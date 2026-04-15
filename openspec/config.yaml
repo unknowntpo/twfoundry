@@ -1,0 +1,45 @@
+schema: spec-driven
+
+context: |
+  # Project: TWFoundry
+  
+  ## Purpose
+  
+  TWFoundry is a Taiwan-focused data operating system for integrating public transportation and civic sensor data into an operations dashboard.
+  
+  ## Phase 1 Scope
+  
+  - Ingest YouBike, Taipei MRT LiveBoard, Civil IoT SensorThings, and MRT static GTFS data.
+  - Preserve raw source payloads and publish them through Kafka topics.
+  - Process data with Spring Boot and Kafka Streams.
+  - Store current operational state in StarRocks.
+  - Expose dashboard-ready APIs.
+  - Build a Google Maps-based Vue dashboard.
+  
+  ## Source Brief
+  
+  The initial project brief is stored at `docs/TWFoundry-project-brief.md`.
+  
+  ## Conventions
+  
+  - Keep architecture simple until the first end-to-end data flow is reliable.
+  - Prefer explicit schemas and metadata over implicit source-specific handling.
+  - Use SDD changes to discuss and approve scope before implementation.
+# Project context (optional)
+# This is shown to AI when creating artifacts.
+# Add your tech stack, conventions, style guides, domain knowledge, etc.
+# Example:
+#   context: |
+#     Tech stack: TypeScript, React, Node.js
+#     We use conventional commits
+#     Domain: e-commerce platform
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
