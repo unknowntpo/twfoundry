@@ -101,6 +101,18 @@ Initial dashboard capabilities:
 
 The first version should use TypeScript mock fixtures as the MRT data contract. YouBike and Civil IoT layers are deferred until the MRT path is proven.
 
+### Figma Design Source
+
+Figma should be the visual design source of truth for the dashboard experience. The first Figma design should cover:
+
+- MRT map dashboard layout.
+- Station marker interaction states.
+- LiveBoard side panel states for empty selection, selected station, no arrivals, and delayed arrivals.
+- Layer control states for visible and hidden MRT lines.
+- Responsive layout expectations for desktop and mobile widths.
+
+The implementation does not need pixel-perfect parity during early frontend iteration, but meaningful UI changes should either come from the Figma design or be reflected back into it after validation. Figma links should be recorded in project documentation once a shareable design file exists.
+
 Initial mock/static MRT scope:
 
 - Red Line: Taipei Main Station, Daan, Xiangshan.
