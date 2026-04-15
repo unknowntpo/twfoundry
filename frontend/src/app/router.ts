@@ -7,7 +7,7 @@ export const router = createRouter({
     {
       path: "/",
       name: "mrt-dashboard",
-      component: MrtDashboard
-    }
-  ]
+      component: MrtDashboard,
+    },
+  ],
 });

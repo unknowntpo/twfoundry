@@ -6,17 +6,17 @@ export default defineConfig({
   reporter: "list",
   use: {
     baseURL: "http://127.0.0.1:5175",
-    trace: "on-first-retry"
+    trace: "on-first-retry",
   },
   webServer: {
     command: "bun run dev --host 127.0.0.1 --port 5175 --mode e2e",
     url: "http://127.0.0.1:5175",
-    reuseExistingServer: false
+    reuseExistingServer: false,
   },
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] }
-    }
-  ]
+      use: { ...devices["Desktop Chrome"] },
+    },
+  ],
 });

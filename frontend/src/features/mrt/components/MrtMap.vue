@@ -16,8 +16,8 @@ const googleReady = ref(false);
 
 const visibleStations = computed(() =>
   props.stations.filter((station) =>
-    station.lineIds.some((lineId) => store.visibleLineIds.includes(lineId))
-  )
+    station.lineIds.some((lineId) => store.visibleLineIds.includes(lineId)),
+  ),
 );
 
 onMounted(() => {
@@ -35,7 +35,7 @@ watch(
       void initializeGoogleMap();
     }
   },
-  { deep: true }
+  { deep: true },
 );
 
 async function initializeGoogleMap(): Promise<void> {
@@ -56,7 +56,7 @@ async function initializeGoogleMap(): Promise<void> {
       zoom: 13,
       mapId: "DEMO_MAP_ID",
       disableDefaultUI: true,
-      gestureHandling: "greedy"
+      gestureHandling: "greedy",
     });
 
     new google.maps.TransitLayer().setMap(map);
@@ -65,7 +65,7 @@ async function initializeGoogleMap(): Promise<void> {
       const marker = new markerLibrary.AdvancedMarkerElement({
         map,
         position: station.position,
-        title: station.name
+        title: station.name,
       });
       marker.addListener("click", () => store.selectStation(station.id));
     }
@@ -129,10 +129,12 @@ interface GoogleMapsGlobal {
   };
 }
 
-interface GoogleMapInstance {}
+type GoogleMapInstance = object;
 
 interface GoogleMarkerLibrary {
-  AdvancedMarkerElement: new (options: Record<string, unknown>) => {
+  AdvancedMarkerElement: new (
+    options: Record<string, unknown>,
+  ) => {
     addListener: (eventName: "click", listener: () => void) => void;
   };
 }

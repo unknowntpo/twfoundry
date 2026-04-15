@@ -3,7 +3,7 @@ import { computed, ref } from "vue";
 import {
   findLiveBoardRowsByStation,
   findStationById,
-  mrtLines
+  mrtLines,
 } from "@/features/mrt/data/mrt-fixtures";
 import type { MrtLineId } from "@/features/mrt/types";
 
@@ -16,9 +16,7 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
   });
 
   const selectedLiveBoards = computed(() => {
-    return selectedStationId.value
-      ? findLiveBoardRowsByStation(selectedStationId.value)
-      : [];
+    return selectedStationId.value ? findLiveBoardRowsByStation(selectedStationId.value) : [];
   });
 
   function selectStation(stationId: string): void {
@@ -40,6 +38,6 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
     selectedLiveBoards,
     visibleLineIds,
     selectStation,
-    toggleLine
+    toggleLine,
   };
 });

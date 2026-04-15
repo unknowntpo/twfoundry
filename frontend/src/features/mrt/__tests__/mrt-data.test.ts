@@ -7,7 +7,7 @@ describe("MRT mock fixtures", () => {
     expect(mrtLines.map((line) => line.stationIds)).toEqual([
       ["R10", "R05", "R02"],
       ["BL12", "BL15", "BL18"],
-      ["G12", "G10", "G16"]
+      ["G12", "G10", "G16"],
     ]);
     expect(mrtStations).toHaveLength(9);
   });

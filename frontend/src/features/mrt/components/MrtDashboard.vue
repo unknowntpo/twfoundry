@@ -11,7 +11,7 @@ const store = useMrtDashboardStore();
 const { selectedStation, selectedLiveBoards, visibleLineIds } = storeToRefs(store);
 
 const visibleLines = computed(() =>
-  mrtLines.filter((line) => visibleLineIds.value.includes(line.id))
+  mrtLines.filter((line) => visibleLineIds.value.includes(line.id)),
 );
 </script>
 

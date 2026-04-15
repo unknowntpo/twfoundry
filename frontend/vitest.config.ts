@@ -6,13 +6,13 @@ export default defineConfig({
   plugins: [vue()],
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url))
-    }
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+    },
   },
   test: {
     environment: "jsdom",
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
-    exclude: ["node_modules/**", "dist/**", "tests/e2e/**"]
-  }
+    exclude: ["node_modules/**", "dist/**", "tests/e2e/**"],
+  },
 });
