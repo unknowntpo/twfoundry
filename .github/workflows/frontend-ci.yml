@@ -1,0 +1,41 @@
+name: Frontend CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  frontend:
+    name: Build and test frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.0.23
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build and typecheck
+        run: bun run build
+
+      - name: Run unit and integration tests
+        run: bun run test
+
+      - name: Install Playwright Chromium
+        run: bunx playwright install chromium
+
+      - name: Run E2E smoke tests
+        run: bun run e2e
