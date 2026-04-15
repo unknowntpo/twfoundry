@@ -1,7 +1,13 @@
 .spectra/
+.env
+.env.*
+!.env.example
 openspec/.vector-search.db*
 frontend/dist/
 frontend/node_modules/
 frontend/playwright-report/
 frontend/test-results/
 frontend/tsconfig.tsbuildinfo
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
