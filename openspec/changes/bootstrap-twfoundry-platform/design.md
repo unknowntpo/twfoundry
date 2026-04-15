@@ -133,6 +133,20 @@ Testing should grow from small to broad:
 
 This keeps early feedback fast while preserving E2E coverage for the user-facing flow once the UI is stable.
 
+### CI Strategy
+
+CI should start with the frontend slice and run on pull requests and pushes to the main branch.
+
+Required frontend CI checks:
+
+1. Install frontend dependencies with Bun from `frontend/bun.lockb`.
+2. Run TypeScript type checking through the production build command.
+3. Run Vitest unit and integration tests.
+4. Install the Playwright Chromium browser used by the E2E project.
+5. Run Playwright E2E smoke tests in isolated `--mode e2e` mock-map mode.
+
+Linting or formatting checks should be added as a separate step after the project chooses the lint rule set. Until then, CI should still enforce type checking, build, unit/integration tests, and E2E tests.
+
 ## Repository Shape
 
 The repository should start as a simple monorepo:

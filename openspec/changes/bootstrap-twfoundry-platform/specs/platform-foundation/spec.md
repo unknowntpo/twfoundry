@@ -102,6 +102,22 @@ TWFoundry SHALL provide a mock map provider for Playwright E2E tests while prese
 - **WHEN** `VITE_MAP_PROVIDER=mock` is configured
 - **THEN** tests can verify dashboard load, station selection, and layer toggling without requiring Google Maps network access, quota, tile loading, or an API key
 
+### Requirement: Frontend CI
+
+TWFoundry SHALL run frontend validation in CI for pull requests and pushes to the main branch.
+
+#### Scenario: CI validates the frontend slice
+
+- **GIVEN** frontend code changes are pushed or proposed in a pull request
+- **WHEN** CI runs
+- **THEN** CI installs frontend dependencies with Bun, runs the production build for TypeScript type checking, runs Vitest unit and integration tests, installs the Playwright Chromium browser, and runs Playwright E2E smoke tests in mock-map mode
+
+#### Scenario: Linting is introduced
+
+- **GIVEN** the project chooses a linting and formatting rule set
+- **WHEN** the CI workflow is updated
+- **THEN** CI includes a lint or formatting check alongside build, unit/integration tests, and E2E tests
+
 ### Requirement: Implementation Before Coding
 
 TWFoundry SHALL resolve or explicitly defer Phase 1 bootstrap questions before application implementation code is added.

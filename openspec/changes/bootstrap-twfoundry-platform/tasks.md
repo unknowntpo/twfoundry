@@ -23,6 +23,9 @@
 - [x] Add mock map provider using `VITE_MAP_PROVIDER=mock`.
 - [x] Add map provider boundary tests for `VITE_MAP_PROVIDER=google | mock`.
 - [x] Add Playwright E2E smoke tests for dashboard load, station selection, and layer toggle after unit/integration tests are passing to implement Requirement: Deterministic Map E2E.
+- [ ] Add GitHub Actions CI for CI Strategy and Requirement: Frontend CI to run Bun install, frontend build/typecheck, Vitest, Playwright browser install, and Playwright E2E.
+- [ ] Choose lint and formatting tools for Requirement: Frontend CI before adding lint enforcement.
+- [ ] Add lint or formatting CI check after the rule set is chosen.
 - [ ] Add backend module skeletons for ingestion, streams, and API after the frontend contract is stable.
 - [ ] Add local infrastructure notes or compose files for Kafka and StarRocks after backend work begins.
 
