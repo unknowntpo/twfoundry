@@ -50,25 +50,19 @@ async function initializeGoogleMap(): Promise<void> {
 
   try {
     const google = await loadGoogleMaps(appConfig.googleMapsApiKey);
+    const markerLibrary = await google.maps.importLibrary("marker");
     const map = new google.maps.Map(mapElement.value, {
       center: { lat: 25.0418, lng: 121.5359 },
       zoom: 13,
+      mapId: "DEMO_MAP_ID",
       disableDefaultUI: true,
       gestureHandling: "greedy"
     });
 
-    for (const line of props.lines) {
-      new google.maps.Polyline({
-        map,
-        path: line.polyline,
-        strokeColor: line.color,
-        strokeOpacity: 0.95,
-        strokeWeight: 5
-      });
-    }
+    new google.maps.TransitLayer().setMap(map);
 
     for (const station of visibleStations.value) {
-      const marker = new google.maps.Marker({
+      const marker = new markerLibrary.AdvancedMarkerElement({
         map,
         position: station.position,
         title: station.name
@@ -98,7 +92,7 @@ function loadGoogleMaps(apiKey: string): Promise<GoogleMapsGlobal> {
   const script = document.createElement("script");
   script.id = scriptId;
   script.async = true;
-  script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}`;
+  script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&loading=async`;
   script.onerror = () => {
     mapError.value = "Google Maps script failed to load.";
   };
@@ -127,11 +121,19 @@ function waitForGoogleMaps(): Promise<GoogleMapsGlobal> {
 
 interface GoogleMapsGlobal {
   maps: {
-    Map: new (element: HTMLElement, options: Record<string, unknown>) => unknown;
-    Marker: new (options: Record<string, unknown>) => {
-      addListener: (eventName: string, listener: () => void) => void;
+    importLibrary: (name: "marker") => Promise<GoogleMarkerLibrary>;
+    Map: new (element: HTMLElement, options: Record<string, unknown>) => GoogleMapInstance;
+    TransitLayer: new () => {
+      setMap: (map: GoogleMapInstance) => void;
     };
-    Polyline: new (options: Record<string, unknown>) => unknown;
+  };
+}
+
+interface GoogleMapInstance {}
+
+interface GoogleMarkerLibrary {
+  AdvancedMarkerElement: new (options: Record<string, unknown>) => {
+    addListener: (eventName: "click", listener: () => void) => void;
   };
 }
 
