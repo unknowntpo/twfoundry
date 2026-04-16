@@ -16,7 +16,6 @@ const googleReady = ref(false);
 let googleMap: GoogleMapInstance | undefined;
 let googleApi: GoogleMapsGlobal | undefined;
 let googleMarkerLibrary: GoogleMarkerLibrary | undefined;
-let googlePolylines: GooglePolylineInstance[] = [];
 let googleMarkers: GoogleMarkerInstance[] = [];
 
 const visibleStations = computed(() =>
@@ -89,24 +88,9 @@ function renderGoogleMapOverlays(): void {
   const google = googleApi;
   const markerLibrary = googleMarkerLibrary;
 
-  for (const polyline of googlePolylines) {
-    polyline.setMap(null);
-  }
-
   for (const marker of googleMarkers) {
     marker.setMap(null);
   }
-
-  googlePolylines = props.lines.map((line) => {
-    return new google.maps.Polyline({
-      map,
-      path: line.polyline,
-      strokeColor: line.color,
-      strokeOpacity: 0.92,
-      strokeWeight: 5,
-      zIndex: 20,
-    });
-  });
 
   googleMarkers = visibleStations.value.map((station) => {
     const marker = createGoogleMapMarker(google, markerLibrary, map, station);
@@ -249,7 +233,6 @@ interface GoogleMapsGlobal {
     importLibrary?: GoogleImportLibrary;
     Map?: new (element: HTMLElement, options: Record<string, unknown>) => GoogleMapInstance;
     Marker: new (options: Record<string, unknown>) => GoogleLegacyMarkerInstance;
-    Polyline: new (options: Record<string, unknown>) => GooglePolylineInstance;
     TransitLayer: new () => {
       setMap: (map: GoogleMapInstance) => void;
     };
@@ -265,10 +248,6 @@ interface GoogleImportLibrary {
 
 interface GoogleMapsLibrary {
   Map: new (element: HTMLElement, options: Record<string, unknown>) => GoogleMapInstance;
-}
-
-interface GooglePolylineInstance {
-  setMap: (map: GoogleMapInstance | null) => void;
 }
 
 interface GoogleAdvancedMarkerInstance {
