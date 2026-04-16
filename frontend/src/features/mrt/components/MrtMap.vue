@@ -17,7 +17,7 @@ let googleMap: GoogleMapInstance | undefined;
 let googleApi: GoogleMapsGlobal | undefined;
 let googleMarkerLibrary: GoogleMarkerLibrary | undefined;
 let googlePolylines: GooglePolylineInstance[] = [];
-let googleMarkers: GoogleAdvancedMarkerInstance[] = [];
+let googleMarkers: GoogleMarkerInstance[] = [];
 
 const visibleStations = computed(() =>
   props.stations.filter((station) =>
@@ -55,8 +55,13 @@ async function initializeGoogleMap(): Promise<void> {
 
   try {
     googleApi = await loadGoogleMaps(appConfig.googleMapsApiKey);
-    googleMarkerLibrary = await googleApi.maps.importLibrary("marker");
-    googleMap = new googleApi.maps.Map(mapElement.value, {
+    googleMarkerLibrary = await loadGoogleMarkerLibrary(googleApi);
+    const GoogleMap = googleApi.maps.Map;
+    if (!GoogleMap) {
+      throw new Error("Google Maps library is not available.");
+    }
+
+    googleMap = new GoogleMap(mapElement.value, {
       center: { lat: 25.044, lng: 121.5134 },
       zoom: 12,
       tilt: 45,
@@ -76,7 +81,7 @@ async function initializeGoogleMap(): Promise<void> {
 }
 
 function renderGoogleMapOverlays(): void {
-  if (!googleMap || !googleApi || !googleMarkerLibrary) {
+  if (!googleMap || !googleApi) {
     return;
   }
 
@@ -89,7 +94,7 @@ function renderGoogleMapOverlays(): void {
   }
 
   for (const marker of googleMarkers) {
-    marker.map = null;
+    marker.setMap(null);
   }
 
   googlePolylines = props.lines.map((line) => {
@@ -104,6 +109,19 @@ function renderGoogleMapOverlays(): void {
   });
 
   googleMarkers = visibleStations.value.map((station) => {
+    const marker = createGoogleMapMarker(google, markerLibrary, map, station);
+    marker.addListener("click", () => store.selectStation(station.id));
+    return marker;
+  });
+}
+
+function createGoogleMapMarker(
+  google: GoogleMapsGlobal,
+  markerLibrary: GoogleMarkerLibrary | undefined,
+  map: GoogleMapInstance,
+  station: MrtStation,
+): GoogleMarkerInstance {
+  if (markerLibrary) {
     const marker = new markerLibrary.AdvancedMarkerElement({
       map,
       position: station.position,
@@ -111,8 +129,25 @@ function renderGoogleMapOverlays(): void {
       content: createGoogleStationMarker(station),
       zIndex: station.id === store.selectedStationId ? 40 : 30,
     });
-    marker.addListener("click", () => store.selectStation(station.id));
-    return marker;
+
+    return {
+      addListener: marker.addListener.bind(marker),
+      setMap: (nextMap) => {
+        marker.map = nextMap;
+      },
+    };
+  }
+
+  return new google.maps.Marker({
+    label: {
+      color: "#26241e",
+      fontWeight: "700",
+      text: station.name,
+    },
+    map,
+    position: station.position,
+    title: station.name,
+    zIndex: station.id === store.selectedStationId ? 40 : 30,
   });
 }
 
@@ -134,8 +169,12 @@ function resolveStationColor(station: MrtStation): string {
 
 function loadGoogleMaps(apiKey: string): Promise<GoogleMapsGlobal> {
   const existing = window.google;
-  if (existing?.maps) {
+  if (existing?.maps?.Map) {
     return Promise.resolve(existing);
+  }
+
+  if (existing?.maps?.importLibrary) {
+    return ensureGoogleMapsLibrary(existing);
   }
 
   const scriptId = "google-maps-js";
@@ -156,13 +195,44 @@ function loadGoogleMaps(apiKey: string): Promise<GoogleMapsGlobal> {
   return waitForGoogleMaps();
 }
 
+async function ensureGoogleMapsLibrary(google: GoogleMapsGlobal): Promise<GoogleMapsGlobal> {
+  if (google.maps.Map) {
+    return google;
+  }
+
+  if (!google.maps.importLibrary) {
+    throw new Error("Google Maps library is not available.");
+  }
+
+  const mapsLibrary = await google.maps.importLibrary("maps");
+  google.maps.Map = mapsLibrary.Map;
+  return google;
+}
+
+async function loadGoogleMarkerLibrary(
+  google: GoogleMapsGlobal,
+): Promise<GoogleMarkerLibrary | undefined> {
+  if (!google.maps.importLibrary) {
+    return undefined;
+  }
+
+  return google.maps.importLibrary("marker");
+}
+
 function waitForGoogleMaps(): Promise<GoogleMapsGlobal> {
   return new Promise((resolve, reject) => {
     const startedAt = Date.now();
     const interval = window.setInterval(() => {
-      if (window.google?.maps) {
+      const google = window.google;
+      if (google?.maps?.Map) {
         window.clearInterval(interval);
-        resolve(window.google);
+        resolve(google);
+        return;
+      }
+
+      if (google?.maps?.importLibrary) {
+        window.clearInterval(interval);
+        ensureGoogleMapsLibrary(google).then(resolve, reject);
         return;
       }
 
@@ -176,8 +246,9 @@ function waitForGoogleMaps(): Promise<GoogleMapsGlobal> {
 
 interface GoogleMapsGlobal {
   maps: {
-    importLibrary: (name: "marker") => Promise<GoogleMarkerLibrary>;
-    Map: new (element: HTMLElement, options: Record<string, unknown>) => GoogleMapInstance;
+    importLibrary?: GoogleImportLibrary;
+    Map?: new (element: HTMLElement, options: Record<string, unknown>) => GoogleMapInstance;
+    Marker: new (options: Record<string, unknown>) => GoogleLegacyMarkerInstance;
     Polyline: new (options: Record<string, unknown>) => GooglePolylineInstance;
     TransitLayer: new () => {
       setMap: (map: GoogleMapInstance) => void;
@@ -186,6 +257,15 @@ interface GoogleMapsGlobal {
 }
 
 type GoogleMapInstance = object;
+
+interface GoogleImportLibrary {
+  (name: "maps"): Promise<GoogleMapsLibrary>;
+  (name: "marker"): Promise<GoogleMarkerLibrary>;
+}
+
+interface GoogleMapsLibrary {
+  Map: new (element: HTMLElement, options: Record<string, unknown>) => GoogleMapInstance;
+}
 
 interface GooglePolylineInstance {
   setMap: (map: GoogleMapInstance | null) => void;
@@ -198,6 +278,16 @@ interface GoogleAdvancedMarkerInstance {
 
 interface GoogleMarkerLibrary {
   AdvancedMarkerElement: new (options: Record<string, unknown>) => GoogleAdvancedMarkerInstance;
+}
+
+interface GoogleLegacyMarkerInstance {
+  addListener: (eventName: "click", listener: () => void) => void;
+  setMap: (map: GoogleMapInstance | null) => void;
+}
+
+interface GoogleMarkerInstance {
+  addListener: (eventName: "click", listener: () => void) => void;
+  setMap: (map: GoogleMapInstance | null) => void;
 }
 
 declare global {
