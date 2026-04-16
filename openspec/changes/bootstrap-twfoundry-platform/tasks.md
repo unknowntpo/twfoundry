@@ -7,7 +7,7 @@
 - [x] Resolve Requirement: MRT-First Frontend Slice as MRT-only and frontend-first.
 - [x] Resolve Requirement: Frontend Stack Direction as Bun, Vite, Vue 3, TypeScript, Pinia, Vue Router, Google Maps, scoped CSS, Vitest, and Playwright.
 - [x] Resolve Requirement: Implementation Before Coding by deferring backend/data pipeline implementation until frontend contract exists.
-- [ ] Resolve Requirement: Current-State Storage Direction as latest-state only or latest-state plus history.
+- [x] Defer Requirement: Current-State Storage Direction details to `define-backend-platform-contracts`.
 - [x] Resolve Requirement: Dashboard Visualization Direction as MRT route, station markers, station selection, and LiveBoard side panel.
 - [x] Choose Requirement: Initial MRT Mock Dataset lines and stations for mock/static data.
 - [x] Create or link the dashboard design source for Requirement: Dashboard Design Source.
@@ -28,14 +28,14 @@
 - [x] Choose Biome as the lint and formatting tool for Requirement: Frontend CI.
 - [x] Add Biome lint and formatting CI check after the rule set is chosen.
 - [x] Apply the committed dashboard mockup styling to the Vue MRT dashboard without changing the mock data contract.
-- [ ] Add backend module skeletons for ingestion, streams, and API after the frontend contract is stable.
-- [ ] Add local infrastructure notes or compose files for Kafka and StarRocks after backend work begins.
+- [x] Defer backend module skeletons for ingestion, streams, and API to `define-backend-platform-contracts`.
+- [x] Defer local infrastructure notes or compose files for Kafka and StarRocks to `define-backend-platform-contracts`.
 
 ## Platform Foundation
 
-- [ ] Define Requirement: Raw Topic Direction message envelope with `ingested_at` and `source`.
-- [ ] Define curated Kafka Streams topic naming and ownership.
-- [ ] Define StarRocks Primary Key Table schemas for current-state tables.
+- [x] Defer Requirement: Raw Topic Direction message envelope with `ingested_at` and `source` to `define-backend-platform-contracts`.
+- [x] Defer curated Kafka Streams topic naming and ownership to `define-backend-platform-contracts`.
+- [x] Defer StarRocks Primary Key Table schemas for current-state tables to `define-backend-platform-contracts`.
 - [x] Define MRT dashboard API resource boundaries from the mock fixture contract.
 - [x] Define frontend MRT map layers and dashboard controls.
 - [x] Record dashboard design reference in project documentation after a shareable source exists.

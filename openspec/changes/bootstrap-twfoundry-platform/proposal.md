@@ -35,6 +35,4 @@ TWFoundry needs a clear Phase 1 foundation before implementation begins. The pro
 
 ## Open Questions
 
-- Should Phase 1 persist only latest state in StarRocks Primary Key Tables, or also retain append-only raw and curated history?
-- Which local development stack should be introduced first for Kafka and StarRocks?
-- Which Taipei MRT lines and stations should be included in the first mock/static dataset?
+- Backend/platform contract details are deferred to `openspec/changes/define-backend-platform-contracts`.

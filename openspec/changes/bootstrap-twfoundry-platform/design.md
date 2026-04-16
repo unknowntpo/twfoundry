@@ -25,6 +25,8 @@ Vue 3 dashboard -> mock MRT fixtures -> Google Maps / mock map provider
 
 The backend pipeline is added after the dashboard interaction model and MRT API contract are visible.
 
+Detailed backend contracts, Kafka topic ownership, StarRocks table schemas, and local infrastructure setup are deferred to `openspec/changes/define-backend-platform-contracts` so this bootstrap change can close around the frontend-first slice.
+
 ## Source Coverage
 
 Phase 1 source candidates:
