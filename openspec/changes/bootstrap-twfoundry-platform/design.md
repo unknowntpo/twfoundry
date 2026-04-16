@@ -113,6 +113,10 @@ Figma should be the visual design source of truth for the dashboard experience. 
 
 The implementation does not need pixel-perfect parity during early frontend iteration, but meaningful UI changes should either come from the Figma design or be reflected back into it after validation. Figma links should be recorded in project documentation once a shareable design file exists.
 
+Design source:
+
+- [TWFoundry MRT Dashboard](https://www.figma.com/design/yFU5QcHZSHpJiQemHvt9aR/twfoundry?node-id=0-1&m=dev&t=dLwptqoO9WSX623M-1)
+
 Initial mock/static MRT scope:
 
 - Red Line: Taipei Main Station, Daan, Xiangshan.
