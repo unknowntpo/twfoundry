@@ -10,7 +10,7 @@
 - [ ] Resolve Requirement: Current-State Storage Direction as latest-state only or latest-state plus history.
 - [x] Resolve Requirement: Dashboard Visualization Direction as MRT route, station markers, station selection, and LiveBoard side panel.
 - [x] Choose Requirement: Initial MRT Mock Dataset lines and stations for mock/static data.
-- [x] Create or link the Figma design source for Requirement: Figma Design Source.
+- [x] Create or link the dashboard design source for Requirement: Dashboard Design Source.
 
 ## Repository Bootstrap
 
@@ -37,4 +37,4 @@
 - [ ] Define StarRocks Primary Key Table schemas for current-state tables.
 - [x] Define MRT dashboard API resource boundaries from the mock fixture contract.
 - [x] Define frontend MRT map layers and dashboard controls.
-- [x] Record Figma design reference in project documentation after a shareable file exists.
+- [x] Record dashboard design reference in project documentation after a shareable source exists.

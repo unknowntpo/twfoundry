@@ -92,21 +92,21 @@ TWFoundry SHALL use Vue 3, Pinia, and Google Maps JavaScript API for the Phase 1
 - **WHEN** the dashboard loads
 - **THEN** it can display MRT route polylines, MRT station markers, and station LiveBoard information
 
-### Requirement: Figma Design Source
+### Requirement: Dashboard Design Source
 
-TWFoundry SHALL use Figma as the visual design source of truth for the MRT dashboard user interface.
+TWFoundry SHALL use a committed dashboard design mockup as the current visual design source of truth for the MRT dashboard user interface.
 
 #### Scenario: Dashboard UI is designed
 
 - **GIVEN** the MRT-first frontend slice is being designed
 - **WHEN** dashboard layout, marker interaction, LiveBoard panel states, layer controls, or responsive behavior are changed
-- **THEN** the change is represented in Figma or synchronized back to Figma after implementation validation
+- **THEN** the change is represented in the committed design source or synchronized back to it after implementation validation
 
-#### Scenario: Figma design is shared with the project
+#### Scenario: Design source is shared with the project
 
-- **GIVEN** a shareable Figma design file exists
+- **GIVEN** a committed dashboard design mockup exists
 - **WHEN** project documentation is updated
-- **THEN** the Figma file reference is recorded without requiring secrets or private credentials in the repository
+- **THEN** the design source reference is recorded without requiring secrets or private credentials in the repository
 
 ### Requirement: Deterministic Map E2E
 

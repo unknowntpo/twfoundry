@@ -11,7 +11,7 @@ TWFoundry needs a clear Phase 1 foundation before implementation begins. The pro
 - Capture the initial public data source candidates: YouBike, TDX Taipei MRT LiveBoard, Civil IoT SensorThings, and MRT static GTFS data.
 - Set the first implementation slice as an MRT-only, frontend-first dashboard with mock/static data.
 - Use Bun, Vite, Vue 3, TypeScript, Pinia, Vue Router, Google Maps JavaScript API, scoped CSS, and Playwright E2E.
-- Use Figma as the visual design source of truth for dashboard layout, map interactions, station panels, and future UI iteration.
+- Use a committed dashboard design mockup as the current visual design source for dashboard layout, map interactions, station panels, and future UI iteration.
 - Define the initial topic and table naming direction for raw data, current-state storage, and dashboard-facing APIs.
 - Keep the first implementation scope simple and maintainable, with advanced analytics, alerting, and broader city coverage deferred.
 
@@ -23,7 +23,7 @@ TWFoundry needs a clear Phase 1 foundation before implementation begins. The pro
 - Building historical trend analysis, anomaly detection, advanced alerting, or operator workflow automation.
 - Supporting data sources beyond the Phase 1 source candidates.
 - Integrating YouBike or Civil IoT before the MRT end-to-end path is proven.
-- Requiring pixel-perfect implementation parity with Figma before the first MRT dashboard loop is functional.
+- Requiring pixel-perfect implementation parity with the design mockup before the first MRT dashboard loop is functional.
 
 ## Discussion Conclusion
 
