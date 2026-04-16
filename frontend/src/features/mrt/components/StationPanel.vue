@@ -2,6 +2,8 @@
 import type { LiveBoardRow, MrtStation } from "../types";
 
 defineProps<{
+  error?: string;
+  isLoading?: boolean;
   station: MrtStation | undefined;
   liveBoards: LiveBoardRow[];
 }>();
@@ -29,6 +31,8 @@ function formatLineName(lineId: string): string {
       <p class="station-meta">{{ station.id }} · LiveBoard active · mock data</p>
 
       <p class="section-heading">Upcoming Arrivals</p>
+      <p v-if="isLoading" class="notice">Loading LiveBoard rows...</p>
+      <p v-if="error" class="notice error">{{ error }}</p>
 
       <div class="liveboard-list" data-testid="liveboard-list">
         <article v-for="row in liveBoards" :key="row.id" class="liveboard-row">
@@ -141,6 +145,18 @@ h2 {
   font-weight: 800;
   letter-spacing: 0;
   text-transform: uppercase;
+}
+
+.notice {
+  margin: 0;
+  padding: 10px 18px 0;
+  color: #6b6557;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.notice.error {
+  color: #d92d3a;
 }
 
 .liveboard-list {

@@ -8,7 +8,8 @@ import MrtMap from "./MrtMap.vue";
 import StationPanel from "./StationPanel.vue";
 
 const store = useMrtDashboardStore();
-const { selectedStation, selectedLiveBoards, visibleLineIds } = storeToRefs(store);
+const { liveBoardError, liveBoardLoading, selectedStation, selectedLiveBoards, visibleLineIds } =
+  storeToRefs(store);
 
 const visibleLines = computed(() =>
   mrtLines.filter((line) => visibleLineIds.value.includes(line.id)),
@@ -112,6 +113,8 @@ const activeTrainCount = computed(() => mrtLines.length * 12 + mrtStations.lengt
 
       <StationPanel
         class="station-panel"
+        :error="liveBoardError"
+        :is-loading="liveBoardLoading"
         :station="selectedStation"
         :live-boards="selectedLiveBoards"
       />
