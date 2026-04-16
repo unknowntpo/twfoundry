@@ -4,6 +4,7 @@ import { createTdxProxyHandler, loadTdxProxyConfig } from "../src/features/mrt/t
 
 const env = {
   ...loadDotEnv(resolve(process.cwd(), ".env")),
+  ...loadDotEnv(resolve(process.cwd(), ".env.local")),
   ...process.env,
 };
 
