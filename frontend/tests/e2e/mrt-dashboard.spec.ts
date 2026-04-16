@@ -39,6 +39,7 @@ test("sidebars collapse without clearing dashboard state", async ({ page }) => {
 
   await page.getByTestId("collapse-layers-sidebar").click();
   await expect(page.getByTestId("expand-layers-sidebar")).toHaveAttribute("aria-expanded", "false");
+  await expect(page.getByLabel("Map layers")).toBeHidden();
   await expect(page.getByRole("button", { name: "Red Line" })).toBeHidden();
 
   await page.getByTestId("collapse-station-panel").click();

@@ -96,6 +96,21 @@ function notifyMapLayoutChanged(): void {
             <path d="M1.5 7L8 1.5 14.5 7v8h-13V7z" />
           </svg>
         </button>
+        <button
+          v-if="isLayerSidebarCollapsed"
+          type="button"
+          class="rail-button"
+          data-testid="expand-layers-sidebar"
+          aria-label="Expand Layers sidebar"
+          aria-controls="layers-sidebar-content"
+          :aria-expanded="false"
+          title="Expand Layers sidebar"
+          @click="toggleLayerSidebar"
+        >
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M6 4l4 4-4 4" />
+          </svg>
+        </button>
         <button type="button" class="rail-button" aria-label="Stations">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
             <circle cx="8" cy="6" r="3.5" />
@@ -115,21 +130,7 @@ function notifyMapLayoutChanged(): void {
         :data-collapsed="isLayerSidebarCollapsed"
         aria-label="Map layers"
       >
-        <button
-          v-if="isLayerSidebarCollapsed"
-          type="button"
-          class="sidebar-rail-toggle"
-          data-testid="expand-layers-sidebar"
-          aria-label="Expand Layers sidebar"
-          aria-controls="layers-sidebar-content"
-          :aria-expanded="false"
-          title="Expand Layers sidebar"
-          @click="toggleLayerSidebar"
-        >
-          <span aria-hidden="true">›</span>
-        </button>
-
-        <div v-else id="layers-sidebar-content" class="sidebar-content">
+        <div v-if="!isLayerSidebarCollapsed" id="layers-sidebar-content" class="sidebar-content">
           <div class="sidebar-head">
             <h2>Layers</h2>
             <div class="sidebar-head-actions">
@@ -332,7 +333,7 @@ h1 {
 }
 
 .workspace.layers-collapsed {
-  --layers-width: 36px;
+  --layers-width: 0px;
 }
 
 .workspace.station-collapsed {
@@ -380,6 +381,7 @@ h1 {
 }
 
 .layer-sidebar[data-collapsed="true"] {
+  border-right: 0;
   background: var(--white);
 }
 
@@ -415,8 +417,7 @@ h1 {
   text-transform: uppercase;
 }
 
-.collapse-button,
-.sidebar-rail-toggle {
+.collapse-button {
   border: 1px solid var(--border);
   border-radius: 7px;
   background: var(--surface);
@@ -434,32 +435,9 @@ h1 {
 }
 
 .collapse-button:hover,
-.sidebar-rail-toggle:hover {
+.rail-button:hover {
   border-color: var(--text-muted);
   color: var(--text);
-}
-
-.sidebar-rail-toggle {
-  display: grid;
-  width: 100%;
-  min-height: 100%;
-  align-content: start;
-  justify-items: center;
-  border: 0;
-  border-radius: 0;
-  padding: 10px 0;
-  background: transparent;
-}
-
-.sidebar-rail-toggle span {
-  display: grid;
-  width: 28px;
-  height: 28px;
-  place-items: center;
-  border: 1px solid var(--border);
-  border-radius: 7px;
-  background: var(--surface);
-  font-size: 1rem;
 }
 
 .layer-group {

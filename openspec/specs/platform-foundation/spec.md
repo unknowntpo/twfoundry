@@ -561,7 +561,7 @@ TWFoundry SHALL allow the MRT dashboard's Layers sidebar and Station Detail pane
 
 - **GIVEN** the MRT dashboard is open with one or more visible MRT route filters
 - **WHEN** the user collapses the Layers sidebar
-- **THEN** the map expands into the freed space, the existing route visibility selections remain unchanged, and the collapsed control remains a compact icon-only affordance
+- **THEN** the map expands into the freed space, the existing route visibility selections remain unchanged, and the outer icon rail provides the compact icon-only expand affordance without rendering a second collapsed sidebar rail
 
 #### Scenario: User collapses the Station Detail panel
 
