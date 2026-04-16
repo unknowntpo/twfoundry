@@ -2,6 +2,7 @@
 import { storeToRefs } from "pinia";
 import { computed, nextTick, ref } from "vue";
 import { useMrtDashboardStore } from "@/app/stores/mrt-dashboard";
+import { appConfig } from "@/shared/config/env";
 import { mrtLines, mrtStations } from "../data/mrt-fixtures";
 import LayerControl from "./LayerControl.vue";
 import MrtMap from "./MrtMap.vue";
@@ -16,6 +17,9 @@ const visibleLines = computed(() =>
 );
 
 const activeTrainCount = computed(() => mrtLines.length * 12 + mrtStations.length);
+const liveBoardSourceLabel = computed(() =>
+  appConfig.mrtLiveBoardSource === "tdx" ? "TDX live" : "Mock",
+);
 const isLayerSidebarCollapsed = ref(false);
 const isStationPanelCollapsed = ref(false);
 
@@ -69,7 +73,7 @@ function notifyMapLayoutChanged(): void {
           <span class="stat-dot" :style="{ '--line-color': line.color }" aria-hidden="true" />
           {{ line.stationIds.length * 6 }} trains
         </span>
-        <span>{{ activeTrainCount }} active · Mock</span>
+        <span>{{ activeTrainCount }} active · {{ liveBoardSourceLabel }}</span>
       </div>
 
       <div class="topbar-actions" aria-label="Map view actions">
@@ -119,10 +123,10 @@ function notifyMapLayoutChanged(): void {
           aria-label="Expand Layers sidebar"
           aria-controls="layers-sidebar-content"
           :aria-expanded="false"
+          title="Expand Layers sidebar"
           @click="toggleLayerSidebar"
         >
           <span aria-hidden="true">›</span>
-          <strong>Layers</strong>
         </button>
 
         <div v-else id="layers-sidebar-content" class="sidebar-content">
@@ -177,6 +181,7 @@ function notifyMapLayoutChanged(): void {
         :is-loading="liveBoardLoading"
         :station="selectedStation"
         :live-boards="selectedLiveBoards"
+        @refresh="store.refreshLiveBoards"
         @toggle-collapse="toggleStationPanel"
       />
     </div>
@@ -195,7 +200,7 @@ function notifyMapLayoutChanged(): void {
       <div class="timeline-track" aria-hidden="true">
         <span />
       </div>
-      <small>Mock map provider · MRT fixture feed</small>
+      <small>{{ liveBoardSourceLabel }} LiveBoard feed</small>
     </footer>
   </main>
 </template>
@@ -327,11 +332,11 @@ h1 {
 }
 
 .workspace.layers-collapsed {
-  --layers-width: 48px;
+  --layers-width: 36px;
 }
 
 .workspace.station-collapsed {
-  --station-width: 52px;
+  --station-width: 36px;
 }
 
 .icon-rail {
@@ -438,12 +443,11 @@ h1 {
   display: grid;
   width: 100%;
   min-height: 100%;
-  grid-template-rows: auto 1fr;
+  align-content: start;
   justify-items: center;
-  gap: 10px;
   border: 0;
   border-radius: 0;
-  padding: 14px 0;
+  padding: 10px 0;
   background: transparent;
 }
 
@@ -456,14 +460,6 @@ h1 {
   border-radius: 7px;
   background: var(--surface);
   font-size: 1rem;
-}
-
-.sidebar-rail-toggle strong {
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  font-size: 0.72rem;
-  letter-spacing: 0;
-  text-transform: uppercase;
 }
 
 .layer-group {

@@ -10,6 +10,7 @@ defineProps<{
 }>();
 
 defineEmits<{
+  refresh: [];
   "toggle-collapse": [];
 }>();
 
@@ -28,10 +29,10 @@ function formatLineName(lineId: string): string {
       aria-label="Expand Station Detail panel"
       aria-controls="station-panel-content"
       :aria-expanded="false"
+      title="Expand Station Detail panel"
       @click="$emit('toggle-collapse')"
     >
       <span aria-hidden="true">‹</span>
-      <strong>Station Detail</strong>
     </button>
 
     <template v-else>
@@ -51,55 +52,51 @@ function formatLineName(lineId: string): string {
           </button>
         </div>
 
-    <template v-if="station">
-      <h2>{{ station.name }}</h2>
-      <div class="line-badges" aria-label="Station lines">
-        <span
-          v-for="lineId in station.lineIds"
-          :key="lineId"
-          class="line-badge"
-          :data-line="lineId"
-        >
-          {{ formatLineName(lineId) }}
-        </span>
-      </div>
-      <p class="station-meta">{{ station.id }} · LiveBoard active · mock data</p>
-
-      <p class="section-heading">Upcoming Arrivals</p>
-      <p v-if="isLoading" class="notice">Loading LiveBoard rows...</p>
-      <p v-if="error" class="notice error">{{ error }}</p>
-
-      <div class="liveboard-list" data-testid="liveboard-list">
-        <article v-for="row in liveBoards" :key="row.id" class="liveboard-row">
-          <span
-            class="row-line"
-            :data-line="row.lineId"
-            aria-hidden="true"
-          />
-          <div>
-            <h3>{{ row.destination }}</h3>
-            <p class="direction">{{ formatLineName(row.lineId) }} · {{ row.direction }}</p>
+        <template v-if="station">
+          <h2>{{ station.name }}</h2>
+          <div class="line-badges" aria-label="Station lines">
+            <span
+              v-for="lineId in station.lineIds"
+              :key="lineId"
+              class="line-badge"
+              :data-line="lineId"
+            >
+              {{ formatLineName(lineId) }}
+            </span>
           </div>
-          <div class="arrival">
-            <strong>{{ row.arrivalMinutes }}</strong>
-            <span>min</span>
-            <em class="status" :data-status="row.status">{{ row.status }}</em>
-          </div>
-        </article>
-      </div>
+          <p class="station-meta">{{ station.id }} · LiveBoard active</p>
 
-      <p v-if="liveBoards.length === 0" class="empty">No arrivals in the mock feed.</p>
-      <footer class="panel-footer">
-        <span>Updated 30s ago</span>
-        <button type="button">Refresh</button>
-      </footer>
-    </template>
-    <template v-else>
-      <h2>Select a station</h2>
-      <p class="empty">
-        Pick a station marker on the map to inspect mock LiveBoard arrivals.
-      </p>
-    </template>
+          <p class="section-heading">Upcoming Arrivals</p>
+          <p v-if="isLoading" class="notice">Loading LiveBoard rows...</p>
+          <p v-if="error" class="notice error">{{ error }}</p>
+
+          <div class="liveboard-list" data-testid="liveboard-list">
+            <article v-for="row in liveBoards" :key="row.id" class="liveboard-row">
+              <span class="row-line" :data-line="row.lineId" aria-hidden="true" />
+              <div>
+                <h3>{{ row.destination }}</h3>
+                <p class="direction">{{ formatLineName(row.lineId) }} · {{ row.direction }}</p>
+              </div>
+              <div class="arrival">
+                <strong>{{ row.arrivalMinutes }}</strong>
+                <span>min</span>
+                <em class="status" :data-status="row.status">{{ row.status }}</em>
+              </div>
+            </article>
+          </div>
+
+          <p v-if="liveBoards.length === 0" class="empty">No arrivals in the mock feed.</p>
+          <footer class="panel-footer">
+            <span>Updated 30s ago</span>
+            <button type="button" :disabled="isLoading" @click="$emit('refresh')">Refresh</button>
+          </footer>
+        </template>
+        <template v-else>
+          <h2>Select a station</h2>
+          <p class="empty">
+            Pick a station marker on the map to inspect mock LiveBoard arrivals.
+          </p>
+        </template>
       </div>
     </template>
   </aside>
@@ -164,12 +161,11 @@ function formatLineName(lineId: string): string {
   display: grid;
   width: 100%;
   min-height: 100%;
-  grid-template-rows: auto 1fr;
+  align-content: start;
   justify-items: center;
-  gap: 10px;
   border: 0;
   border-radius: 0;
-  padding: 14px 0;
+  padding: 10px 0;
   background: transparent;
 }
 
@@ -182,15 +178,6 @@ function formatLineName(lineId: string): string {
   border-radius: 7px;
   background: #fafaf7;
   font-size: 1rem;
-}
-
-.panel-rail-toggle strong {
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  color: #6b6557;
-  font-size: 0.72rem;
-  letter-spacing: 0;
-  text-transform: uppercase;
 }
 
 h2 {
@@ -371,6 +358,11 @@ h3 {
   cursor: pointer;
   font-size: 0.74rem;
   font-weight: 700;
+}
+
+.panel-footer button:disabled {
+  cursor: wait;
+  opacity: 0.58;
 }
 
 @media (max-width: 840px) {
