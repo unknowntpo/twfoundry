@@ -561,19 +561,31 @@ TWFoundry SHALL allow the MRT dashboard's Layers sidebar and Station Detail pane
 
 - **GIVEN** the MRT dashboard is open with one or more visible MRT route filters
 - **WHEN** the user collapses the Layers sidebar
-- **THEN** the map expands into the freed space and the existing route visibility selections remain unchanged
+- **THEN** the map expands into the freed space, the existing route visibility selections remain unchanged, and the collapsed control remains a compact icon-only affordance
 
 #### Scenario: User collapses the Station Detail panel
 
 - **GIVEN** an MRT station is selected and its LiveBoard panel is visible
 - **WHEN** the user collapses the Station Detail panel
-- **THEN** the map expands into the freed space and the selected station and LiveBoard state remain available when the panel is expanded again
+- **THEN** the map expands into the freed space, the selected station and LiveBoard state remain available when the panel is expanded again, and the collapsed control remains a compact icon-only affordance
 
 #### Scenario: User operates collapse controls with assistive technology
 
 - **GIVEN** the dashboard sidebars can be collapsed
 - **WHEN** a user focuses a sidebar collapse control
 - **THEN** the control communicates which panel it affects and whether that panel is expanded or collapsed
+
+#### Scenario: User refreshes visible LiveBoard rows
+
+- **GIVEN** the Station Detail panel is expanded
+- **WHEN** the user activates Refresh
+- **THEN** the dashboard reloads the selected station's LiveBoard rows without changing the selected station
+
+#### Scenario: Dashboard communicates the active LiveBoard source
+
+- **GIVEN** the dashboard is configured for mock or TDX LiveBoard rows
+- **WHEN** the dashboard renders its monitoring chrome
+- **THEN** the visible source label reflects the configured LiveBoard source instead of always displaying mock data
 
 <!-- @trace
 source: make-dashboard-sidebars-foldable
