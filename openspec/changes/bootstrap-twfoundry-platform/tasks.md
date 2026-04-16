@@ -27,6 +27,7 @@
 - [x] Add GitHub Actions CI for CI Strategy and Requirement: Frontend CI to run Bun install, frontend build/typecheck, Vitest, Playwright browser install, and Playwright E2E.
 - [x] Choose Biome as the lint and formatting tool for Requirement: Frontend CI.
 - [x] Add Biome lint and formatting CI check after the rule set is chosen.
+- [x] Apply the committed dashboard mockup styling to the Vue MRT dashboard without changing the mock data contract.
 - [ ] Add backend module skeletons for ingestion, streams, and API after the frontend contract is stable.
 - [ ] Add local infrastructure notes or compose files for Kafka and StarRocks after backend work begins.
 

@@ -117,6 +117,10 @@ Design source:
 
 - `design/mrt-liveboard-mockup.html`
 
+Current implementation sync:
+
+- The Vue MRT dashboard has been styled from the committed mockup while preserving the existing mock map provider, station selection, layer toggles, and LiveBoard panel behavior.
+
 Initial mock/static MRT scope:
 
 - Red Line: Taipei Main Station, Daan, Xiangshan.
