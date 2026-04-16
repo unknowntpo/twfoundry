@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
-import { computed } from "vue";
+import { computed, nextTick, ref } from "vue";
 import { useMrtDashboardStore } from "@/app/stores/mrt-dashboard";
 import { mrtLines, mrtStations } from "../data/mrt-fixtures";
 import LayerControl from "./LayerControl.vue";
@@ -16,6 +16,26 @@ const visibleLines = computed(() =>
 );
 
 const activeTrainCount = computed(() => mrtLines.length * 12 + mrtStations.length);
+const isLayerSidebarCollapsed = ref(false);
+const isStationPanelCollapsed = ref(false);
+
+function toggleLayerSidebar(): void {
+  isLayerSidebarCollapsed.value = !isLayerSidebarCollapsed.value;
+  notifyMapLayoutChanged();
+}
+
+function toggleStationPanel(): void {
+  isStationPanelCollapsed.value = !isStationPanelCollapsed.value;
+  notifyMapLayoutChanged();
+}
+
+function notifyMapLayoutChanged(): void {
+  void nextTick(() => {
+    window.requestAnimationFrame(() => {
+      window.dispatchEvent(new Event("resize"));
+    });
+  });
+}
 </script>
 
 <template>
@@ -59,7 +79,13 @@ const activeTrainCount = computed(() => mrtLines.length * 12 + mrtStations.lengt
       </div>
     </header>
 
-    <div class="workspace">
+    <div
+      class="workspace"
+      :class="{
+        'layers-collapsed': isLayerSidebarCollapsed,
+        'station-collapsed': isStationPanelCollapsed
+      }"
+    >
       <nav class="icon-rail" aria-label="Dashboard sections">
         <button type="button" class="rail-button active" aria-label="MRT dashboard">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -80,30 +106,63 @@ const activeTrainCount = computed(() => mrtLines.length * 12 + mrtStations.lengt
         </button>
       </nav>
 
-      <aside class="layer-sidebar" aria-label="Map layers">
-        <div class="sidebar-head">
-          <h2>Layers</h2>
-          <span>All Off</span>
-        </div>
+      <aside
+        class="layer-sidebar"
+        :data-collapsed="isLayerSidebarCollapsed"
+        aria-label="Map layers"
+      >
+        <button
+          v-if="isLayerSidebarCollapsed"
+          type="button"
+          class="sidebar-rail-toggle"
+          data-testid="expand-layers-sidebar"
+          aria-label="Expand Layers sidebar"
+          aria-controls="layers-sidebar-content"
+          :aria-expanded="false"
+          @click="toggleLayerSidebar"
+        >
+          <span aria-hidden="true">›</span>
+          <strong>Layers</strong>
+        </button>
 
-        <div class="layer-group">
-          <p class="group-label">Moving</p>
-          <article class="layer-card active">
-            <span class="layer-icon">M</span>
-            <strong>捷運 MRT</strong>
-            <span class="layer-count">{{ activeTrainCount }}</span>
-          </article>
-          <div class="layer-settings">
-            <div><span>Train</span><strong>ON</strong></div>
-            <div><span>Track</span><strong>3D</strong></div>
-            <div><span>Rail Z</span><strong>+58m</strong></div>
-            <div><span>Glow</span><strong>0.7</strong></div>
+        <div v-else id="layers-sidebar-content" class="sidebar-content">
+          <div class="sidebar-head">
+            <h2>Layers</h2>
+            <div class="sidebar-head-actions">
+              <span>All Off</span>
+              <button
+                type="button"
+                class="collapse-button"
+                data-testid="collapse-layers-sidebar"
+                aria-label="Collapse Layers sidebar"
+                aria-controls="layers-sidebar-content"
+                :aria-expanded="true"
+                @click="toggleLayerSidebar"
+              >
+                ‹
+              </button>
+            </div>
           </div>
-        </div>
 
-        <div class="layer-group">
-          <p class="group-label">Route</p>
-          <LayerControl :lines="mrtLines" />
+          <div class="layer-group">
+            <p class="group-label">Moving</p>
+            <article class="layer-card active">
+              <span class="layer-icon">M</span>
+              <strong>捷運 MRT</strong>
+              <span class="layer-count">{{ activeTrainCount }}</span>
+            </article>
+            <div class="layer-settings">
+              <div><span>Train</span><strong>ON</strong></div>
+              <div><span>Track</span><strong>3D</strong></div>
+              <div><span>Rail Z</span><strong>+58m</strong></div>
+              <div><span>Glow</span><strong>0.7</strong></div>
+            </div>
+          </div>
+
+          <div class="layer-group">
+            <p class="group-label">Route</p>
+            <LayerControl :lines="mrtLines" />
+          </div>
         </div>
       </aside>
 
@@ -113,10 +172,12 @@ const activeTrainCount = computed(() => mrtLines.length * 12 + mrtStations.lengt
 
       <StationPanel
         class="station-panel"
+        :collapsed="isStationPanelCollapsed"
         :error="liveBoardError"
         :is-loading="liveBoardLoading"
         :station="selectedStation"
         :live-boards="selectedLiveBoards"
+        @toggle-collapse="toggleStationPanel"
       />
     </div>
 
@@ -255,10 +316,22 @@ h1 {
 }
 
 .workspace {
+  --layers-width: 228px;
+  --station-width: minmax(320px, 360px);
+
   display: grid;
   flex: 1;
   min-height: 0;
-  grid-template-columns: 44px 228px minmax(0, 1fr) minmax(320px, 360px);
+  grid-template-columns: 44px var(--layers-width) minmax(0, 1fr) var(--station-width);
+  transition: grid-template-columns 180ms ease;
+}
+
+.workspace.layers-collapsed {
+  --layers-width: 48px;
+}
+
+.workspace.station-collapsed {
+  --station-width: 52px;
 }
 
 .icon-rail {
@@ -296,8 +369,17 @@ h1 {
 
 .layer-sidebar {
   min-width: 0;
+  overflow: hidden;
   border-right: 1px solid var(--border);
   background: var(--surface);
+}
+
+.layer-sidebar[data-collapsed="true"] {
+  background: var(--white);
+}
+
+.sidebar-content {
+  min-width: 228px;
 }
 
 .sidebar-head {
@@ -307,6 +389,12 @@ h1 {
   height: 52px;
   border-bottom: 1px solid var(--border);
   padding: 0 14px;
+}
+
+.sidebar-head-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .sidebar-head h2 {
@@ -319,6 +407,62 @@ h1 {
   color: var(--text-faint);
   font-size: 0.7rem;
   font-weight: 700;
+  text-transform: uppercase;
+}
+
+.collapse-button,
+.sidebar-rail-toggle {
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.collapse-button {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  padding: 0;
+}
+
+.collapse-button:hover,
+.sidebar-rail-toggle:hover {
+  border-color: var(--text-muted);
+  color: var(--text);
+}
+
+.sidebar-rail-toggle {
+  display: grid;
+  width: 100%;
+  min-height: 100%;
+  grid-template-rows: auto 1fr;
+  justify-items: center;
+  gap: 10px;
+  border: 0;
+  border-radius: 0;
+  padding: 14px 0;
+  background: transparent;
+}
+
+.sidebar-rail-toggle span {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface);
+  font-size: 1rem;
+}
+
+.sidebar-rail-toggle strong {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-size: 0.72rem;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
@@ -439,6 +583,9 @@ h1 {
 
 @media (max-width: 840px) {
   .workspace {
+    --layers-width: 0px;
+    --station-width: auto;
+
     grid-template-columns: 1fr;
   }
 

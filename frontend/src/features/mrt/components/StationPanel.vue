@@ -2,10 +2,15 @@
 import type { LiveBoardRow, MrtStation } from "../types";
 
 defineProps<{
+  collapsed?: boolean;
   error?: string;
   isLoading?: boolean;
   station: MrtStation | undefined;
   liveBoards: LiveBoardRow[];
+}>();
+
+defineEmits<{
+  "toggle-collapse": [];
 }>();
 
 function formatLineName(lineId: string): string {
@@ -14,8 +19,38 @@ function formatLineName(lineId: string): string {
 </script>
 
 <template>
-  <aside class="panel" aria-label="Station LiveBoard">
-    <p class="eyebrow">Station Detail</p>
+  <aside class="panel" :data-collapsed="collapsed" aria-label="Station LiveBoard">
+    <button
+      v-if="collapsed"
+      type="button"
+      class="panel-rail-toggle"
+      data-testid="expand-station-panel"
+      aria-label="Expand Station Detail panel"
+      aria-controls="station-panel-content"
+      :aria-expanded="false"
+      @click="$emit('toggle-collapse')"
+    >
+      <span aria-hidden="true">‹</span>
+      <strong>Station Detail</strong>
+    </button>
+
+    <template v-else>
+      <div id="station-panel-content">
+        <div class="panel-head">
+          <p class="eyebrow">Station Detail</p>
+          <button
+            type="button"
+            class="collapse-button"
+            data-testid="collapse-station-panel"
+            aria-label="Collapse Station Detail panel"
+            aria-controls="station-panel-content"
+            :aria-expanded="true"
+            @click="$emit('toggle-collapse')"
+          >
+            ›
+          </button>
+        </div>
+
     <template v-if="station">
       <h2>{{ station.name }}</h2>
       <div class="line-badges" aria-label="Station lines">
@@ -65,6 +100,8 @@ function formatLineName(lineId: string): string {
         Pick a station marker on the map to inspect mock LiveBoard arrivals.
       </p>
     </template>
+      </div>
+    </template>
   </aside>
 </template>
 
@@ -76,13 +113,82 @@ function formatLineName(lineId: string): string {
   background: #fafaf7;
 }
 
+.panel[data-collapsed="true"] {
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #eceae3;
+  padding: 0 12px 0 18px;
+}
+
 .eyebrow {
   margin: 0;
-  border-bottom: 1px solid #eceae3;
-  padding: 16px 18px 6px;
+  padding: 16px 0 6px;
   color: #9b9485;
   font-size: 0.7rem;
   font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.collapse-button,
+.panel-rail-toggle {
+  border: 1px solid #ddd9ce;
+  border-radius: 7px;
+  background: #fafaf7;
+  color: #6b6557;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.collapse-button {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  padding: 0;
+}
+
+.collapse-button:hover,
+.panel-rail-toggle:hover {
+  border-color: #6b6557;
+  color: #26241e;
+}
+
+.panel-rail-toggle {
+  display: grid;
+  width: 100%;
+  min-height: 100%;
+  grid-template-rows: auto 1fr;
+  justify-items: center;
+  gap: 10px;
+  border: 0;
+  border-radius: 0;
+  padding: 14px 0;
+  background: transparent;
+}
+
+.panel-rail-toggle span {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 1px solid #ddd9ce;
+  border-radius: 7px;
+  background: #fafaf7;
+  font-size: 1rem;
+}
+
+.panel-rail-toggle strong {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  color: #6b6557;
+  font-size: 0.72rem;
   letter-spacing: 0;
   text-transform: uppercase;
 }
