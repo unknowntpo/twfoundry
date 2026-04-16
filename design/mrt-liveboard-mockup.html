@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=1440"/>
+<title>TWFoundry — MRT LiveBoard Monitor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ─── TOKENS ─── */
+:root {
+  --bg:      #F2EFE8;
+  --surface: #FAFAF7;
+  --white:   #FFFFFF;
+  --border:  #DDD9CE;
+  --border2: #ECEAE3;
+  --text:    #26241E;
+  --text-2:  #6B6557;
+  --text-3:  #9B9485;
+
+  --map-bg:   #E6E2D8;
+  --map-road: #D4CFBF;
+  --map-bldg: #DEDAD0;
+  --map-water:#C4D4E0;
+  --map-park: #CDE0CB;
+
+  --red:     #D92D3A;
+  --blue:    #2F6FD6;
+  --green:   #2F9E62;
+  --orange:  #E07820;
+
+  --red-a20:   rgba(217,45,58,.20);
+  --blue-a20:  rgba(47,111,214,.20);
+  --green-a20: rgba(47,158,98,.20);
+  --red-a40:   rgba(217,45,58,.40);
+  --blue-a40:  rgba(47,111,214,.40);
+  --green-a40: rgba(47,158,98,.40);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+
+body {
+  font-family:'Inter',sans-serif;
+  background:#B8B4AC;
+  display:flex; flex-direction:column;
+  align-items:center; padding:32px 20px; gap:28px;
+}
+.frame-label {
+  font-size:11px;font-weight:600;letter-spacing:.07em;
+  text-transform:uppercase;color:#888;align-self:flex-start;
+}
+
+/* ════ SHELL ════ */
+.shell {
+  width:1440px; height:900px;
+  background:var(--bg);
+  display:flex; flex-direction:column;
+  overflow:hidden; position:relative;
+  box-shadow:0 16px 56px rgba(0,0,0,.18),0 2px 8px rgba(0,0,0,.1);
+  border-radius:6px;
+}
+
+/* ════ TOP BAR ════ */
+.topbar {
+  height:48px; flex-shrink:0;
+  background:var(--white);
+  border-bottom:1px solid var(--border);
+  display:flex; align-items:center;
+  padding:0 16px; gap:10px; z-index:20;
+}
+.logo-wrap { display:flex; align-items:center; gap:8px; }
+.logo-box {
+  width:26px; height:26px; border-radius:7px;
+  background:var(--text);
+  display:flex; align-items:center; justify-content:center;
+}
+.logo-name { font-size:15px; font-weight:700; color:var(--text); letter-spacing:-.02em; }
+.tb-sep { width:1px; height:18px; background:var(--border); margin:0 2px; }
+.tb-page { font-size:13px; font-weight:500; color:var(--text-2); }
+
+.tb-stats {
+  margin-left:14px; display:flex; align-items:center; gap:0;
+  font-size:11px; color:var(--text-3);
+}
+.ts-item { display:flex; align-items:center; gap:4px; padding:0 10px;
+  border-left:1px solid var(--border2); }
+.ts-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.ts-num { font-weight:600; font-variant-numeric:tabular-nums; }
+
+.tb-right { margin-left:auto; display:flex; align-items:center; gap:7px; }
+.tb-btn {
+  height:30px; padding:0 13px;
+  border:1px solid var(--border); border-radius:7px;
+  background:var(--surface);
+  font-size:12px; font-weight:500; color:var(--text-2);
+  cursor:pointer; display:flex; align-items:center; gap:5px;
+  transition:all .15s;
+}
+.tb-btn:hover { background:var(--bg); }
+.tb-btn.primary { background:var(--text); border-color:var(--text); color:#fff; }
+.tb-btn svg { width:12px; height:12px; }
+
+/* ════ BODY ════ */
+.body { flex:1; display:flex; overflow:hidden; }
+
+/* ════ ICON RAIL ════ */
+.rail {
+  width:44px; flex-shrink:0;
+  background:var(--white); border-right:1px solid var(--border);
+  display:flex; flex-direction:column;
+  align-items:center; padding:10px 0; gap:4px; z-index:15;
+}
+.ri {
+  width:32px; height:32px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--text-3);
+}
+.ri:hover { background:var(--bg); color:var(--text-2); }
+.ri.on { background:var(--bg); color:var(--text); }
+.ri svg { width:15px; height:15px; }
+.ri-spacer { flex:1; }
+
+/* ════ SIDEBAR ════ */
+.sidebar {
+  width:280px; flex-shrink:0;
+  background:var(--white); border-right:1px solid var(--border);
+  display:flex; flex-direction:column; overflow:hidden; z-index:15;
+}
+.sb-head {
+  padding:13px 16px 11px;
+  border-bottom:1px solid var(--border2);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.sb-head h2 { font-size:13px; font-weight:600; color:var(--text); }
+.sb-alloff {
+  font-size:11px; font-weight:500; color:var(--text-3);
+  padding:3px 8px; border:1px solid var(--border); border-radius:5px; cursor:pointer;
+}
+.sb-body { flex:1; overflow-y:auto; padding:6px 0 16px; }
+
+.grp-lbl {
+  padding:10px 16px 4px;
+  font-size:10px; font-weight:600; letter-spacing:.07em;
+  text-transform:uppercase; color:var(--text-3);
+}
+.layer {
+  display:flex; align-items:center; gap:9px;
+  padding:7px 16px; margin:0 6px; border-radius:6px; cursor:pointer;
+}
+.layer:hover { background:var(--bg); }
+.l-ico { width:16px; flex-shrink:0; display:flex; align-items:center; color:var(--text-3); }
+.l-ico svg { width:13px; height:13px; }
+.l-name { flex:1; font-size:12px; font-weight:500; color:var(--text); }
+.l-count { font-size:11px; font-weight:600; font-variant-numeric:tabular-nums; min-width:30px; text-align:right; }
+.c-red   { color:var(--red); }
+.c-blue  { color:var(--blue); }
+.c-green { color:var(--green); }
+.c-org   { color:var(--orange); }
+
+/* Toggle switch */
+.tog {
+  width:32px; height:18px; border-radius:9px;
+  background:var(--border); position:relative; flex-shrink:0; cursor:pointer;
+  transition:background .2s;
+}
+.tog::after {
+  content:''; position:absolute;
+  top:2px; left:2px; width:14px; height:14px;
+  border-radius:50%; background:white;
+  box-shadow:0 1px 3px rgba(0,0,0,.18);
+  transition:left .2s;
+}
+.tog.on            { background:var(--blue); }
+.tog.on::after     { left:16px; }
+.tog.on.t-red      { background:var(--red); }
+.tog.on.t-green    { background:var(--green); }
+.tog.on.t-org      { background:var(--orange); }
+
+/* Sub-controls */
+.sub {
+  padding:2px 16px 8px 42px;
+  display:flex; flex-direction:column; gap:4px;
+}
+.sub-row { display:flex; align-items:center; gap:8px; }
+.sub-lbl { font-size:10px; color:var(--text-3); width:52px; }
+.seg { display:flex; border:1px solid var(--border); border-radius:5px; overflow:hidden; }
+.seg span { padding:2px 7px; font-size:10px; font-weight:600; color:var(--text-3); cursor:pointer; }
+.seg span.on { background:var(--text); color:white; }
+.slider-wrap { flex:1; height:4px; background:var(--border2); border-radius:2px; position:relative; }
+.slider-fill { height:100%; border-radius:2px; background:var(--text-2); }
+.slider-thumb {
+  position:absolute; top:50%;
+  width:10px; height:10px; border-radius:50%;
+  background:var(--text-2); border:2px solid white;
+  box-shadow:0 1px 3px rgba(0,0,0,.2);
+  transform:translateY(-50%);
+}
+.sub-val { font-size:10px; color:var(--text-3); width:32px; text-align:right; }
+
+/* ════ MAP WRAP ════ */
+.map-wrap { flex:1; position:relative; overflow:hidden; }
+
+/* 3D perspective tilt */
+.tilt-stage {
+  position:absolute; inset:0;
+  perspective:1000px; perspective-origin:50% 25%;
+}
+.tilt-content {
+  position:absolute;
+  width:150%; height:155%;
+  left:-25%; top:-15%;
+  transform:rotateX(26deg) rotateZ(-1deg);
+  transform-origin:50% 38%;
+  transform-style:preserve-3d;
+  will-change:transform;
+}
+
+/* Map base */
+.map-base {
+  position:absolute; inset:0;
+  background:var(--map-bg);
+}
+.map-base::before {
+  content:''; position:absolute; inset:0;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 59px, var(--map-road) 60px),
+    repeating-linear-gradient(90deg, transparent, transparent 59px, var(--map-road) 60px);
+  opacity:.45;
+}
+.water { position:absolute; background:var(--map-water); border-radius:40%; }
+.park  { position:absolute; background:var(--map-park);  border-radius:30%; }
+.road  { position:absolute; background:rgba(255,255,255,.6); border-radius:1px; }
+
+/* ─── MAP PLACEHOLDER ─── */
+.map-placeholder {
+  position:absolute; inset:0;
+  background: repeating-linear-gradient(
+    45deg,
+    #EAE7DF,
+    #EAE7DF 10px,
+    #E2DED5 10px,
+    #E2DED5 20px
+  );
+  display:flex; align-items:center; justify-content:center;
+}
+.map-placeholder-inner {
+  display:flex; flex-direction:column; align-items:center; gap:16px;
+  background:rgba(255,255,255,.82);
+  backdrop-filter:blur(4px);
+  border:1.5px dashed #C4BFB2;
+  border-radius:16px;
+  padding:36px 48px;
+  text-align:center;
+  max-width:480px;
+}
+.mp-icon {
+  width:56px; height:56px; border-radius:50%;
+  background:#F2EFE8; border:2px solid #DDD9CE;
+  display:flex; align-items:center; justify-content:center;
+}
+.mp-icon svg { width:28px; height:28px; opacity:.5; }
+.mp-title {
+  font-size:18px; font-weight:700; color:#26241E; letter-spacing:-.02em;
+}
+.mp-sub {
+  font-size:13px; color:#6B6557; line-height:1.6;
+}
+.mp-specs {
+  display:flex; flex-direction:column; gap:6px;
+  width:100%; margin-top:4px;
+}
+.mp-spec-row {
+  display:flex; align-items:center; justify-content:space-between;
+  font-size:11px; padding:6px 12px;
+  background:#F7F5F0; border-radius:6px;
+  border:1px solid #E4E0D8;
+}
+.mp-spec-key { color:#9B9485; font-weight:500; }
+.mp-spec-val { color:#26241E; font-weight:600; font-family:monospace; font-size:11px; }
+.mp-badge {
+  display:flex; align-items:center; gap:6px; flex-wrap:wrap;
+  justify-content:center; margin-top:4px;
+}
+.mp-pill {
+  display:flex; align-items:center; gap:5px;
+  padding:4px 10px; border-radius:12px;
+  font-size:11px; font-weight:600;
+  border:1.5px solid;
+}
+.mp-dot { width:7px; height:7px; border-radius:50%; }
+
+/* Station marker legend (floating bottom-left of placeholder) */
+.map-legend {
+  position:absolute; bottom:16px; left:16px; z-index:10;
+  background:rgba(255,255,255,.88);
+  backdrop-filter:blur(4px);
+  border:1px solid var(--border);
+  border-radius:8px; padding:10px 14px;
+  display:flex; flex-direction:column; gap:6px;
+}
+.legend-title {
+  font-size:10px; font-weight:600; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--text-3); margin-bottom:2px;
+}
+.legend-row { display:flex; align-items:center; gap:8px; }
+.legend-line { width:24px; height:3px; border-radius:2px; }
+.legend-dot  {
+  width:10px; height:10px; border-radius:50%;
+  background:white; border:2px solid;
+  flex-shrink:0;
+}
+.legend-label { font-size:11px; font-weight:500; color:var(--text-2); }
+
+/* ─── MAP CONTROLS ─── */
+.map-ctrl {
+  position:absolute; top:14px; right:14px;
+  display:flex; gap:7px; z-index:20;
+}
+.mc-btn {
+  height:32px; padding:0 14px;
+  border:1px solid var(--border); border-radius:7px;
+  background:rgba(255,255,255,.88);
+  backdrop-filter:blur(6px);
+  font-size:12px; font-weight:500; color:var(--text-2);
+  cursor:pointer; display:flex; align-items:center; gap:5px;
+  box-shadow:0 1px 4px rgba(0,0,0,.07);
+}
+.mc-btn.primary { background:var(--text); border-color:var(--text); color:white; }
+.mc-btn svg { width:12px; height:12px; }
+
+/* Coords */
+.coords {
+  position:absolute; top:14px; left:12px; z-index:20;
+  font-size:10px; color:var(--text-3);
+  background:rgba(255,255,255,.7); backdrop-filter:blur(4px);
+  padding:5px 9px; border-radius:6px; border:1px solid var(--border2);
+  line-height:1.7;
+}
+
+/* ════ RIGHT PANEL ════ */
+.rpanel {
+  width:336px; flex-shrink:0;
+  background:var(--white); border-left:1px solid var(--border);
+  display:flex; flex-direction:column; z-index:15;
+}
+.rp-head {
+  padding:16px 18px 13px;
+  border-bottom:1px solid var(--border);
+}
+.rp-tag {
+  font-size:10px; font-weight:600; letter-spacing:.07em;
+  text-transform:uppercase; color:var(--text-3); margin-bottom:9px;
+}
+.rp-name {
+  font-size:19px; font-weight:700; color:var(--text);
+  letter-spacing:-.02em; line-height:1.2; margin-bottom:8px;
+}
+.rp-badges { display:flex; gap:4px; margin-bottom:8px; }
+.badge { padding:3px 8px; border-radius:5px; font-size:10px; font-weight:700; }
+.b-red   { background:#FBEAEA; color:var(--red); }
+.b-blue  { background:#EAF0FB; color:var(--blue); }
+.b-green { background:#EAF5EE; color:var(--green); }
+.rp-live {
+  display:flex; align-items:center; gap:5px;
+  font-size:11px; color:var(--text-3);
+}
+@keyframes livePulse {
+  0%,100% { box-shadow:0 0 0 3px rgba(47,158,98,.2); }
+  50%      { box-shadow:0 0 0 5px rgba(47,158,98,.08); }
+}
+.live-dot {
+  width:7px; height:7px; border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 0 3px rgba(47,158,98,.2);
+  animation:livePulse 2s infinite;
+}
+
+.arr-head {
+  padding:11px 18px 8px;
+  font-size:10px; font-weight:600; letter-spacing:.07em;
+  text-transform:uppercase; color:var(--text-3);
+  border-bottom:1px solid var(--border2);
+}
+.arr-list { flex:1; overflow-y:auto; }
+.arr-row {
+  display:flex; align-items:center; gap:10px;
+  padding:12px 18px; border-bottom:1px solid var(--border2);
+}
+.arr-row:last-child { border-bottom:none; }
+.arr-line { width:3px; height:34px; border-radius:2px; flex-shrink:0; }
+.arr-info { flex:1; min-width:0; }
+.arr-dest { font-size:13px; font-weight:500; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.arr-sub  { font-size:11px; color:var(--text-3); margin-top:2px; }
+.arr-time { text-align:right; flex-shrink:0; }
+.arr-min  { font-size:22px; font-weight:700; color:var(--text); line-height:1; font-variant-numeric:tabular-nums; }
+.arr-unit { font-size:9px; color:var(--text-3); text-align:center; }
+.arr-tag  { font-size:9px; font-weight:600; padding:2px 5px; border-radius:4px; margin-top:3px; display:inline-block; }
+.t-ok { background:#EAF5EE; color:var(--green); }
+.t-cr { background:#FEF3C7; color:#A16207; }
+
+.rp-foot {
+  padding:10px 18px; border-top:1px solid var(--border);
+  background:var(--surface);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.rf-meta { font-size:11px; color:var(--text-3); }
+.rf-btn  { font-size:11px; font-weight:500; color:var(--blue); cursor:pointer; }
+
+/* ════ TIMELINE ════ */
+.timeline {
+  height:52px; flex-shrink:0;
+  background:var(--white); border-top:1px solid var(--border);
+  display:flex; align-items:center;
+  padding:0 16px; gap:10px; z-index:20;
+}
+.tl-btns { display:flex; gap:3px; }
+.tlb {
+  width:28px; height:28px; border:1px solid var(--border);
+  border-radius:6px; background:var(--surface);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--text-2);
+}
+.tlb svg { width:11px; height:11px; }
+.tl-date { font-size:12px; font-weight:600; color:var(--text); padding:0 6px; }
+.tl-now {
+  font-size:11px; font-weight:600; color:var(--blue);
+  border:1px solid var(--blue); border-radius:5px; padding:2px 7px; cursor:pointer;
+}
+.tl-range {
+  font-size:10px; color:var(--text-3);
+  border:1px solid var(--border); border-radius:5px; padding:2px 7px;
+}
+.tl-sep { width:1px; height:18px; background:var(--border); margin:0 2px; }
+.tl-spd {
+  font-size:11px; font-weight:600; color:var(--text-2);
+  border:1px solid var(--border); border-radius:5px; padding:3px 8px;
+}
+.tl-clk { font-size:14px; font-weight:700; color:var(--text); font-variant-numeric:tabular-nums; letter-spacing:.03em; }
+.tl-track {
+  flex:1; height:4px; background:var(--border2);
+  border-radius:2px; cursor:pointer; position:relative;
+}
+.tl-fill { height:100%; background:var(--blue); border-radius:2px; width:45%; }
+.tl-thumb {
+  position:absolute; top:50%; left:45%;
+  transform:translate(-50%,-50%);
+  width:12px; height:12px; border-radius:50%;
+  background:var(--blue); border:2.5px solid white;
+  box-shadow:0 1px 4px rgba(0,0,0,.2);
+}
+.tl-src { font-size:10px; color:var(--text-3); display:flex; align-items:center; gap:4px; }
+</style>
+</head>
+<body>
+
+<p class="frame-label">Frame 1 — Desktop · TWFoundry MRT LiveBoard (Light + 3D Tilt) · 1440 × 900</p>
+
+<div class="shell">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="logo-wrap">
+      <div class="logo-box">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M2 12L7 2l5 10" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3.8 8.5h6.4" stroke="white" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="logo-name">TWFoundry</span>
+    </div>
+    <div class="tb-sep"></div>
+    <span class="tb-page">MRT LiveBoard Monitor</span>
+
+    <div class="tb-stats">
+      <div class="ts-item">
+        <div class="ts-dot" style="background:var(--red)"></div>
+        <span class="ts-num c-red">24</span> trains
+      </div>
+      <div class="ts-item">
+        <div class="ts-dot" style="background:var(--blue)"></div>
+        <span class="ts-num c-blue">18</span> trains
+      </div>
+      <div class="ts-item">
+        <div class="ts-dot" style="background:var(--green)"></div>
+        <span class="ts-num c-green">20</span> trains
+      </div>
+      <div class="ts-item">62 active · Live</div>
+    </div>
+
+    <div class="tb-right">
+      <button class="tb-btn">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4">
+          <rect x="1" y="1" width="10" height="10" rx="1.5"/>
+          <circle cx="6" cy="6" r="2.5"/>
+        </svg>
+        Capture
+      </button>
+      <button class="tb-btn primary">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M6 1l5 4v6H1V5l5-4z"/>
+          <path d="M6 4l3 2.5V11H3V6.5L6 4z" opacity=".5"/>
+        </svg>
+        3D Altitude
+      </button>
+      <button class="tb-btn">Info</button>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="body">
+
+    <!-- ICON RAIL -->
+    <div class="rail">
+      <div class="ri on">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M1.5 7L8 1.5 14.5 7v8h-13V7z"/>
+        </svg>
+      </div>
+      <div class="ri">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="8" cy="6" r="3.5"/><path d="M8 9.5V14"/>
+        </svg>
+      </div>
+      <div class="ri">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="2" y="3" width="12" height="10" rx="1.5"/>
+          <path d="M2 7h12M6 3v10"/>
+        </svg>
+      </div>
+      <div class="ri-spacer"></div>
+      <div class="ri">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sb-head">
+        <h2>Layers</h2>
+        <span class="sb-alloff">All Off</span>
+      </div>
+      <div class="sb-body">
+
+        <div class="grp-lbl">Moving</div>
+
+        <!-- MRT (expanded) -->
+        <div class="layer" style="background:var(--bg);">
+          <div class="l-ico">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M4 11V5.5a3 3 0 016 0V11M2 11h10M7 2.5V1"/>
+            </svg>
+          </div>
+          <span class="l-name">捷運 MRT</span>
+          <span class="l-count c-red">62</span>
+          <span style="font-size:10px;color:var(--text-3);margin:0 3px">›</span>
+          <div class="tog on t-red"></div>
+        </div>
+        <div class="sub">
+          <div class="sub-row">
+            <span class="sub-lbl">Train</span>
+            <div class="seg"><span class="on">ON</span><span>OFF</span></div>
+          </div>
+          <div class="sub-row">
+            <span class="sub-lbl">Track</span>
+            <div class="seg"><span>2D</span><span class="on">3D</span></div>
+          </div>
+          <div class="sub-row">
+            <span class="sub-lbl">Rail Z</span>
+            <div class="slider-wrap">
+              <div class="slider-fill" style="width:58%"></div>
+              <div class="slider-thumb" style="left:58%"></div>
+            </div>
+            <span class="sub-val">+58m</span>
+          </div>
+          <div class="sub-row">
+            <span class="sub-lbl">Glow</span>
+            <div class="slider-wrap">
+              <div class="slider-fill" style="width:70%"></div>
+              <div class="slider-thumb" style="left:70%"></div>
+            </div>
+            <span class="sub-val">0.7</span>
+          </div>
+        </div>
+
+        <div class="layer">
+          <div class="l-ico"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="10" height="7" rx="1.5"/><path d="M5 4V3a2 2 0 014 0v1"/></svg></div>
+          <span class="l-name">公車 Bus</span>
+          <span class="l-count c-org">3,530</span>
+          <div class="tog on t-org"></div>
+        </div>
+        <div class="layer">
+          <div class="l-ico"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 2l1.5 3 3.5.5-2.5 2.5.5 3.5L7 10l-3 1.5.5-3.5-2.5-2.5 3.5-.5z"/></svg></div>
+          <span class="l-name">航班 Flight</span>
+          <span class="l-count">4,913</span>
+          <div class="tog"></div>
+        </div>
+        <div class="layer">
+          <div class="l-ico"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 9c1.5-3 8-3 10 0"/><path d="M4 7c1-2 5-2 6 0"/></svg></div>
+          <span class="l-name">船舶 Ship</span>
+          <span class="l-count">6,702</span>
+          <div class="tog"></div>
+        </div>
+
+        <div class="grp-lbl">Station</div>
+        <div class="layer">
+          <div class="l-ico"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5"/><circle cx="7" cy="7" r="2"/></svg></div>
+          <span class="l-name">捷運站 Metro st.</span>
+          <div class="tog on t-red"></div>
+        </div>
+        <div class="layer">
+          <div class="l-ico"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="10" height="7" rx="1"/></svg></div>
+          <span class="l-name">市區公車 City Bus</span>
+          <div class="tog on t-org"></div>
+        </div>
+        <div class="layer">
+          <div class="l-ico"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h10M2 7h7M2 10h5"/></svg></div>
+          <span class="l-name">台鐵站 TRA st.</span>
+          <div class="tog"></div>
+        </div>
+
+        <div class="grp-lbl">Route</div>
+        <div class="layer">
+          <div class="l-ico"><svg viewBox="0 0 14 14" fill="none" stroke="var(--red)" stroke-width="2.5"><path d="M2 7h10"/></svg></div>
+          <span class="l-name">Red Line</span>
+          <div class="tog on t-red"></div>
+        </div>
+        <div class="layer">
+          <div class="l-ico"><svg viewBox="0 0 14 14" fill="none" stroke="var(--blue)" stroke-width="2.5"><path d="M2 7h10"/></svg></div>
+          <span class="l-name">Blue Line</span>
+          <div class="tog on"></div>
+        </div>
+        <div class="layer">
+          <div class="l-ico"><svg viewBox="0 0 14 14" fill="none" stroke="var(--green)" stroke-width="2.5"><path d="M2 7h10"/></svg></div>
+          <span class="l-name">Green Line</span>
+          <div class="tog on t-green"></div>
+        </div>
+        <div class="layer">
+          <div class="l-ico"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h10M2 7h10M2 10h10"/></svg></div>
+          <span class="l-name">Transit Overlay</span>
+          <div class="tog"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- MAP -->
+    <div class="map-wrap">
+
+      <!-- ╔══════════════════════════════════════════════════════╗
+           ║           GOOGLE MAP PLACEHOLDER                    ║
+           ║  Replace this entire .map-placeholder div           ║
+           ║  with a <div id="map"> and initialize               ║
+           ║  Google Maps JS API with:                           ║
+           ║    center: { lat: 25.0440, lng: 121.5134 }          ║
+           ║    zoom: 12                                         ║
+           ║    tilt: 45  (3D view)                              ║
+           ║    mapId: <your-map-id>  (for custom styling)       ║
+           ╚══════════════════════════════════════════════════════╝ -->
+      <div class="map-placeholder">
+        <div class="map-placeholder-inner">
+
+          <div class="mp-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#26241E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+              <circle cx="12" cy="9" r="2.5"/>
+            </svg>
+          </div>
+
+          <div class="mp-title">Google Maps</div>
+          <div class="mp-sub">
+            地圖區域由 Google Maps JS API 渲染<br>
+            含 MRT 路線 overlay、站點 marker、3D tilt 視角
+          </div>
+
+          <div class="mp-specs">
+            <div class="mp-spec-row">
+              <span class="mp-spec-key">Center</span>
+              <span class="mp-spec-val">25.0440° N, 121.5134° E</span>
+            </div>
+            <div class="mp-spec-row">
+              <span class="mp-spec-key">Zoom</span>
+              <span class="mp-spec-val">12</span>
+            </div>
+            <div class="mp-spec-row">
+              <span class="mp-spec-key">Tilt (3D)</span>
+              <span class="mp-spec-val">45°</span>
+            </div>
+            <div class="mp-spec-row">
+              <span class="mp-spec-key">Map Style</span>
+              <span class="mp-spec-val">Light warm — mapId required</span>
+            </div>
+            <div class="mp-spec-row">
+              <span class="mp-spec-key">Overlays</span>
+              <span class="mp-spec-val">Polyline + Marker per line</span>
+            </div>
+            <div class="mp-spec-row">
+              <span class="mp-spec-key">Transit Layer</span>
+              <span class="mp-spec-val">google.maps.TransitLayer()</span>
+            </div>
+          </div>
+
+          <div class="mp-badge">
+            <div class="mp-pill" style="color:var(--red);border-color:var(--red);background:#FBEAEA">
+              <div class="mp-dot" style="background:var(--red)"></div>
+              Red Line  #D92D3A
+            </div>
+            <div class="mp-pill" style="color:var(--blue);border-color:var(--blue);background:#EAF0FB">
+              <div class="mp-dot" style="background:var(--blue)"></div>
+              Blue Line  #2F6FD6
+            </div>
+            <div class="mp-pill" style="color:var(--green);border-color:var(--green);background:#EAF5EE">
+              <div class="mp-dot" style="background:var(--green)"></div>
+              Green Line  #2F9E62
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Station marker / line legend -->
+      <div class="map-legend">
+        <div class="legend-title">Map Overlay Spec</div>
+        <div class="legend-row">
+          <div class="legend-line" style="background:var(--red)"></div>
+          <span class="legend-label">Red Line · Polyline · weight 4</span>
+        </div>
+        <div class="legend-row">
+          <div class="legend-line" style="background:var(--blue)"></div>
+          <span class="legend-label">Blue Line · Polyline · weight 4</span>
+        </div>
+        <div class="legend-row">
+          <div class="legend-line" style="background:var(--green)"></div>
+          <span class="legend-label">Green Line · Polyline · weight 4</span>
+        </div>
+        <div class="legend-row" style="margin-top:4px">
+          <div class="legend-dot" style="border-color:var(--red)"></div>
+          <span class="legend-label">Station marker · white + line color border</span>
+        </div>
+        <div class="legend-row">
+          <div class="legend-dot" style="border-color:var(--red);box-shadow:0 0 0 3px rgba(217,45,58,.2)"></div>
+          <span class="legend-label">Selected station · pulse ring</span>
+        </div>
+      </div>
+
+      <!-- Coords overlay (keep as reference) -->
+      <div class="coords">
+        25.0440, 121.5134 z12<br>
+        tilt 45  bearing 0
+      </div>
+
+      <!-- Map controls -->
+      <div class="map-ctrl">
+        <button class="mc-btn">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4">
+            <circle cx="5" cy="5" r="3.5"/><path d="M8 8l3 3"/>
+          </svg>
+          Capture
+        </button>
+        <button class="mc-btn primary">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M1 8.5L6 1.5l5 7H1z"/>
+            <path d="M3 8.5l3-4 3 4H3z" opacity=".6"/>
+          </svg>
+          3D Altitude
+        </button>
+        <button class="mc-btn">Info</button>
+      </div>
+
+    </div><!-- /map-wrap -->
+
+    <!-- RIGHT PANEL -->
+    <div class="rpanel">
+      <div class="rp-head">
+        <div class="rp-tag">Station Detail</div>
+        <div class="rp-name">Taipei Main Station</div>
+        <div class="rp-badges">
+          <span class="badge b-red">Red Line</span>
+          <span class="badge b-blue">Blue Line</span>
+        </div>
+        <div class="rp-live">
+          <div class="live-dot"></div>
+          LiveBoard active · mock data
+        </div>
+      </div>
+
+      <div class="arr-head">Upcoming Arrivals</div>
+      <div class="arr-list">
+
+        <div class="arr-row">
+          <div class="arr-line" style="background:var(--red)"></div>
+          <div class="arr-info">
+            <div class="arr-dest">To Tamsui</div>
+            <div class="arr-sub">Red · Northbound</div>
+          </div>
+          <div class="arr-time">
+            <div class="arr-min">2</div>
+            <div class="arr-unit">min</div>
+            <div class="arr-tag t-ok">On time</div>
+          </div>
+        </div>
+
+        <div class="arr-row">
+          <div class="arr-line" style="background:var(--red)"></div>
+          <div class="arr-info">
+            <div class="arr-dest">To Xiangshan</div>
+            <div class="arr-sub">Red · Southbound</div>
+          </div>
+          <div class="arr-time">
+            <div class="arr-min">5</div>
+            <div class="arr-unit">min</div>
+            <div class="arr-tag t-ok">On time</div>
+          </div>
+        </div>
+
+        <div class="arr-row">
+          <div class="arr-line" style="background:var(--blue)"></div>
+          <div class="arr-info">
+            <div class="arr-dest">To Nangang Exhibition Center</div>
+            <div class="arr-sub">Blue · Eastbound</div>
+          </div>
+          <div class="arr-time">
+            <div class="arr-min">8</div>
+            <div class="arr-unit">min</div>
+            <div class="arr-tag t-cr">Crowded</div>
+          </div>
+        </div>
+
+        <div class="arr-row">
+          <div class="arr-line" style="background:var(--blue)"></div>
+          <div class="arr-info">
+            <div class="arr-dest">To Yongning</div>
+            <div class="arr-sub">Blue · Westbound</div>
+          </div>
+          <div class="arr-time">
+            <div class="arr-min">11</div>
+            <div class="arr-unit">min</div>
+            <div class="arr-tag t-ok">On time</div>
+          </div>
+        </div>
+
+        <div class="arr-row">
+          <div class="arr-line" style="background:var(--red)"></div>
+          <div class="arr-info">
+            <div class="arr-dest">To Tamsui</div>
+            <div class="arr-sub">Red · Northbound</div>
+          </div>
+          <div class="arr-time">
+            <div class="arr-min">14</div>
+            <div class="arr-unit">min</div>
+            <div class="arr-tag t-ok">On time</div>
+          </div>
+        </div>
+
+        <div class="arr-row">
+          <div class="arr-line" style="background:var(--blue)"></div>
+          <div class="arr-info">
+            <div class="arr-dest">To Nangang Exhibition Center</div>
+            <div class="arr-sub">Blue · Eastbound</div>
+          </div>
+          <div class="arr-time">
+            <div class="arr-min">17</div>
+            <div class="arr-unit">min</div>
+            <div class="arr-tag t-ok">On time</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="rp-foot">
+        <span class="rf-meta">Updated 30s ago</span>
+        <span class="rf-btn">↻ Refresh</span>
+      </div>
+    </div>
+
+  </div><!-- /body -->
+
+  <!-- TIMELINE -->
+  <div class="timeline">
+    <div class="tl-btns">
+      <button class="tlb">
+        <svg viewBox="0 0 11 11" fill="currentColor">
+          <path d="M7.5 1.5H5.5L1.5 5.5l4 4h2l-4-4z"/>
+          <rect x="7.5" y="1.5" width="2" height="8" rx=".4"/>
+        </svg>
+      </button>
+      <button class="tlb">
+        <svg viewBox="0 0 11 11" fill="currentColor">
+          <rect x="1.5" y="1.5" width="2" height="8" rx=".4"/>
+          <rect x="5.5" y="1.5" width="4" height="8" rx=".4"/>
+        </svg>
+      </button>
+      <button class="tlb">
+        <svg viewBox="0 0 11 11" fill="currentColor">
+          <path d="M3.5 1.5h2l4 4-4 4h-2l4-4z"/>
+          <rect x="1.5" y="1.5" width="2" height="8" rx=".4"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="tl-date">4/16 (三)</div>
+    <button class="tl-now">Now</button>
+    <div class="tl-range">1d ▾</div>
+    <div class="tl-sep"></div>
+    <div class="tl-spd">60× ▾</div>
+    <div class="tl-clk">10:43</div>
+
+    <div class="tl-track">
+      <div class="tl-fill"></div>
+      <div class="tl-thumb"></div>
+    </div>
+
+    <div class="tl-src">
+      <svg width="12" height="12" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10" fill="#9B9485"/>
+        <path d="M12 6l3.5 3.5-3.5 2-3.5-2L12 6z" fill="white" opacity=".8"/>
+        <path d="M8.5 13.5l3.5-2 3.5 2L12 18l-3.5-4.5z" fill="white" opacity=".6"/>
+      </svg>
+      © Mapbox · OpenStreetMap
+    </div>
+  </div>
+
+</div><!-- /shell -->
+
+</body>
+</html>
