@@ -29,36 +29,53 @@ const store = useMrtDashboardStore();
 
 <style scoped>
 .layer-control {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  display: grid;
   gap: 8px;
-  max-width: 420px;
 }
 
 .layer-button {
-  display: inline-flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  min-height: 36px;
+  min-height: 38px;
   gap: 8px;
-  border: 1px solid rgba(32, 33, 36, 0.16);
+  border: 0;
   border-radius: 8px;
-  padding: 7px 10px;
-  background: rgba(255, 255, 255, 0.92);
-  color: #202124;
+  padding: 7px 8px;
+  background: transparent;
+  color: #26241e;
   cursor: pointer;
-  box-shadow: 0 6px 18px rgba(32, 33, 36, 0.08);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+.layer-button::after {
+  display: block;
+  width: 28px;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--line-color);
+  box-shadow: inset 0 0 0 1px rgba(38, 36, 30, 0.08);
+  content: "";
 }
 
 .layer-button.muted {
-  opacity: 0.52;
+  color: #9b9485;
+}
+
+.layer-button.muted::after {
+  background: #ddd9ce;
 }
 
 .line-dot {
-  width: 10px;
-  height: 10px;
+  width: 24px;
+  height: 24px;
   flex: 0 0 auto;
-  border-radius: 50%;
-  background: var(--line-color);
+  border: 1px solid #ddd9ce;
+  border-radius: 7px;
+  background:
+    linear-gradient(var(--line-color), var(--line-color)) center / 14px 3px no-repeat,
+    #fafaf7;
 }
 </style>

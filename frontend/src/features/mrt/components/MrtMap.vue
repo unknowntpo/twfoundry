@@ -52,8 +52,9 @@ async function initializeGoogleMap(): Promise<void> {
     const google = await loadGoogleMaps(appConfig.googleMapsApiKey);
     const markerLibrary = await google.maps.importLibrary("marker");
     const map = new google.maps.Map(mapElement.value, {
-      center: { lat: 25.0418, lng: 121.5359 },
-      zoom: 13,
+      center: { lat: 25.044, lng: 121.5134 },
+      zoom: 12,
+      tilt: 45,
       mapId: "DEMO_MAP_ID",
       disableDefaultUI: true,
       gestureHandling: "greedy",
@@ -175,6 +176,24 @@ declare global {
     >
       {{ station.name }}
     </button>
+
+    <aside class="map-legend" aria-label="Map overlay specification">
+      <h2>Map Overlay Spec</h2>
+      <p v-for="line in lines" :key="line.id">
+        <span class="legend-line" :style="{ '--line-color': line.color }" aria-hidden="true" />
+        {{ line.name }} · Polyline · weight 4
+      </p>
+      <p>
+        <span class="legend-dot" aria-hidden="true" />
+        Station marker · white + line border
+      </p>
+      <p>
+        <span class="legend-dot selected" aria-hidden="true" />
+        Selected station · pulse ring
+      </p>
+    </aside>
+
+    <div class="coords">25.0440, 121.5134 z12<br />tilt 45 bearing 0</div>
   </div>
 
   <div v-else class="google-map-shell">
@@ -188,13 +207,15 @@ declare global {
 .google-map-shell {
   position: relative;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100%;
   overflow: hidden;
   background:
-    linear-gradient(rgba(255, 255, 255, 0.42) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.42) 1px, transparent 1px),
-    #dce6e6;
-  background-size: 42px 42px;
+    radial-gradient(circle at 22% 28%, rgba(196, 212, 224, 0.8) 0 11%, transparent 12%),
+    radial-gradient(circle at 78% 42%, rgba(205, 224, 203, 0.8) 0 13%, transparent 14%),
+    linear-gradient(120deg, transparent 0 18%, rgba(212, 207, 191, 0.72) 18% 19%, transparent 19% 100%),
+    linear-gradient(40deg, transparent 0 34%, rgba(212, 207, 191, 0.72) 34% 35%, transparent 35% 100%),
+    #e6e2d8;
+  background-size: auto, auto, 160px 160px, 220px 220px, auto;
 }
 
 .google-map {
@@ -204,21 +225,39 @@ declare global {
 
 .mock-lines {
   position: absolute;
-  right: 18px;
-  bottom: 18px;
-  left: 18px;
-  display: grid;
-  gap: 8px;
-  max-width: 520px;
+  top: 45%;
+  left: 16%;
+  width: 66%;
+  height: 220px;
+  pointer-events: none;
 }
 
 .mock-line {
-  height: 12px;
-  border-radius: 8px;
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  transform-origin: left center;
+  border-radius: 999px;
   background: var(--line-color);
-  color: #202124;
+  color: #26241e;
   font-size: 0;
-  box-shadow: 0 6px 18px rgba(32, 33, 36, 0.12);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--line-color) 20%, transparent);
+}
+
+.mock-line:nth-child(1) {
+  top: 20px;
+  transform: rotate(-18deg);
+}
+
+.mock-line:nth-child(2) {
+  top: 112px;
+  transform: rotate(5deg);
+}
+
+.mock-line:nth-child(3) {
+  top: 188px;
+  transform: rotate(20deg);
 }
 
 .station-marker {
@@ -226,20 +265,84 @@ declare global {
   max-width: 140px;
   min-height: 34px;
   transform: translate(-50%, -50%);
-  border: 2px solid #202124;
+  border: 2px solid #d92d3a;
   border-radius: 8px;
   padding: 6px 9px;
   background: #ffffff;
-  color: #202124;
+  color: #26241e;
   cursor: pointer;
   font-size: 0.78rem;
   font-weight: 700;
-  box-shadow: 0 8px 20px rgba(32, 33, 36, 0.16);
+  box-shadow: 0 8px 20px rgba(38, 36, 30, 0.16);
 }
 
 .station-marker.selected {
-  border-color: #006b5f;
-  background: #e8f3ef;
+  border-color: #2f6fd6;
+  background: #ffffff;
+  box-shadow:
+    0 0 0 5px rgba(47, 111, 214, 0.2),
+    0 8px 20px rgba(38, 36, 30, 0.16);
+}
+
+.map-legend {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  z-index: 2;
+  width: min(286px, calc(100% - 36px));
+  border: 1px solid #ddd9ce;
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(250, 250, 247, 0.92);
+  color: #6b6557;
+  box-shadow: 0 10px 28px rgba(38, 36, 30, 0.12);
+}
+
+.map-legend h2 {
+  margin: 0 0 9px;
+  color: #26241e;
+  font-size: 0.76rem;
+}
+
+.map-legend p {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 7px 0;
+  font-size: 0.72rem;
+}
+
+.legend-line {
+  width: 30px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--line-color);
+}
+
+.legend-dot {
+  width: 11px;
+  height: 11px;
+  border: 2px solid #d92d3a;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+.legend-dot.selected {
+  box-shadow: 0 0 0 3px rgba(217, 45, 58, 0.2);
+}
+
+.coords {
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  border: 1px solid #ddd9ce;
+  border-radius: 8px;
+  padding: 9px 10px;
+  background: rgba(250, 250, 247, 0.82);
+  color: #6b6557;
+  font-size: 0.7rem;
+  line-height: 1.45;
+  text-align: right;
 }
 
 .map-error {
@@ -251,13 +354,18 @@ declare global {
   padding: 12px 14px;
   background: #fff4d8;
   color: #684600;
-  box-shadow: 0 8px 22px rgba(32, 33, 36, 0.16);
+  box-shadow: 0 8px 22px rgba(38, 36, 30, 0.16);
 }
 
 @media (max-width: 840px) {
   .mock-map,
   .google-map-shell {
     min-height: 520px;
+  }
+
+  .map-legend,
+  .coords {
+    display: none;
   }
 }
 </style>
