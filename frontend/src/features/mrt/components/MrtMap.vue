@@ -13,6 +13,11 @@ const store = useMrtDashboardStore();
 const mapElement = ref<HTMLElement | null>(null);
 const mapError = ref<string | undefined>();
 const googleReady = ref(false);
+let googleMap: GoogleMapInstance | undefined;
+let googleApi: GoogleMapsGlobal | undefined;
+let googleMarkerLibrary: GoogleMarkerLibrary | undefined;
+let googlePolylines: GooglePolylineInstance[] = [];
+let googleMarkers: GoogleAdvancedMarkerInstance[] = [];
 
 const visibleStations = computed(() =>
   props.stations.filter((station) =>
@@ -29,10 +34,10 @@ onMounted(() => {
 });
 
 watch(
-  () => [props.lines, visibleStations.value],
+  () => [props.lines, visibleStations.value, store.selectedStationId],
   () => {
     if (appConfig.mapProvider === "google" && googleReady.value) {
-      void initializeGoogleMap();
+      renderGoogleMapOverlays();
     }
   },
   { deep: true },
@@ -49,33 +54,82 @@ async function initializeGoogleMap(): Promise<void> {
   }
 
   try {
-    const google = await loadGoogleMaps(appConfig.googleMapsApiKey);
-    const markerLibrary = await google.maps.importLibrary("marker");
-    const map = new google.maps.Map(mapElement.value, {
+    googleApi = await loadGoogleMaps(appConfig.googleMapsApiKey);
+    googleMarkerLibrary = await googleApi.maps.importLibrary("marker");
+    googleMap = new googleApi.maps.Map(mapElement.value, {
       center: { lat: 25.044, lng: 121.5134 },
       zoom: 12,
       tilt: 45,
-      mapId: "DEMO_MAP_ID",
+      mapId: appConfig.googleMapsMapId,
       disableDefaultUI: true,
       gestureHandling: "greedy",
     });
 
-    new google.maps.TransitLayer().setMap(map);
-
-    for (const station of visibleStations.value) {
-      const marker = new markerLibrary.AdvancedMarkerElement({
-        map,
-        position: station.position,
-        title: station.name,
-      });
-      marker.addListener("click", () => store.selectStation(station.id));
-    }
+    new googleApi.maps.TransitLayer().setMap(googleMap);
+    renderGoogleMapOverlays();
 
     googleReady.value = true;
     mapError.value = undefined;
   } catch (error) {
     mapError.value = error instanceof Error ? error.message : "Unable to load Google Maps.";
   }
+}
+
+function renderGoogleMapOverlays(): void {
+  if (!googleMap || !googleApi || !googleMarkerLibrary) {
+    return;
+  }
+
+  const map = googleMap;
+  const google = googleApi;
+  const markerLibrary = googleMarkerLibrary;
+
+  for (const polyline of googlePolylines) {
+    polyline.setMap(null);
+  }
+
+  for (const marker of googleMarkers) {
+    marker.map = null;
+  }
+
+  googlePolylines = props.lines.map((line) => {
+    return new google.maps.Polyline({
+      map,
+      path: line.polyline,
+      strokeColor: line.color,
+      strokeOpacity: 0.92,
+      strokeWeight: 5,
+      zIndex: 20,
+    });
+  });
+
+  googleMarkers = visibleStations.value.map((station) => {
+    const marker = new markerLibrary.AdvancedMarkerElement({
+      map,
+      position: station.position,
+      title: station.name,
+      content: createGoogleStationMarker(station),
+      zIndex: station.id === store.selectedStationId ? 40 : 30,
+    });
+    marker.addListener("click", () => store.selectStation(station.id));
+    return marker;
+  });
+}
+
+function createGoogleStationMarker(station: MrtStation): HTMLElement {
+  const marker = document.createElement("button");
+  marker.type = "button";
+  marker.className = "google-station-marker";
+  marker.dataset.selected = String(station.id === store.selectedStationId);
+  marker.textContent = station.name;
+  marker.setAttribute("aria-label", `Select ${station.name}`);
+  marker.style.setProperty("--station-line-color", resolveStationColor(station));
+  return marker;
+}
+
+function resolveStationColor(station: MrtStation): string {
+  const primaryLineId = station.lineIds[0];
+  return props.lines.find((line) => line.id === primaryLineId)?.color ?? "#d92d3a";
 }
 
 function loadGoogleMaps(apiKey: string): Promise<GoogleMapsGlobal> {
@@ -124,6 +178,7 @@ interface GoogleMapsGlobal {
   maps: {
     importLibrary: (name: "marker") => Promise<GoogleMarkerLibrary>;
     Map: new (element: HTMLElement, options: Record<string, unknown>) => GoogleMapInstance;
+    Polyline: new (options: Record<string, unknown>) => GooglePolylineInstance;
     TransitLayer: new () => {
       setMap: (map: GoogleMapInstance) => void;
     };
@@ -132,12 +187,17 @@ interface GoogleMapsGlobal {
 
 type GoogleMapInstance = object;
 
+interface GooglePolylineInstance {
+  setMap: (map: GoogleMapInstance | null) => void;
+}
+
+interface GoogleAdvancedMarkerInstance {
+  map: GoogleMapInstance | null;
+  addListener: (eventName: "click", listener: () => void) => void;
+}
+
 interface GoogleMarkerLibrary {
-  AdvancedMarkerElement: new (
-    options: Record<string, unknown>,
-  ) => {
-    addListener: (eventName: "click", listener: () => void) => void;
-  };
+  AdvancedMarkerElement: new (options: Record<string, unknown>) => GoogleAdvancedMarkerInstance;
 }
 
 declare global {
@@ -221,6 +281,26 @@ declare global {
 .google-map {
   position: absolute;
   inset: 0;
+}
+
+:global(.google-station-marker) {
+  max-width: 140px;
+  min-height: 34px;
+  border: 2px solid var(--station-line-color);
+  border-radius: 8px;
+  padding: 6px 9px;
+  background: #ffffff;
+  color: #26241e;
+  cursor: pointer;
+  font: 700 0.78rem Inter, ui-sans-serif, system-ui, sans-serif;
+  box-shadow: 0 8px 20px rgba(38, 36, 30, 0.16);
+}
+
+:global(.google-station-marker[data-selected="true"]) {
+  border-color: #2f6fd6;
+  box-shadow:
+    0 0 0 5px rgba(47, 111, 214, 0.2),
+    0 8px 20px rgba(38, 36, 30, 0.16);
 }
 
 .mock-lines {
