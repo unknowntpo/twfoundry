@@ -10,8 +10,21 @@
   --twf-color-accent-warm: #c97b63;
   --twf-color-accent-warm-soft: #f3e6e0;
   --twf-color-route-red: #d92d3a;
+  --twf-color-route-red-soft: #fbeaea;
   --twf-color-route-blue: #2f6fd6;
+  --twf-color-route-blue-soft: #eaf0fb;
   --twf-color-route-green: #2f9e62;
+  --twf-color-route-green-soft: #eaf5ee;
+  --twf-color-status-warning: #e07820;
+  --twf-color-status-warning-soft: #fff3e6;
+  --twf-color-map-canvas: #e6e2d8;
+  --twf-color-map-error: #684600;
+  --twf-color-map-error-bg: #fff4d8;
+  --twf-shadow-floating: 0 8px 20px rgba(31, 27, 23, 0.16);
+  --twf-shadow-panel: 0 10px 28px rgba(31, 27, 23, 0.12);
+  --twf-shadow-route-blue-ring: 0 0 0 5px rgba(47, 111, 214, 0.2);
+  --twf-shadow-route-red-ring: 0 0 0 3px rgba(217, 45, 58, 0.2);
+  --twf-shadow-hairline: inset 0 0 0 1px rgba(31, 27, 23, 0.08);
 
   --twf-radius-sm: 7px;
   --twf-radius-md: 8px;

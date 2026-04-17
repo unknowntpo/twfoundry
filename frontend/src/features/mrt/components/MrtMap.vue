@@ -124,7 +124,7 @@ function createGoogleMapMarker(
 
   return new google.maps.Marker({
     label: {
-      color: "#26241e",
+      color: readDesignToken("--twf-color-text", "#1f1b17"),
       fontWeight: "700",
       text: station.name,
     },
@@ -148,7 +148,14 @@ function createGoogleStationMarker(station: MrtStation): HTMLElement {
 
 function resolveStationColor(station: MrtStation): string {
   const primaryLineId = station.lineIds[0];
-  return props.lines.find((line) => line.id === primaryLineId)?.color ?? "#d92d3a";
+  return (
+    props.lines.find((line) => line.id === primaryLineId)?.color ?? "var(--twf-color-route-red)"
+  );
+}
+
+function readDesignToken(token: string, fallback: string): string {
+  const value = window.getComputedStyle(document.documentElement).getPropertyValue(token).trim();
+  return value || fallback;
 }
 
 function loadGoogleMaps(apiKey: string): Promise<GoogleMapsGlobal> {
@@ -343,7 +350,7 @@ declare global {
     radial-gradient(circle at 78% 42%, rgba(205, 224, 203, 0.8) 0 13%, transparent 14%),
     linear-gradient(120deg, transparent 0 18%, rgba(212, 207, 191, 0.72) 18% 19%, transparent 19% 100%),
     linear-gradient(40deg, transparent 0 34%, rgba(212, 207, 191, 0.72) 34% 35%, transparent 35% 100%),
-    #e6e2d8;
+    var(--twf-color-map-canvas);
   background-size: auto, auto, 160px 160px, 220px 220px, auto;
 }
 
@@ -358,18 +365,18 @@ declare global {
   border: 2px solid var(--station-line-color);
   border-radius: 8px;
   padding: 6px 9px;
-  background: #ffffff;
-  color: #26241e;
+  background: var(--twf-color-surface-raised);
+  color: var(--twf-color-text);
   cursor: pointer;
   font: 700 0.78rem Inter, ui-sans-serif, system-ui, sans-serif;
-  box-shadow: 0 8px 20px rgba(38, 36, 30, 0.16);
+  box-shadow: var(--twf-shadow-floating);
 }
 
 :global(.google-station-marker[data-selected="true"]) {
-  border-color: #2f6fd6;
+  border-color: var(--twf-color-route-blue);
   box-shadow:
-    0 0 0 5px rgba(47, 111, 214, 0.2),
-    0 8px 20px rgba(38, 36, 30, 0.16);
+    var(--twf-shadow-route-blue-ring),
+    var(--twf-shadow-floating);
 }
 
 .mock-lines {
@@ -389,7 +396,7 @@ declare global {
   transform-origin: left center;
   border-radius: 999px;
   background: var(--line-color);
-  color: #26241e;
+  color: var(--twf-color-text);
   font-size: 0;
   box-shadow: 0 0 0 5px color-mix(in srgb, var(--line-color) 20%, transparent);
 }
@@ -414,23 +421,23 @@ declare global {
   max-width: 140px;
   min-height: 34px;
   transform: translate(-50%, -50%);
-  border: 2px solid #d92d3a;
-  border-radius: 8px;
+  border: 2px solid var(--twf-color-route-red);
+  border-radius: var(--twf-radius-md);
   padding: 6px 9px;
-  background: #ffffff;
-  color: #26241e;
+  background: var(--twf-color-surface-raised);
+  color: var(--twf-color-text);
   cursor: pointer;
   font-size: 0.78rem;
   font-weight: 700;
-  box-shadow: 0 8px 20px rgba(38, 36, 30, 0.16);
+  box-shadow: var(--twf-shadow-floating);
 }
 
 .station-marker.selected {
-  border-color: #2f6fd6;
-  background: #ffffff;
+  border-color: var(--twf-color-route-blue);
+  background: var(--twf-color-surface-raised);
   box-shadow:
-    0 0 0 5px rgba(47, 111, 214, 0.2),
-    0 8px 20px rgba(38, 36, 30, 0.16);
+    var(--twf-shadow-route-blue-ring),
+    var(--twf-shadow-floating);
 }
 
 .map-legend {
@@ -439,17 +446,17 @@ declare global {
   bottom: 18px;
   z-index: 2;
   width: min(286px, calc(100% - 36px));
-  border: 1px solid #ddd9ce;
-  border-radius: 8px;
+  border: 1px solid var(--twf-color-border);
+  border-radius: var(--twf-radius-md);
   padding: 12px;
-  background: rgba(250, 250, 247, 0.92);
-  color: #6b6557;
-  box-shadow: 0 10px 28px rgba(38, 36, 30, 0.12);
+  background: color-mix(in srgb, var(--twf-color-surface) 92%, transparent);
+  color: var(--twf-color-text-muted);
+  box-shadow: var(--twf-shadow-panel);
 }
 
 .map-legend h2 {
   margin: 0 0 9px;
-  color: #26241e;
+  color: var(--twf-color-text);
   font-size: 0.76rem;
 }
 
@@ -471,24 +478,24 @@ declare global {
 .legend-dot {
   width: 11px;
   height: 11px;
-  border: 2px solid #d92d3a;
+  border: 2px solid var(--twf-color-route-red);
   border-radius: 50%;
-  background: #ffffff;
+  background: var(--twf-color-surface-raised);
 }
 
 .legend-dot.selected {
-  box-shadow: 0 0 0 3px rgba(217, 45, 58, 0.2);
+  box-shadow: var(--twf-shadow-route-red-ring);
 }
 
 .coords {
   position: absolute;
   right: 18px;
   top: 18px;
-  border: 1px solid #ddd9ce;
-  border-radius: 8px;
+  border: 1px solid var(--twf-color-border);
+  border-radius: var(--twf-radius-md);
   padding: 9px 10px;
-  background: rgba(250, 250, 247, 0.82);
-  color: #6b6557;
+  background: color-mix(in srgb, var(--twf-color-surface) 82%, transparent);
+  color: var(--twf-color-text-muted);
   font-size: 0.7rem;
   line-height: 1.45;
   text-align: right;
@@ -499,11 +506,11 @@ declare global {
   right: 18px;
   bottom: 18px;
   max-width: 360px;
-  border-radius: 8px;
+  border-radius: var(--twf-radius-md);
   padding: 12px 14px;
-  background: #fff4d8;
-  color: #684600;
-  box-shadow: 0 8px 22px rgba(38, 36, 30, 0.16);
+  background: var(--twf-color-map-error-bg);
+  color: var(--twf-color-map-error);
+  box-shadow: var(--twf-shadow-floating);
 }
 
 @media (max-width: 840px) {

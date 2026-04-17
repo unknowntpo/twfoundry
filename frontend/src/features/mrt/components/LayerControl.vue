@@ -30,7 +30,7 @@ const store = useMrtDashboardStore();
 <style scoped>
 .layer-control {
   display: grid;
-  gap: 8px;
+  gap: var(--twf-space-2);
 }
 
 .layer-button {
@@ -38,12 +38,12 @@ const store = useMrtDashboardStore();
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   min-height: 38px;
-  gap: 8px;
+  gap: var(--twf-space-2);
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--twf-radius-md);
   padding: 7px 8px;
   background: transparent;
-  color: #26241e;
+  color: var(--twf-color-text);
   cursor: pointer;
   font-size: 0.78rem;
   font-weight: 700;
@@ -56,26 +56,26 @@ const store = useMrtDashboardStore();
   height: 16px;
   border-radius: 999px;
   background: var(--line-color);
-  box-shadow: inset 0 0 0 1px rgba(38, 36, 30, 0.08);
+  box-shadow: var(--twf-shadow-hairline);
   content: "";
 }
 
 .layer-button.muted {
-  color: #9b9485;
+  color: var(--twf-color-text-faint);
 }
 
 .layer-button.muted::after {
-  background: #ddd9ce;
+  background: var(--twf-color-border);
 }
 
 .line-dot {
   width: 24px;
   height: 24px;
   flex: 0 0 auto;
-  border: 1px solid #ddd9ce;
-  border-radius: 7px;
+  border: 1px solid var(--twf-color-border);
+  border-radius: var(--twf-radius-sm);
   background:
     linear-gradient(var(--line-color), var(--line-color)) center / 14px 3px no-repeat,
-    #fafaf7;
+    var(--twf-color-surface);
 }
 </style>

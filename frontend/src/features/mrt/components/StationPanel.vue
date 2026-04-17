@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BaseBadge from "@/shared/components/BaseBadge.vue";
 import type { LiveBoardRow, MrtStation } from "../types";
 
 defineProps<{
@@ -16,6 +17,14 @@ defineEmits<{
 
 function formatLineName(lineId: string): string {
   return `${lineId.charAt(0).toUpperCase()}${lineId.slice(1)} Line`;
+}
+
+function routeTone(lineId: string): "red" | "blue" | "green" | "neutral" {
+  if (lineId === "red" || lineId === "blue" || lineId === "green") {
+    return lineId;
+  }
+
+  return "neutral";
 }
 </script>
 
@@ -55,14 +64,14 @@ function formatLineName(lineId: string): string {
         <template v-if="station">
           <h2>{{ station.name }}</h2>
           <div class="line-badges" aria-label="Station lines">
-            <span
+            <BaseBadge
               v-for="lineId in station.lineIds"
               :key="lineId"
               class="line-badge"
-              :data-line="lineId"
+              :tone="routeTone(lineId)"
             >
               {{ formatLineName(lineId) }}
-            </span>
+            </BaseBadge>
           </div>
           <p class="station-meta">{{ station.id }} · LiveBoard active</p>
 
@@ -106,27 +115,27 @@ function formatLineName(lineId: string): string {
 .panel {
   min-height: 100%;
   overflow: auto;
-  border-left: 1px solid #ddd9ce;
-  background: #fafaf7;
+  border-left: 1px solid var(--twf-color-border);
+  background: var(--twf-color-surface);
 }
 
 .panel[data-collapsed="true"] {
   overflow: hidden;
-  background: #ffffff;
+  background: var(--twf-color-surface-raised);
 }
 
 .panel-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #eceae3;
+  border-bottom: 1px solid var(--twf-color-border-soft);
   padding: 0 12px 0 18px;
 }
 
 .eyebrow {
   margin: 0;
   padding: 16px 0 6px;
-  color: #9b9485;
+  color: var(--twf-color-text-faint);
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0;
@@ -135,10 +144,10 @@ function formatLineName(lineId: string): string {
 
 .collapse-button,
 .panel-rail-toggle {
-  border: 1px solid #ddd9ce;
-  border-radius: 7px;
-  background: #fafaf7;
-  color: #6b6557;
+  border: 1px solid var(--twf-color-border);
+  border-radius: var(--twf-radius-sm);
+  background: var(--twf-color-surface);
+  color: var(--twf-color-text-muted);
   cursor: pointer;
   font-weight: 800;
 }
@@ -153,8 +162,8 @@ function formatLineName(lineId: string): string {
 
 .collapse-button:hover,
 .panel-rail-toggle:hover {
-  border-color: #6b6557;
-  color: #26241e;
+  border-color: var(--twf-color-text-muted);
+  color: var(--twf-color-text);
 }
 
 .panel-rail-toggle {
@@ -174,16 +183,16 @@ function formatLineName(lineId: string): string {
   width: 28px;
   height: 28px;
   place-items: center;
-  border: 1px solid #ddd9ce;
-  border-radius: 7px;
-  background: #fafaf7;
+  border: 1px solid var(--twf-color-border);
+  border-radius: var(--twf-radius-sm);
+  background: var(--twf-color-surface);
   font-size: 1rem;
 }
 
 h2 {
   margin: 0;
   padding: 10px 18px 0;
-  color: #26241e;
+  color: var(--twf-color-text);
   font-size: 1.45rem;
   line-height: 1.12;
 }
@@ -195,45 +204,21 @@ h2 {
   padding: 12px 18px 0;
 }
 
-.line-badge {
-  border: 1px solid currentColor;
-  border-radius: 7px;
-  padding: 4px 8px;
-  background: #ffffff;
-  font-size: 0.72rem;
-  font-weight: 800;
-}
-
-.line-badge[data-line="red"] {
-  color: #d92d3a;
-  background: #fbeaea;
-}
-
-.line-badge[data-line="blue"] {
-  color: #2f6fd6;
-  background: #eaf0fb;
-}
-
-.line-badge[data-line="green"] {
-  color: #2f9e62;
-  background: #eaf5ee;
-}
-
 .station-meta,
 .empty {
   margin: 0;
   padding: 10px 18px 0;
-  color: #6b6557;
+  color: var(--twf-color-text-muted);
   font-size: 0.8rem;
   line-height: 1.55;
 }
 
 .section-heading {
   margin: 24px 0 0;
-  border-top: 1px solid #eceae3;
-  border-bottom: 1px solid #eceae3;
+  border-top: 1px solid var(--twf-color-border-soft);
+  border-bottom: 1px solid var(--twf-color-border-soft);
   padding: 10px 18px;
-  color: #9b9485;
+  color: var(--twf-color-text-faint);
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0;
@@ -243,18 +228,18 @@ h2 {
 .notice {
   margin: 0;
   padding: 10px 18px 0;
-  color: #6b6557;
+  color: var(--twf-color-text-muted);
   font-size: 0.78rem;
   line-height: 1.45;
 }
 
 .notice.error {
-  color: #d92d3a;
+  color: var(--twf-color-route-red);
 }
 
 .liveboard-list {
   display: grid;
-  gap: 8px;
+  gap: var(--twf-space-2);
   padding: 12px 12px 0;
 }
 
@@ -262,37 +247,37 @@ h2 {
   display: grid;
   grid-template-columns: 4px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 12px;
-  border: 1px solid #eceae3;
-  border-radius: 8px;
-  padding: 12px;
-  background: #ffffff;
+  gap: var(--twf-space-3);
+  border: 1px solid var(--twf-color-border-soft);
+  border-radius: var(--twf-radius-md);
+  padding: var(--twf-space-3);
+  background: var(--twf-color-surface-raised);
 }
 
 .row-line {
   width: 4px;
   height: 42px;
   border-radius: 999px;
-  background: #d92d3a;
+  background: var(--twf-color-route-red);
 }
 
 .row-line[data-line="blue"] {
-  background: #2f6fd6;
+  background: var(--twf-color-route-blue);
 }
 
 .row-line[data-line="green"] {
-  background: #2f9e62;
+  background: var(--twf-color-route-green);
 }
 
 .direction {
   margin: 4px 0 0;
-  color: #6b6557;
+  color: var(--twf-color-text-muted);
   font-size: 0.74rem;
 }
 
 h3 {
   margin: 0;
-  color: #26241e;
+  color: var(--twf-color-text);
   font-size: 0.92rem;
   line-height: 1.25;
 }
@@ -301,7 +286,7 @@ h3 {
   display: grid;
   min-width: 58px;
   justify-items: end;
-  color: #26241e;
+  color: var(--twf-color-text);
 }
 
 .arrival strong {
@@ -310,7 +295,7 @@ h3 {
 }
 
 .arrival span {
-  color: #9b9485;
+  color: var(--twf-color-text-faint);
   font-size: 0.64rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -320,8 +305,8 @@ h3 {
   margin-top: 5px;
   border-radius: 999px;
   padding: 3px 7px;
-  background: #eaf5ee;
-  color: #2f9e62;
+  background: var(--twf-color-route-green-soft);
+  color: var(--twf-color-route-green);
   font-size: 0.62rem;
   font-style: normal;
   font-weight: 700;
@@ -329,13 +314,13 @@ h3 {
 }
 
 .status[data-status="delayed"] {
-  background: #fbeaea;
-  color: #d92d3a;
+  background: var(--twf-color-route-red-soft);
+  color: var(--twf-color-route-red);
 }
 
 .status[data-status="approaching"] {
-  background: #fff3e6;
-  color: #e07820;
+  background: var(--twf-color-status-warning-soft);
+  color: var(--twf-color-status-warning);
 }
 
 .panel-footer {
@@ -343,18 +328,18 @@ h3 {
   align-items: center;
   justify-content: space-between;
   margin-top: 16px;
-  border-top: 1px solid #eceae3;
+  border-top: 1px solid var(--twf-color-border-soft);
   padding: 12px 18px;
-  color: #9b9485;
+  color: var(--twf-color-text-faint);
   font-size: 0.74rem;
 }
 
 .panel-footer button {
-  border: 1px solid #ddd9ce;
-  border-radius: 7px;
+  border: 1px solid var(--twf-color-border);
+  border-radius: var(--twf-radius-sm);
   padding: 6px 9px;
-  background: #ffffff;
-  color: #6b6557;
+  background: var(--twf-color-surface-raised);
+  color: var(--twf-color-text-muted);
   cursor: pointer;
   font-size: 0.74rem;
   font-weight: 700;
@@ -368,7 +353,7 @@ h3 {
 @media (max-width: 840px) {
   .panel {
     min-height: auto;
-    border-top: 1px solid #ddd9ce;
+    border-top: 1px solid var(--twf-color-border);
     border-left: 0;
   }
 }

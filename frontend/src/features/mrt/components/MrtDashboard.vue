@@ -208,14 +208,14 @@ function notifyMapLayoutChanged(): void {
 
 <style scoped>
 .dashboard-shell {
-  --bg: #f2efe8;
-  --surface: #fafaf7;
-  --white: #ffffff;
-  --border: #ddd9ce;
-  --border-soft: #eceae3;
-  --text: #26241e;
-  --text-muted: #6b6557;
-  --text-faint: #9b9485;
+  --bg: var(--twf-color-canvas);
+  --surface: var(--twf-color-surface);
+  --white: var(--twf-color-surface-raised);
+  --border: var(--twf-color-border);
+  --border-soft: var(--twf-color-border-soft);
+  --text: var(--twf-color-text);
+  --text-muted: var(--twf-color-text-muted);
+  --text-faint: var(--twf-color-text-faint);
 
   display: flex;
   flex-direction: column;
@@ -483,7 +483,7 @@ h1 {
 }
 
 .layer-count {
-  color: #d92d3a;
+  color: var(--twf-color-route-red);
   font-size: 0.72rem;
   font-weight: 800;
 }
@@ -511,7 +511,7 @@ h1 {
 
 .map-region {
   min-width: 0;
-  background: #dedad0;
+  background: var(--twf-color-border);
 }
 
 .station-panel {
@@ -553,7 +553,7 @@ h1 {
   width: 45%;
   height: 100%;
   border-radius: inherit;
-  background: #2f6fd6;
+  background: var(--twf-color-route-blue);
 }
 
 .timeline small {
