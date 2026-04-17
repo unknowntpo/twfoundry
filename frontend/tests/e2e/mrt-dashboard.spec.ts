@@ -54,3 +54,47 @@ test("sidebars collapse without clearing dashboard state", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Taipei City Hall" })).toBeVisible();
   await expect(page.getByTestId("liveboard-list")).toContainText("Dingpu");
 });
+
+test("mobile controls reveal hidden dashboard panels", async ({ page }) => {
+  await page.setViewportSize({ width: 520, height: 1112 });
+  await page.goto("/");
+
+  const mobilePanels = page.getByRole("navigation", { name: "Compact dashboard panels" });
+  await expect(mobilePanels).toBeVisible();
+  await expect(page.getByLabel("Map layers")).toBeHidden();
+  await expect(page.getByLabel("Playback timeline")).toBeHidden();
+
+  await mobilePanels.getByRole("button", { name: "Layers" }).click();
+  await expect(page.getByLabel("Map layers")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Red Line" })).toBeVisible();
+
+  await mobilePanels.getByRole("button", { name: "Time" }).click();
+  await expect(page.getByLabel("Playback timeline")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Now" })).toBeVisible();
+
+  await mobilePanels.getByRole("button", { name: "Detail" }).click();
+  await expect(page.getByLabel("Station LiveBoard")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Select a station" })).toBeVisible();
+
+  await expect(mobilePanels.getByRole("button", { name: "Detail" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+});
+
+test("tablet layout keeps side panels behind compact controls", async ({ page }) => {
+  await page.setViewportSize({ width: 722, height: 1080 });
+  await page.goto("/");
+
+  const compactPanels = page.getByRole("navigation", { name: "Compact dashboard panels" });
+  await expect(compactPanels).toBeVisible();
+  await expect(page.getByLabel("Map layers")).toBeHidden();
+  await expect(page.getByLabel("Station LiveBoard")).toBeHidden();
+
+  const mapRegion = page.getByLabel("MRT map dashboard");
+  await expect(mapRegion).toBeVisible();
+  await expect(mapRegion).toHaveJSProperty("clientWidth", 722);
+
+  await compactPanels.getByRole("button", { name: "Detail" }).click();
+  await expect(page.getByLabel("Station LiveBoard")).toBeVisible();
+});

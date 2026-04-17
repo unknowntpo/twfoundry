@@ -28,7 +28,7 @@ const spacingTokens = [
 
 const breakpointTokens = [
   ["Mobile", "0-639px", "Single-column map-first layout; hide wide rails and timeline."],
-  ["Tablet", "640-1023px", "Map remains primary; simplify side panels before adding drawers."],
+  ["Tablet", "640-1023px", "Map-first compact layout; reveal panels through compact controls."],
   ["Desktop", "1024px+", "Full monitoring layout with topbar, rails, panels, map, and timeline."],
 ];
 

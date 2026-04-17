@@ -350,7 +350,11 @@ h3 {
   opacity: 0.58;
 }
 
-@media (max-width: 639px) {
+@media (max-width: 1023px) {
+  .panel[data-collapsed="true"] {
+    display: none;
+  }
+
   .panel {
     min-height: auto;
     border-top: 1px solid var(--twf-color-border);

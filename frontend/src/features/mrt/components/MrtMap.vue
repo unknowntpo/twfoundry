@@ -343,6 +343,7 @@ declare global {
 .google-map-shell {
   position: relative;
   width: 100%;
+  height: 100%;
   min-height: 100%;
   overflow: hidden;
   background:
@@ -516,7 +517,8 @@ declare global {
 @media (max-width: 639px) {
   .mock-map,
   .google-map-shell {
-    min-height: 520px;
+    height: 100%;
+    min-height: 100%;
   }
 
   .map-legend,

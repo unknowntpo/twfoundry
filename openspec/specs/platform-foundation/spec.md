@@ -706,11 +706,19 @@ TWFoundry SHALL define shared frontend breakpoint rules for dashboard and design
 - **WHEN** the MRT dashboard renders
 - **THEN** the full map-first desktop layout can show topbar, icon rail, layer controls, map, station detail, and timeline
 
+#### Scenario: Dashboard reaches tablet width
+
+- **GIVEN** the viewport is between 640px and 1023px wide
+- **WHEN** the MRT dashboard renders
+- **THEN** the layout keeps the map primary and avoids persistent left and right sidebars that squeeze the map
+- **AND** compact controls can reveal Layers, Station Detail, and Timeline panels on demand
+
 #### Scenario: Dashboard reaches mobile width
 
 - **GIVEN** the viewport is 639px wide or narrower
 - **WHEN** the MRT dashboard renders
-- **THEN** the layout uses a single-column map-first mode without wide sidebars, icon rail, or timeline
+- **THEN** the layout uses a single-column map-first mode without wide sidebars or icon rail
+- **AND** compact controls can reveal Layers, Station Detail, and Timeline panels without showing collapsed desktop rails
 
 #### Scenario: Breakpoints remain consistent
 

@@ -22,6 +22,7 @@ const liveBoardSourceLabel = computed(() =>
 );
 const isLayerSidebarCollapsed = ref(false);
 const isStationPanelCollapsed = ref(false);
+const activeMobilePanel = ref<"map" | "layers" | "detail" | "time">("map");
 
 function toggleLayerSidebar(): void {
   isLayerSidebarCollapsed.value = !isLayerSidebarCollapsed.value;
@@ -39,6 +40,15 @@ function notifyMapLayoutChanged(): void {
       window.dispatchEvent(new Event("resize"));
     });
   });
+}
+
+function showMobilePanel(panel: "map" | "layers" | "detail" | "time"): void {
+  activeMobilePanel.value = panel;
+  if (panel === "detail") {
+    isStationPanelCollapsed.value = false;
+  }
+
+  notifyMapLayoutChanged();
 }
 </script>
 
@@ -87,7 +97,8 @@ function notifyMapLayoutChanged(): void {
       class="workspace"
       :class="{
         'layers-collapsed': isLayerSidebarCollapsed,
-        'station-collapsed': isStationPanelCollapsed
+        'station-collapsed': isStationPanelCollapsed,
+        [`mobile-panel-${activeMobilePanel}`]: true
       }"
     >
       <nav class="icon-rail" aria-label="Dashboard sections">
@@ -174,6 +185,37 @@ function notifyMapLayoutChanged(): void {
       <section class="map-region" aria-label="MRT map dashboard">
         <MrtMap :lines="visibleLines" :stations="mrtStations" />
       </section>
+
+      <nav class="mobile-controls" aria-label="Compact dashboard panels">
+        <button
+          type="button"
+          :aria-pressed="activeMobilePanel === 'map'"
+          @click="showMobilePanel('map')"
+        >
+          Map
+        </button>
+        <button
+          type="button"
+          :aria-pressed="activeMobilePanel === 'layers'"
+          @click="showMobilePanel('layers')"
+        >
+          Layers
+        </button>
+        <button
+          type="button"
+          :aria-pressed="activeMobilePanel === 'detail'"
+          @click="showMobilePanel('detail')"
+        >
+          Detail
+        </button>
+        <button
+          type="button"
+          :aria-pressed="activeMobilePanel === 'time'"
+          @click="showMobilePanel('time')"
+        >
+          Time
+        </button>
+      </nav>
 
       <StationPanel
         class="station-panel"
@@ -511,11 +553,16 @@ h1 {
 
 .map-region {
   min-width: 0;
+  overflow: hidden;
   background: var(--twf-color-border);
 }
 
 .station-panel {
   min-width: 0;
+}
+
+.mobile-controls {
+  display: none;
 }
 
 .timeline {
@@ -560,12 +607,13 @@ h1 {
   color: var(--text-faint);
 }
 
-@media (max-width: 639px) {
+@media (max-width: 1023px) {
   .workspace {
     --layers-width: 0px;
     --station-width: auto;
 
     grid-template-columns: 1fr;
+    grid-template-rows: minmax(520px, 1fr) auto auto;
   }
 
   .topbar {
@@ -577,7 +625,67 @@ h1 {
   .topbar-actions,
   .icon-rail,
   .layer-sidebar,
+  .station-panel,
   .timeline {
+    display: none;
+  }
+
+  .map-region {
+    min-height: 520px;
+  }
+
+  .mobile-controls {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-top: 1px solid var(--border);
+    padding: var(--twf-space-1) var(--twf-space-2);
+    background: var(--white);
+  }
+
+  .mobile-controls button {
+    min-height: 44px;
+    border: 0;
+    border-radius: var(--twf-radius-sm);
+    background: transparent;
+    color: var(--text-muted);
+    font: inherit;
+    font-size: 0.72rem;
+    font-weight: 800;
+  }
+
+  .mobile-controls button[aria-pressed="true"] {
+    background: var(--text);
+    color: var(--white);
+  }
+
+  .workspace.mobile-panel-layers .layer-sidebar,
+  .workspace.mobile-panel-detail .station-panel {
+    display: block;
+  }
+
+  .workspace.mobile-panel-layers .layer-sidebar {
+    border-top: 1px solid var(--border);
+    border-right: 0;
+  }
+
+  .workspace.mobile-panel-layers .sidebar-content {
+    min-width: 0;
+  }
+
+  .workspace.mobile-panel-detail .station-panel {
+    min-height: auto;
+  }
+
+  .workspace.mobile-panel-time + .timeline {
+    display: grid;
+    grid-template-columns: auto auto auto auto minmax(90px, 1fr);
+    gap: var(--twf-space-2);
+    min-height: auto;
+    padding: var(--twf-space-2);
+  }
+
+  .workspace.mobile-panel-time + .timeline .timeline-buttons,
+  .workspace.mobile-panel-time + .timeline small {
     display: none;
   }
 }
