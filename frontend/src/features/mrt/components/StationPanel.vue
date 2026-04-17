@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
 import BaseBadge from "@/shared/components/BaseBadge.vue";
 import type { LiveBoardRow, MrtStation } from "../types";
+
+const { t } = useI18n();
 
 defineProps<{
   collapsed?: boolean;
@@ -16,7 +19,11 @@ defineEmits<{
 }>();
 
 function formatLineName(lineId: string): string {
-  return `${lineId.charAt(0).toUpperCase()}${lineId.slice(1)} Line`;
+  if (lineId === "red" || lineId === "blue" || lineId === "green") {
+    return t(`dashboard.station.lineNames.${lineId}`);
+  }
+
+  return t("dashboard.station.lineNames.neutral");
 }
 
 function routeTone(lineId: string): "red" | "blue" | "green" | "neutral" {
@@ -29,16 +36,16 @@ function routeTone(lineId: string): "red" | "blue" | "green" | "neutral" {
 </script>
 
 <template>
-  <aside class="panel" :data-collapsed="collapsed" aria-label="Station LiveBoard">
+  <aside class="panel" :data-collapsed="collapsed" :aria-label="t('dashboard.station.aria')">
     <button
       v-if="collapsed"
       type="button"
       class="panel-rail-toggle"
       data-testid="expand-station-panel"
-      aria-label="Expand Station Detail panel"
+      :aria-label="t('dashboard.station.expand')"
       aria-controls="station-panel-content"
       :aria-expanded="false"
-      title="Expand Station Detail panel"
+      :title="t('dashboard.station.expand')"
       @click="$emit('toggle-collapse')"
     >
       <span aria-hidden="true">‹</span>
@@ -47,12 +54,12 @@ function routeTone(lineId: string): "red" | "blue" | "green" | "neutral" {
     <template v-else>
       <div id="station-panel-content">
         <div class="panel-head">
-          <p class="eyebrow">Station Detail</p>
+          <p class="eyebrow">{{ t("dashboard.station.detail") }}</p>
           <button
             type="button"
             class="collapse-button"
             data-testid="collapse-station-panel"
-            aria-label="Collapse Station Detail panel"
+            :aria-label="t('dashboard.station.collapse')"
             aria-controls="station-panel-content"
             :aria-expanded="true"
             @click="$emit('toggle-collapse')"
@@ -63,7 +70,7 @@ function routeTone(lineId: string): "red" | "blue" | "green" | "neutral" {
 
         <template v-if="station">
           <h2>{{ station.name }}</h2>
-          <div class="line-badges" aria-label="Station lines">
+          <div class="line-badges" :aria-label="t('dashboard.station.lines')">
             <BaseBadge
               v-for="lineId in station.lineIds"
               :key="lineId"
@@ -73,10 +80,10 @@ function routeTone(lineId: string): "red" | "blue" | "green" | "neutral" {
               {{ formatLineName(lineId) }}
             </BaseBadge>
           </div>
-          <p class="station-meta">{{ station.id }} · LiveBoard active</p>
+          <p class="station-meta">{{ t("dashboard.station.active", { stationId: station.id }) }}</p>
 
-          <p class="section-heading">Upcoming Arrivals</p>
-          <p v-if="isLoading" class="notice">Loading LiveBoard rows...</p>
+          <p class="section-heading">{{ t("dashboard.station.arrivals") }}</p>
+          <p v-if="isLoading" class="notice">{{ t("dashboard.station.loading") }}</p>
           <p v-if="error" class="notice error">{{ error }}</p>
 
           <div class="liveboard-list" data-testid="liveboard-list">
@@ -84,26 +91,30 @@ function routeTone(lineId: string): "red" | "blue" | "green" | "neutral" {
               <span class="row-line" :data-line="row.lineId" aria-hidden="true" />
               <div>
                 <h3>{{ row.destination }}</h3>
-                <p class="direction">{{ formatLineName(row.lineId) }} · {{ row.direction }}</p>
+                <p class="direction">
+                  {{ t("dashboard.station.direction", { line: formatLineName(row.lineId), direction: row.direction }) }}
+                </p>
               </div>
               <div class="arrival">
                 <strong>{{ row.arrivalMinutes }}</strong>
-                <span>min</span>
+                <span>{{ t("dashboard.station.minutes") }}</span>
                 <em class="status" :data-status="row.status">{{ row.status }}</em>
               </div>
             </article>
           </div>
 
-          <p v-if="liveBoards.length === 0" class="empty">No arrivals in the mock feed.</p>
+          <p v-if="liveBoards.length === 0" class="empty">{{ t("dashboard.station.noArrivals") }}</p>
           <footer class="panel-footer">
-            <span>Updated 30s ago</span>
-            <button type="button" :disabled="isLoading" @click="$emit('refresh')">Refresh</button>
+            <span>{{ t("dashboard.station.updated") }}</span>
+            <button type="button" :disabled="isLoading" @click="$emit('refresh')">
+              {{ t("dashboard.station.refresh") }}
+            </button>
           </footer>
         </template>
         <template v-else>
-          <h2>Select a station</h2>
+          <h2>{{ t("dashboard.station.select") }}</h2>
           <p class="empty">
-            Pick a station marker on the map to inspect mock LiveBoard arrivals.
+            {{ t("dashboard.station.empty") }}
           </p>
         </template>
       </div>

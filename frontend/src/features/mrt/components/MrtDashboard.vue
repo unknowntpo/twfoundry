@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
 import { computed, nextTick, ref } from "vue";
+import { useI18n } from "vue-i18n";
 import { useMrtDashboardStore } from "@/app/stores/mrt-dashboard";
+import LocaleSwitcher from "@/shared/components/LocaleSwitcher.vue";
 import { appConfig } from "@/shared/config/env";
 import { mrtLines, mrtStations } from "../data/mrt-fixtures";
 import LayerControl from "./LayerControl.vue";
 import MrtMap from "./MrtMap.vue";
 import StationPanel from "./StationPanel.vue";
 
+const { t } = useI18n();
 const store = useMrtDashboardStore();
 const { liveBoardError, liveBoardLoading, selectedStation, selectedLiveBoards, visibleLineIds } =
   storeToRefs(store);
@@ -76,20 +79,23 @@ function showMobilePanel(panel: "map" | "layers" | "detail" | "time"): void {
         <strong>TWFoundry</strong>
       </div>
       <span class="topbar-separator" aria-hidden="true" />
-      <h1>MRT LiveBoard Monitor</h1>
+      <h1>{{ t("dashboard.title") }}</h1>
 
-      <div class="line-stats" aria-label="MRT service summary">
+      <div class="line-stats" :aria-label="t('dashboard.serviceSummary')">
         <span v-for="line in mrtLines" :key="line.id" class="line-stat">
           <span class="stat-dot" :style="{ '--line-color': line.color }" aria-hidden="true" />
-          {{ line.stationIds.length * 6 }} trains
+          {{ t("dashboard.trains", { count: line.stationIds.length * 6 }) }}
         </span>
-        <span>{{ activeTrainCount }} active · {{ liveBoardSourceLabel }}</span>
+        <span>{{
+          t("dashboard.activeSource", { count: activeTrainCount, source: liveBoardSourceLabel })
+        }}</span>
       </div>
 
-      <div class="topbar-actions" aria-label="Map view actions">
-        <button type="button">Capture</button>
-        <button type="button" class="primary">3D Altitude</button>
-        <RouterLink to="/design-system">Design System</RouterLink>
+      <div class="topbar-actions" :aria-label="t('dashboard.actions.mapView')">
+        <LocaleSwitcher />
+        <button type="button">{{ t("dashboard.actions.capture") }}</button>
+        <button type="button" class="primary">{{ t("dashboard.actions.altitude") }}</button>
+        <RouterLink to="/design-system">{{ t("dashboard.actions.designSystem") }}</RouterLink>
       </div>
     </header>
 
@@ -101,8 +107,8 @@ function showMobilePanel(panel: "map" | "layers" | "detail" | "time"): void {
         [`mobile-panel-${activeMobilePanel}`]: true
       }"
     >
-      <nav class="icon-rail" aria-label="Dashboard sections">
-        <button type="button" class="rail-button active" aria-label="MRT dashboard">
+      <nav class="icon-rail" :aria-label="t('dashboard.nav.sections')">
+        <button type="button" class="rail-button active" :aria-label="t('dashboard.nav.dashboard')">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M1.5 7L8 1.5 14.5 7v8h-13V7z" />
           </svg>
@@ -112,23 +118,23 @@ function showMobilePanel(panel: "map" | "layers" | "detail" | "time"): void {
           type="button"
           class="rail-button"
           data-testid="expand-layers-sidebar"
-          aria-label="Expand Layers sidebar"
+          :aria-label="t('dashboard.layers.expand')"
           aria-controls="layers-sidebar-content"
           :aria-expanded="false"
-          title="Expand Layers sidebar"
+          :title="t('dashboard.layers.expand')"
           @click="toggleLayerSidebar"
         >
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M6 4l4 4-4 4" />
           </svg>
         </button>
-        <button type="button" class="rail-button" aria-label="Stations">
+        <button type="button" class="rail-button" :aria-label="t('dashboard.nav.stations')">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
             <circle cx="8" cy="6" r="3.5" />
             <path d="M8 9.5V14" />
           </svg>
         </button>
-        <button type="button" class="rail-button" aria-label="Tables">
+        <button type="button" class="rail-button" :aria-label="t('dashboard.nav.tables')">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
             <rect x="2" y="3" width="12" height="10" rx="1.5" />
             <path d="M2 7h12M6 3v10" />
@@ -139,18 +145,18 @@ function showMobilePanel(panel: "map" | "layers" | "detail" | "time"): void {
       <aside
         class="layer-sidebar"
         :data-collapsed="isLayerSidebarCollapsed"
-        aria-label="Map layers"
+        :aria-label="t('dashboard.layers.aria')"
       >
         <div v-if="!isLayerSidebarCollapsed" id="layers-sidebar-content" class="sidebar-content">
           <div class="sidebar-head">
-            <h2>Layers</h2>
+            <h2>{{ t("dashboard.layers.title") }}</h2>
             <div class="sidebar-head-actions">
-              <span>All Off</span>
+              <span>{{ t("dashboard.layers.allOff") }}</span>
               <button
                 type="button"
                 class="collapse-button"
                 data-testid="collapse-layers-sidebar"
-                aria-label="Collapse Layers sidebar"
+                :aria-label="t('dashboard.layers.collapse')"
                 aria-controls="layers-sidebar-content"
                 :aria-expanded="true"
                 @click="toggleLayerSidebar"
@@ -161,59 +167,59 @@ function showMobilePanel(panel: "map" | "layers" | "detail" | "time"): void {
           </div>
 
           <div class="layer-group">
-            <p class="group-label">Moving</p>
+            <p class="group-label">{{ t("dashboard.layers.moving") }}</p>
             <article class="layer-card active">
               <span class="layer-icon">M</span>
-              <strong>捷運 MRT</strong>
+              <strong>{{ t("dashboard.layers.mrt") }}</strong>
               <span class="layer-count">{{ activeTrainCount }}</span>
             </article>
             <div class="layer-settings">
-              <div><span>Train</span><strong>ON</strong></div>
-              <div><span>Track</span><strong>3D</strong></div>
-              <div><span>Rail Z</span><strong>+58m</strong></div>
-              <div><span>Glow</span><strong>0.7</strong></div>
+              <div><span>{{ t("dashboard.layers.train") }}</span><strong>ON</strong></div>
+              <div><span>{{ t("dashboard.layers.track") }}</span><strong>3D</strong></div>
+              <div><span>{{ t("dashboard.layers.railZ") }}</span><strong>+58m</strong></div>
+              <div><span>{{ t("dashboard.layers.glow") }}</span><strong>0.7</strong></div>
             </div>
           </div>
 
           <div class="layer-group">
-            <p class="group-label">Route</p>
+            <p class="group-label">{{ t("dashboard.layers.route") }}</p>
             <LayerControl :lines="mrtLines" />
           </div>
         </div>
       </aside>
 
-      <section class="map-region" aria-label="MRT map dashboard">
+      <section class="map-region" :aria-label="t('dashboard.map.dashboard')">
         <MrtMap :lines="visibleLines" :stations="mrtStations" />
       </section>
 
-      <nav class="mobile-controls" aria-label="Compact dashboard panels">
+      <nav class="mobile-controls" :aria-label="t('dashboard.compactPanels.aria')">
         <button
           type="button"
           :aria-pressed="activeMobilePanel === 'map'"
           @click="showMobilePanel('map')"
         >
-          Map
+          {{ t("dashboard.compactPanels.map") }}
         </button>
         <button
           type="button"
           :aria-pressed="activeMobilePanel === 'layers'"
           @click="showMobilePanel('layers')"
         >
-          Layers
+          {{ t("dashboard.compactPanels.layers") }}
         </button>
         <button
           type="button"
           :aria-pressed="activeMobilePanel === 'detail'"
           @click="showMobilePanel('detail')"
         >
-          Detail
+          {{ t("dashboard.compactPanels.detail") }}
         </button>
         <button
           type="button"
           :aria-pressed="activeMobilePanel === 'time'"
           @click="showMobilePanel('time')"
         >
-          Time
+          {{ t("dashboard.compactPanels.time") }}
         </button>
       </nav>
 
@@ -229,21 +235,21 @@ function showMobilePanel(panel: "map" | "layers" | "detail" | "time"): void {
       />
     </div>
 
-    <footer class="timeline" aria-label="Playback timeline">
+    <footer class="timeline" :aria-label="t('dashboard.timeline.aria')">
       <div class="timeline-buttons">
-        <button type="button" aria-label="Previous">‹</button>
-        <button type="button" aria-label="Pause">Ⅱ</button>
-        <button type="button" aria-label="Next">›</button>
+        <button type="button" :aria-label="t('dashboard.timeline.previous')">‹</button>
+        <button type="button" :aria-label="t('dashboard.timeline.pause')">Ⅱ</button>
+        <button type="button" :aria-label="t('dashboard.timeline.next')">›</button>
       </div>
-      <span>4/16 (Thu)</span>
-      <button type="button" class="now-button">Now</button>
+      <span>{{ t("dashboard.timeline.date") }}</span>
+      <button type="button" class="now-button">{{ t("dashboard.timeline.now") }}</button>
       <span>1d</span>
       <span>60x</span>
       <strong>10:43</strong>
       <div class="timeline-track" aria-hidden="true">
         <span />
       </div>
-      <small>{{ liveBoardSourceLabel }} LiveBoard feed</small>
+      <small>{{ t("dashboard.timeline.feed", { source: liveBoardSourceLabel }) }}</small>
     </footer>
   </main>
 </template>

@@ -1,9 +1,14 @@
 <script setup lang="ts">
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
 import BaseBadge from "@/shared/components/BaseBadge.vue";
 import BaseButton from "@/shared/components/BaseButton.vue";
 import BaseCard from "@/shared/components/BaseCard.vue";
 import BasePanel from "@/shared/components/BasePanel.vue";
 import BaseSectionLabel from "@/shared/components/BaseSectionLabel.vue";
+import LocaleSwitcher from "@/shared/components/LocaleSwitcher.vue";
+
+const { t } = useI18n();
 
 const colorTokens = [
   ["Canvas", "--twf-color-canvas", "#F7F3EE", "Warm page background."],
@@ -26,65 +31,64 @@ const spacingTokens = [
   ["40px", "Major section rhythm"],
 ];
 
-const breakpointTokens = [
+const breakpointTokens = computed(() => [
   ["Mobile", "0-639px", "Single-column map-first layout; hide wide rails and timeline."],
   ["Tablet", "640-1023px", "Map-first compact layout; reveal panels through compact controls."],
   ["Desktop", "1024px+", "Full monitoring layout with topbar, rails, panels, map, and timeline."],
-];
+]);
 
-const libraryTradeoffs = [
+const libraryTradeoffs = computed(() => [
   [
     "Local Vue components",
-    "First pass",
+    t("designSystem.tradeoffs.firstPass"),
     "Best fit for our map-first dashboard and custom light-mode identity.",
   ],
   ["shadcn/ui", "Concept only", "React-oriented; borrow vocabulary, not dependency."],
   ["shadcn-vue", "Defer", "Useful later for richer primitives if we need them."],
   ["Ant Design Vue", "Defer", "Strong enterprise style and heavier surface than we need now."],
   ["Reka UI", "Later candidate", "Good for accessible headless primitives without visual lock-in."],
-];
+]);
 </script>
 
 <template>
   <main class="design-system-page">
     <header class="hero">
-      <RouterLink class="back-link" to="/">MRT dashboard</RouterLink>
-      <BaseSectionLabel>TWFoundry Design System</BaseSectionLabel>
-      <h1>Calm, transit-aware, data-dense light mode.</h1>
-      <p>
-        This page turns the Anthropic-inspired study into TWFoundry rules: warm
-        surfaces, soft borders, semantic MRT route colors, and reusable Vue
-        components.
-      </p>
+      <div class="hero-nav">
+        <RouterLink class="back-link" to="/">{{ t("designSystem.back") }}</RouterLink>
+        <LocaleSwitcher />
+      </div>
+      <BaseSectionLabel>{{ t("designSystem.label") }}</BaseSectionLabel>
+      <h1>{{ t("designSystem.title") }}</h1>
+      <p>{{ t("designSystem.intro") }}</p>
       <div class="hero-actions">
-        <BaseButton variant="primary">Primary action</BaseButton>
-        <BaseButton>Secondary action</BaseButton>
-        <BaseBadge tone="warm">Anthropic light direction</BaseBadge>
+        <BaseButton variant="primary">{{ t("designSystem.actions.primary") }}</BaseButton>
+        <BaseButton>{{ t("designSystem.actions.secondary") }}</BaseButton>
+        <BaseBadge tone="warm">{{ t("designSystem.actions.direction") }}</BaseBadge>
       </div>
     </header>
 
-    <section class="principles" aria-label="Design principles">
+    <section class="principles" :aria-label="t('designSystem.principles.aria')">
       <BaseCard>
-        <BaseSectionLabel>Principle</BaseSectionLabel>
-        <h2>Warm before clinical</h2>
-        <p>Use off-white canvas and quiet surfaces instead of cold admin-console gray.</p>
+        <BaseSectionLabel>{{ t("designSystem.principles.label") }}</BaseSectionLabel>
+        <h2>{{ t("designSystem.principles.warmTitle") }}</h2>
+        <p>{{ t("designSystem.principles.warmBody") }}</p>
       </BaseCard>
       <BaseCard>
-        <BaseSectionLabel>Principle</BaseSectionLabel>
-        <h2>Semantic before decorative</h2>
-        <p>Red, blue, and green belong to MRT route meaning, not random ornament.</p>
+        <BaseSectionLabel>{{ t("designSystem.principles.label") }}</BaseSectionLabel>
+        <h2>{{ t("designSystem.principles.semanticTitle") }}</h2>
+        <p>{{ t("designSystem.principles.semanticBody") }}</p>
       </BaseCard>
       <BaseCard>
-        <BaseSectionLabel>Principle</BaseSectionLabel>
-        <h2>Map first</h2>
-        <p>Panels support the map. They should not make the map feel embedded in a card.</p>
+        <BaseSectionLabel>{{ t("designSystem.principles.label") }}</BaseSectionLabel>
+        <h2>{{ t("designSystem.principles.mapTitle") }}</h2>
+        <p>{{ t("designSystem.principles.mapBody") }}</p>
       </BaseCard>
     </section>
 
     <section class="section-grid" aria-labelledby="color-title">
       <div>
-        <BaseSectionLabel>Color system</BaseSectionLabel>
-        <h2 id="color-title">Named tokens with product intent</h2>
+        <BaseSectionLabel>{{ t("designSystem.colors.label") }}</BaseSectionLabel>
+        <h2 id="color-title">{{ t("designSystem.colors.title") }}</h2>
       </div>
       <div class="token-grid" data-testid="design-token-grid">
         <BasePanel v-for="[name, token, hex, usage] in colorTokens" :key="token">
@@ -102,17 +106,22 @@ const libraryTradeoffs = [
 
     <section class="section-grid" aria-labelledby="type-title">
       <div>
-        <BaseSectionLabel>Typography and spacing</BaseSectionLabel>
-        <h2 id="type-title">Readable hierarchy without sharp jumps</h2>
+        <BaseSectionLabel>{{ t("designSystem.typography.label") }}</BaseSectionLabel>
+        <h2 id="type-title">{{ t("designSystem.typography.title") }}</h2>
       </div>
       <div class="docs-stack">
         <BaseCard>
-          <div class="type-sample display">Display: MRT system overview</div>
-          <div class="type-sample heading">Heading: Station detail</div>
-          <div class="type-sample body">
-            Body: LiveBoard rows and map controls should be readable at dense dashboard scale.
-          </div>
-          <div class="type-sample meta">Meta: route, source, status, timestamp</div>
+          <div class="type-sample display">{{ t("designSystem.typography.display") }}</div>
+          <div class="type-sample heading">{{ t("designSystem.typography.heading") }}</div>
+          <div class="type-sample body">{{ t("designSystem.typography.body") }}</div>
+          <div class="type-sample meta">{{ t("designSystem.typography.meta") }}</div>
+        </BaseCard>
+        <BaseCard>
+          <BaseSectionLabel>{{ t("designSystem.typography.cjkLabel") }}</BaseSectionLabel>
+          <h3>{{ t("designSystem.typography.cjkTitle") }}</h3>
+          <p>{{ t("designSystem.typography.cjkBody") }}</p>
+          <div class="type-sample cjk">{{ t("designSystem.typography.cjkSample") }}</div>
+          <code>--twf-font-family-cjk</code>
         </BaseCard>
         <BaseCard>
           <div class="spacing-list">
@@ -127,28 +136,28 @@ const libraryTradeoffs = [
 
     <section class="section-grid" aria-labelledby="components-title">
       <div>
-        <BaseSectionLabel>Component grammar</BaseSectionLabel>
-        <h2 id="components-title">Small Vue components first</h2>
+        <BaseSectionLabel>{{ t("designSystem.components.label") }}</BaseSectionLabel>
+        <h2 id="components-title">{{ t("designSystem.components.title") }}</h2>
       </div>
       <div class="component-grid">
         <BaseCard>
-          <BaseSectionLabel>Buttons and badges</BaseSectionLabel>
+          <BaseSectionLabel>{{ t("designSystem.components.buttons") }}</BaseSectionLabel>
           <div class="component-row">
-            <BaseButton variant="primary">Refresh LiveBoard</BaseButton>
-            <BaseButton>Open layers</BaseButton>
-            <BaseBadge tone="blue">Blue Line</BaseBadge>
-            <BaseBadge tone="green">On time</BaseBadge>
+            <BaseButton variant="primary">{{ t("designSystem.components.refresh") }}</BaseButton>
+            <BaseButton>{{ t("designSystem.components.openLayers") }}</BaseButton>
+            <BaseBadge tone="blue">{{ t("designSystem.components.blueLine") }}</BaseBadge>
+            <BaseBadge tone="green">{{ t("designSystem.components.onTime") }}</BaseBadge>
           </div>
         </BaseCard>
         <BaseCard>
-          <BaseSectionLabel>LiveBoard row</BaseSectionLabel>
+          <BaseSectionLabel>{{ t("designSystem.components.liveBoardRow") }}</BaseSectionLabel>
           <div class="liveboard-example">
             <span class="route-line" aria-hidden="true" />
             <div>
-              <h3>Dingpu</h3>
-              <p>Blue Line · Westbound</p>
+              <h3>{{ t("designSystem.components.destination") }}</h3>
+              <p>{{ t("designSystem.components.direction") }}</p>
             </div>
-            <strong>2 min</strong>
+            <strong>{{ t("designSystem.components.arrival") }}</strong>
           </div>
         </BaseCard>
       </div>
@@ -156,8 +165,8 @@ const libraryTradeoffs = [
 
     <section class="section-grid" aria-labelledby="breakpoint-title">
       <div>
-        <BaseSectionLabel>Responsive system</BaseSectionLabel>
-        <h2 id="breakpoint-title">Breakpoints are product behavior</h2>
+        <BaseSectionLabel>{{ t("designSystem.breakpoints.label") }}</BaseSectionLabel>
+        <h2 id="breakpoint-title">{{ t("designSystem.breakpoints.title") }}</h2>
       </div>
       <BaseCard>
         <div class="breakpoint-list" data-testid="breakpoint-rules">
@@ -172,40 +181,66 @@ const libraryTradeoffs = [
 
     <section class="section-grid" aria-labelledby="tradeoff-title">
       <div>
-        <BaseSectionLabel>Library decision</BaseSectionLabel>
-        <h2 id="tradeoff-title">Trade-offs before dependencies</h2>
+        <BaseSectionLabel>{{ t("designSystem.tradeoffs.label") }}</BaseSectionLabel>
+        <h2 id="tradeoff-title">{{ t("designSystem.tradeoffs.title") }}</h2>
       </div>
       <BaseCard>
         <div class="tradeoff-table" data-testid="library-tradeoffs">
           <div v-for="[option, decision, reason] in libraryTradeoffs" :key="option" class="tradeoff-row">
             <strong>{{ option }}</strong>
-            <BaseBadge :tone="decision === 'First pass' ? 'warm' : 'neutral'">{{ decision }}</BaseBadge>
+            <BaseBadge :tone="decision === t('designSystem.tradeoffs.firstPass') ? 'warm' : 'neutral'">{{ decision }}</BaseBadge>
             <span>{{ reason }}</span>
           </div>
         </div>
       </BaseCard>
     </section>
 
+    <section class="section-grid" aria-labelledby="i18n-title">
+      <div>
+        <BaseSectionLabel>{{ t("designSystem.i18n.label") }}</BaseSectionLabel>
+        <h2 id="i18n-title">{{ t("designSystem.i18n.title") }}</h2>
+      </div>
+      <BaseCard>
+        <p>{{ t("designSystem.i18n.body") }}</p>
+        <div class="component-grid compact">
+          <BasePanel>
+            <h3>{{ t("designSystem.rules.do") }}</h3>
+            <ul>
+              <li>{{ t("designSystem.i18n.doOne") }}</li>
+              <li>{{ t("designSystem.i18n.doTwo") }}</li>
+            </ul>
+          </BasePanel>
+          <BasePanel>
+            <h3>{{ t("designSystem.rules.avoid") }}</h3>
+            <ul>
+              <li>{{ t("designSystem.i18n.avoidOne") }}</li>
+              <li>{{ t("designSystem.i18n.avoidTwo") }}</li>
+            </ul>
+          </BasePanel>
+        </div>
+      </BaseCard>
+    </section>
+
     <section class="section-grid" aria-labelledby="rules-title">
       <div>
-        <BaseSectionLabel>Usage rules</BaseSectionLabel>
-        <h2 id="rules-title">Do this, avoid that</h2>
+        <BaseSectionLabel>{{ t("designSystem.rules.label") }}</BaseSectionLabel>
+        <h2 id="rules-title">{{ t("designSystem.rules.title") }}</h2>
       </div>
       <div class="component-grid">
         <BasePanel>
-          <h3>Do</h3>
+          <h3>{{ t("designSystem.rules.do") }}</h3>
           <ul>
-            <li>Use MRT colors only for route meaning.</li>
-            <li>Use warm surfaces for dashboard chrome.</li>
-            <li>Keep map content visually dominant.</li>
+            <li>{{ t("designSystem.rules.doRoute") }}</li>
+            <li>{{ t("designSystem.rules.doSurface") }}</li>
+            <li>{{ t("designSystem.rules.doMap") }}</li>
           </ul>
         </BasePanel>
         <BasePanel>
-          <h3>Avoid</h3>
+          <h3>{{ t("designSystem.rules.avoid") }}</h3>
           <ul>
-            <li>Do not copy finance dashboard examples into product copy.</li>
-            <li>Do not introduce Ant Design or shadcn-vue in the first pass.</li>
-            <li>Do not use heavy gradients or purple-blue dominant palettes.</li>
+            <li>{{ t("designSystem.rules.avoidFinance") }}</li>
+            <li>{{ t("designSystem.rules.avoidDependency") }}</li>
+            <li>{{ t("designSystem.rules.avoidGradient") }}</li>
           </ul>
         </BasePanel>
       </div>
@@ -368,6 +403,14 @@ code {
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+}
+
+.cjk {
+  font-family: var(--twf-font-family-cjk);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.55;
 }
 
 .spacing-list {

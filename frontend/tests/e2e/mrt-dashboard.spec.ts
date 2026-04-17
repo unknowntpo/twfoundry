@@ -98,3 +98,17 @@ test("tablet layout keeps side panels behind compact controls", async ({ page })
   await compactPanels.getByRole("button", { name: "Detail" }).click();
   await expect(page.getByLabel("Station LiveBoard")).toBeVisible();
 });
+
+test("locale switcher changes dashboard copy and persists preference", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByLabel("Language").selectOption("zh-TW");
+
+  await expect(page.getByRole("heading", { name: "MRT 即時看板" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "設計系統" })).toBeVisible();
+
+  await page.reload();
+
+  await expect(page.getByRole("heading", { name: "MRT 即時看板" })).toBeVisible();
+  await expect(page.getByLabel("語言")).toHaveValue("zh-TW");
+});

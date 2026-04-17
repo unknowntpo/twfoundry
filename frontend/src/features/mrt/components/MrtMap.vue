@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import { useMrtDashboardStore } from "@/app/stores/mrt-dashboard";
 import { appConfig } from "@/shared/config/env";
 import type { MrtLine, MrtStation } from "../types";
@@ -10,6 +11,7 @@ const props = defineProps<{
 }>();
 
 const store = useMrtDashboardStore();
+const { t } = useI18n();
 const mapElement = ref<HTMLElement | null>(null);
 const mapError = ref<string | undefined>();
 const googleReady = ref(false);
@@ -48,7 +50,7 @@ async function initializeGoogleMap(): Promise<void> {
   }
 
   if (!appConfig.googleMapsApiKey) {
-    mapError.value = "Set VITE_GOOGLE_MAPS_API_KEY to use Google Maps.";
+    mapError.value = t("dashboard.map.googleApiKeyMissing");
     return;
   }
 
@@ -57,7 +59,7 @@ async function initializeGoogleMap(): Promise<void> {
     googleMarkerLibrary = await loadGoogleMarkerLibrary(googleApi);
     const GoogleMap = googleApi.maps.Map;
     if (!GoogleMap) {
-      throw new Error("Google Maps library is not available.");
+      throw new Error(t("dashboard.map.googleUnavailable"));
     }
 
     googleMap = new GoogleMap(mapElement.value, {
@@ -75,7 +77,7 @@ async function initializeGoogleMap(): Promise<void> {
     googleReady.value = true;
     mapError.value = undefined;
   } catch (error) {
-    mapError.value = error instanceof Error ? error.message : "Unable to load Google Maps.";
+    mapError.value = error instanceof Error ? error.message : t("dashboard.map.googleUnknownError");
   }
 }
 
@@ -141,7 +143,7 @@ function createGoogleStationMarker(station: MrtStation): HTMLElement {
   marker.className = "google-station-marker";
   marker.dataset.selected = String(station.id === store.selectedStationId);
   marker.textContent = station.name;
-  marker.setAttribute("aria-label", `Select ${station.name}`);
+  marker.setAttribute("aria-label", t("dashboard.map.selectStation", { station: station.name }));
   marker.style.setProperty("--station-line-color", resolveStationColor(station));
   return marker;
 }
@@ -179,7 +181,7 @@ function loadGoogleMaps(apiKey: string): Promise<GoogleMapsGlobal> {
   script.async = true;
   script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&loading=async`;
   script.onerror = () => {
-    mapError.value = "Google Maps script failed to load.";
+    mapError.value = t("dashboard.map.googleLoadFailed");
   };
   document.head.appendChild(script);
 
@@ -192,7 +194,7 @@ async function ensureGoogleMapsLibrary(google: GoogleMapsGlobal): Promise<Google
   }
 
   if (!google.maps.importLibrary) {
-    throw new Error("Google Maps library is not available.");
+    throw new Error(t("dashboard.map.googleUnavailable"));
   }
 
   const mapsLibrary = await google.maps.importLibrary("maps");
@@ -229,7 +231,7 @@ function waitForGoogleMaps(): Promise<GoogleMapsGlobal> {
 
       if (Date.now() - startedAt > 8000) {
         window.clearInterval(interval);
-        reject(new Error("Google Maps did not become available."));
+        reject(new Error(t("dashboard.map.googleTimeout")));
       }
     }, 50);
   });
@@ -285,7 +287,7 @@ declare global {
 
 <template>
   <div v-if="appConfig.mapProvider === 'mock'" class="mock-map" data-testid="mock-map">
-    <div class="mock-lines" aria-label="Visible MRT lines">
+    <div class="mock-lines" :aria-label="t('dashboard.map.visibleLines')">
       <div
         v-for="line in lines"
         :key="line.id"
@@ -306,26 +308,26 @@ declare global {
         left: `${120 + ((index % 3) * 190)}px`,
         top: `${140 + (Math.floor(index / 3) * 120)}px`
       }"
-      :aria-label="`Select ${station.name}`"
+      :aria-label="t('dashboard.map.selectStation', { station: station.name })"
       :data-testid="`station-${station.id}`"
       @click="store.selectStation(station.id)"
     >
       {{ station.name }}
     </button>
 
-    <aside class="map-legend" aria-label="Map overlay specification">
-      <h2>Map Overlay Spec</h2>
+    <aside class="map-legend" :aria-label="t('dashboard.map.overlaySpec')">
+      <h2>{{ t("dashboard.map.overlayTitle") }}</h2>
       <p v-for="line in lines" :key="line.id">
         <span class="legend-line" :style="{ '--line-color': line.color }" aria-hidden="true" />
-        {{ line.name }} · Polyline · weight 4
+        {{ t("dashboard.map.polyline", { line: line.name }) }}
       </p>
       <p>
         <span class="legend-dot" aria-hidden="true" />
-        Station marker · white + line border
+        {{ t("dashboard.map.marker") }}
       </p>
       <p>
         <span class="legend-dot selected" aria-hidden="true" />
-        Selected station · pulse ring
+        {{ t("dashboard.map.selectedMarker") }}
       </p>
     </aside>
 

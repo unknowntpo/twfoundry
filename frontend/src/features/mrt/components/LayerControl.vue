@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
 import { useMrtDashboardStore } from "@/app/stores/mrt-dashboard";
 import type { MrtLine } from "../types";
 
@@ -7,10 +8,11 @@ defineProps<{
 }>();
 
 const store = useMrtDashboardStore();
+const { t } = useI18n();
 </script>
 
 <template>
-  <div class="layer-control" aria-label="MRT layer controls">
+  <div class="layer-control" :aria-label="t('dashboard.layers.controls')">
     <button
       v-for="line in lines"
       :key="line.id"
