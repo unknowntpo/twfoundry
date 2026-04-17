@@ -560,7 +560,7 @@ h1 {
   color: var(--text-faint);
 }
 
-@media (max-width: 840px) {
+@media (max-width: 639px) {
   .workspace {
     --layers-width: 0px;
     --station-width: auto;

@@ -513,7 +513,7 @@ declare global {
   box-shadow: var(--twf-shadow-floating);
 }
 
-@media (max-width: 840px) {
+@media (max-width: 639px) {
   .mock-map,
   .google-map-shell {
     min-height: 520px;

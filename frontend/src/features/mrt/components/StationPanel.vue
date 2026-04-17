@@ -350,7 +350,7 @@ h3 {
   opacity: 0.58;
 }
 
-@media (max-width: 840px) {
+@media (max-width: 639px) {
   .panel {
     min-height: auto;
     border-top: 1px solid var(--twf-color-border);

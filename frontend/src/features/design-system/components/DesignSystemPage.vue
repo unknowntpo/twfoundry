@@ -26,6 +26,12 @@ const spacingTokens = [
   ["40px", "Major section rhythm"],
 ];
 
+const breakpointTokens = [
+  ["Mobile", "0-639px", "Single-column map-first layout; hide wide rails and timeline."],
+  ["Tablet", "640-1023px", "Map remains primary; simplify side panels before adding drawers."],
+  ["Desktop", "1024px+", "Full monitoring layout with topbar, rails, panels, map, and timeline."],
+];
+
 const libraryTradeoffs = [
   [
     "Local Vue components",
@@ -146,6 +152,22 @@ const libraryTradeoffs = [
           </div>
         </BaseCard>
       </div>
+    </section>
+
+    <section class="section-grid" aria-labelledby="breakpoint-title">
+      <div>
+        <BaseSectionLabel>Responsive system</BaseSectionLabel>
+        <h2 id="breakpoint-title">Breakpoints are product behavior</h2>
+      </div>
+      <BaseCard>
+        <div class="breakpoint-list" data-testid="breakpoint-rules">
+          <div v-for="[name, range, behavior] in breakpointTokens" :key="name">
+            <strong>{{ name }}</strong>
+            <code>{{ range }}</code>
+            <span>{{ behavior }}</span>
+          </div>
+        </div>
+      </BaseCard>
     </section>
 
     <section class="section-grid" aria-labelledby="tradeoff-title">
@@ -354,7 +376,8 @@ code {
 }
 
 .spacing-list div,
-.tradeoff-row {
+.tradeoff-row,
+.breakpoint-list div {
   display: grid;
   grid-template-columns: 120px minmax(0, 1fr);
   gap: var(--twf-space-3);
@@ -388,6 +411,22 @@ code {
   gap: var(--twf-space-3);
 }
 
+.breakpoint-list {
+  display: grid;
+  gap: var(--twf-space-3);
+}
+
+.breakpoint-list div {
+  grid-template-columns: 100px 110px minmax(0, 1fr);
+  border-bottom: 1px solid var(--twf-color-border-soft);
+  padding-bottom: var(--twf-space-3);
+}
+
+.breakpoint-list div:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
 .tradeoff-row {
   grid-template-columns: 160px 110px minmax(0, 1fr);
   border-bottom: 1px solid var(--twf-color-border-soft);
@@ -404,7 +443,7 @@ ul {
   padding-left: 18px;
 }
 
-@media (max-width: 860px) {
+@media (max-width: 639px) {
   .principles,
   .section-grid,
   .token-grid,
@@ -412,7 +451,8 @@ ul {
     grid-template-columns: 1fr;
   }
 
-  .tradeoff-row {
+  .tradeoff-row,
+  .breakpoint-list div {
     grid-template-columns: 1fr;
   }
 }

@@ -6,6 +6,7 @@ test("design system page documents TWFoundry tokens and trade-offs", async ({ pa
   await expect(page.getByRole("heading", { name: /Calm, transit-aware/ })).toBeVisible();
   await expect(page.getByTestId("design-token-grid")).toContainText("--twf-color-canvas");
   await expect(page.getByRole("heading", { name: "Small Vue components first" })).toBeVisible();
+  await expect(page.getByTestId("breakpoint-rules")).toContainText("1024px+");
   await expect(page.getByTestId("library-tradeoffs")).toContainText("Ant Design Vue");
   await expect(page.getByTestId("library-tradeoffs")).toContainText("shadcn-vue");
 });
