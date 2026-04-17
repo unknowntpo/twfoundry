@@ -96,3 +96,49 @@ The first implementation should be small:
 - Update navigation so the page is reachable without disrupting the MRT dashboard.
 - Use mock examples tied to TWFoundry transit/data concepts.
 - Add tests that confirm the route renders and key token/component sections exist.
+
+## UI Library Trade-Offs
+
+TWFoundry is currently a Vue 3 application with scoped CSS. The design system should fit that reality first.
+
+### Option: Local Vue Components + CSS Tokens
+
+- **Pros**: Small dependency surface, full control over the Anthropic-inspired light-mode direction, easy to keep map-first dashboard layout custom, no forced enterprise visual language.
+- **Cons**: We own component API design, accessibility details, and consistency discipline.
+- **Decision**: Use this for the first pass. Build only the base components the dashboard needs now.
+
+### Option: shadcn/ui
+
+- **Pros**: Strong design-system vocabulary, composable primitives, good examples for cards, buttons, badges, inputs, and documentation pages.
+- **Cons**: Native `shadcn/ui` is React-oriented and cannot be directly used in this Vue codebase.
+- **Decision**: Borrow concepts and component vocabulary only; do not add the React dependency.
+
+### Option: shadcn-vue
+
+- **Pros**: Vue-compatible interpretation of the shadcn approach; useful if the app needs accessible Dialog, Popover, Select, Dropdown, Tabs, or Command primitives.
+- **Cons**: Adds a UI framework layer before the product has proven it needs those primitives; may increase migration and styling work.
+- **Decision**: Defer. Re-evaluate when TWFoundry needs complex accessible interaction primitives.
+
+### Option: Ant Design Vue
+
+- **Pros**: Mature enterprise components, especially tables, forms, filters, and admin console workflows.
+- **Cons**: Strong visual defaults that can overpower TWFoundry's quieter light-mode identity; heavier than needed for the current map-first operations dashboard.
+- **Decision**: Do not adopt for the first design system pass. Reconsider only if TWFoundry grows a large admin-console surface.
+
+### Option: Reka UI / Headless Primitives
+
+- **Pros**: Accessible behavior without forcing a visual style; can pair well with TWFoundry-owned tokens.
+- **Cons**: Still requires local styling and component composition.
+- **Decision**: Candidate for later primitives, not needed for first pass.
+
+## First-Pass Component Scope
+
+The first pass should create local Vue components for:
+
+- `BaseButton`
+- `BaseBadge`
+- `BaseCard`
+- `BasePanel`
+- `BaseSectionLabel`
+
+These components are intentionally small. They should prove token usage and documentation patterns before the project adopts any external UI kit.

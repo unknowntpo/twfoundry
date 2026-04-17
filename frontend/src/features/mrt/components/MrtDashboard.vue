@@ -79,7 +79,7 @@ function notifyMapLayoutChanged(): void {
       <div class="topbar-actions" aria-label="Map view actions">
         <button type="button">Capture</button>
         <button type="button" class="primary">3D Altitude</button>
-        <button type="button">Info</button>
+        <RouterLink to="/design-system">Design System</RouterLink>
       </div>
     </header>
 
@@ -302,7 +302,11 @@ h1 {
 }
 
 .topbar-actions button,
+.topbar-actions a,
 .timeline button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-height: 30px;
   border: 1px solid var(--border);
   border-radius: 7px;
@@ -312,6 +316,7 @@ h1 {
   cursor: pointer;
   font-size: 0.75rem;
   font-weight: 600;
+  text-decoration: none;
 }
 
 .topbar-actions .primary,

@@ -1,0 +1,30 @@
+:root {
+  --twf-color-canvas: #f7f3ee;
+  --twf-color-surface: #fbf8f3;
+  --twf-color-surface-raised: #ffffff;
+  --twf-color-border: #e6ded2;
+  --twf-color-border-soft: #efe7dd;
+  --twf-color-text: #1f1b17;
+  --twf-color-text-muted: #6c635b;
+  --twf-color-text-faint: #8a7e72;
+  --twf-color-accent-warm: #c97b63;
+  --twf-color-accent-warm-soft: #f3e6e0;
+  --twf-color-route-red: #d92d3a;
+  --twf-color-route-blue: #2f6fd6;
+  --twf-color-route-green: #2f9e62;
+
+  --twf-radius-sm: 7px;
+  --twf-radius-md: 8px;
+  --twf-radius-lg: 18px;
+  --twf-radius-xl: 24px;
+
+  --twf-space-1: 4px;
+  --twf-space-2: 8px;
+  --twf-space-3: 12px;
+  --twf-space-4: 16px;
+  --twf-space-6: 24px;
+  --twf-space-10: 40px;
+
+  --twf-font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}

@@ -6,6 +6,7 @@
       "!dist",
       "!node_modules",
       "!playwright-report",
+      "!scripts/test.html",
       "!test-results",
       "!tsconfig.tsbuildinfo"
     ]
