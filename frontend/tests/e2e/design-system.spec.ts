@@ -13,6 +13,10 @@ test("design system page documents TWFoundry tokens and trade-offs", async ({ pa
   await expect(
     page.getByRole("heading", { name: "Product copy lives in locale messages" }),
   ).toBeVisible();
+  await expect(page.getByTestId("common-component-inventory")).toContainText("Dialog");
+  await expect(page.getByTestId("common-component-inventory")).toContainText("Implemented");
+  await expect(page.getByTestId("overlay-patterns")).toContainText("Toast");
+  await expect(page.getByTestId("overlay-patterns")).toContainText("Drawer / Sheet");
   await expect(page.getByTestId("breakpoint-rules")).toContainText("1024px+");
   await expect(page.getByTestId("library-tradeoffs")).toContainText("Ant Design Vue");
   await expect(page.getByTestId("library-tradeoffs")).toContainText("shadcn-vue");

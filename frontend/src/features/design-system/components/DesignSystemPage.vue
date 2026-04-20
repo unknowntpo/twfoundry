@@ -48,6 +48,45 @@ const libraryTradeoffs = computed(() => [
   ["Ant Design Vue", "Defer", "Strong enterprise style and heavier surface than we need now."],
   ["Reka UI", "Later candidate", "Good for accessible headless primitives without visual lock-in."],
 ]);
+
+const commonComponents = computed(
+  () =>
+    [
+      ["actions", "button", "implemented"],
+      ["actions", "iconButton", "partial"],
+      ["actions", "segmentedControl", "partial"],
+      ["feedback", "badge", "implemented"],
+      ["feedback", "inlineAlert", "partial"],
+      ["feedback", "emptyState", "partial"],
+      ["feedback", "loadingState", "partial"],
+      ["feedback", "toast", "gap"],
+      ["overlays", "dialog", "gap"],
+      ["overlays", "drawer", "gap"],
+      ["overlays", "tooltip", "gap"],
+      ["data", "liveboard", "implemented"],
+      ["data", "statChip", "partial"],
+      ["map", "timeline", "partial"],
+      ["map", "mapControl", "implemented"],
+    ] as const,
+);
+
+const statusSummary = computed(() => ({
+  implemented: commonComponents.value.filter(([, , status]) => status === "implemented").length,
+  partial: commonComponents.value.filter(([, , status]) => status === "partial").length,
+  gap: commonComponents.value.filter(([, , status]) => status === "gap").length,
+}));
+
+function componentStatusTone(status: string): "green" | "blue" | "warm" {
+  if (status === "implemented") {
+    return "green";
+  }
+
+  if (status === "partial") {
+    return "blue";
+  }
+
+  return "warm";
+}
 </script>
 
 <template>
@@ -158,6 +197,87 @@ const libraryTradeoffs = computed(() => [
               <p>{{ t("designSystem.components.direction") }}</p>
             </div>
             <strong>{{ t("designSystem.components.arrival") }}</strong>
+          </div>
+        </BaseCard>
+      </div>
+    </section>
+
+    <section class="section-grid" aria-labelledby="common-components-title">
+      <div>
+        <BaseSectionLabel>{{ t("designSystem.commonComponents.label") }}</BaseSectionLabel>
+        <h2 id="common-components-title">{{ t("designSystem.commonComponents.title") }}</h2>
+      </div>
+      <div class="docs-stack">
+        <BaseCard data-testid="common-component-inventory">
+          <BaseSectionLabel>{{ t("designSystem.commonComponents.inventory") }}</BaseSectionLabel>
+          <div class="summary-badges">
+            <BaseBadge tone="green">
+              {{ t("designSystem.commonComponents.statusImplemented") }} · {{ statusSummary.implemented }}
+            </BaseBadge>
+            <BaseBadge tone="blue">
+              {{ t("designSystem.commonComponents.statusPartial") }} · {{ statusSummary.partial }}
+            </BaseBadge>
+            <BaseBadge tone="warm">
+              {{ t("designSystem.commonComponents.statusGap") }} · {{ statusSummary.gap }}
+            </BaseBadge>
+          </div>
+          <div class="inventory-list">
+            <article
+              v-for="[category, itemKey, status] in commonComponents"
+              :key="itemKey"
+              class="inventory-row"
+            >
+              <div>
+                <strong>{{ t(`designSystem.commonComponents.items.${itemKey}.0`) }}</strong>
+                <p>{{ t(`designSystem.commonComponents.items.${itemKey}.1`) }}</p>
+              </div>
+              <div class="inventory-meta">
+                <span>{{ t(`designSystem.commonComponents.categories.${category}`) }}</span>
+                <BaseBadge :tone="componentStatusTone(status)">
+                  {{ t(`designSystem.commonComponents.status${status.charAt(0).toUpperCase()}${status.slice(1)}`) }}
+                </BaseBadge>
+              </div>
+            </article>
+          </div>
+        </BaseCard>
+
+        <BaseCard data-testid="overlay-patterns">
+          <BaseSectionLabel>{{ t("designSystem.commonComponents.overlayLabel") }}</BaseSectionLabel>
+          <h3>{{ t("designSystem.commonComponents.overlayTitle") }}</h3>
+          <div class="overlay-grid">
+            <BasePanel class="overlay-preview dialog-preview">
+              <BaseSectionLabel>{{ t("designSystem.commonComponents.dialogTitle") }}</BaseSectionLabel>
+              <div class="dialog-box">
+                <strong>{{ t("designSystem.commonComponents.previewDialogTitle") }}</strong>
+                <p>{{ t("designSystem.commonComponents.previewDialogBody") }}</p>
+                <div class="component-row compact-row">
+                  <BaseButton>{{ t("designSystem.commonComponents.previewDialogCancel") }}</BaseButton>
+                  <BaseButton variant="primary">
+                    {{ t("designSystem.commonComponents.previewDialogConfirm") }}
+                  </BaseButton>
+                </div>
+              </div>
+              <p>{{ t("designSystem.commonComponents.dialogBody") }}</p>
+            </BasePanel>
+
+            <BasePanel class="overlay-preview toast-preview">
+              <BaseSectionLabel>{{ t("designSystem.commonComponents.toastTitle") }}</BaseSectionLabel>
+              <div class="toast-box">
+                <strong>{{ t("designSystem.commonComponents.previewToastTitle") }}</strong>
+                <p>{{ t("designSystem.commonComponents.previewToastBody") }}</p>
+              </div>
+              <p>{{ t("designSystem.commonComponents.toastBody") }}</p>
+            </BasePanel>
+
+            <BasePanel class="overlay-preview drawer-preview">
+              <BaseSectionLabel>{{ t("designSystem.commonComponents.drawerTitle") }}</BaseSectionLabel>
+              <div class="drawer-shell">
+                <div class="drawer-handle" aria-hidden="true" />
+                <strong>{{ t("designSystem.commonComponents.previewDrawerTitle") }}</strong>
+                <p>{{ t("designSystem.commonComponents.previewDrawerBody") }}</p>
+              </div>
+              <p>{{ t("designSystem.commonComponents.drawerBody") }}</p>
+            </BasePanel>
           </div>
         </BaseCard>
       </div>
@@ -358,6 +478,107 @@ li {
   gap: var(--twf-space-3);
 }
 
+.inventory-list {
+  display: grid;
+  gap: var(--twf-space-3);
+}
+
+.summary-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--twf-space-2);
+  margin-bottom: var(--twf-space-4);
+}
+
+.inventory-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--twf-space-3);
+  align-items: start;
+  border-bottom: 1px solid var(--twf-color-border-soft);
+  padding-bottom: var(--twf-space-3);
+}
+
+.inventory-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.inventory-meta {
+  display: grid;
+  justify-items: end;
+  gap: var(--twf-space-2);
+  color: var(--twf-color-text-faint);
+  font-size: 0.74rem;
+}
+
+.overlay-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--twf-space-3);
+  margin-top: var(--twf-space-4);
+}
+
+.overlay-preview {
+  display: grid;
+  gap: var(--twf-space-3);
+}
+
+.dialog-preview,
+.toast-preview,
+.drawer-preview {
+  min-height: 100%;
+}
+
+.dialog-box,
+.toast-box,
+.drawer-shell {
+  border: 1px solid var(--twf-color-border-soft);
+  border-radius: var(--twf-radius-lg);
+  background: var(--twf-color-surface-raised);
+}
+
+.dialog-box {
+  display: grid;
+  gap: var(--twf-space-3);
+  padding: var(--twf-space-4);
+  box-shadow: var(--twf-shadow-panel);
+}
+
+.toast-box {
+  display: grid;
+  gap: var(--twf-space-1);
+  padding: var(--twf-space-3) var(--twf-space-4);
+  border-left: 4px solid var(--twf-color-route-blue);
+  box-shadow: var(--twf-shadow-floating);
+}
+
+.drawer-shell {
+  display: grid;
+  gap: var(--twf-space-3);
+  align-content: start;
+  min-height: 200px;
+  padding: var(--twf-space-4);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--twf-color-route-blue-soft) 90%, transparent),
+      var(--twf-color-surface-raised) 35%
+    );
+}
+
+.drawer-handle {
+  width: 48px;
+  height: 5px;
+  border-radius: 999px;
+  margin: 0 auto;
+  background: var(--twf-color-border);
+}
+
+.compact-row {
+  margin-top: 0;
+}
+
 .swatch-row {
   display: flex;
   align-items: center;
@@ -490,13 +711,19 @@ ul {
   .principles,
   .section-grid,
   .token-grid,
-  .component-grid {
+  .component-grid,
+  .overlay-grid {
     grid-template-columns: 1fr;
   }
 
   .tradeoff-row,
-  .breakpoint-list div {
+  .breakpoint-list div,
+  .inventory-row {
     grid-template-columns: 1fr;
+  }
+
+  .inventory-meta {
+    justify-items: start;
   }
 }
 </style>
