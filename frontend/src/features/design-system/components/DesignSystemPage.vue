@@ -76,6 +76,14 @@ const statusSummary = computed(() => ({
   gap: commonComponents.value.filter(([, , status]) => status === "gap").length,
 }));
 
+const componentGroups = computed(() => {
+  const order = ["actions", "feedback", "overlays", "data", "map"] as const;
+  return order.map((category) => ({
+    category,
+    items: commonComponents.value.filter(([itemCategory]) => itemCategory === category),
+  }));
+});
+
 function componentStatusTone(status: string): "green" | "blue" | "warm" {
   if (status === "implemented") {
     return "green";
@@ -221,23 +229,111 @@ function componentStatusTone(status: string): "green" | "blue" | "warm" {
               {{ t("designSystem.commonComponents.statusGap") }} · {{ statusSummary.gap }}
             </BaseBadge>
           </div>
-          <div class="inventory-list">
-            <article
-              v-for="[category, itemKey, status] in commonComponents"
-              :key="itemKey"
-              class="inventory-row"
+          <div class="inventory-groups">
+            <details
+              v-for="({ category, items }, index) in componentGroups"
+              :key="category"
+              class="inventory-group"
+              :open="index === 0"
             >
-              <div>
-                <strong>{{ t(`designSystem.commonComponents.items.${itemKey}.0`) }}</strong>
-                <p>{{ t(`designSystem.commonComponents.items.${itemKey}.1`) }}</p>
+              <summary class="inventory-summary">
+                <div>
+                  <strong>{{ t(`designSystem.commonComponents.categories.${category}`) }}</strong>
+                  <p>{{ items.length }} components</p>
+                </div>
+                <span>{{ index === 0 ? "−" : "+" }}</span>
+              </summary>
+
+              <div class="inventory-list">
+                <article
+                  v-for="[, itemKey, status] in items"
+                  :key="itemKey"
+                  class="inventory-row"
+                >
+                  <div>
+                    <strong>{{ t(`designSystem.commonComponents.items.${itemKey}.0`) }}</strong>
+                    <p>{{ t(`designSystem.commonComponents.items.${itemKey}.1`) }}</p>
+                  </div>
+                  <div class="inventory-preview">
+                    <div class="preview-surface" :data-component="itemKey">
+                      <BaseButton
+                        v-if="itemKey === 'button'"
+                        size="sm"
+                        variant="primary"
+                      >
+                        Run
+                      </BaseButton>
+                      <button
+                        v-else-if="itemKey === 'iconButton'"
+                        type="button"
+                        class="mini-icon-button"
+                        aria-label="Preview icon button"
+                      >
+                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                          <path d="M3 8h10M8 3v10" />
+                        </svg>
+                      </button>
+                      <div v-else-if="itemKey === 'segmentedControl'" class="mini-segmented">
+                        <span class="active">Map</span>
+                        <span>Detail</span>
+                      </div>
+                      <BaseBadge v-else-if="itemKey === 'badge'" tone="green">On time</BaseBadge>
+                      <div v-else-if="itemKey === 'inlineAlert'" class="mini-alert">
+                        Feed unavailable
+                      </div>
+                      <div v-else-if="itemKey === 'emptyState'" class="mini-empty">
+                        <strong>No rows</strong>
+                        <span>Select a station</span>
+                      </div>
+                      <div v-else-if="itemKey === 'loadingState'" class="mini-loading">
+                        <span />
+                        <span />
+                      </div>
+                      <div v-else-if="itemKey === 'toast'" class="mini-toast">
+                        Synced
+                      </div>
+                      <div v-else-if="itemKey === 'dialog'" class="mini-dialog">
+                        <strong>Confirm</strong>
+                        <div class="mini-dialog-actions">
+                          <span />
+                          <span class="primary" />
+                        </div>
+                      </div>
+                      <div v-else-if="itemKey === 'drawer'" class="mini-drawer">
+                        <span class="handle" />
+                        <strong>Sheet</strong>
+                      </div>
+                      <div v-else-if="itemKey === 'tooltip'" class="mini-tooltip">
+                        Layers
+                      </div>
+                      <div v-else-if="itemKey === 'liveboard'" class="mini-liveboard">
+                        <span class="route" />
+                        <strong>2 min</strong>
+                      </div>
+                      <div v-else-if="itemKey === 'statChip'" class="mini-stat-chip">
+                        18 trains
+                      </div>
+                      <div v-else-if="itemKey === 'timeline'" class="mini-timeline">
+                        <span class="track" />
+                      </div>
+                      <div v-else-if="itemKey === 'mapControl'" class="mini-map-control">
+                        <span>3D</span>
+                      </div>
+                    </div>
+                    <div class="inventory-meta">
+                      <span>{{ t(`designSystem.commonComponents.categories.${category}`) }}</span>
+                      <BaseBadge :tone="componentStatusTone(status)">
+                        {{
+                          t(
+                            `designSystem.commonComponents.status${status.charAt(0).toUpperCase()}${status.slice(1)}`,
+                          )
+                        }}
+                      </BaseBadge>
+                    </div>
+                  </div>
+                </article>
               </div>
-              <div class="inventory-meta">
-                <span>{{ t(`designSystem.commonComponents.categories.${category}`) }}</span>
-                <BaseBadge :tone="componentStatusTone(status)">
-                  {{ t(`designSystem.commonComponents.status${status.charAt(0).toUpperCase()}${status.slice(1)}`) }}
-                </BaseBadge>
-              </div>
-            </article>
+            </details>
           </div>
         </BaseCard>
 
@@ -478,9 +574,45 @@ li {
   gap: var(--twf-space-3);
 }
 
-.inventory-list {
+.inventory-groups {
   display: grid;
   gap: var(--twf-space-3);
+}
+
+.inventory-group {
+  border: 1px solid var(--twf-color-border-soft);
+  border-radius: var(--twf-radius-lg);
+  background: var(--twf-color-surface-raised);
+}
+
+.inventory-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--twf-space-3);
+  padding: var(--twf-space-4);
+  cursor: pointer;
+  list-style: none;
+}
+
+.inventory-summary::-webkit-details-marker {
+  display: none;
+}
+
+.inventory-summary p {
+  margin-top: 4px;
+  color: var(--twf-color-text-faint);
+  font-size: 0.78rem;
+}
+
+.inventory-group[open] .inventory-summary {
+  border-bottom: 1px solid var(--twf-color-border-soft);
+}
+
+.inventory-list {
+  display: grid;
+  gap: 0;
+  padding: 0 var(--twf-space-4) var(--twf-space-4);
 }
 
 .summary-badges {
@@ -492,16 +624,21 @@ li {
 
 .inventory-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) 240px;
   gap: var(--twf-space-3);
   align-items: start;
   border-bottom: 1px solid var(--twf-color-border-soft);
-  padding-bottom: var(--twf-space-3);
+  padding: var(--twf-space-4) 0;
 }
 
 .inventory-row:last-child {
   border-bottom: 0;
   padding-bottom: 0;
+}
+
+.inventory-preview {
+  display: grid;
+  gap: var(--twf-space-2);
 }
 
 .inventory-meta {
@@ -510,6 +647,219 @@ li {
   gap: var(--twf-space-2);
   color: var(--twf-color-text-faint);
   font-size: 0.74rem;
+}
+
+.preview-surface {
+  display: grid;
+  min-height: 78px;
+  align-content: center;
+  justify-items: center;
+  gap: var(--twf-space-2);
+  border: 1px solid var(--twf-color-border-soft);
+  border-radius: var(--twf-radius-md);
+  padding: var(--twf-space-3);
+  background: color-mix(in srgb, var(--twf-color-surface) 96%, transparent);
+}
+
+.mini-icon-button {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid var(--twf-color-border);
+  border-radius: var(--twf-radius-sm);
+  background: var(--twf-color-surface-raised);
+  color: var(--twf-color-text-muted);
+}
+
+.mini-icon-button svg {
+  width: 15px;
+  height: 15px;
+}
+
+.mini-segmented {
+  display: inline-grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 4px;
+  border: 1px solid var(--twf-color-border);
+  border-radius: 999px;
+  padding: 4px;
+  background: var(--twf-color-surface);
+}
+
+.mini-segmented span {
+  border-radius: 999px;
+  padding: 6px 10px;
+  color: var(--twf-color-text-faint);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.mini-segmented .active {
+  background: var(--twf-color-text);
+  color: var(--twf-color-surface-raised);
+}
+
+.mini-alert,
+.mini-toast,
+.mini-tooltip,
+.mini-stat-chip,
+.mini-map-control {
+  border-radius: var(--twf-radius-sm);
+  padding: 8px 10px;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.mini-alert {
+  border: 1px solid color-mix(in srgb, var(--twf-color-route-red) 28%, transparent);
+  background: var(--twf-color-route-red-soft);
+  color: var(--twf-color-route-red);
+}
+
+.mini-empty {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+}
+
+.mini-empty strong {
+  font-size: 0.84rem;
+}
+
+.mini-empty span {
+  color: var(--twf-color-text-faint);
+  font-size: 0.72rem;
+}
+
+.mini-loading {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+
+.mini-loading span {
+  display: block;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--twf-color-border-soft);
+}
+
+.mini-loading span:first-child {
+  width: 100%;
+}
+
+.mini-loading span:last-child {
+  width: 70%;
+}
+
+.mini-toast {
+  border-left: 4px solid var(--twf-color-route-blue);
+  background: var(--twf-color-route-blue-soft);
+  color: var(--twf-color-route-blue);
+}
+
+.mini-dialog {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  border: 1px solid var(--twf-color-border);
+  border-radius: var(--twf-radius-md);
+  padding: 10px;
+  background: var(--twf-color-surface-raised);
+  box-shadow: var(--twf-shadow-panel);
+}
+
+.mini-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.mini-dialog-actions span {
+  width: 34px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--twf-color-border);
+}
+
+.mini-dialog-actions .primary {
+  background: var(--twf-color-text);
+}
+
+.mini-drawer {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 70px;
+  border: 1px solid var(--twf-color-border-soft);
+  border-radius: var(--twf-radius-md);
+  padding: 10px;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--twf-color-route-blue-soft) 92%, transparent),
+      var(--twf-color-surface-raised) 42%
+    );
+}
+
+.mini-drawer .handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--twf-color-border);
+}
+
+.mini-tooltip {
+  background: var(--twf-color-text);
+  color: var(--twf-color-surface-raised);
+}
+
+.mini-liveboard {
+  display: grid;
+  grid-template-columns: 4px auto;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  border: 1px solid var(--twf-color-border-soft);
+  border-radius: var(--twf-radius-md);
+  padding: 10px;
+}
+
+.mini-liveboard .route {
+  width: 4px;
+  height: 34px;
+  border-radius: 999px;
+  background: var(--twf-color-route-blue);
+}
+
+.mini-stat-chip {
+  background: var(--twf-color-surface-raised);
+  box-shadow: var(--twf-shadow-hairline);
+}
+
+.mini-timeline {
+  width: 100%;
+}
+
+.mini-timeline .track {
+  display: block;
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      90deg,
+      var(--twf-color-route-blue) 0 58%,
+      var(--twf-color-border-soft) 58% 100%
+    );
+}
+
+.mini-map-control {
+  border: 1px solid var(--twf-color-border);
+  background: var(--twf-color-surface-raised);
+  color: var(--twf-color-text);
 }
 
 .overlay-grid {
