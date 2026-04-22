@@ -897,10 +897,26 @@ li {
 
 .toast-box {
   display: grid;
-  gap: var(--twf-space-1);
-  padding: var(--twf-space-3) var(--twf-space-4);
-  border-left: 4px solid var(--twf-color-route-blue);
+  gap: 6px;
+  width: min(280px, 100%);
+  justify-self: center;
+  padding: 14px 16px;
+  border-color: var(--twf-color-border-soft);
+  border-radius: var(--twf-radius-md);
+  background: var(--twf-color-surface-raised);
   box-shadow: var(--twf-shadow-floating);
+}
+
+.toast-box strong {
+  color: var(--twf-color-text);
+  font-size: 0.86rem;
+  line-height: 1.3;
+}
+
+.toast-box p {
+  color: var(--twf-color-text-muted);
+  font-size: 0.74rem;
+  line-height: 1.45;
 }
 
 .drawer-shell {
