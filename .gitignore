@@ -12,3 +12,6 @@ frontend/tsconfig.tsbuildinfo
 frontend/.env
 frontend/.env.*
 !frontend/.env.example
+.gradle/
+build/
+backend/**/build/

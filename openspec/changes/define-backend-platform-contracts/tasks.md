@@ -1,11 +1,20 @@
 ## Discussion
 
 - [ ] Resolve current-state storage direction as latest-state only or latest-state plus history.
-- [ ] Define Requirement: Raw Topic Direction message envelope with `ingested_at` and `source`.
-- [ ] Define curated Kafka Streams topic naming and ownership.
-- [ ] Define StarRocks Primary Key Table schemas for current-state tables.
+- [x] Define Phase 1 backbone direction as `Redpanda/Kafka -> Stream Processing -> StarRocks`.
+- [x] Define source registry fields and datasource onboarding contract.
+- [x] Define pluggable datasource connector interface for poll, file, webhook, stream bridge, and backfill methods.
+- [x] Define Requirement: raw envelope contract with `source`, `dataset`, `domain`, `ingested_at`, and `payload`.
+- [x] Define raw, normalized, state, and dead-letter topic naming and ownership.
+- [x] Define StarRocks Primary Key Table direction for latest-state tables.
 
 ## Backend Bootstrap
 
-- [ ] Add backend module skeletons for ingestion, streams, and API after the frontend contract is stable.
+- [ ] Define and document the MRT real-data backend MVP slice.
+- [x] Add backend module skeletons for ingestion, streams, and API after the frontend contract is stable.
 - [ ] Add local infrastructure notes or compose files for Kafka and StarRocks after backend work begins.
+- [x] Add starter datasource registry and connector interfaces in code after this change is accepted.
+- [ ] Add backend E2E tests for the MRT real-data slice.
+- [ ] Add frontend + backend E2E tests proving MRT train positions, train information, and draggable timeline movement are visible in the web UI.
+- [ ] Preserve backend and frontend contract extensibility for both 2D and 3D map views.
+- [x] Run `spectra validate define-backend-platform-contracts`.

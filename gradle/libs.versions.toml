@@ -1,0 +1,22 @@
+[versions]
+spring-boot = "3.3.5"
+junit = "5.11.3"
+
+[libraries]
+spring-boot-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
+spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter" }
+spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
+spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
+spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation" }
+spring-boot-starter-jdbc = { module = "org.springframework.boot:spring-boot-starter-jdbc" }
+spring-retry = { module = "org.springframework.retry:spring-retry" }
+spring-kafka = { module = "org.springframework.kafka:spring-kafka" }
+micrometer-prometheus = { module = "io.micrometer:micrometer-registry-prometheus" }
+mysql-connector-j = { module = "com.mysql:mysql-connector-j" }
+jackson-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-kafka-test = { module = "org.springframework.kafka:spring-kafka-test" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
