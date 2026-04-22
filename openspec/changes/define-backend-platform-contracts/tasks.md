@@ -10,11 +10,11 @@
 
 ## Backend Bootstrap
 
-- [ ] Define and document the MRT real-data backend MVP slice.
+- [x] Define and document the MRT real-data backend MVP slice.
 - [x] Add backend module skeletons for ingestion, streams, and API after the frontend contract is stable.
 - [ ] Add local infrastructure notes or compose files for Kafka and StarRocks after backend work begins.
 - [x] Add starter datasource registry and connector interfaces in code after this change is accepted.
-- [ ] Add backend E2E tests for the MRT real-data slice.
-- [ ] Add frontend + backend E2E tests proving MRT train positions, train information, and draggable timeline movement are visible in the web UI.
+- [x] Add backend E2E tests for the MRT real-data slice.
+- [x] Add frontend + backend E2E tests proving MRT train positions, train information, and draggable timeline movement are visible in the web UI.
 - [ ] Preserve backend and frontend contract extensibility for both 2D and 3D map views.
 - [x] Run `spectra validate define-backend-platform-contracts`.

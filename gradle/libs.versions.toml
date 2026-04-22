@@ -15,6 +15,7 @@ micrometer-prometheus = { module = "io.micrometer:micrometer-registry-prometheus
 mysql-connector-j = { module = "com.mysql:mysql-connector-j" }
 jackson-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-boot-test = { module = "org.springframework.boot:spring-boot-test" }
 spring-kafka-test = { module = "org.springframework.kafka:spring-kafka-test" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
 

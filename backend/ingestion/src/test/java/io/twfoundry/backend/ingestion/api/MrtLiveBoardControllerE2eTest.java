@@ -1,0 +1,30 @@
+package io.twfoundry.backend.ingestion.api;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import io.twfoundry.backend.ingestion.application.MrtLiveBoardService.MrtLiveBoardResponse;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("e2e")
+class MrtLiveBoardControllerE2eTest {
+  @Autowired private TestRestTemplate restTemplate;
+
+  @Test
+  void returnsNormalizedLiveBoardRowsFromBackendEndpoint() {
+    ResponseEntity<MrtLiveBoardResponse> response =
+        restTemplate.getForEntity(
+            "/api/mrt/liveboard?operator=TRTC&stationId=BL18", MrtLiveBoardResponse.class);
+
+    assertEquals(200, response.getStatusCode().value());
+    assertEquals("tdx", response.getBody().source());
+    assertFalse(response.getBody().rows().isEmpty());
+    assertEquals("BL18", response.getBody().rows().getFirst().stationId());
+  }
+}

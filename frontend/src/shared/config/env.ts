@@ -8,12 +8,14 @@ export function resolveMrtLiveBoardSource(value: string | undefined): MrtLiveBoa
 
 export const appConfig = {
   mapProvider:
-    import.meta.env.MODE === "e2e" ? "mock" : resolveMapProvider(import.meta.env.VITE_MAP_PROVIDER),
+    import.meta.env.MODE === "e2e"
+      ? resolveMapProvider(import.meta.env.VITE_MAP_PROVIDER ?? "mock")
+      : resolveMapProvider(import.meta.env.VITE_MAP_PROVIDER),
   googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY ?? "",
   googleMapsMapId: import.meta.env.VITE_GOOGLE_MAPS_MAP_ID ?? "DEMO_MAP_ID",
   mrtLiveBoardSource:
     import.meta.env.MODE === "e2e"
-      ? "mock"
+      ? resolveMrtLiveBoardSource(import.meta.env.VITE_MRT_LIVEBOARD_SOURCE)
       : resolveMrtLiveBoardSource(import.meta.env.VITE_MRT_LIVEBOARD_SOURCE),
-  tdxProxyUrl: import.meta.env.VITE_TDX_PROXY_URL ?? "http://localhost:5174",
+  tdxProxyUrl: import.meta.env.VITE_TDX_PROXY_URL ?? "http://localhost:8080",
 };
