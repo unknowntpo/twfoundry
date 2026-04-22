@@ -740,3 +740,95 @@ code:
 tests:
   - frontend/tests/e2e/design-system.spec.ts
 -->
+
+---
+### Requirement: Frontend i18n Foundation
+
+TWFoundry SHALL provide a frontend internationalization foundation for user-facing product copy in the Vue application.
+
+#### Scenario: App starts with default locale
+
+- **GIVEN** no valid locale preference exists
+- **WHEN** the frontend app starts
+- **THEN** the UI uses `en-US` copy by default
+
+#### Scenario: User switches locale
+
+- **GIVEN** the dashboard is open
+- **WHEN** the user selects `zh-TW`
+- **THEN** primary dashboard chrome, panel headings, controls, and documentation navigation use Traditional Chinese copy
+- **AND** the selected locale is persisted for future page loads
+
+#### Scenario: Domain data remains source-owned
+
+- **GIVEN** MRT station names, route names, mock arrivals, or TDX rows are displayed
+- **WHEN** locale changes
+- **THEN** source-owned transit data is not rewritten through product-copy dictionaries
+
+#### Scenario: Design system documents i18n guidance
+
+- **GIVEN** a developer reviews the Design System page
+- **WHEN** they look for copy rules
+- **THEN** the page explains where user-facing product copy should live and which domain data is out of scope for first-pass translation
+
+#### Scenario: Design system documents Traditional Chinese typography
+
+- **GIVEN** the frontend supports `zh-TW`
+- **WHEN** a developer reviews typography guidance
+- **THEN** the Design System page documents Traditional Chinese font fallbacks, no negative letter spacing, and readable line-height expectations
+
+<!-- @trace
+source: add-frontend-i18n-foundation
+updated: 2026-04-22
+code:
+  - frontend/src/shared/design/tokens.css
+  - frontend/bun.lockb
+  - frontend/src/features/mrt/components/LayerControl.vue
+  - frontend/src/features/design-system/components/DesignSystemPage.vue
+  - frontend/src/shared/i18n/locale.ts
+  - frontend/src/features/mrt/components/MrtMap.vue
+  - frontend/src/shared/components/LocaleSwitcher.vue
+  - frontend/src/main.ts
+  - frontend/src/shared/i18n/messages.ts
+  - frontend/.DS_Store
+  - frontend/package.json
+  - frontend/src/shared/i18n/index.ts
+  - frontend/src/features/mrt/components/StationPanel.vue
+  - frontend/scripts/test.html
+  - frontend/src/features/mrt/components/MrtDashboard.vue
+tests:
+  - frontend/src/shared/i18n/locale.test.ts
+  - frontend/tests/e2e/design-system.spec.ts
+  - frontend/tests/e2e/mrt-dashboard.spec.ts
+-->
+
+---
+### Requirement: Dashboard Common Components
+
+TWFoundry SHALL document a common component catalog for the map-first dashboard in the Design System page.
+
+#### Scenario: Developer reviews dashboard component inventory
+
+- **GIVEN** the Design System page exists
+- **WHEN** a developer reviews dashboard primitives
+- **THEN** the page lists common dashboard components and groups them by action, feedback, overlay, data display, and map chrome
+
+#### Scenario: Developer reviews overlay guidance
+
+- **GIVEN** future dashboard interactions may need overlays
+- **WHEN** a developer reviews the Design System page
+- **THEN** the page defines intended use for Dialog, Toast, and Drawer / Sheet
+
+#### Scenario: Developer checks current product fit
+
+- **GIVEN** the MRT dashboard already ships some primitives
+- **WHEN** the Design System page is reviewed
+- **THEN** the page marks which common components are already implemented, partially matched, or still missing
+
+<!-- @trace
+source: define-dashboard-common-components
+updated: 2026-04-22
+code:
+  - frontend/scripts/test.html
+  - frontend/.DS_Store
+-->
