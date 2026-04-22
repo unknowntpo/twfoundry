@@ -72,4 +72,61 @@ describe("TDX proxy core", () => {
     ).toHaveLength(1);
     expect(sleepDurations).toEqual([200]);
   });
+
+  it("filters liveboard requests by StationID only", async () => {
+    const requests: Request[] = [];
+    const handler = createTdxProxyHandler(
+      loadTdxProxyConfig({
+        TDX_CLIENT_ID: "client-id",
+        TDX_CLIENT_SECRET: "client-secret",
+      }),
+      {
+        fetcher: vi.fn(async (input, init) => {
+          requests.push(new Request(input, init));
+          if (String(input).includes("openid-connect")) {
+            return Response.json({ access_token: "token", expires_in: 3600 });
+          }
+          return Response.json([{ EstimateTime: 60, LineID: "BL", StationID: "BL18" }]);
+        }),
+        now: () => 0,
+      },
+    );
+
+    await handler(new Request("http://localhost/api/mrt/liveboard?operator=TRTC&stationId=TRTC-BL18"));
+
+    const liveboardRequest = requests.find((request) => request.url.includes("/Rail/Metro/LiveBoard/"));
+
+    expect(liveboardRequest).toBeDefined();
+    expect(new URL(liveboardRequest?.url ?? "").searchParams.get("$filter")).toBe(
+      "StationID eq 'BL18'",
+    );
+  });
+
+  it("preserves the configured TDX API base path", async () => {
+    const requests: Request[] = [];
+    const handler = createTdxProxyHandler(
+      loadTdxProxyConfig({
+        TDX_CLIENT_ID: "client-id",
+        TDX_CLIENT_SECRET: "client-secret",
+        TDX_API_BASE_URL: "https://tdx.transportdata.tw/api/basic/v2",
+      }),
+      {
+        fetcher: vi.fn(async (input, init) => {
+          requests.push(new Request(input, init));
+          if (String(input).includes("openid-connect")) {
+            return Response.json({ access_token: "token", expires_in: 3600 });
+          }
+          return Response.json([{ EstimateTime: 60, LineID: "BL", StationID: "BL18" }]);
+        }),
+        now: () => 0,
+      },
+    );
+
+    await handler(new Request("http://localhost/api/mrt/liveboard?operator=TRTC&stationId=BL18"));
+
+    const liveboardRequest = requests.find((request) => request.url.includes("/Rail/Metro/LiveBoard/"));
+
+    expect(liveboardRequest).toBeDefined();
+    expect(liveboardRequest?.url).toContain("/api/basic/v2/Rail/Metro/LiveBoard/TRTC");
+  });
 });

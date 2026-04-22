@@ -107,16 +107,14 @@ export function createTdxProxyHandler(config: TdxProxyConfig, deps: TdxProxyDeps
     try {
       const operator = requestUrl.searchParams.get("operator") || "TRTC";
       const stationId = requestUrl.searchParams.get("stationId") || undefined;
+      const stationFilterId = normalizeStationId(stationId);
       const token = await getAccessToken();
       await rateLimitTdxApiCall();
 
-      const tdxUrl = new URL(`/Rail/Metro/LiveBoard/${operator}`, config.apiBaseUrl);
+      const tdxUrl = new URL(`Rail/Metro/LiveBoard/${operator}`, withTrailingSlash(config.apiBaseUrl));
       tdxUrl.searchParams.set("$format", "JSON");
-      if (stationId) {
-        tdxUrl.searchParams.set(
-          "$filter",
-          `StationID eq '${stationId}' or StationUID eq '${operator}-${stationId}'`,
-        );
+      if (stationFilterId) {
+        tdxUrl.searchParams.set("$filter", `StationID eq '${stationFilterId}'`);
       }
 
       const response = await fetcher(tdxUrl, {
@@ -141,6 +139,18 @@ export function createTdxProxyHandler(config: TdxProxyConfig, deps: TdxProxyDeps
       );
     }
   };
+}
+
+function normalizeStationId(stationId: string | undefined): string | undefined {
+  if (!stationId) {
+    return undefined;
+  }
+
+  return stationId.split("-").at(-1) || stationId;
+}
+
+function withTrailingSlash(value: string): string {
+  return value.endsWith("/") ? value : `${value}/`;
 }
 
 function json(payload: unknown, status = 200): Response {
