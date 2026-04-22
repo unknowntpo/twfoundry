@@ -35,6 +35,20 @@ export interface OverlayDescriptor {
   timelineAware: boolean;
 }
 
+export interface OverlayRenderContext {
+  mapProvider: "google" | "mock";
+  selectedStationId?: string;
+  visibleLineIds: string[];
+  visibleOverlayIds: OverlayId[];
+}
+
+export interface OverlayRenderer {
+  id: OverlayId;
+  mount(context: OverlayRenderContext): void | Promise<void>;
+  update(context: OverlayRenderContext): void | Promise<void>;
+  unmount(): void | Promise<void>;
+}
+
 export const mrtOverlayRegistry: OverlayDescriptor[] = [
   {
     id: "mrt-routes",
@@ -96,4 +110,10 @@ export const mrtOverlayRegistry: OverlayDescriptor[] = [
 
 export function findOverlayById(overlayId: OverlayId): OverlayDescriptor | undefined {
   return mrtOverlayRegistry.find((overlay) => overlay.id === overlayId);
+}
+
+export function defaultVisibleOverlayIds(): OverlayId[] {
+  return mrtOverlayRegistry
+    .filter((overlay) => overlay.visibility.defaultVisible)
+    .map((overlay) => overlay.id);
 }

@@ -19,6 +19,7 @@ const googleReady = ref(false);
 let googleMap: GoogleMapInstance | undefined;
 let googleApi: GoogleMapsGlobal | undefined;
 let googleMarkerLibrary: GoogleMarkerLibrary | undefined;
+let googleTransitLayer: GoogleTransitLayer | undefined;
 let googleStationMarkers: GoogleRenderableMarker[] = [];
 let googleTrainMarkers: GoogleRenderableMarker[] = [];
 
@@ -26,6 +27,11 @@ const visibleStations = computed(() =>
   props.stations.filter((station) =>
     station.lineIds.some((lineId) => store.visibleLineIds.includes(lineId)),
   ),
+);
+const routeOverlayVisible = computed(() => store.visibleOverlayIds.includes("mrt-routes"));
+const stationOverlayVisible = computed(() => store.visibleOverlayIds.includes("mrt-stations"));
+const estimatedTrainOverlayVisible = computed(() =>
+  store.visibleOverlayIds.includes("mrt-estimated-trains"),
 );
 const inferredTrains = computed(() =>
   inferTrainMarkers(store.selectedLiveBoards, props.stations, props.lines).filter((train) =>
@@ -78,7 +84,7 @@ async function initializeGoogleMap(): Promise<void> {
       gestureHandling: "greedy",
     });
 
-    new googleApi.maps.TransitLayer().setMap(googleMap);
+    googleTransitLayer = new googleApi.maps.TransitLayer();
     renderGoogleMapOverlays();
 
     googleReady.value = true;
@@ -97,6 +103,8 @@ function renderGoogleMapOverlays(): void {
   const google = googleApi;
   const markerLibrary = googleMarkerLibrary;
 
+  googleTransitLayer?.setMap(routeOverlayVisible.value ? map : null);
+
   for (const marker of googleStationMarkers) {
     marker.setMap(null);
   }
@@ -104,14 +112,16 @@ function renderGoogleMapOverlays(): void {
     marker.setMap(null);
   }
 
-  googleStationMarkers = visibleStations.value.map((station) => {
-    const marker = createGoogleStationMarkerOverlay(google, markerLibrary, map, station);
-    marker.addListener?.("click", () => store.selectStation(station.id));
-    return marker;
-  });
-  googleTrainMarkers = inferredTrains.value.map((train) =>
-    createGoogleTrainMarker(google, markerLibrary, map, train),
-  );
+  googleStationMarkers = stationOverlayVisible.value
+    ? visibleStations.value.map((station) => {
+        const marker = createGoogleStationMarkerOverlay(google, markerLibrary, map, station);
+        marker.addListener?.("click", () => store.selectStation(station.id));
+        return marker;
+      })
+    : [];
+  googleTrainMarkers = estimatedTrainOverlayVisible.value
+    ? inferredTrains.value.map((train) => createGoogleTrainMarker(google, markerLibrary, map, train))
+    : [];
 }
 
 function createGoogleStationMarkerOverlay(
@@ -318,9 +328,7 @@ interface GoogleMapsGlobal {
     importLibrary?: GoogleImportLibrary;
     Map?: new (element: HTMLElement, options: Record<string, unknown>) => GoogleMapInstance;
     Marker: new (options: Record<string, unknown>) => GoogleLegacyMarkerInstance;
-    TransitLayer: new () => {
-      setMap: (map: GoogleMapInstance) => void;
-    };
+    TransitLayer: new () => GoogleTransitLayer;
   };
 }
 
@@ -354,6 +362,10 @@ interface GoogleRenderableMarker {
   addListener?: (eventName: "click", listener: () => void) => void;
 }
 
+interface GoogleTransitLayer {
+  setMap: (map: GoogleMapInstance | null) => void;
+}
+
 declare global {
   interface Window {
     google?: GoogleMapsGlobal;
@@ -363,7 +375,11 @@ declare global {
 
 <template>
   <div v-if="appConfig.mapProvider === 'mock'" class="mock-map" data-testid="mock-map">
-    <div class="mock-lines" :aria-label="t('dashboard.map.visibleLines')">
+    <div
+      v-if="routeOverlayVisible"
+      class="mock-lines"
+      :aria-label="t('dashboard.map.visibleLines')"
+    >
       <div
         v-for="line in lines"
         :key="line.id"
@@ -375,7 +391,7 @@ declare global {
     </div>
 
     <button
-      v-for="(station, index) in visibleStations"
+      v-for="(station, index) in stationOverlayVisible ? visibleStations : []"
       :key="station.id"
       type="button"
       class="station-marker"
@@ -392,7 +408,7 @@ declare global {
     </button>
 
     <div
-      v-for="train in inferredTrains"
+      v-for="train in estimatedTrainOverlayVisible ? inferredTrains : []"
       :key="train.id"
       class="train-circle"
       :style="resolveMockTrainStyle(train)"

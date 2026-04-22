@@ -13,8 +13,14 @@ import StationPanel from "./StationPanel.vue";
 
 const { t } = useI18n();
 const store = useMrtDashboardStore();
-const { liveBoardError, liveBoardLoading, selectedStation, selectedLiveBoards, visibleLineIds } =
-  storeToRefs(store);
+const {
+  liveBoardError,
+  liveBoardLoading,
+  selectedStation,
+  selectedLiveBoards,
+  visibleLineIds,
+  visibleOverlayIds,
+} = storeToRefs(store);
 
 const visibleLines = computed(() =>
   mrtLines.filter((line) => visibleLineIds.value.includes(line.id)),
@@ -24,6 +30,9 @@ const movingOverlays = computed(() =>
 );
 const routeOverlay = computed(() =>
   mrtOverlayRegistry.find((overlay) => overlay.id === "mrt-routes"),
+);
+const stationOverlays = computed(() =>
+  mrtOverlayRegistry.filter((overlay) => overlay.category === "station"),
 );
 
 const activeTrainCount = computed(() => mrtLines.length * 12 + mrtStations.length);
@@ -179,11 +188,15 @@ function showMobilePanel(panel: "map" | "layers" | "detail" | "time"): void {
               v-for="overlay in movingOverlays"
               :key="overlay.id"
               class="layer-card active"
+              :class="{ inactive: !visibleOverlayIds.includes(overlay.id) }"
               :data-testid="`overlay-${overlay.id}`"
+              @click="store.toggleOverlay(overlay.id)"
             >
               <span class="layer-icon">M</span>
               <strong>{{ overlay.title }}</strong>
-              <span class="layer-count">{{ activeTrainCount }}</span>
+              <span class="layer-count">
+                {{ visibleOverlayIds.includes(overlay.id) ? activeTrainCount : "OFF" }}
+              </span>
             </article>
             <div class="layer-settings">
               <div><span>{{ t("dashboard.layers.train") }}</span><strong>ON</strong></div>
@@ -195,6 +208,20 @@ function showMobilePanel(panel: "map" | "layers" | "detail" | "time"): void {
 
           <div class="layer-group">
             <p class="group-label">{{ routeOverlay?.title ?? t("dashboard.layers.route") }}</p>
+            <article
+              v-for="overlay in stationOverlays"
+              :key="overlay.id"
+              class="layer-card active compact"
+              :class="{ inactive: !visibleOverlayIds.includes(overlay.id) }"
+              :data-testid="`overlay-${overlay.id}`"
+              @click="store.toggleOverlay(overlay.id)"
+            >
+              <span class="layer-icon">S</span>
+              <strong>{{ overlay.title }}</strong>
+              <span class="layer-count">
+                {{ visibleOverlayIds.includes(overlay.id) ? "ON" : "OFF" }}
+              </span>
+            </article>
             <LayerControl :lines="mrtLines" />
           </div>
         </div>
@@ -529,6 +556,14 @@ h1 {
 .layer-card.active {
   background: var(--bg);
   color: var(--text);
+}
+
+.layer-card.inactive {
+  opacity: 0.58;
+}
+
+.layer-card.compact {
+  margin-bottom: 10px;
 }
 
 .layer-icon {

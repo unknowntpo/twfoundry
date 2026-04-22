@@ -6,6 +6,7 @@ import {
   findStationById,
   mrtLines,
 } from "@/features/mrt/data/mrt-fixtures";
+import { defaultVisibleOverlayIds } from "@/features/mrt/map/overlay-registry";
 import type { MrtLineId } from "@/features/mrt/types";
 import { appConfig } from "@/shared/config/env";
 
@@ -15,6 +16,7 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
   const liveBoardError = ref<string | undefined>();
   const liveBoardLoading = ref(false);
   const visibleLineIds = ref<MrtLineId[]>(mrtLines.map((line) => line.id));
+  const visibleOverlayIds = ref(defaultVisibleOverlayIds());
 
   const selectedStation = computed(() => {
     return selectedStationId.value ? findStationById(selectedStationId.value) : undefined;
@@ -74,6 +76,15 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
     visibleLineIds.value = [...visibleLineIds.value, lineId];
   }
 
+  function toggleOverlay(overlayId: (typeof visibleOverlayIds.value)[number]): void {
+    if (visibleOverlayIds.value.includes(overlayId)) {
+      visibleOverlayIds.value = visibleOverlayIds.value.filter((id) => id !== overlayId);
+      return;
+    }
+
+    visibleOverlayIds.value = [...visibleOverlayIds.value, overlayId];
+  }
+
   return {
     selectedStationId,
     selectedStation,
@@ -81,8 +92,10 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
     liveBoardError,
     liveBoardLoading,
     visibleLineIds,
+    visibleOverlayIds,
     refreshLiveBoards,
     selectStation,
     toggleLine,
+    toggleOverlay,
   };
 });

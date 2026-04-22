@@ -37,4 +37,16 @@ describe("MRT dashboard store", () => {
 
     expect(store.visibleLineIds).toEqual(["blue", "green", "red"]);
   });
+
+  it("toggles overlay visibility independently", () => {
+    const store = useMrtDashboardStore();
+
+    store.toggleOverlay("mrt-estimated-trains");
+
+    expect(store.visibleOverlayIds.includes("mrt-estimated-trains")).toBe(false);
+
+    store.toggleOverlay("mrt-estimated-trains");
+
+    expect(store.visibleOverlayIds.includes("mrt-estimated-trains")).toBe(true);
+  });
 });
