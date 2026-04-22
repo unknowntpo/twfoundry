@@ -17,4 +17,5 @@
 - [x] Add backend E2E tests for the MRT real-data slice.
 - [x] Add frontend + backend E2E tests proving MRT train positions, train information, and draggable timeline movement are visible in the web UI.
 - [ ] Preserve backend and frontend contract extensibility for both 2D and 3D map views.
+- [x] Define a frontend overlay registry contract for MRT route, station, estimated-train, and timeline overlays.
 - [x] Run `spectra validate define-backend-platform-contracts`.

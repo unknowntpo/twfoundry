@@ -6,6 +6,7 @@ import { useMrtDashboardStore } from "@/app/stores/mrt-dashboard";
 import LocaleSwitcher from "@/shared/components/LocaleSwitcher.vue";
 import { appConfig } from "@/shared/config/env";
 import { mrtLines, mrtStations } from "../data/mrt-fixtures";
+import { mrtOverlayRegistry } from "../map/overlay-registry";
 import LayerControl from "./LayerControl.vue";
 import MrtMap from "./MrtMap.vue";
 import StationPanel from "./StationPanel.vue";
@@ -17,6 +18,12 @@ const { liveBoardError, liveBoardLoading, selectedStation, selectedLiveBoards, v
 
 const visibleLines = computed(() =>
   mrtLines.filter((line) => visibleLineIds.value.includes(line.id)),
+);
+const movingOverlays = computed(() =>
+  mrtOverlayRegistry.filter((overlay) => overlay.category === "moving"),
+);
+const routeOverlay = computed(() =>
+  mrtOverlayRegistry.find((overlay) => overlay.id === "mrt-routes"),
 );
 
 const activeTrainCount = computed(() => mrtLines.length * 12 + mrtStations.length);
@@ -168,9 +175,14 @@ function showMobilePanel(panel: "map" | "layers" | "detail" | "time"): void {
 
           <div class="layer-group">
             <p class="group-label">{{ t("dashboard.layers.moving") }}</p>
-            <article class="layer-card active">
+            <article
+              v-for="overlay in movingOverlays"
+              :key="overlay.id"
+              class="layer-card active"
+              :data-testid="`overlay-${overlay.id}`"
+            >
               <span class="layer-icon">M</span>
-              <strong>{{ t("dashboard.layers.mrt") }}</strong>
+              <strong>{{ overlay.title }}</strong>
               <span class="layer-count">{{ activeTrainCount }}</span>
             </article>
             <div class="layer-settings">
@@ -182,7 +194,7 @@ function showMobilePanel(panel: "map" | "layers" | "detail" | "time"): void {
           </div>
 
           <div class="layer-group">
-            <p class="group-label">{{ t("dashboard.layers.route") }}</p>
+            <p class="group-label">{{ routeOverlay?.title ?? t("dashboard.layers.route") }}</p>
             <LayerControl :lines="mrtLines" />
           </div>
         </div>

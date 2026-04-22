@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useMrtDashboardStore } from "@/app/stores/mrt-dashboard";
 import { appConfig } from "@/shared/config/env";
+import { inferTrainMarkers } from "../map/inferred-trains";
 import type { MrtLine, MrtStation } from "../types";
 
 const props = defineProps<{
@@ -18,11 +19,17 @@ const googleReady = ref(false);
 let googleMap: GoogleMapInstance | undefined;
 let googleApi: GoogleMapsGlobal | undefined;
 let googleMarkerLibrary: GoogleMarkerLibrary | undefined;
-let googleMarkers: GoogleMarkerInstance[] = [];
+let googleStationMarkers: GoogleRenderableMarker[] = [];
+let googleTrainMarkers: GoogleRenderableMarker[] = [];
 
 const visibleStations = computed(() =>
   props.stations.filter((station) =>
     station.lineIds.some((lineId) => store.visibleLineIds.includes(lineId)),
+  ),
+);
+const inferredTrains = computed(() =>
+  inferTrainMarkers(store.selectedLiveBoards, props.stations, props.lines).filter((train) =>
+    store.visibleLineIds.includes(train.lineId),
   ),
 );
 
@@ -35,7 +42,7 @@ onMounted(() => {
 });
 
 watch(
-  () => [props.lines, visibleStations.value, store.selectedStationId],
+  () => [props.lines, visibleStations.value, store.selectedStationId, store.selectedLiveBoards],
   () => {
     if (appConfig.mapProvider === "google" && googleReady.value) {
       renderGoogleMapOverlays();
@@ -90,23 +97,29 @@ function renderGoogleMapOverlays(): void {
   const google = googleApi;
   const markerLibrary = googleMarkerLibrary;
 
-  for (const marker of googleMarkers) {
+  for (const marker of googleStationMarkers) {
+    marker.setMap(null);
+  }
+  for (const marker of googleTrainMarkers) {
     marker.setMap(null);
   }
 
-  googleMarkers = visibleStations.value.map((station) => {
-    const marker = createGoogleMapMarker(google, markerLibrary, map, station);
-    marker.addListener("click", () => store.selectStation(station.id));
+  googleStationMarkers = visibleStations.value.map((station) => {
+    const marker = createGoogleStationMarkerOverlay(google, markerLibrary, map, station);
+    marker.addListener?.("click", () => store.selectStation(station.id));
     return marker;
   });
+  googleTrainMarkers = inferredTrains.value.map((train) =>
+    createGoogleTrainMarker(google, markerLibrary, map, train),
+  );
 }
 
-function createGoogleMapMarker(
+function createGoogleStationMarkerOverlay(
   google: GoogleMapsGlobal,
   markerLibrary: GoogleMarkerLibrary | undefined,
   map: GoogleMapInstance,
   station: MrtStation,
-): GoogleMarkerInstance {
+): GoogleRenderableMarker {
   if (markerLibrary) {
     const marker = new markerLibrary.AdvancedMarkerElement({
       map,
@@ -137,6 +150,44 @@ function createGoogleMapMarker(
   });
 }
 
+function createGoogleTrainMarker(
+  google: GoogleMapsGlobal,
+  markerLibrary: GoogleMarkerLibrary | undefined,
+  map: GoogleMapInstance,
+  train: ReturnType<typeof inferTrainMarkers>[number],
+): GoogleRenderableMarker {
+  if (markerLibrary) {
+    const marker = new markerLibrary.AdvancedMarkerElement({
+      map,
+      position: train.position,
+      title: `${train.destination} · ${train.arrivalMinutes} min`,
+      content: createGoogleTrainMarkerContent(train),
+      zIndex: 90,
+    });
+
+    return {
+      setMap: (nextMap) => {
+        marker.map = nextMap;
+      },
+    };
+  }
+
+  return new google.maps.Marker({
+    map,
+    position: train.position,
+    title: `${train.destination} · ${train.arrivalMinutes} min`,
+    zIndex: 90,
+    icon: {
+      path: "M -6 0 a 6 6 0 1 0 12 0 a 6 6 0 1 0 -12 0",
+      fillColor: resolveLineColor(train.lineId),
+      fillOpacity: 1,
+      strokeColor: "#fffaf2",
+      strokeWeight: 2,
+      scale: 1,
+    },
+  });
+}
+
 function createGoogleStationMarker(station: MrtStation): HTMLElement {
   const marker = document.createElement("button");
   marker.type = "button";
@@ -148,11 +199,36 @@ function createGoogleStationMarker(station: MrtStation): HTMLElement {
   return marker;
 }
 
+function createGoogleTrainMarkerContent(
+  train: ReturnType<typeof inferTrainMarkers>[number],
+): HTMLElement {
+  const marker = document.createElement("div");
+  marker.className = "google-train-marker";
+  marker.dataset.status = train.status;
+  marker.title = `${train.destination} · ${train.arrivalMinutes} min`;
+  marker.style.setProperty("--train-line-color", resolveLineColor(train.lineId));
+  return marker;
+}
+
 function resolveStationColor(station: MrtStation): string {
-  const primaryLineId = station.lineIds[0];
-  return (
-    props.lines.find((line) => line.id === primaryLineId)?.color ?? "var(--twf-color-route-red)"
-  );
+  return resolveLineColor(station.lineIds[0]);
+}
+
+function resolveLineColor(lineId: string | undefined): string {
+  return props.lines.find((line) => line.id === lineId)?.color ?? "var(--twf-color-route-red)";
+}
+
+function resolveMockTrainStyle(train: ReturnType<typeof inferTrainMarkers>[number]): Record<string, string> {
+  const stationIndex = visibleStations.value.findIndex((station) => station.id === train.stationId);
+  if (stationIndex < 0) {
+    return { display: "none" };
+  }
+
+  return {
+    left: `${120 + ((stationIndex % 3) * 190) + train.layoutOffset.x}px`,
+    top: `${140 + (Math.floor(stationIndex / 3) * 120) + train.layoutOffset.y}px`,
+    "--train-line-color": resolveLineColor(train.lineId),
+  };
 }
 
 function readDesignToken(token: string, fallback: string): string {
@@ -273,9 +349,9 @@ interface GoogleLegacyMarkerInstance {
   setMap: (map: GoogleMapInstance | null) => void;
 }
 
-interface GoogleMarkerInstance {
-  addListener: (eventName: "click", listener: () => void) => void;
+interface GoogleRenderableMarker {
   setMap: (map: GoogleMapInstance | null) => void;
+  addListener?: (eventName: "click", listener: () => void) => void;
 }
 
 declare global {
@@ -315,6 +391,15 @@ declare global {
       {{ station.name }}
     </button>
 
+    <div
+      v-for="train in inferredTrains"
+      :key="train.id"
+      class="train-circle"
+      :style="resolveMockTrainStyle(train)"
+      :data-testid="`train-${train.id}`"
+      :title="`${train.destination} · ${train.arrivalMinutes} min`"
+    />
+
     <aside class="map-legend" :aria-label="t('dashboard.map.overlaySpec')">
       <h2>{{ t("dashboard.map.overlayTitle") }}</h2>
       <p v-for="line in lines" :key="line.id">
@@ -328,6 +413,10 @@ declare global {
       <p>
         <span class="legend-dot selected" aria-hidden="true" />
         {{ t("dashboard.map.selectedMarker") }}
+      </p>
+      <p>
+        <span class="legend-train" aria-hidden="true" />
+        {{ t("dashboard.map.estimatedTrain") }}
       </p>
     </aside>
 
@@ -379,6 +468,23 @@ declare global {
   border-color: var(--twf-color-route-blue);
   box-shadow:
     var(--twf-shadow-route-blue-ring),
+    var(--twf-shadow-floating);
+}
+
+:global(.google-train-marker) {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #fffaf2;
+  border-radius: 50%;
+  background: var(--train-line-color);
+  box-shadow:
+    0 0 0 5px color-mix(in srgb, var(--train-line-color) 18%, transparent),
+    var(--twf-shadow-floating);
+}
+
+:global(.google-train-marker[data-status="approaching"]) {
+  box-shadow:
+    0 0 0 7px color-mix(in srgb, var(--train-line-color) 24%, transparent),
     var(--twf-shadow-floating);
 }
 
@@ -443,6 +549,19 @@ declare global {
     var(--twf-shadow-floating);
 }
 
+.train-circle {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  transform: translate(-50%, -50%);
+  border: 2px solid #fffaf2;
+  border-radius: 50%;
+  background: var(--train-line-color);
+  box-shadow:
+    0 0 0 5px color-mix(in srgb, var(--train-line-color) 18%, transparent),
+    var(--twf-shadow-floating);
+}
+
 .map-legend {
   position: absolute;
   right: 18px;
@@ -488,6 +607,15 @@ declare global {
 
 .legend-dot.selected {
   box-shadow: var(--twf-shadow-route-red-ring);
+}
+
+.legend-train {
+  width: 12px;
+  height: 12px;
+  border: 2px solid #fffaf2;
+  border-radius: 50%;
+  background: var(--twf-color-route-blue);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--twf-color-route-blue) 16%, transparent);
 }
 
 .coords {

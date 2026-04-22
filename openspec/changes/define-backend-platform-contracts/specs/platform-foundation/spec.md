@@ -134,3 +134,21 @@ TWFoundry SHALL keep the platform map model extensible for both 2D and 3D views.
 - **WHEN** backend and frontend map-related contracts are defined
 - **THEN** those contracts do not assume a strictly 2D-only view model
 - **AND** the platform remains compatible with both 2D and 3D map presentation modes
+
+### Requirement: Frontend Overlay Registry Contract
+
+TWFoundry SHALL define a frontend overlay registry contract so map-facing product modules are declared explicitly instead of being hard-coded inside one large map component.
+
+#### Scenario: MRT map overlays are defined
+
+- **GIVEN** the MRT dashboard needs route, station, train, and timeline presentation
+- **WHEN** frontend map contracts are defined
+- **THEN** the product-facing map modules are modeled as overlays rather than raw renderer layers
+- **AND** the MRT MVP defines at least `MrtRouteOverlay`, `MrtStationOverlay`, `EstimatedTrainOverlay`, and `TimelineOverlay`
+
+#### Scenario: Overlay controls drive the UI
+
+- **GIVEN** the layer sidebar and mobile panel switcher expose map controls
+- **WHEN** those controls are wired to map features
+- **THEN** the UI addresses overlay identity, visibility, and controls
+- **AND** it does not depend directly on renderer-specific layer names

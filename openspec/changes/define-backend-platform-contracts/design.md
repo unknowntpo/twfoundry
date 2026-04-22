@@ -42,6 +42,131 @@ This is not limited to the MRT MVP. The map view model should remain extensible 
 
 That means backend contracts and frontend-facing map state should avoid assuming a strictly 2D transport model.
 
+## Frontend Overlay Registry Direction
+
+The frontend map should treat `overlay` as the product abstraction and `layer` as the renderer abstraction.
+
+This distinction matters because TWFoundry will combine many domains on one map:
+
+- MRT
+- YouBike
+- flight
+- weather
+- traffic
+
+Each domain should appear as one or more product-facing overlays, while each overlay may internally use one or more renderer-specific layers.
+
+The intended relationship is:
+
+```text
+datasource(s)
+  -> domain model
+  -> overlay
+  -> one or more renderer layers
+```
+
+### Overlay vs Layer
+
+- `overlay`: a map-facing product module with identity, controls, visibility, and data dependencies
+- `layer`: a renderer-facing drawing unit such as a Google marker collection, a Mapbox line layer, or a custom WebGL layer
+
+The sidebar, mobile panel switcher, and future timeline should operate at `overlay` level, not at raw renderer-layer level.
+
+### Overlay Registry
+
+The frontend should define overlays declaratively instead of mixing all overlay logic inside a single map component.
+
+Minimum overlay registry fields:
+
+- `overlay_id`
+- `title`
+- `category`
+- `description`
+- `z_index`
+- `visibility`
+- `data_dependencies`
+- `controls`
+- `timeline_aware`
+
+Illustrative TypeScript contract:
+
+```ts
+export type OverlayId =
+  | "mrt-routes"
+  | "mrt-stations"
+  | "mrt-estimated-trains"
+  | "timeline"
+  | "youbike";
+
+export interface OverlayDescriptor {
+  id: OverlayId;
+  title: string;
+  category: "moving" | "station" | "route" | "time" | "mobility";
+  description: string;
+  zIndex: number;
+  visibility: {
+    defaultVisible: boolean;
+    supportsToggle: boolean;
+  };
+  dataDependencies: Array<{
+    sourceId: string;
+    datasetId: string;
+    required: boolean;
+  }>;
+  controls: Array<{
+    id: string;
+    label: string;
+    kind: "toggle" | "slider" | "select";
+  }>;
+  timelineAware: boolean;
+}
+```
+
+### Renderer Boundary
+
+The overlay registry should not know Google Maps, Mapbox, or Three.js details directly.
+
+Renderer implementations should sit behind a renderer contract so the map engine can evolve later without changing product-level overlay definitions.
+
+Illustrative boundary:
+
+```ts
+export interface OverlayRenderContext {
+  mapProvider: "google" | "mock";
+  selectedStationId?: string;
+  visibleLineIds: string[];
+  timelineTime?: string;
+}
+
+export interface OverlayRenderer {
+  mount(context: OverlayRenderContext): void | Promise<void>;
+  update(context: OverlayRenderContext): void | Promise<void>;
+  unmount(): void | Promise<void>;
+}
+```
+
+### Phase 1 MRT Overlay Set
+
+The MRT MVP should be split into four overlays:
+
+- `MrtRouteOverlay`
+  renders route geometry and route visibility
+
+- `MrtStationOverlay`
+  renders station markers, selection, and station highlight state
+
+- `EstimatedTrainOverlay`
+  renders train circles derived from station LiveBoard and route geometry
+
+- `TimelineOverlay`
+  owns playback cursor, play state, and timeline drag behavior
+
+Important:
+
+- `EstimatedTrainOverlay` is an estimated position model unless a verified official train position source exists
+- datasource and overlay are not one-to-one by default
+- one overlay may depend on multiple datasets
+
 ## Domain Language First
 
 This change should define domain language before defining code interfaces.
