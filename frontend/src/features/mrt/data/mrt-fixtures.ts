@@ -1,9 +1,9 @@
-import type { LiveBoardRow, LiveBoardSnapshot, MrtStation } from "../types";
+import type { LiveBoardEntry, LiveBoardSnapshot, MrtStation } from "../types";
 import { mrtLines, mrtStations } from "./mrt-network.generated";
 
 export { mrtLines, mrtStations };
 
-export const liveBoardRows: LiveBoardRow[] = [
+export const liveBoardRows: LiveBoardEntry[] = [
   {
     id: "lb-bl18-1",
     trainCode: "BL18-BL01",
@@ -84,6 +84,6 @@ export function findStationById(stationId: string): MrtStation | undefined {
   return mrtStations.find((station) => station.id === stationId);
 }
 
-export function findLiveBoardRowsByStation(stationId: string): LiveBoardRow[] {
+export function findLiveBoardRowsByStation(stationId: string): LiveBoardEntry[] {
   return liveBoardRows.filter((row) => row.stationId === stationId);
 }

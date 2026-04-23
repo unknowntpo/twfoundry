@@ -3,7 +3,7 @@ import { useI18n } from "vue-i18n";
 import BaseBadge from "@/shared/components/BaseBadge.vue";
 import { resolveLocalizedText } from "../localized-text";
 import { formatMrtLineName, resolveMrtLineLabel } from "../line-names";
-import type { LiveBoardRow, MrtStation } from "../types";
+import type { LiveBoardEntry, MrtStation } from "../types";
 
 const { locale, t } = useI18n();
 
@@ -12,7 +12,7 @@ const props = defineProps<{
   error?: string;
   isLoading?: boolean;
   station: MrtStation | undefined;
-  liveBoards: LiveBoardRow[];
+  liveBoards: LiveBoardEntry[];
   updatedLabel?: string;
 }>();
 
@@ -34,7 +34,7 @@ function displayLineName(lineId: string): string {
   );
 }
 
-function displayDestination(row: LiveBoardRow): string {
+function displayDestination(row: LiveBoardEntry): string {
   return resolveLocalizedText(locale.value, row.destinationName, row.destination) ?? row.destination;
 }
 

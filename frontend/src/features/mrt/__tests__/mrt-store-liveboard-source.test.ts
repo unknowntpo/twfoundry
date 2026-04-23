@@ -1,8 +1,8 @@
 import { createPinia, setActivePinia } from "pinia";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { LiveBoardRow } from "../types";
+import type { LiveBoardEntry } from "../types";
 
-const tdxRows: LiveBoardRow[] = [
+const tdxRows: LiveBoardEntry[] = [
   {
     arrivalMinutes: 1,
     destination: "Nangang Exhibition Center",
@@ -54,6 +54,36 @@ describe("MRT dashboard store LiveBoard source", () => {
     expect(store.networkLiveBoards).toEqual(tdxRows);
     expect(store.liveBoardUpdatedAt).toBe("2026-04-23T01:00:00.000Z");
     expect(store.liveBoardError).toBeUndefined();
+  });
+
+  it("auto-selects the first known station when TDX live rows arrive without a station selection", async () => {
+    const fetchTdxLiveBoard = vi.fn().mockResolvedValue({
+      source: "tdx",
+      updatedAt: "2026-04-23T01:00:00.000Z",
+      rows: tdxRows,
+    });
+    const fetchTdxLiveBoardTimeline = vi.fn().mockResolvedValue({
+      source: "tdx",
+      snapshots: [],
+    });
+    vi.doMock("@/shared/config/env", () => ({
+      appConfig: {
+        mrtLiveBoardSource: "tdx",
+        tdxProxyUrl: "http://localhost:5174",
+      },
+    }));
+    vi.doMock("@/features/mrt/api/tdx-liveboard", () => ({
+      fetchTdxLiveBoard,
+      fetchTdxLiveBoardTimeline,
+    }));
+
+    const { useMrtDashboardStore } = await import("@/app/stores/mrt-dashboard");
+    const store = useMrtDashboardStore();
+
+    await store.refreshLiveBoards();
+
+    expect(store.selectedStationId).toBe("BL18");
+    expect(store.selectedLiveBoards).toEqual(tdxRows);
   });
 
   it("keeps station selection and exposes an error when TDX fails", async () => {

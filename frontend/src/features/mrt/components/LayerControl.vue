@@ -4,7 +4,7 @@ import { useI18n } from "vue-i18n";
 import { useMrtDashboardStore } from "@/app/stores/mrt-dashboard";
 import { resolveLocalizedText } from "../localized-text";
 import { resolveMrtLineLabel } from "../line-names";
-import type { LiveBoardRow, MrtLine } from "../types";
+import type { LiveBoardEntry, MrtLine } from "../types";
 
 const props = defineProps<{
   lines: MrtLine[];
@@ -32,15 +32,15 @@ function isExpanded(lineId: string): boolean {
   return expandedLineIds.value.includes(lineId);
 }
 
-function displayLineLabel(line: MrtLine, rows: LiveBoardRow[]): string {
+function displayLineLabel(line: MrtLine, rows: LiveBoardEntry[]): string {
   return resolveMrtLineLabel(t, locale.value, line.id, rows.find((row) => row.lineName)?.lineName);
 }
 
-function displayDestination(row: LiveBoardRow): string {
+function displayDestination(row: LiveBoardEntry): string {
   return resolveLocalizedText(locale.value, row.destinationName, row.destination) ?? row.destination;
 }
 
-async function selectTrain(row: LiveBoardRow): Promise<void> {
+async function selectTrain(row: LiveBoardEntry): Promise<void> {
   await store.selectStation(row.stationId);
   store.selectTrain(row.id);
 }

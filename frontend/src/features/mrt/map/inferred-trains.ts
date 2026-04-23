@@ -1,15 +1,15 @@
-import type { Coordinates, LiveBoardRow, MrtLine, MrtStation } from "../types";
+import type { Coordinates, LiveBoardEntry, MrtLine, MrtStation } from "../types";
 
 export interface InferredTrainMarker {
   id: string;
   trainCode: string;
   stationId: string;
-  lineId: LiveBoardRow["lineId"];
-  direction: LiveBoardRow["direction"];
+  lineId: LiveBoardEntry["lineId"];
+  direction: LiveBoardEntry["direction"];
   position: Coordinates;
   arrivalMinutes: number;
   destination: string;
-  status: LiveBoardRow["status"];
+  status: LiveBoardEntry["status"];
   layoutOffset: {
     x: number;
     y: number;
@@ -17,7 +17,7 @@ export interface InferredTrainMarker {
 }
 
 export function inferTrainMarkers(
-  rows: LiveBoardRow[],
+  rows: LiveBoardEntry[],
   stations: MrtStation[],
   lines: MrtLine[],
 ): InferredTrainMarker[] {

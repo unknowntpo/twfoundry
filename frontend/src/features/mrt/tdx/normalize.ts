@@ -1,4 +1,4 @@
-import type { LiveBoardRow, LocalizedText, MrtLineId } from "../types";
+import type { LiveBoardEntry, LocalizedText, MrtLineId } from "../types";
 
 export interface TdxRawLiveBoardRow {
   StationID?: string;
@@ -31,7 +31,7 @@ export function extractTdxLiveBoardRows(payload: unknown): TdxRawLiveBoardRow[] 
 export function normalizeTdxLiveBoardRows(
   rows: TdxRawLiveBoardRow[],
   stationId?: string,
-): LiveBoardRow[] {
+): LiveBoardEntry[] {
   return rows
     .filter((row) => !stationId || matchesStation(row, stationId))
     .map((row, index) => normalizeTdxLiveBoardRow(row, stationId, index));
@@ -41,7 +41,7 @@ function normalizeTdxLiveBoardRow(
   row: TdxRawLiveBoardRow,
   requestedStationId: string | undefined,
   index: number,
-): LiveBoardRow {
+): LiveBoardEntry {
   const stationId = row.StationID ?? requestedStationId ?? suffixId(row.StationUID) ?? "unknown";
   const estimateSeconds = Number(row.EstimateTime);
   const hasEstimate = Number.isFinite(estimateSeconds);
@@ -153,7 +153,7 @@ function normalizeStatus(
   stopStatus: string | number | null | undefined,
   arrivalMinutes: number,
   hasEstimate: boolean,
-): LiveBoardRow["status"] {
+): LiveBoardEntry["status"] {
   if (!hasEstimate || stopStatus === 2 || stopStatus === "2") {
     return "delayed";
   }

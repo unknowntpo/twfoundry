@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { mrtLines, mrtStations } from "../data/mrt-fixtures";
 import { inferTrainMarkers } from "../map/inferred-trains";
-import type { LiveBoardRow } from "../types";
+import type { LiveBoardEntry } from "../types";
 
 describe("inferTrainMarkers", () => {
   it("derives estimated train circles from liveboard rows", () => {
-    const rows: LiveBoardRow[] = [
+    const rows: LiveBoardEntry[] = [
       {
         id: "tdx-BL18-1",
         trainCode: "BL18-BL12",
@@ -39,7 +39,7 @@ describe("inferTrainMarkers", () => {
   });
 
   it("changes inferred position when replayed snapshot timing changes", () => {
-    const earlySnapshot: LiveBoardRow[] = [
+    const earlySnapshot: LiveBoardEntry[] = [
       {
         id: "tdx-BL18-1",
         trainCode: "BL18-BL12",
@@ -51,7 +51,7 @@ describe("inferTrainMarkers", () => {
         status: "on-time",
       },
     ];
-    const lateSnapshot: LiveBoardRow[] = [
+    const lateSnapshot: LiveBoardEntry[] = [
       {
         ...earlySnapshot[0],
         arrivalMinutes: 1,

@@ -8,7 +8,7 @@ import {
   mrtLines,
 } from "@/features/mrt/data/mrt-fixtures";
 import { defaultVisibleOverlayIds } from "@/features/mrt/map/overlay-registry";
-import type { LiveBoardRow, LiveBoardSnapshot, MrtLineId } from "@/features/mrt/types";
+import type { LiveBoardEntry, LiveBoardSnapshot, MrtLineId } from "@/features/mrt/types";
 import { appConfig } from "@/shared/config/env";
 
 export const supportedLiveRefreshIntervalsMs = [5000, 20000, 30000, 60000] as const;
@@ -19,7 +19,7 @@ const MAX_TIMELINE_SNAPSHOTS = 240;
 export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
   const selectedStationId = ref<string | undefined>();
   const selectedTrainId = ref<string | undefined>();
-  const networkLiveBoards = ref<LiveBoardRow[]>([]);
+  const networkLiveBoards = ref<LiveBoardEntry[]>([]);
   const liveBoardError = ref<string | undefined>();
   const liveBoardLoading = ref(false);
   const liveBoardUpdatedAt = ref<string | undefined>();
@@ -86,6 +86,17 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
     syncSelectedTrain();
   }
 
+  function syncSelectedStationFromLiveRows(rows: LiveBoardEntry[]): void {
+    if (selectedStationId.value) {
+      return;
+    }
+
+    const firstKnownStationId = rows.find((row) => findStationById(row.stationId))?.stationId;
+    if (firstKnownStationId) {
+      selectedStationId.value = firstKnownStationId;
+    }
+  }
+
   function seedMockTimeline(): void {
     replaceTimelineSnapshots(liveBoardSnapshots);
     const latest = liveBoardSnapshots[liveBoardSnapshots.length - 1];
@@ -127,6 +138,7 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
       const payload = await fetchTdxLiveBoard(undefined, appConfig.tdxProxyUrl);
       networkLiveBoards.value = payload.rows;
       liveBoardUpdatedAt.value = payload.updatedAt;
+      syncSelectedStationFromLiveRows(payload.rows);
       appendTimelineSnapshot({
         updatedAt: payload.updatedAt,
         rows: payload.rows,

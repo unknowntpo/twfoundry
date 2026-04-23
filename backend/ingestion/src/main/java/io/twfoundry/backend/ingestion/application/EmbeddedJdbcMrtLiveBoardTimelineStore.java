@@ -2,7 +2,7 @@ package io.twfoundry.backend.ingestion.application;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.twfoundry.backend.ingestion.application.MrtLiveBoardService.LiveBoardRow;
+import io.twfoundry.backend.ingestion.application.MrtLiveBoardService.LiveBoardEntry;
 import io.twfoundry.backend.ingestion.application.MrtLiveBoardService.MrtLiveBoardSnapshot;
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Repository;
     havingValue = "embedded-jdbc",
     matchIfMissing = true)
 public class EmbeddedJdbcMrtLiveBoardTimelineStore implements MrtLiveBoardTimelineStore {
-  private static final TypeReference<List<LiveBoardRow>> ROWS_TYPE = new TypeReference<>() {};
+  private static final TypeReference<List<LiveBoardEntry>> ROWS_TYPE = new TypeReference<>() {};
 
   private final JdbcTemplate jdbcTemplate;
   private final ObjectMapper objectMapper;
@@ -31,10 +31,11 @@ public class EmbeddedJdbcMrtLiveBoardTimelineStore implements MrtLiveBoardTimeli
   }
 
   @Override
-  public void saveSnapshot(String source, String operator, Instant updatedAt, List<LiveBoardRow> rows) {
+  public void saveSnapshot(String source, String operator, Instant updatedAt, List<LiveBoardEntry> rows) {
     jdbcTemplate.update(
         """
-        INSERT INTO mrt_liveboard_snapshot (source, operator, updated_at, row_count, rows_json)
+        MERGE INTO mrt_liveboard_snapshot (source, operator, updated_at, row_count, rows_json)
+        KEY (source, operator, updated_at)
         VALUES (?, ?, ?, ?, ?)
         """,
         source,
@@ -75,7 +76,7 @@ public class EmbeddedJdbcMrtLiveBoardTimelineStore implements MrtLiveBoardTimeli
     return new MrtLiveBoardSnapshot(updatedAt.toString(), readRows(rowsJson));
   }
 
-  private String writeRows(List<LiveBoardRow> rows) {
+  private String writeRows(List<LiveBoardEntry> rows) {
     try {
       return objectMapper.writeValueAsString(rows);
     } catch (IOException error) {
@@ -83,7 +84,7 @@ public class EmbeddedJdbcMrtLiveBoardTimelineStore implements MrtLiveBoardTimeli
     }
   }
 
-  private List<LiveBoardRow> readRows(String rowsJson) {
+  private List<LiveBoardEntry> readRows(String rowsJson) {
     try {
       return objectMapper.readValue(rowsJson, ROWS_TYPE);
     } catch (IOException error) {

@@ -236,7 +236,7 @@ export const messages = {
           ],
           tooltip: ["Tooltip", "Useful for dense icon chrome, but not yet defined."],
           liveboard: [
-            "LiveBoardRow",
+            "LiveBoardEntry",
             "The station panel already provides a strong base row pattern.",
           ],
           statChip: ["StatChip", "Topbar service summary behaves like a metric pill pattern."],
@@ -492,7 +492,7 @@ export const messages = {
           dialog: ["Dialog", "未來 destructive 或高確認度操作需要它。"],
           drawer: ["Drawer / Sheet", "小尺寸 detail 與 controls 面板需要它。"],
           tooltip: ["Tooltip", "對密集 icon chrome 有用，但尚未定義。"],
-          liveboard: ["LiveBoardRow", "Station panel 已提供不錯的 row pattern 基礎。"],
+          liveboard: ["LiveBoardEntry", "Station panel 已提供不錯的 row pattern 基礎。"],
           statChip: ["StatChip", "Topbar 服務摘要已接近 metric pill pattern。"],
           timeline: ["TimelineControl", "播放控制已存在，但仍偏 dashboard-specific。"],
           mapControl: ["MapControl", "Map-first chrome 已存在，應維持精簡且情境化。"],

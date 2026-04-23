@@ -20,7 +20,7 @@ public class MrtLiveBoardService {
   public MrtLiveBoardResponse fetch(String operator, String stationId) {
     List<JsonNode> rows = gateway.fetchLiveBoard(operator, stationId);
     Instant updatedAt = Instant.now();
-    List<LiveBoardRow> normalizedRows = rows.stream().map(row -> normalize(row, stationId)).toList();
+    List<LiveBoardEntry> normalizedRows = rows.stream().map(row -> normalize(row, stationId)).toList();
     timelineStore.saveSnapshot("tdx", operator, updatedAt, normalizedRows);
     return new MrtLiveBoardResponse("tdx", updatedAt.toString(), normalizedRows);
   }
@@ -29,7 +29,7 @@ public class MrtLiveBoardService {
     return new MrtLiveBoardTimelineResponse("tdx", timelineStore.findRecentSnapshots(operator, limit));
   }
 
-  private LiveBoardRow normalize(JsonNode row, String requestedStationId) {
+  private LiveBoardEntry normalize(JsonNode row, String requestedStationId) {
     String stationId = text(row, "StationID", normalizeStationId(requestedStationId), "unknown");
     int estimateSeconds = integer(row, "EstimateTime", -1);
     boolean hasEstimate = estimateSeconds >= 0;
@@ -40,7 +40,7 @@ public class MrtLiveBoardService {
             row,
             "DestinationStationName",
             text(row, "TripHeadSign", text(row, "DestinationStationID", "Unknown destination")));
-    return new LiveBoardRow(
+    return new LiveBoardEntry(
         "tdx-" + stationId + "-" + text(row, "DestinationStationID", "0"),
         text(row, "TrainNo", stationId + "-" + text(row, "DestinationStationID", "0")),
         stationId,
@@ -183,13 +183,13 @@ public class MrtLiveBoardService {
     return fallback;
   }
 
-  public record MrtLiveBoardResponse(String source, String updatedAt, List<LiveBoardRow> rows) {}
+  public record MrtLiveBoardResponse(String source, String updatedAt, List<LiveBoardEntry> rows) {}
 
   public record MrtLiveBoardTimelineResponse(String source, List<MrtLiveBoardSnapshot> snapshots) {}
 
-  public record MrtLiveBoardSnapshot(String updatedAt, List<LiveBoardRow> rows) {}
+  public record MrtLiveBoardSnapshot(String updatedAt, List<LiveBoardEntry> rows) {}
 
-  public record LiveBoardRow(
+  public record LiveBoardEntry(
       String id,
       String trainCode,
       String stationId,

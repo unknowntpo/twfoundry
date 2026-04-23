@@ -1,9 +1,9 @@
-import type { LiveBoardRow, LiveBoardSnapshot } from "../types";
+import type { LiveBoardEntry, LiveBoardSnapshot } from "../types";
 
 export interface TdxLiveBoardProxyResponse {
   source: "tdx";
   updatedAt: string;
-  rows: LiveBoardRow[];
+  rows: LiveBoardEntry[];
 }
 
 export interface TdxLiveBoardTimelineResponse {
@@ -46,7 +46,7 @@ export async function fetchTdxLiveBoardRows(
   stationId: string | undefined,
   proxyUrl: string,
   fetcher: typeof fetch = fetch,
-): Promise<LiveBoardRow[]> {
+): Promise<LiveBoardEntry[]> {
   const payload = await fetchTdxLiveBoard(stationId, proxyUrl, fetcher);
   return payload.rows;
 }

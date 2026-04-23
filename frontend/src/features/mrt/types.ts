@@ -25,7 +25,7 @@ export interface LocalizedText {
   En?: string;
 }
 
-export interface LiveBoardRow {
+export interface LiveBoardEntry {
   id: string;
   trainCode: string;
   stationId: string;
@@ -41,5 +41,5 @@ export interface LiveBoardRow {
 
 export interface LiveBoardSnapshot {
   updatedAt: string;
-  rows: LiveBoardRow[];
+  rows: LiveBoardEntry[];
 }
