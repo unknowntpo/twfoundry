@@ -22,22 +22,27 @@ describe("MRT dashboard store LiveBoard source", () => {
   });
 
   it("loads TDX rows when live source is enabled", async () => {
-    const fetchTdxLiveBoardRows = vi.fn().mockResolvedValue(tdxRows);
+    const fetchTdxLiveBoard = vi.fn().mockResolvedValue({
+      source: "tdx",
+      updatedAt: "2026-04-23T01:00:00.000Z",
+      rows: tdxRows,
+    });
     vi.doMock("@/shared/config/env", () => ({
       appConfig: {
         mrtLiveBoardSource: "tdx",
         tdxProxyUrl: "http://localhost:5174",
       },
     }));
-    vi.doMock("@/features/mrt/api/tdx-liveboard", () => ({ fetchTdxLiveBoardRows }));
+    vi.doMock("@/features/mrt/api/tdx-liveboard", () => ({ fetchTdxLiveBoard }));
 
     const { useMrtDashboardStore } = await import("@/app/stores/mrt-dashboard");
     const store = useMrtDashboardStore();
 
     await store.selectStation("BL18");
 
-    expect(fetchTdxLiveBoardRows).toHaveBeenCalledWith("BL18", "http://localhost:5174");
+    expect(fetchTdxLiveBoard).toHaveBeenCalledWith("BL18", "http://localhost:5174");
     expect(store.selectedLiveBoards).toEqual(tdxRows);
+    expect(store.liveBoardUpdatedAt).toBe("2026-04-23T01:00:00.000Z");
     expect(store.liveBoardError).toBeUndefined();
   });
 
@@ -49,7 +54,7 @@ describe("MRT dashboard store LiveBoard source", () => {
       },
     }));
     vi.doMock("@/features/mrt/api/tdx-liveboard", () => ({
-      fetchTdxLiveBoardRows: vi.fn().mockRejectedValue(new Error("proxy unavailable")),
+      fetchTdxLiveBoard: vi.fn().mockRejectedValue(new Error("proxy unavailable")),
     }));
 
     const { useMrtDashboardStore } = await import("@/app/stores/mrt-dashboard");
@@ -59,6 +64,7 @@ describe("MRT dashboard store LiveBoard source", () => {
 
     expect(store.selectedStation?.id).toBe("BL18");
     expect(store.selectedLiveBoards).toEqual([]);
+    expect(store.liveBoardUpdatedAt).toBeUndefined();
     expect(store.liveBoardError).toBe("proxy unavailable");
   });
 });

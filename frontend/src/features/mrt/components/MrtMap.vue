@@ -16,6 +16,8 @@ const { t } = useI18n();
 const mapElement = ref<HTMLElement | null>(null);
 const mapError = ref<string | undefined>();
 const googleReady = ref(false);
+const hoveredTrainId = ref<string | undefined>();
+const hoveredTrainTooltip = ref<{ left: number; top: number } | null>(null);
 let googleMap: GoogleMapInstance | undefined;
 let googleApi: GoogleMapsGlobal | undefined;
 let googleMarkerLibrary: GoogleMarkerLibrary | undefined;
@@ -37,6 +39,9 @@ const inferredTrains = computed(() =>
   inferTrainMarkers(store.selectedLiveBoards, props.stations, props.lines).filter((train) =>
     store.visibleLineIds.includes(train.lineId),
   ),
+);
+const hoveredTrain = computed(() =>
+  inferredTrains.value.find((train) => train.id === hoveredTrainId.value),
 );
 
 onMounted(() => {
@@ -167,13 +172,16 @@ function createGoogleTrainMarker(
   train: ReturnType<typeof inferTrainMarkers>[number],
 ): GoogleRenderableMarker {
   if (markerLibrary) {
+    const content = createGoogleTrainMarkerContent(train);
     const marker = new markerLibrary.AdvancedMarkerElement({
       map,
       position: train.position,
       title: `${train.destination} · ${train.arrivalMinutes} min`,
-      content: createGoogleTrainMarkerContent(train),
+      content,
       zIndex: 90,
     });
+
+    bindTrainHover(content, train);
 
     return {
       setMap: (nextMap) => {
@@ -220,6 +228,21 @@ function createGoogleTrainMarkerContent(
   return marker;
 }
 
+function bindTrainHover(
+  element: HTMLElement,
+  train: ReturnType<typeof inferTrainMarkers>[number],
+): void {
+  element.addEventListener("mouseenter", (event) => {
+    updateHoveredTrain(train, event);
+  });
+  element.addEventListener("mousemove", (event) => {
+    updateHoveredTrain(train, event);
+  });
+  element.addEventListener("mouseleave", () => {
+    clearHoveredTrain();
+  });
+}
+
 function resolveStationColor(station: MrtStation): string {
   return resolveLineColor(station.lineIds[0]);
 }
@@ -239,6 +262,32 @@ function resolveMockTrainStyle(train: ReturnType<typeof inferTrainMarkers>[numbe
     top: `${140 + (Math.floor(stationIndex / 3) * 120) + train.layoutOffset.y}px`,
     "--train-line-color": resolveLineColor(train.lineId),
   };
+}
+
+function updateHoveredTrain(
+  train: ReturnType<typeof inferTrainMarkers>[number],
+  event: MouseEvent,
+): void {
+  hoveredTrainId.value = train.id;
+  if (!mapElement.value) {
+    hoveredTrainTooltip.value = null;
+    return;
+  }
+
+  const bounds = mapElement.value.getBoundingClientRect();
+  hoveredTrainTooltip.value = {
+    left: event.clientX - bounds.left + 12,
+    top: event.clientY - bounds.top - 14,
+  };
+}
+
+function clearHoveredTrain(): void {
+  hoveredTrainId.value = undefined;
+  hoveredTrainTooltip.value = null;
+}
+
+function formatTrainTooltip(train: ReturnType<typeof inferTrainMarkers>[number]): string {
+  return `${train.destination} · ${train.arrivalMinutes} min · ${train.status}`;
 }
 
 function readDesignToken(token: string, fallback: string): string {
@@ -374,7 +423,12 @@ declare global {
 </script>
 
 <template>
-  <div v-if="appConfig.mapProvider === 'mock'" class="mock-map" data-testid="mock-map">
+  <div
+    v-if="appConfig.mapProvider === 'mock'"
+    ref="mapElement"
+    class="mock-map"
+    data-testid="mock-map"
+  >
     <div
       v-if="routeOverlayVisible"
       class="mock-lines"
@@ -414,7 +468,22 @@ declare global {
       :style="resolveMockTrainStyle(train)"
       :data-testid="`train-${train.id}`"
       :title="`${train.destination} · ${train.arrivalMinutes} min`"
+      @mouseenter="updateHoveredTrain(train, $event)"
+      @mousemove="updateHoveredTrain(train, $event)"
+      @mouseleave="clearHoveredTrain()"
     />
+
+    <div
+      v-if="hoveredTrain && hoveredTrainTooltip"
+      class="train-tooltip"
+      :style="{
+        left: `${hoveredTrainTooltip.left}px`,
+        top: `${hoveredTrainTooltip.top}px`
+      }"
+      data-testid="train-tooltip"
+    >
+      {{ formatTrainTooltip(hoveredTrain) }}
+    </div>
 
     <aside class="map-legend" :aria-label="t('dashboard.map.overlaySpec')">
       <h2>{{ t("dashboard.map.overlayTitle") }}</h2>
@@ -441,6 +510,17 @@ declare global {
 
   <div v-else class="google-map-shell">
     <div ref="mapElement" class="google-map" data-testid="google-map" />
+    <div
+      v-if="hoveredTrain && hoveredTrainTooltip"
+      class="train-tooltip"
+      :style="{
+        left: `${hoveredTrainTooltip.left}px`,
+        top: `${hoveredTrainTooltip.top}px`
+      }"
+      data-testid="train-tooltip"
+    >
+      {{ formatTrainTooltip(hoveredTrain) }}
+    </div>
     <p v-if="mapError" class="map-error">{{ mapError }}</p>
   </div>
 </template>
@@ -576,6 +656,24 @@ declare global {
   box-shadow:
     0 0 0 5px color-mix(in srgb, var(--train-line-color) 18%, transparent),
     var(--twf-shadow-floating);
+}
+
+.train-tooltip {
+  position: absolute;
+  z-index: 8;
+  max-width: 220px;
+  border: 1px solid var(--twf-color-border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  background: color-mix(in srgb, var(--twf-color-surface-raised) 94%, white);
+  color: var(--twf-color-text);
+  box-shadow: var(--twf-shadow-floating);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.35;
+  pointer-events: none;
+  transform: translateY(-100%);
+  white-space: nowrap;
 }
 
 .map-legend {

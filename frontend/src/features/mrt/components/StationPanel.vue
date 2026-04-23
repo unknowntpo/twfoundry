@@ -11,6 +11,7 @@ defineProps<{
   isLoading?: boolean;
   station: MrtStation | undefined;
   liveBoards: LiveBoardRow[];
+  updatedLabel?: string;
 }>();
 
 defineEmits<{
@@ -105,7 +106,7 @@ function routeTone(lineId: string): "red" | "blue" | "green" | "neutral" {
 
           <p v-if="liveBoards.length === 0" class="empty">{{ t("dashboard.station.noArrivals") }}</p>
           <footer class="panel-footer">
-            <span>{{ t("dashboard.station.updated") }}</span>
+            <span>{{ updatedLabel ?? t("dashboard.station.updated") }}</span>
             <button type="button" :disabled="isLoading" @click="$emit('refresh')">
               {{ t("dashboard.station.refresh") }}
             </button>

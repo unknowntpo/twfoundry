@@ -6,11 +6,11 @@ export interface TdxLiveBoardProxyResponse {
   rows: LiveBoardRow[];
 }
 
-export async function fetchTdxLiveBoardRows(
+export async function fetchTdxLiveBoard(
   stationId: string,
   proxyUrl: string,
   fetcher: typeof fetch = fetch,
-): Promise<LiveBoardRow[]> {
+): Promise<TdxLiveBoardProxyResponse> {
   const url = new URL("/api/mrt/liveboard", proxyUrl);
   url.searchParams.set("operator", "TRTC");
   url.searchParams.set("stationId", stationId);
@@ -26,7 +26,22 @@ export async function fetchTdxLiveBoardRows(
     throw new Error(message);
   }
 
-  return isProxyResponse(payload) ? payload.rows : [];
+  return isProxyResponse(payload)
+    ? payload
+    : {
+        source: "tdx",
+        updatedAt: new Date().toISOString(),
+        rows: [],
+      };
+}
+
+export async function fetchTdxLiveBoardRows(
+  stationId: string,
+  proxyUrl: string,
+  fetcher: typeof fetch = fetch,
+): Promise<LiveBoardRow[]> {
+  const payload = await fetchTdxLiveBoard(stationId, proxyUrl, fetcher);
+  return payload.rows;
 }
 
 function isProxyResponse(value: unknown): value is TdxLiveBoardProxyResponse {

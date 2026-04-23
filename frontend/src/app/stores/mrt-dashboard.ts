@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import { fetchTdxLiveBoardRows } from "@/features/mrt/api/tdx-liveboard";
+import { fetchTdxLiveBoard } from "@/features/mrt/api/tdx-liveboard";
 import {
   findLiveBoardRowsByStation,
   findStationById,
@@ -10,13 +10,19 @@ import { defaultVisibleOverlayIds } from "@/features/mrt/map/overlay-registry";
 import type { MrtLineId } from "@/features/mrt/types";
 import { appConfig } from "@/shared/config/env";
 
+export const supportedLiveRefreshIntervalsMs = [5000, 20000, 30000, 60000] as const;
+export type TimelineMode = "live" | "paused";
+
 export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
   const selectedStationId = ref<string | undefined>();
   const selectedLiveBoards = ref(findLiveBoardRowsByStation(""));
   const liveBoardError = ref<string | undefined>();
   const liveBoardLoading = ref(false);
+  const liveBoardUpdatedAt = ref<string | undefined>();
   const visibleLineIds = ref<MrtLineId[]>(mrtLines.map((line) => line.id));
   const visibleOverlayIds = ref(defaultVisibleOverlayIds());
+  const timelineMode = ref<TimelineMode>("live");
+  const liveRefreshIntervalMs = ref<(typeof supportedLiveRefreshIntervalsMs)[number]>(30000);
 
   const selectedStation = computed(() => {
     return selectedStationId.value ? findStationById(selectedStationId.value) : undefined;
@@ -29,11 +35,13 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
 
     if (!station) {
       selectedLiveBoards.value = [];
+      liveBoardUpdatedAt.value = undefined;
       return;
     }
 
     if (appConfig.mrtLiveBoardSource === "mock") {
       selectedLiveBoards.value = findLiveBoardRowsByStation(station.id);
+      liveBoardUpdatedAt.value = new Date().toISOString();
       return;
     }
 
@@ -43,25 +51,30 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
   async function refreshLiveBoards(): Promise<void> {
     if (!selectedStationId.value) {
       selectedLiveBoards.value = [];
+      liveBoardUpdatedAt.value = undefined;
       return;
     }
 
     if (appConfig.mrtLiveBoardSource === "mock") {
       selectedLiveBoards.value = findLiveBoardRowsByStation(selectedStationId.value);
+      liveBoardUpdatedAt.value = new Date().toISOString();
       return;
     }
 
     liveBoardLoading.value = true;
     liveBoardError.value = undefined;
     try {
-      selectedLiveBoards.value = await fetchTdxLiveBoardRows(
+      const payload = await fetchTdxLiveBoard(
         selectedStationId.value,
         appConfig.tdxProxyUrl,
       );
+      selectedLiveBoards.value = payload.rows;
+      liveBoardUpdatedAt.value = payload.updatedAt;
     } catch (error) {
       liveBoardError.value =
         error instanceof Error ? error.message : "Unable to load TDX LiveBoard rows.";
       selectedLiveBoards.value = [];
+      liveBoardUpdatedAt.value = undefined;
     } finally {
       liveBoardLoading.value = false;
     }
@@ -85,17 +98,36 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
     visibleOverlayIds.value = [...visibleOverlayIds.value, overlayId];
   }
 
+  function setTimelineMode(mode: TimelineMode): void {
+    timelineMode.value = mode;
+  }
+
+  function setLiveRefreshIntervalMs(intervalMs: number): void {
+    if (
+      supportedLiveRefreshIntervalsMs.includes(
+        intervalMs as (typeof supportedLiveRefreshIntervalsMs)[number],
+      )
+    ) {
+      liveRefreshIntervalMs.value = intervalMs as (typeof supportedLiveRefreshIntervalsMs)[number];
+    }
+  }
+
   return {
     selectedStationId,
     selectedStation,
     selectedLiveBoards,
     liveBoardError,
     liveBoardLoading,
+    liveBoardUpdatedAt,
     visibleLineIds,
     visibleOverlayIds,
+    timelineMode,
+    liveRefreshIntervalMs,
     refreshLiveBoards,
     selectStation,
     toggleLine,
     toggleOverlay,
+    setTimelineMode,
+    setLiveRefreshIntervalMs,
   };
 });

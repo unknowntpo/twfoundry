@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
-import { computed, nextTick, ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { useMrtDashboardStore } from "@/app/stores/mrt-dashboard";
+import {
+  supportedLiveRefreshIntervalsMs,
+  useMrtDashboardStore,
+} from "@/app/stores/mrt-dashboard";
 import LocaleSwitcher from "@/shared/components/LocaleSwitcher.vue";
 import { appConfig } from "@/shared/config/env";
 import { mrtLines, mrtStations } from "../data/mrt-fixtures";
@@ -16,8 +19,12 @@ const store = useMrtDashboardStore();
 const {
   liveBoardError,
   liveBoardLoading,
+  liveBoardUpdatedAt,
   selectedStation,
+  selectedStationId,
   selectedLiveBoards,
+  timelineMode,
+  liveRefreshIntervalMs,
   visibleLineIds,
   visibleOverlayIds,
 } = storeToRefs(store);
@@ -39,9 +46,46 @@ const activeTrainCount = computed(() => mrtLines.length * 12 + mrtStations.lengt
 const liveBoardSourceLabel = computed(() =>
   appConfig.mrtLiveBoardSource === "tdx" ? "TDX live" : "Mock",
 );
+const clockNow = ref(Date.now());
+const timelineTimestampLabel = computed(() => {
+  if (!liveBoardUpdatedAt.value) {
+    return t("dashboard.timeline.noData");
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
+    month: "numeric",
+    day: "numeric",
+    weekday: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(liveBoardUpdatedAt.value));
+});
+const timelineUpdatedLabel = computed(() => {
+  if (!liveBoardUpdatedAt.value) {
+    return t("dashboard.timeline.noData");
+  }
+
+  const diffSeconds = Math.max(
+    0,
+    Math.floor((clockNow.value - new Date(liveBoardUpdatedAt.value).getTime()) / 1000),
+  );
+  const relative =
+    diffSeconds < 60 ? `${diffSeconds}s ago` : `${Math.floor(diffSeconds / 60)}m ago`;
+  return t("dashboard.timeline.updated", { relative });
+});
+const timelineTrackFill = computed(() => {
+  if (timelineMode.value !== "live") {
+    return "100%";
+  }
+
+  const ratio = Math.min(1, Math.max(0.08, 5000 / liveRefreshIntervalMs.value));
+  return `${Math.round(ratio * 100)}%`;
+});
 const isLayerSidebarCollapsed = ref(false);
 const isStationPanelCollapsed = ref(false);
 const activeMobilePanel = ref<"map" | "layers" | "detail" | "time">("map");
+let liveRefreshTimer: number | undefined;
+let freshnessTicker: number | undefined;
 
 function toggleLayerSidebar(): void {
   isLayerSidebarCollapsed.value = !isLayerSidebarCollapsed.value;
@@ -69,6 +113,66 @@ function showMobilePanel(panel: "map" | "layers" | "detail" | "time"): void {
 
   notifyMapLayoutChanged();
 }
+
+function clearLiveRefreshTimer(): void {
+  if (liveRefreshTimer !== undefined) {
+    window.clearInterval(liveRefreshTimer);
+    liveRefreshTimer = undefined;
+  }
+}
+
+function clearFreshnessTicker(): void {
+  if (freshnessTicker !== undefined) {
+    window.clearInterval(freshnessTicker);
+    freshnessTicker = undefined;
+  }
+}
+
+function syncLiveRefreshTimer(): void {
+  clearLiveRefreshTimer();
+
+  if (
+    appConfig.mrtLiveBoardSource !== "tdx" ||
+    timelineMode.value !== "live" ||
+    !selectedStationId.value
+  ) {
+    return;
+  }
+
+  liveRefreshTimer = window.setInterval(() => {
+    void store.refreshLiveBoards();
+  }, liveRefreshIntervalMs.value);
+}
+
+function setLiveMode(mode: "live" | "paused"): void {
+  store.setTimelineMode(mode);
+  if (mode === "live" && selectedStationId.value) {
+    void store.refreshLiveBoards();
+  }
+}
+
+function setLiveRefreshInterval(intervalMs: number): void {
+  store.setLiveRefreshIntervalMs(intervalMs);
+  if (timelineMode.value === "live" && selectedStationId.value) {
+    void store.refreshLiveBoards();
+  }
+}
+
+onMounted(() => {
+  syncLiveRefreshTimer();
+  freshnessTicker = window.setInterval(() => {
+    clockNow.value = Date.now();
+  }, 1000);
+});
+
+onBeforeUnmount(() => {
+  clearLiveRefreshTimer();
+  clearFreshnessTicker();
+});
+
+watch([timelineMode, liveRefreshIntervalMs, selectedStationId], () => {
+  syncLiveRefreshTimer();
+});
 </script>
 
 <template>
@@ -269,6 +373,7 @@ function showMobilePanel(panel: "map" | "layers" | "detail" | "time"): void {
         :is-loading="liveBoardLoading"
         :station="selectedStation"
         :live-boards="selectedLiveBoards"
+        :updated-label="timelineUpdatedLabel"
         @refresh="store.refreshLiveBoards"
         @toggle-collapse="toggleStationPanel"
       />
@@ -276,17 +381,43 @@ function showMobilePanel(panel: "map" | "layers" | "detail" | "time"): void {
 
     <footer class="timeline" :aria-label="t('dashboard.timeline.aria')">
       <div class="timeline-buttons">
-        <button type="button" :aria-label="t('dashboard.timeline.previous')">‹</button>
-        <button type="button" :aria-label="t('dashboard.timeline.pause')">Ⅱ</button>
-        <button type="button" :aria-label="t('dashboard.timeline.next')">›</button>
+        <button type="button" :aria-label="t('dashboard.timeline.previous')" disabled>‹</button>
+        <button
+          type="button"
+          :aria-label="
+            timelineMode === 'live'
+              ? t('dashboard.timeline.pause')
+              : t('dashboard.timeline.live')
+          "
+          data-testid="timeline-live-toggle"
+          @click="setLiveMode(timelineMode === 'live' ? 'paused' : 'live')"
+        >
+          {{ timelineMode === "live" ? "Ⅱ" : "▶" }}
+        </button>
+        <button type="button" :aria-label="t('dashboard.timeline.next')" disabled>›</button>
       </div>
-      <span>{{ t("dashboard.timeline.date") }}</span>
-      <button type="button" class="now-button">{{ t("dashboard.timeline.now") }}</button>
-      <span>1d</span>
-      <span>60x</span>
-      <strong>10:43</strong>
+      <span>{{ timelineTimestampLabel }}</span>
+      <button type="button" class="now-button" @click="setLiveMode('live')">
+        {{ t("dashboard.timeline.now") }}
+      </button>
+      <span>{{ timelineMode === "live" ? t("dashboard.timeline.live") : t("dashboard.timeline.paused") }}</span>
+      <span>{{ t("dashboard.timeline.every") }}</span>
+      <div class="timeline-intervals" data-testid="timeline-intervals">
+        <button
+          v-for="intervalMs in supportedLiveRefreshIntervalsMs"
+          :key="intervalMs"
+          type="button"
+          class="interval-button"
+          :class="{ active: liveRefreshIntervalMs === intervalMs }"
+          :aria-pressed="liveRefreshIntervalMs === intervalMs"
+          @click="setLiveRefreshInterval(intervalMs)"
+        >
+          {{ intervalMs < 60000 ? `${intervalMs / 1000}s` : "1m" }}
+        </button>
+      </div>
+      <strong>{{ timelineUpdatedLabel }}</strong>
       <div class="timeline-track" aria-hidden="true">
-        <span />
+        <span :style="{ width: timelineTrackFill }" />
       </div>
       <small>{{ t("dashboard.timeline.feed", { source: liveBoardSourceLabel }) }}</small>
     </footer>
@@ -639,6 +770,21 @@ h1 {
 .timeline-buttons button {
   width: 28px;
   padding: 0;
+}
+
+.timeline-intervals {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.interval-button {
+  min-width: 42px;
+  padding-inline: 10px;
+}
+
+.interval-button.active {
+  border-color: var(--text);
+  color: var(--text);
 }
 
 .timeline-track {

@@ -49,4 +49,14 @@ describe("MRT dashboard store", () => {
 
     expect(store.visibleOverlayIds.includes("mrt-estimated-trains")).toBe(true);
   });
+
+  it("updates live timeline mode and refresh interval independently", () => {
+    const store = useMrtDashboardStore();
+
+    store.setTimelineMode("paused");
+    store.setLiveRefreshIntervalMs(5000);
+
+    expect(store.timelineMode).toBe("paused");
+    expect(store.liveRefreshIntervalMs).toBe(5000);
+  });
 });
