@@ -35,3 +35,19 @@ TWFoundry SHALL avoid implying historical replay capability before a persisted h
 - **WHEN** the operator views the timeline
 - **THEN** previous/next controls remain non-historical
 - **AND** the live mode can be paused without implying replay navigation
+
+### Requirement: Train-Centric Live Selection
+
+TWFoundry SHALL treat the train code as the primary identity for live train selection in the MRT dashboard.
+
+#### Scenario: Sidebar and map stay centered on the selected train
+
+- **GIVEN** the MRT dashboard renders train cards from the live feed
+- **WHEN** the operator views the sidebar
+- **THEN** each train card shows the train code as the primary label
+- **AND** destination and direction remain secondary metadata
+- **WHEN** the operator hovers an estimated train marker on the map
+- **THEN** the hover tooltip shows only the train code
+- **WHEN** the operator clicks an estimated train marker on the map
+- **THEN** the matching sidebar line group is expanded if needed
+- **AND** the matching train card is scrolled into view and focused

@@ -49,6 +49,21 @@ The station panel must use the same freshness label source as the timeline.
 
 Empty-state copy must be source-neutral and must not imply the data is mock-only.
 
+## Train Selection Interaction Contract
+
+For the MRT live sidebar and estimated train markers:
+
+- the primary train label in the sidebar must be the train code, not the destination station
+- destination and direction remain secondary metadata
+- hover state for estimated train markers must show only the train code
+- clicking a train marker on the map must keep `selectedTrainId` as the source of truth
+- when `selectedTrainId` changes from a map click, the sidebar must:
+  - expand the owning line group if needed
+  - scroll the selected train card into view
+  - move keyboard focus to the selected train card
+
+This keeps train selection centered on the moving vehicle instead of the currently observed station row.
+
 ## Store Contract
 
 The MRT dashboard store owns the live timeline state:

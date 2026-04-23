@@ -13,6 +13,8 @@ Phase 1 should first make live monitoring complete before introducing persisted 
 - Show the latest live snapshot timestamp and relative freshness in the timeline.
 - Reuse the existing backend `/api/mrt/liveboard` endpoint and its `updatedAt` field.
 - Make station panel freshness and timeline freshness share the same source of truth.
+- Make train selection UI treat the train code as the primary identifier in the live sidebar.
+- Make map-to-sidebar interaction return focus to the selected train card when a train marker is clicked.
 
 ## Out of Scope
 

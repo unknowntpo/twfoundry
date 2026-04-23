@@ -7,6 +7,9 @@
 - [x] Keep `previous` and `next` disabled and explicitly non-historical.
 - [x] Make station panel freshness and timeline freshness share the same source of truth.
 - [x] Update empty-state wording so it is source-neutral.
+- [x] Make train code the primary live train label in the sidebar.
+- [x] Make train marker hover show only train code.
+- [x] Make map train selection expand, scroll, and focus the matching sidebar card.
 
 ## Validation
 

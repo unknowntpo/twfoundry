@@ -191,7 +191,7 @@ function createGoogleTrainMarker(
     const marker = new markerLibrary.AdvancedMarkerElement({
       map,
       position: train.position,
-      title: `Train ${train.trainCode} · ${train.destination} · ${train.arrivalMinutes} min`,
+      title: train.trainCode,
       content,
       zIndex: 90,
     });
@@ -209,7 +209,7 @@ function createGoogleTrainMarker(
   const marker = new google.maps.Marker({
     map,
     position: train.position,
-    title: `Train ${train.trainCode} · ${train.destination} · ${train.arrivalMinutes} min`,
+    title: train.trainCode,
     zIndex: 90,
     icon: {
       path: "M -6 0 a 6 6 0 1 0 12 0 a 6 6 0 1 0 -12 0",
@@ -251,7 +251,7 @@ function createGoogleTrainMarkerContent(
   marker.className = "google-train-marker";
   marker.dataset.status = train.status;
   marker.dataset.selected = String(store.selectedTrainId === train.id);
-  marker.title = `Train ${train.trainCode} · ${train.destination} · ${train.arrivalMinutes} min`;
+  marker.title = train.trainCode;
   marker.style.setProperty("--train-line-color", resolveLineColor(train.lineId));
   return marker;
 }
@@ -315,7 +315,7 @@ function clearHoveredTrain(): void {
 }
 
 function formatTrainTooltip(train: ReturnType<typeof inferTrainMarkers>[number]): string {
-  return `Train ${train.trainCode} · ${train.destination} · ${train.direction} · ${train.arrivalMinutes} min · ${train.status}`;
+  return train.trainCode;
 }
 
 function focusSelectedTrain(): void {
@@ -511,7 +511,7 @@ declare global {
       :class="{ selected: store.selectedTrainId === train.id }"
       :style="resolveMockTrainStyle(train)"
       :data-testid="`train-${train.id}`"
-      :title="`${train.destination} · ${train.arrivalMinutes} min`"
+      :title="train.trainCode"
       @mouseenter="updateHoveredTrain(train, $event)"
       @mousemove="updateHoveredTrain(train, $event)"
       @mouseleave="clearHoveredTrain()"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useMrtDashboardStore } from "@/app/stores/mrt-dashboard";
 import type { LiveBoardRow, MrtLine } from "../types";
@@ -11,6 +11,7 @@ const props = defineProps<{
 const store = useMrtDashboardStore();
 const { t } = useI18n();
 const expandedLineIds = ref<string[]>([]);
+const trainCardRefs = ref<Record<string, HTMLButtonElement | null>>({});
 
 const liveRowsByLine = computed(() =>
   props.lines.map((line) => ({
@@ -33,6 +34,33 @@ async function selectTrain(row: LiveBoardRow): Promise<void> {
   await store.selectStation(row.stationId);
   store.selectTrain(row.id);
 }
+
+function registerTrainCardRef(trainId: string, element: Element | null): void {
+  trainCardRefs.value[trainId] = element instanceof HTMLButtonElement ? element : null;
+}
+
+watch(
+  () => store.selectedTrainId,
+  async (selectedTrainId) => {
+    if (!selectedTrainId) {
+      return;
+    }
+
+    const row = store.networkLiveBoards.find((item) => item.id === selectedTrainId);
+    if (!row) {
+      return;
+    }
+
+    if (!expandedLineIds.value.includes(row.lineId)) {
+      expandedLineIds.value = [...expandedLineIds.value, row.lineId];
+    }
+
+    await nextTick();
+    const card = trainCardRefs.value[selectedTrainId];
+    card?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    card?.focus({ preventScroll: true });
+  },
+);
 </script>
 
 <template>
@@ -77,6 +105,7 @@ async function selectTrain(row: LiveBoardRow): Promise<void> {
         <button
           v-for="row in rows"
           :key="row.id"
+          :ref="(element) => registerTrainCardRef(row.id, element)"
           type="button"
           class="train-row"
           :class="{ selected: store.selectedTrainId === row.id }"
@@ -84,8 +113,8 @@ async function selectTrain(row: LiveBoardRow): Promise<void> {
         >
           <span class="train-dot" aria-hidden="true" />
           <span class="train-main">
-            <strong>{{ row.destination }}</strong>
-            <span>Train {{ row.trainCode }}</span>
+            <strong>{{ row.trainCode }}</strong>
+            <span>{{ row.destination }}</span>
             <span>{{ row.direction }}</span>
           </span>
           <span class="train-meta">
