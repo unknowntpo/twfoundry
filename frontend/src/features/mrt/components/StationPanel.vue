@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
 import BaseBadge from "@/shared/components/BaseBadge.vue";
+import { resolveLocalizedText } from "../localized-text";
+import { formatMrtLineName, resolveMrtLineLabel } from "../line-names";
 import type { LiveBoardRow, MrtStation } from "../types";
 
-const { t } = useI18n();
+const { locale, t } = useI18n();
 
-defineProps<{
+const props = defineProps<{
   collapsed?: boolean;
   error?: string;
   isLoading?: boolean;
@@ -20,17 +22,20 @@ defineEmits<{
 }>();
 
 function formatLineName(lineId: string): string {
-  if (
-    lineId === "red" ||
-    lineId === "blue" ||
-    lineId === "green" ||
-    lineId === "orange" ||
-    lineId === "brown"
-  ) {
-    return t(`dashboard.station.lineNames.${lineId}`);
-  }
+  return formatMrtLineName(t, lineId);
+}
 
-  return t("dashboard.station.lineNames.neutral");
+function displayLineName(lineId: string): string {
+  return resolveMrtLineLabel(
+    t,
+    locale.value,
+    lineId,
+    props.liveBoards.find((row) => row.lineId === lineId)?.lineName,
+  );
+}
+
+function displayDestination(row: LiveBoardRow): string {
+  return resolveLocalizedText(locale.value, row.destinationName, row.destination) ?? row.destination;
 }
 
 function routeTone(lineId: string): "red" | "blue" | "green" | "orange" | "brown" | "neutral" {
@@ -90,7 +95,7 @@ function routeTone(lineId: string): "red" | "blue" | "green" | "orange" | "brown
               class="line-badge"
               :tone="routeTone(lineId)"
             >
-              {{ formatLineName(lineId) }}
+              {{ displayLineName(lineId) }}
             </BaseBadge>
           </div>
           <p class="station-meta">{{ t("dashboard.station.active", { stationId: station.id }) }}</p>
@@ -103,9 +108,9 @@ function routeTone(lineId: string): "red" | "blue" | "green" | "orange" | "brown
             <article v-for="row in liveBoards" :key="row.id" class="liveboard-row">
               <span class="row-line" :data-line="row.lineId" aria-hidden="true" />
               <div>
-                <h3>{{ row.destination }}</h3>
+                <h3>{{ displayDestination(row) }}</h3>
                 <p class="direction">
-                  {{ t("dashboard.station.direction", { line: formatLineName(row.lineId), direction: row.direction }) }}
+                  {{ t("dashboard.station.direction", { line: displayLineName(row.lineId), direction: row.direction }) }}
                 </p>
               </div>
               <div class="arrival">

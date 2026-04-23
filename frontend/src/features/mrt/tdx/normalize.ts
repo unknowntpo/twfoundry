@@ -1,4 +1,4 @@
-import type { LiveBoardRow, MrtLineId } from "../types";
+import type { LiveBoardRow, LocalizedText, MrtLineId } from "../types";
 
 export interface TdxRawLiveBoardRow {
   StationID?: string;
@@ -47,18 +47,23 @@ function normalizeTdxLiveBoardRow(
   const hasEstimate = Number.isFinite(estimateSeconds);
   const arrivalMinutes = hasEstimate ? Math.max(0, Math.ceil(estimateSeconds / 60)) : 0;
   const lineId = resolveLineId(row.LineID, row.LineName, stationId);
+  const destinationLabel =
+    localizedText(row.DestinationStationName) ??
+    row.TripHeadSign ??
+    row.DestinationStationID ??
+    "Unknown destination";
 
   return {
     id: `tdx-${stationId}-${row.DestinationStationID ?? index}`,
     trainCode: row.TrainNo ?? `${stationId}-${row.DestinationStationID ?? index}`,
     stationId,
+    stationName: localizedValue(row.StationName),
     lineId,
+    lineName: localizedValue(row.LineName),
     direction: normalizeDirection(row.Direction),
-    destination:
-      localizedText(row.DestinationStationName) ??
-      row.TripHeadSign ??
-      row.DestinationStationID ??
-      "Unknown destination",
+    destination: destinationLabel,
+    destinationName:
+      localizedValue(row.DestinationStationName) ?? localizedValue(destinationLabel),
     arrivalMinutes,
     status: normalizeStatus(row.StopStatus, arrivalMinutes, hasEstimate),
   };
@@ -166,6 +171,21 @@ function localizedText(value: TdxRawLiveBoardRow["StationName"]): string | undef
   }
 
   return value?.En ?? value?.Zh_tw;
+}
+
+function localizedValue(value: TdxRawLiveBoardRow["StationName"]): LocalizedText | undefined {
+  if (typeof value === "string") {
+    return { En: value };
+  }
+
+  if (!value || (!value.En && !value.Zh_tw)) {
+    return undefined;
+  }
+
+  return {
+    En: value.En,
+    Zh_tw: value.Zh_tw,
+  };
 }
 
 function isRecord(value: unknown): value is TdxRawLiveBoardRow & Record<string, unknown> {

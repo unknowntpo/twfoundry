@@ -28,16 +28,21 @@ public class MrtLiveBoardService {
     boolean hasEstimate = estimateSeconds >= 0;
     int arrivalMinutes = hasEstimate ? Math.max(0, (int) Math.ceil(estimateSeconds / 60.0)) : 0;
     String lineId = resolveLineId(row);
+    String destinationLabel =
+        text(
+            row,
+            "DestinationStationName",
+            text(row, "TripHeadSign", text(row, "DestinationStationID", "Unknown destination")));
     return new LiveBoardRow(
         "tdx-" + stationId + "-" + text(row, "DestinationStationID", "0"),
         text(row, "TrainNo", stationId + "-" + text(row, "DestinationStationID", "0")),
         stationId,
+        localizedText(row, "StationName"),
         lineId,
+        localizedText(row, "LineName"),
         normalizeDirection(text(row, "Direction", "")),
-        text(
-            row,
-            "DestinationStationName",
-            text(row, "TripHeadSign", text(row, "DestinationStationID", "Unknown destination"))),
+        destinationLabel,
+        localizedText(row, "DestinationStationName", destinationLabel),
         arrivalMinutes,
         normalizeStatus(integer(row, "StopStatus", null), arrivalMinutes, hasEstimate));
   }
@@ -135,6 +140,27 @@ public class MrtLiveBoardService {
     return value == null || value.isBlank() ? defaultValue : value;
   }
 
+  private LocalizedText localizedText(JsonNode row, String field) {
+    return localizedText(row, field, null);
+  }
+
+  private LocalizedText localizedText(JsonNode row, String field, String fallback) {
+    JsonNode value = row.path(field);
+    if (value.isTextual()) {
+      String text = value.asText();
+      return text.isBlank() ? null : new LocalizedText(null, text);
+    }
+    if (value.isObject()) {
+      String zh = value.path("Zh_tw").asText("");
+      String en = value.path("En").asText("");
+      if (zh.isBlank() && en.isBlank()) {
+        return null;
+      }
+      return new LocalizedText(zh.isBlank() ? null : zh, en.isBlank() ? null : en);
+    }
+    return fallback == null || fallback.isBlank() ? null : new LocalizedText(null, fallback);
+  }
+
   private Integer integer(JsonNode row, String field, Integer fallback) {
     JsonNode value = row.path(field);
     if (value.isInt() || value.isLong()) {
@@ -156,9 +182,14 @@ public class MrtLiveBoardService {
       String id,
       String trainCode,
       String stationId,
+      LocalizedText stationName,
       String lineId,
+      LocalizedText lineName,
       String direction,
       String destination,
+      LocalizedText destinationName,
       int arrivalMinutes,
       String status) {}
+
+  public record LocalizedText(String Zh_tw, String En) {}
 }

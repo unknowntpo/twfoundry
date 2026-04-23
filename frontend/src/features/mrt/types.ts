@@ -20,13 +20,21 @@ export interface MrtStation {
   position: Coordinates;
 }
 
+export interface LocalizedText {
+  Zh_tw?: string;
+  En?: string;
+}
+
 export interface LiveBoardRow {
   id: string;
   trainCode: string;
   stationId: string;
+  stationName?: LocalizedText;
   lineId: MrtLineId;
+  lineName?: LocalizedText;
   direction: string;
   destination: string;
+  destinationName?: LocalizedText;
   arrivalMinutes: number;
   status: "on-time" | "approaching" | "delayed";
 }

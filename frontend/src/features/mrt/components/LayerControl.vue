@@ -2,6 +2,8 @@
 import { computed, nextTick, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useMrtDashboardStore } from "@/app/stores/mrt-dashboard";
+import { resolveLocalizedText } from "../localized-text";
+import { resolveMrtLineLabel } from "../line-names";
 import type { LiveBoardRow, MrtLine } from "../types";
 
 const props = defineProps<{
@@ -9,7 +11,7 @@ const props = defineProps<{
 }>();
 
 const store = useMrtDashboardStore();
-const { t } = useI18n();
+const { locale, t } = useI18n();
 const expandedLineIds = ref<string[]>([]);
 const trainCardRefs = ref<Record<string, HTMLButtonElement | null>>({});
 
@@ -28,6 +30,14 @@ function toggleExpanded(lineId: string): void {
 
 function isExpanded(lineId: string): boolean {
   return expandedLineIds.value.includes(lineId);
+}
+
+function displayLineLabel(line: MrtLine, rows: LiveBoardRow[]): string {
+  return resolveMrtLineLabel(t, locale.value, line.id, rows.find((row) => row.lineName)?.lineName);
+}
+
+function displayDestination(row: LiveBoardRow): string {
+  return resolveLocalizedText(locale.value, row.destinationName, row.destination) ?? row.destination;
 }
 
 async function selectTrain(row: LiveBoardRow): Promise<void> {
@@ -75,7 +85,7 @@ watch(
         <button
           type="button"
           class="expand-button"
-          :aria-label="t('dashboard.layers.expandLine', { line: line.name })"
+          :aria-label="t('dashboard.layers.expandLine', { line: displayLineLabel(line, rows) })"
           :aria-expanded="isExpanded(line.id)"
           @click="toggleExpanded(line.id)"
         >
@@ -88,7 +98,7 @@ watch(
           @click="toggleExpanded(line.id)"
         >
           <span class="line-dot" aria-hidden="true" />
-          <span class="line-label">{{ line.name }}</span>
+          <span class="line-label">{{ displayLineLabel(line, rows) }}</span>
           <span class="line-count">{{ rows.length }}</span>
         </button>
 
@@ -114,13 +124,10 @@ watch(
           <span class="train-dot" aria-hidden="true" />
           <span class="train-main">
             <strong>{{ row.trainCode }}</strong>
-            <span>{{ row.destination }}</span>
-            <span>{{ row.direction }}</span>
+            <span class="train-destination">{{ displayDestination(row) }}</span>
+            <span class="train-secondary">{{ row.status }} · {{ row.direction }}</span>
           </span>
-          <span class="train-meta">
-            <strong>{{ row.arrivalMinutes }}m</strong>
-            <span>{{ row.status }}</span>
-          </span>
+          <span class="train-meta">ETA {{ row.arrivalMinutes }}m</span>
         </button>
 
         <p v-if="rows.length === 0" class="empty-trains">
@@ -236,9 +243,9 @@ watch(
 .train-row {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
+  align-items: start;
+  gap: 10px;
+  padding: 10px 12px;
   border: 1px solid var(--twf-color-border);
   border-radius: var(--twf-radius-md);
   background: color-mix(in srgb, var(--twf-color-surface) 92%, white);
@@ -254,32 +261,53 @@ watch(
 .train-dot {
   width: 10px;
   height: 10px;
+  margin-top: 8px;
   border-radius: 50%;
   background: var(--line-color);
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--line-color) 16%, transparent);
 }
 
-.train-main,
-.train-meta {
+.train-main {
   display: grid;
-  gap: 2px;
+  gap: 4px;
 }
 
-.train-main span,
-.train-meta span {
+.train-main strong {
+  font-size: 0.92rem;
+  line-height: 1.15;
+}
+
+.train-destination,
+.train-secondary,
+.train-meta {
   color: var(--twf-color-text-faint);
-  font-size: 0.7rem;
+}
+
+.train-destination {
+  font-size: 0.76rem;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.train-secondary {
+  font-size: 0.68rem;
   font-weight: 600;
+  line-height: 1.2;
 }
 
 .train-meta {
-  justify-items: end;
+  align-self: center;
+  white-space: nowrap;
+  font-size: 0.68rem;
+  font-weight: 700;
 }
 
 .empty-trains {
   margin: 0;
   color: var(--twf-color-text-faint);
   font-size: 0.72rem;
-  padding: 2px 4px 6px;
 }
 </style>

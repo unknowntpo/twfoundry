@@ -27,6 +27,16 @@ class MrtLiveBoardControllerE2eTest {
     assertEquals("tdx", response.getBody().source());
     assertFalse(response.getBody().rows().isEmpty());
     assertEquals("BL18", response.getBody().rows().getFirst().stationId());
+    assertFalse(response.getBody().rows().getFirst().destination().isBlank());
+    assertTrue(
+        response.getBody().rows().stream()
+            .anyMatch(
+                row ->
+                    row.destinationName() != null
+                        && ((row.destinationName().Zh_tw() != null
+                                && !row.destinationName().Zh_tw().isBlank())
+                            || (row.destinationName().En() != null
+                                && !row.destinationName().En().isBlank()))));
   }
 
   @Test

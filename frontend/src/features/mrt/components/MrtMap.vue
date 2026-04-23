@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useMrtDashboardStore } from "@/app/stores/mrt-dashboard";
 import { appConfig } from "@/shared/config/env";
+import { resolveMrtLineLabel } from "../line-names";
 import { inferTrainMarkers } from "../map/inferred-trains";
 import type { MrtLine, MrtStation } from "../types";
 
@@ -12,7 +13,7 @@ const props = defineProps<{
 }>();
 
 const store = useMrtDashboardStore();
-const { t } = useI18n();
+const { locale, t } = useI18n();
 const mapElement = ref<HTMLElement | null>(null);
 const mapError = ref<string | undefined>();
 const googleReady = ref(false);
@@ -46,6 +47,15 @@ const selectedTrain = computed(() =>
 const hoveredTrain = computed(() =>
   inferredTrains.value.find((train) => train.id === hoveredTrainId.value),
 );
+
+function lineLabel(line: MrtLine): string {
+  return resolveMrtLineLabel(
+    t,
+    locale.value,
+    line.id,
+    store.networkLiveBoards.find((row) => row.lineId === line.id)?.lineName,
+  );
+}
 
 onMounted(() => {
   if (appConfig.mapProvider !== "google") {
@@ -483,7 +493,7 @@ declare global {
         class="mock-line"
         :style="{ '--line-color': line.color }"
       >
-        {{ line.name }}
+        {{ lineLabel(line) }}
       </div>
     </div>
 
@@ -534,7 +544,7 @@ declare global {
       <h2>{{ t("dashboard.map.overlayTitle") }}</h2>
       <p v-for="line in lines" :key="line.id">
         <span class="legend-line" :style="{ '--line-color': line.color }" aria-hidden="true" />
-        {{ t("dashboard.map.polyline", { line: line.name }) }}
+        {{ t("dashboard.map.polyline", { line: lineLabel(line) }) }}
       </p>
       <p>
         <span class="legend-dot" aria-hidden="true" />

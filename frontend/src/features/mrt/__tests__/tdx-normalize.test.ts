@@ -27,12 +27,33 @@ describe("TDX LiveBoard normalization", () => {
       expect.objectContaining({
         arrivalMinutes: 2,
         destination: "Nangang Exhibition Center",
+        destinationName: { En: "Nangang Exhibition Center" },
         direction: "Inbound",
         lineId: "blue",
+        lineName: undefined,
         stationId: "BL18",
+        stationName: undefined,
         status: "on-time",
       }),
     ]);
+  });
+
+  it("preserves localized line names as an object", () => {
+    const rows = normalizeTdxLiveBoardRows(
+      [
+        {
+          LineID: "R",
+          LineName: { Zh_tw: "淡水信義線", En: "Tamsui-Xinyi Line" },
+          StationID: "R10",
+        },
+      ],
+      "R10",
+    );
+
+    expect(rows[0]?.lineName).toEqual({
+      En: "Tamsui-Xinyi Line",
+      Zh_tw: "淡水信義線",
+    });
   });
 
   it("filters by StationID, StationUID suffix, and requested station", () => {
