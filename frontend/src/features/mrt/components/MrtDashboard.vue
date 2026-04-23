@@ -20,6 +20,7 @@ const {
   liveBoardError,
   liveBoardLoading,
   liveBoardUpdatedAt,
+  networkLiveBoards,
   selectedStation,
   selectedStationId,
   selectedLiveBoards,
@@ -42,7 +43,15 @@ const stationOverlays = computed(() =>
   mrtOverlayRegistry.filter((overlay) => overlay.category === "station"),
 );
 
-const activeTrainCount = computed(() => mrtLines.length * 12 + mrtStations.length);
+const lineTrainCounts = computed(() =>
+  Object.fromEntries(
+    mrtLines.map((line) => [
+      line.id,
+      networkLiveBoards.value.filter((row) => row.lineId === line.id).length,
+    ]),
+  ) as Record<string, number>,
+);
+const activeTrainCount = computed(() => networkLiveBoards.value.length);
 const liveBoardSourceLabel = computed(() =>
   appConfig.mrtLiveBoardSource === "tdx" ? "TDX live" : "Mock",
 );
@@ -203,7 +212,7 @@ watch([timelineMode, liveRefreshIntervalMs, selectedStationId], () => {
       <div class="line-stats" :aria-label="t('dashboard.serviceSummary')">
         <span v-for="line in mrtLines" :key="line.id" class="line-stat">
           <span class="stat-dot" :style="{ '--line-color': line.color }" aria-hidden="true" />
-          {{ t("dashboard.trains", { count: line.stationIds.length * 6 }) }}
+          {{ t("dashboard.trains", { count: lineTrainCounts[line.id] ?? 0 }) }}
         </span>
         <span>{{
           t("dashboard.activeSource", { count: activeTrainCount, source: liveBoardSourceLabel })

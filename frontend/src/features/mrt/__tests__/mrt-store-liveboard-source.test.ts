@@ -8,6 +8,7 @@ const tdxRows: LiveBoardRow[] = [
     destination: "Nangang Exhibition Center",
     direction: "Inbound",
     id: "tdx-bl18",
+    trainCode: "BL18-BL23",
     lineId: "blue",
     stationId: "BL18",
     status: "approaching",

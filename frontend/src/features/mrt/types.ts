@@ -1,4 +1,4 @@
-export type MrtLineId = "red" | "blue" | "green";
+export type MrtLineId = "red" | "blue" | "green" | "orange" | "brown" | "yellow";
 
 export interface Coordinates {
   lat: number;
@@ -22,6 +22,7 @@ export interface MrtStation {
 
 export interface LiveBoardRow {
   id: string;
+  trainCode: string;
   stationId: string;
   lineId: MrtLineId;
   direction: string;

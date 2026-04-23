@@ -30,6 +30,7 @@ public class MrtLiveBoardService {
     String lineId = resolveLineId(row);
     return new LiveBoardRow(
         "tdx-" + stationId + "-" + text(row, "DestinationStationID", "0"),
+        text(row, "TrainNo", stationId + "-" + text(row, "DestinationStationID", "0")),
         stationId,
         lineId,
         normalizeDirection(text(row, "Direction", "")),
@@ -50,19 +51,43 @@ public class MrtLiveBoardService {
   }
 
   private String resolveLineId(JsonNode row) {
-    String value =
-        (
-                text(row, "LineID", "")
-                    + " "
-                    + text(row, "LineName", "")
-                    + " "
-                    + text(row, "StationID", ""))
-            .toLowerCase();
-    if (value.contains("blue") || value.contains("bl")) {
+    String rawLineId = text(row, "LineID", "").toUpperCase();
+    String stationId = text(row, "StationID", "").toUpperCase();
+    String stationPrefix = stationId.replaceAll("[^A-Z]", "");
+    String lineName = text(row, "LineName", "").toLowerCase();
+
+    if ("BL".equals(rawLineId) || stationPrefix.startsWith("BL")) {
       return "blue";
     }
-    if (value.contains("green") || value.contains("g")) {
+    if ("BR".equals(rawLineId) || stationPrefix.startsWith("BR")) {
+      return "brown";
+    }
+    if ("G".equals(rawLineId) || stationPrefix.startsWith("G")) {
       return "green";
+    }
+    if ("O".equals(rawLineId) || stationPrefix.startsWith("O")) {
+      return "orange";
+    }
+    if ("R".equals(rawLineId) || stationPrefix.startsWith("R")) {
+      return "red";
+    }
+    if ("Y".equals(rawLineId) || stationPrefix.startsWith("Y")) {
+      return "yellow";
+    }
+    if (lineName.contains("blue")) {
+      return "blue";
+    }
+    if (lineName.contains("brown")) {
+      return "brown";
+    }
+    if (lineName.contains("green")) {
+      return "green";
+    }
+    if (lineName.contains("orange")) {
+      return "orange";
+    }
+    if (lineName.contains("yellow")) {
+      return "yellow";
     }
     return "red";
   }
@@ -129,6 +154,7 @@ public class MrtLiveBoardService {
 
   public record LiveBoardRow(
       String id,
+      String trainCode,
       String stationId,
       String lineId,
       String direction,

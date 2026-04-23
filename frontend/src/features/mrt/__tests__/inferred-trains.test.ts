@@ -8,6 +8,7 @@ describe("inferTrainMarkers", () => {
     const rows: LiveBoardRow[] = [
       {
         id: "tdx-BL18-1",
+        trainCode: "BL18-BL12",
         stationId: "BL18",
         lineId: "blue",
         direction: "Inbound",
@@ -17,6 +18,7 @@ describe("inferTrainMarkers", () => {
       },
       {
         id: "tdx-BL18-2",
+        trainCode: "BL18-BL01",
         stationId: "BL18",
         lineId: "blue",
         direction: "Outbound",

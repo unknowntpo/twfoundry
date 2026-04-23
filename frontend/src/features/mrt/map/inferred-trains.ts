@@ -2,6 +2,7 @@ import type { Coordinates, LiveBoardRow, MrtLine, MrtStation } from "../types";
 
 export interface InferredTrainMarker {
   id: string;
+  trainCode: string;
   stationId: string;
   lineId: LiveBoardRow["lineId"];
   direction: LiveBoardRow["direction"];
@@ -30,6 +31,7 @@ export function inferTrainMarkers(
     return [
       {
         id: row.id,
+        trainCode: row.trainCode,
         stationId: station.id,
         lineId: row.lineId,
         direction: row.direction,

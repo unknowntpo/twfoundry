@@ -20,15 +20,27 @@ defineEmits<{
 }>();
 
 function formatLineName(lineId: string): string {
-  if (lineId === "red" || lineId === "blue" || lineId === "green") {
+  if (
+    lineId === "red" ||
+    lineId === "blue" ||
+    lineId === "green" ||
+    lineId === "orange" ||
+    lineId === "brown"
+  ) {
     return t(`dashboard.station.lineNames.${lineId}`);
   }
 
   return t("dashboard.station.lineNames.neutral");
 }
 
-function routeTone(lineId: string): "red" | "blue" | "green" | "neutral" {
-  if (lineId === "red" || lineId === "blue" || lineId === "green") {
+function routeTone(lineId: string): "red" | "blue" | "green" | "orange" | "brown" | "neutral" {
+  if (
+    lineId === "red" ||
+    lineId === "blue" ||
+    lineId === "green" ||
+    lineId === "orange" ||
+    lineId === "brown"
+  ) {
     return lineId;
   }
 

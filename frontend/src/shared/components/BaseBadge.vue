@@ -1,6 +1,6 @@
 <script setup lang="ts">
 defineProps<{
-  tone?: "neutral" | "warm" | "red" | "blue" | "green";
+  tone?: "neutral" | "warm" | "red" | "blue" | "green" | "orange" | "brown";
 }>();
 </script>
 
@@ -47,5 +47,17 @@ defineProps<{
   border-color: #c8e3d2;
   background: #eaf5ee;
   color: var(--twf-color-route-green);
+}
+
+.base-badge[data-tone="orange"] {
+  border-color: #f3dfb7;
+  background: #fbf3df;
+  color: #bb7a00;
+}
+
+.base-badge[data-tone="brown"] {
+  border-color: #e4d5b8;
+  background: #f7f1e4;
+  color: #8c6322;
 }
 </style>

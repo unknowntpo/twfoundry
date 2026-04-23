@@ -2,7 +2,7 @@
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useMrtDashboardStore } from "@/app/stores/mrt-dashboard";
-import type { MrtLine } from "../types";
+import type { LiveBoardRow, MrtLine } from "../types";
 
 const props = defineProps<{
   lines: MrtLine[];
@@ -27,6 +27,11 @@ function toggleExpanded(lineId: string): void {
 
 function isExpanded(lineId: string): boolean {
   return expandedLineIds.value.includes(lineId);
+}
+
+async function selectTrain(row: LiveBoardRow): Promise<void> {
+  await store.selectStation(row.stationId);
+  store.selectTrain(row.id);
 }
 </script>
 
@@ -75,11 +80,12 @@ function isExpanded(lineId: string): boolean {
           type="button"
           class="train-row"
           :class="{ selected: store.selectedTrainId === row.id }"
-          @click="store.selectTrain(row.id)"
+          @click="selectTrain(row)"
         >
           <span class="train-dot" aria-hidden="true" />
           <span class="train-main">
             <strong>{{ row.destination }}</strong>
+            <span>Train {{ row.trainCode }}</span>
             <span>{{ row.direction }}</span>
           </span>
           <span class="train-meta">

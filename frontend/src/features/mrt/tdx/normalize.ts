@@ -12,6 +12,7 @@ export interface TdxRawLiveBoardRow {
   TripHeadSign?: string;
   EstimateTime?: string | number | null;
   StopStatus?: string | number | null;
+  TrainNo?: string;
 }
 
 export function extractTdxLiveBoardRows(payload: unknown): TdxRawLiveBoardRow[] {
@@ -49,6 +50,7 @@ function normalizeTdxLiveBoardRow(
 
   return {
     id: `tdx-${stationId}-${row.DestinationStationID ?? index}`,
+    trainCode: row.TrainNo ?? `${stationId}-${row.DestinationStationID ?? index}`,
     stationId,
     lineId,
     direction: normalizeDirection(row.Direction),
@@ -79,14 +81,52 @@ function resolveLineId(
   lineName: TdxRawLiveBoardRow["LineName"],
   stationId: string,
 ): MrtLineId {
-  const value = `${lineId ?? ""} ${localizedText(lineName) ?? ""} ${stationId}`.toLowerCase();
+  const stationPrefix = stationId.toUpperCase().replace(/[^A-Z]/g, "");
+  const rawLineId = (lineId ?? "").toUpperCase();
+  const lineLabel = (localizedText(lineName) ?? "").toLowerCase();
 
-  if (value.includes("blue") || value.includes("bl")) {
+  if (rawLineId === "BL" || stationPrefix.startsWith("BL")) {
     return "blue";
   }
 
-  if (value.includes("green") || value.includes("g")) {
+  if (rawLineId === "BR" || stationPrefix.startsWith("BR")) {
+    return "brown";
+  }
+
+  if (rawLineId === "G" || stationPrefix.startsWith("G")) {
     return "green";
+  }
+
+  if (rawLineId === "O" || stationPrefix.startsWith("O")) {
+    return "orange";
+  }
+
+  if (rawLineId === "R" || stationPrefix.startsWith("R")) {
+    return "red";
+  }
+
+  if (rawLineId === "Y" || stationPrefix.startsWith("Y")) {
+    return "yellow";
+  }
+
+  if (lineLabel.includes("blue")) {
+    return "blue";
+  }
+
+  if (lineLabel.includes("brown")) {
+    return "brown";
+  }
+
+  if (lineLabel.includes("green")) {
+    return "green";
+  }
+
+  if (lineLabel.includes("orange")) {
+    return "orange";
+  }
+
+  if (lineLabel.includes("yellow")) {
+    return "yellow";
   }
 
   return "red";

@@ -56,7 +56,7 @@ onMounted(() => {
 });
 
 watch(
-  () => [props.lines, visibleStations.value, store.selectedStationId, store.selectedLiveBoards],
+  () => [props.lines, visibleStations.value, store.selectedStationId, store.networkLiveBoards],
   () => {
     if (appConfig.mapProvider === "google" && googleReady.value) {
       renderGoogleMapOverlays();
@@ -191,7 +191,7 @@ function createGoogleTrainMarker(
     const marker = new markerLibrary.AdvancedMarkerElement({
       map,
       position: train.position,
-      title: `${train.destination} · ${train.arrivalMinutes} min`,
+      title: `Train ${train.trainCode} · ${train.destination} · ${train.arrivalMinutes} min`,
       content,
       zIndex: 90,
     });
@@ -209,7 +209,7 @@ function createGoogleTrainMarker(
   const marker = new google.maps.Marker({
     map,
     position: train.position,
-    title: `${train.destination} · ${train.arrivalMinutes} min`,
+    title: `Train ${train.trainCode} · ${train.destination} · ${train.arrivalMinutes} min`,
     zIndex: 90,
     icon: {
       path: "M -6 0 a 6 6 0 1 0 12 0 a 6 6 0 1 0 -12 0",
@@ -225,13 +225,22 @@ function createGoogleTrainMarker(
 }
 
 function createGoogleStationMarker(station: MrtStation): HTMLElement {
+  const selected = station.id === store.selectedStationId;
   const marker = document.createElement("button");
   marker.type = "button";
   marker.className = "google-station-marker";
-  marker.dataset.selected = String(station.id === store.selectedStationId);
-  marker.textContent = station.name;
+  marker.dataset.selected = String(selected);
   marker.setAttribute("aria-label", t("dashboard.map.selectStation", { station: station.name }));
   marker.style.setProperty("--station-line-color", resolveStationColor(station));
+  const dot = document.createElement("span");
+  dot.className = "google-station-marker-dot";
+  marker.append(dot);
+  if (selected) {
+    const label = document.createElement("span");
+    label.className = "google-station-marker-label";
+    label.textContent = station.name;
+    marker.append(label);
+  }
   return marker;
 }
 
@@ -242,7 +251,7 @@ function createGoogleTrainMarkerContent(
   marker.className = "google-train-marker";
   marker.dataset.status = train.status;
   marker.dataset.selected = String(store.selectedTrainId === train.id);
-  marker.title = `${train.destination} · ${train.arrivalMinutes} min`;
+  marker.title = `Train ${train.trainCode} · ${train.destination} · ${train.arrivalMinutes} min`;
   marker.style.setProperty("--train-line-color", resolveLineColor(train.lineId));
   return marker;
 }
@@ -306,7 +315,7 @@ function clearHoveredTrain(): void {
 }
 
 function formatTrainTooltip(train: ReturnType<typeof inferTrainMarkers>[number]): string {
-  return `${train.destination} · ${train.direction} · ${train.arrivalMinutes} min · ${train.status}`;
+  return `Train ${train.trainCode} · ${train.destination} · ${train.direction} · ${train.arrivalMinutes} min · ${train.status}`;
 }
 
 function focusSelectedTrain(): void {
@@ -584,19 +593,45 @@ declare global {
 }
 
 :global(.google-station-marker) {
-  max-width: 140px;
-  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+:global(.google-station-marker-dot) {
+  width: 12px;
+  height: 12px;
+  border: 2px solid #fffaf2;
+  border-radius: 50%;
+  background: var(--station-line-color);
+  box-shadow:
+    0 0 0 5px color-mix(in srgb, var(--station-line-color) 18%, transparent),
+    var(--twf-shadow-floating);
+}
+
+:global(.google-station-marker-label) {
+  max-width: 148px;
   border: 2px solid var(--station-line-color);
   border-radius: 8px;
   padding: 6px 9px;
   background: var(--twf-color-surface-raised);
   color: var(--twf-color-text);
-  cursor: pointer;
   font: 700 0.78rem Inter, ui-sans-serif, system-ui, sans-serif;
   box-shadow: var(--twf-shadow-floating);
 }
 
-:global(.google-station-marker[data-selected="true"]) {
+:global(.google-station-marker[data-selected="true"] .google-station-marker-dot) {
+  box-shadow:
+    0 0 0 3px #fffaf2,
+    0 0 0 9px color-mix(in srgb, var(--station-line-color) 24%, transparent),
+    var(--twf-shadow-floating);
+}
+
+:global(.google-station-marker[data-selected="true"] .google-station-marker-label) {
   border-color: var(--twf-color-route-blue);
   box-shadow:
     var(--twf-shadow-route-blue-ring),

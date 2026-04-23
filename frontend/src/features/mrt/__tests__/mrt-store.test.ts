@@ -31,11 +31,13 @@ describe("MRT dashboard store", () => {
 
     store.toggleLine("red");
 
-    expect(store.visibleLineIds).toEqual(["blue", "green"]);
+    expect(store.visibleLineIds.includes("red")).toBe(false);
+    expect(store.visibleLineIds.includes("blue")).toBe(true);
+    expect(store.visibleLineIds.includes("green")).toBe(true);
 
     store.toggleLine("red");
 
-    expect(store.visibleLineIds).toEqual(["blue", "green", "red"]);
+    expect(store.visibleLineIds.includes("red")).toBe(true);
   });
 
   it("toggles overlay visibility independently", () => {
