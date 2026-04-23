@@ -17,23 +17,19 @@ const candidateStations = ["BL18", "BL15", "R10", "G10", "R05"] as const;
 test("frontend loads MRT liveboard rows from backend endpoint", async ({ page, request }) => {
   let selectedStationId: string | undefined;
   let firstRow: TdxLiveBoardResponse["rows"][number] | undefined;
+  const response = await request.get("http://127.0.0.1:18080/api/mrt/liveboard?operator=TRTC");
+  expect(response.ok()).toBeTruthy();
 
-  for (const stationId of candidateStations) {
-    const response = await request.get(
-      `http://127.0.0.1:18080/api/mrt/liveboard?operator=TRTC&stationId=${stationId}`,
+  const payload = (await response.json()) as TdxLiveBoardResponse;
+  if (payload.source === "tdx") {
+    firstRow = payload.rows.find((row) =>
+      candidateStations.includes(row.stationId as (typeof candidateStations)[number]),
     );
-    expect(response.ok()).toBeTruthy();
-
-    const payload = (await response.json()) as TdxLiveBoardResponse;
-    if (payload.source === "tdx" && payload.rows.length > 0) {
-      selectedStationId = stationId;
-      firstRow = payload.rows[0];
-      break;
-    }
+    selectedStationId = firstRow?.stationId;
   }
 
-  expect(selectedStationId, "No candidate MRT station returned live TDX rows during e2e run.").toBeTruthy();
-  expect(firstRow, "Expected at least one live TDX row for the selected station.").toBeTruthy();
+  expect(selectedStationId, "No supported MRT station returned network live TDX rows during e2e run.").toBeTruthy();
+  expect(firstRow, "Expected at least one live TDX row for a supported station.").toBeTruthy();
 
   await page.goto("/");
   await page.getByTestId(`station-${selectedStationId}`).click();

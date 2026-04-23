@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { fetchTdxLiveBoard } from "@/features/mrt/api/tdx-liveboard";
 import {
+  liveBoardRows,
   findLiveBoardRowsByStation,
   findStationById,
   mrtLines,
@@ -16,7 +17,7 @@ export type TimelineMode = "live" | "paused";
 export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
   const selectedStationId = ref<string | undefined>();
   const selectedTrainId = ref<string | undefined>();
-  const selectedLiveBoards = ref(findLiveBoardRowsByStation(""));
+  const networkLiveBoards = ref(findLiveBoardRowsByStation(""));
   const liveBoardError = ref<string | undefined>();
   const liveBoardLoading = ref(false);
   const liveBoardUpdatedAt = ref<string | undefined>();
@@ -28,6 +29,12 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
   const selectedStation = computed(() => {
     return selectedStationId.value ? findStationById(selectedStationId.value) : undefined;
   });
+  const selectedLiveBoards = computed(() => {
+    if (!selectedStationId.value) {
+      return [];
+    }
+    return networkLiveBoards.value.filter((row) => row.stationId === selectedStationId.value);
+  });
 
   async function selectStation(stationId: string): Promise<void> {
     const station = findStationById(stationId);
@@ -35,14 +42,13 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
     liveBoardError.value = undefined;
 
     if (!station) {
-      selectedLiveBoards.value = [];
       liveBoardUpdatedAt.value = undefined;
       selectedTrainId.value = undefined;
       return;
     }
 
     if (appConfig.mrtLiveBoardSource === "mock") {
-      selectedLiveBoards.value = findLiveBoardRowsByStation(station.id);
+      networkLiveBoards.value = liveBoardRows;
       liveBoardUpdatedAt.value = new Date().toISOString();
       syncSelectedTrain();
       return;
@@ -52,15 +58,8 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
   }
 
   async function refreshLiveBoards(): Promise<void> {
-    if (!selectedStationId.value) {
-      selectedLiveBoards.value = [];
-      liveBoardUpdatedAt.value = undefined;
-      selectedTrainId.value = undefined;
-      return;
-    }
-
     if (appConfig.mrtLiveBoardSource === "mock") {
-      selectedLiveBoards.value = findLiveBoardRowsByStation(selectedStationId.value);
+      networkLiveBoards.value = liveBoardRows;
       liveBoardUpdatedAt.value = new Date().toISOString();
       syncSelectedTrain();
       return;
@@ -70,16 +69,16 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
     liveBoardError.value = undefined;
     try {
       const payload = await fetchTdxLiveBoard(
-        selectedStationId.value,
+        undefined,
         appConfig.tdxProxyUrl,
       );
-      selectedLiveBoards.value = payload.rows;
+      networkLiveBoards.value = payload.rows;
       liveBoardUpdatedAt.value = payload.updatedAt;
       syncSelectedTrain();
     } catch (error) {
       liveBoardError.value =
         error instanceof Error ? error.message : "Unable to load TDX LiveBoard rows.";
-      selectedLiveBoards.value = [];
+      networkLiveBoards.value = [];
       liveBoardUpdatedAt.value = undefined;
       selectedTrainId.value = undefined;
     } finally {
@@ -96,7 +95,7 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
       return;
     }
 
-    if (!selectedLiveBoards.value.some((row) => row.id === selectedTrainId.value)) {
+    if (!networkLiveBoards.value.some((row) => row.id === selectedTrainId.value)) {
       selectedTrainId.value = undefined;
     }
   }
@@ -137,6 +136,7 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
     selectedStationId,
     selectedTrainId,
     selectedStation,
+    networkLiveBoards,
     selectedLiveBoards,
     liveBoardError,
     liveBoardLoading,

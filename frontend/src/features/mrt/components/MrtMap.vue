@@ -36,7 +36,7 @@ const estimatedTrainOverlayVisible = computed(() =>
   store.visibleOverlayIds.includes("mrt-estimated-trains"),
 );
 const inferredTrains = computed(() =>
-  inferTrainMarkers(store.selectedLiveBoards, props.stations, props.lines).filter((train) =>
+  inferTrainMarkers(store.networkLiveBoards, props.stations, props.lines).filter((train) =>
     store.visibleLineIds.includes(train.lineId),
   ),
 );

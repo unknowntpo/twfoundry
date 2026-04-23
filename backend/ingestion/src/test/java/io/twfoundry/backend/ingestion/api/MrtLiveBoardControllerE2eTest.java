@@ -2,6 +2,7 @@ package io.twfoundry.backend.ingestion.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.twfoundry.backend.ingestion.application.MrtLiveBoardService.MrtLiveBoardResponse;
 import org.junit.jupiter.api.Test;
@@ -26,5 +27,15 @@ class MrtLiveBoardControllerE2eTest {
     assertEquals("tdx", response.getBody().source());
     assertFalse(response.getBody().rows().isEmpty());
     assertEquals("BL18", response.getBody().rows().getFirst().stationId());
+  }
+
+  @Test
+  void returnsNetworkWideRowsWhenStationFilterIsMissing() {
+    ResponseEntity<MrtLiveBoardResponse> response =
+        restTemplate.getForEntity("/api/mrt/liveboard?operator=TRTC", MrtLiveBoardResponse.class);
+
+    assertEquals(200, response.getStatusCode().value());
+    assertEquals("tdx", response.getBody().source());
+    assertTrue(response.getBody().rows().size() >= 3);
   }
 }

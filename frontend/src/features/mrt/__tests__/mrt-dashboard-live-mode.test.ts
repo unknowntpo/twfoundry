@@ -10,7 +10,7 @@ describe("MRT dashboard live mode", () => {
     setActivePinia(createPinia());
   });
 
-  it("polls the selected station while live mode is active", async () => {
+  it("polls the network live feed while live mode is active", async () => {
     const pinia = createPinia();
     setActivePinia(pinia);
     const fetchTdxLiveBoard = vi
@@ -54,6 +54,6 @@ describe("MRT dashboard live mode", () => {
 
     await vi.advanceTimersByTimeAsync(5000);
 
-    expect(fetchTdxLiveBoard).toHaveBeenCalledWith("BL18", "http://localhost:5174");
+    expect(fetchTdxLiveBoard).toHaveBeenCalledWith(undefined, "http://localhost:5174");
   });
 });

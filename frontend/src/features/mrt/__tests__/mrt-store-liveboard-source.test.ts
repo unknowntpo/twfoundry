@@ -40,8 +40,9 @@ describe("MRT dashboard store LiveBoard source", () => {
 
     await store.selectStation("BL18");
 
-    expect(fetchTdxLiveBoard).toHaveBeenCalledWith("BL18", "http://localhost:5174");
+    expect(fetchTdxLiveBoard).toHaveBeenCalledWith(undefined, "http://localhost:5174");
     expect(store.selectedLiveBoards).toEqual(tdxRows);
+    expect(store.networkLiveBoards).toEqual(tdxRows);
     expect(store.liveBoardUpdatedAt).toBe("2026-04-23T01:00:00.000Z");
     expect(store.liveBoardError).toBeUndefined();
   });

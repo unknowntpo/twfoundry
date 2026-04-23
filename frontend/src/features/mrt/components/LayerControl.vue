@@ -15,7 +15,7 @@ const expandedLineIds = ref<string[]>([]);
 const liveRowsByLine = computed(() =>
   props.lines.map((line) => ({
     line,
-    rows: store.selectedLiveBoards.filter((row) => row.lineId === line.id),
+    rows: store.networkLiveBoards.filter((row) => row.lineId === line.id),
   })),
 );
 

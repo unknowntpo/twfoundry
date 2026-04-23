@@ -131,11 +131,7 @@ function clearFreshnessTicker(): void {
 function syncLiveRefreshTimer(): void {
   clearLiveRefreshTimer();
 
-  if (
-    appConfig.mrtLiveBoardSource !== "tdx" ||
-    timelineMode.value !== "live" ||
-    !selectedStationId.value
-  ) {
+  if (appConfig.mrtLiveBoardSource !== "tdx" || timelineMode.value !== "live") {
     return;
   }
 
@@ -146,19 +142,22 @@ function syncLiveRefreshTimer(): void {
 
 function setLiveMode(mode: "live" | "paused"): void {
   store.setTimelineMode(mode);
-  if (mode === "live" && selectedStationId.value) {
+  if (mode === "live") {
     void store.refreshLiveBoards();
   }
 }
 
 function setLiveRefreshInterval(intervalMs: number): void {
   store.setLiveRefreshIntervalMs(intervalMs);
-  if (timelineMode.value === "live" && selectedStationId.value) {
+  if (timelineMode.value === "live") {
     void store.refreshLiveBoards();
   }
 }
 
 onMounted(() => {
+  if (appConfig.mrtLiveBoardSource === "tdx") {
+    void store.refreshLiveBoards();
+  }
   syncLiveRefreshTimer();
   freshnessTicker = window.setInterval(() => {
     clockNow.value = Date.now();

@@ -7,13 +7,15 @@ export interface TdxLiveBoardProxyResponse {
 }
 
 export async function fetchTdxLiveBoard(
-  stationId: string,
+  stationId: string | undefined,
   proxyUrl: string,
   fetcher: typeof fetch = fetch,
 ): Promise<TdxLiveBoardProxyResponse> {
   const url = new URL("/api/mrt/liveboard", proxyUrl);
   url.searchParams.set("operator", "TRTC");
-  url.searchParams.set("stationId", stationId);
+  if (stationId) {
+    url.searchParams.set("stationId", stationId);
+  }
 
   const response = await fetcher(url);
   const payload = await response.json().catch(() => undefined);
@@ -36,7 +38,7 @@ export async function fetchTdxLiveBoard(
 }
 
 export async function fetchTdxLiveBoardRows(
-  stationId: string,
+  stationId: string | undefined,
   proxyUrl: string,
   fetcher: typeof fetch = fetch,
 ): Promise<LiveBoardRow[]> {
