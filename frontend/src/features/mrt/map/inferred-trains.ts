@@ -4,6 +4,7 @@ export interface InferredTrainMarker {
   id: string;
   stationId: string;
   lineId: LiveBoardRow["lineId"];
+  direction: LiveBoardRow["direction"];
   position: Coordinates;
   arrivalMinutes: number;
   destination: string;
@@ -31,6 +32,7 @@ export function inferTrainMarkers(
         id: row.id,
         stationId: station.id,
         lineId: row.lineId,
+        direction: row.direction,
         position: resolvePosition(station, line, stations, rowIndex, row.arrivalMinutes),
         arrivalMinutes: row.arrivalMinutes,
         destination: row.destination,

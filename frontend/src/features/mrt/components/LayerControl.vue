@@ -1,31 +1,98 @@
 <script setup lang="ts">
+import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useMrtDashboardStore } from "@/app/stores/mrt-dashboard";
 import type { MrtLine } from "../types";
 
-defineProps<{
+const props = defineProps<{
   lines: MrtLine[];
 }>();
 
 const store = useMrtDashboardStore();
 const { t } = useI18n();
+const expandedLineIds = ref<string[]>([]);
+
+const liveRowsByLine = computed(() =>
+  props.lines.map((line) => ({
+    line,
+    rows: store.selectedLiveBoards.filter((row) => row.lineId === line.id),
+  })),
+);
+
+function toggleExpanded(lineId: string): void {
+  expandedLineIds.value = expandedLineIds.value.includes(lineId)
+    ? expandedLineIds.value.filter((id) => id !== lineId)
+    : [...expandedLineIds.value, lineId];
+}
+
+function isExpanded(lineId: string): boolean {
+  return expandedLineIds.value.includes(lineId);
+}
 </script>
 
 <template>
   <div class="layer-control" :aria-label="t('dashboard.layers.controls')">
-    <button
-      v-for="line in lines"
+    <section
+      v-for="{ line, rows } in liveRowsByLine"
       :key="line.id"
-      type="button"
-      class="layer-button"
-      :class="{ muted: !store.visibleLineIds.includes(line.id) }"
+      class="line-group"
       :style="{ '--line-color': line.color }"
-      :aria-pressed="store.visibleLineIds.includes(line.id)"
-      @click="store.toggleLine(line.id)"
     >
-      <span class="line-dot" aria-hidden="true" />
-      {{ line.name }}
-    </button>
+      <div class="line-row" :class="{ muted: !store.visibleLineIds.includes(line.id) }">
+        <button
+          type="button"
+          class="expand-button"
+          :aria-label="t('dashboard.layers.expandLine', { line: line.name })"
+          :aria-expanded="isExpanded(line.id)"
+          @click="toggleExpanded(line.id)"
+        >
+          <span class="chevron" :class="{ expanded: isExpanded(line.id) }" aria-hidden="true">⌄</span>
+        </button>
+
+        <button
+          type="button"
+          class="line-button"
+          @click="toggleExpanded(line.id)"
+        >
+          <span class="line-dot" aria-hidden="true" />
+          <span class="line-label">{{ line.name }}</span>
+          <span class="line-count">{{ rows.length }}</span>
+        </button>
+
+        <button
+          type="button"
+          class="visibility-toggle"
+          :class="{ off: !store.visibleLineIds.includes(line.id) }"
+          :aria-pressed="store.visibleLineIds.includes(line.id)"
+          @click="store.toggleLine(line.id)"
+        />
+      </div>
+
+      <div v-if="isExpanded(line.id)" class="train-list">
+        <button
+          v-for="row in rows"
+          :key="row.id"
+          type="button"
+          class="train-row"
+          :class="{ selected: store.selectedTrainId === row.id }"
+          @click="store.selectTrain(row.id)"
+        >
+          <span class="train-dot" aria-hidden="true" />
+          <span class="train-main">
+            <strong>{{ row.destination }}</strong>
+            <span>{{ row.direction }}</span>
+          </span>
+          <span class="train-meta">
+            <strong>{{ row.arrivalMinutes }}m</strong>
+            <span>{{ row.status }}</span>
+          </span>
+        </button>
+
+        <p v-if="rows.length === 0" class="empty-trains">
+          {{ t("dashboard.layers.noTrains") }}
+        </p>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -35,39 +102,61 @@ const { t } = useI18n();
   gap: var(--twf-space-2);
 }
 
-.layer-button {
+.line-group {
+  display: grid;
+  gap: 6px;
+}
+
+.line-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.line-row.muted {
+  color: var(--twf-color-text-faint);
+}
+
+.expand-button,
+.line-button,
+.visibility-toggle,
+.train-row {
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.expand-button {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.chevron {
+  display: inline-block;
+  font-size: 0.9rem;
+  transform: rotate(-90deg);
+  transition: transform 140ms ease;
+}
+
+.chevron.expanded {
+  transform: rotate(0deg);
+}
+
+.line-button {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   min-height: 38px;
   gap: var(--twf-space-2);
-  border: 0;
-  border-radius: var(--twf-radius-md);
-  padding: 7px 8px;
-  background: transparent;
-  color: var(--twf-color-text);
+  padding: 7px 4px;
   cursor: pointer;
   font-size: 0.78rem;
   font-weight: 700;
   text-align: left;
-}
-
-.layer-button::after {
-  display: block;
-  width: 28px;
-  height: 16px;
-  border-radius: 999px;
-  background: var(--line-color);
-  box-shadow: var(--twf-shadow-hairline);
-  content: "";
-}
-
-.layer-button.muted {
-  color: var(--twf-color-text-faint);
-}
-
-.layer-button.muted::after {
-  background: var(--twf-color-border);
 }
 
 .line-dot {
@@ -79,5 +168,83 @@ const { t } = useI18n();
   background:
     linear-gradient(var(--line-color), var(--line-color)) center / 14px 3px no-repeat,
     var(--twf-color-surface);
+}
+
+.line-label {
+  min-width: 0;
+}
+
+.line-count {
+  color: var(--twf-color-text-faint);
+  font-size: 0.72rem;
+}
+
+.visibility-toggle {
+  width: 28px;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--line-color);
+  box-shadow: var(--twf-shadow-hairline);
+  cursor: pointer;
+}
+
+.visibility-toggle.off {
+  background: var(--twf-color-border);
+}
+
+.train-list {
+  display: grid;
+  gap: 6px;
+  padding-left: 32px;
+}
+
+.train-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--twf-color-border);
+  border-radius: var(--twf-radius-md);
+  background: color-mix(in srgb, var(--twf-color-surface) 92%, white);
+  cursor: pointer;
+  text-align: left;
+}
+
+.train-row.selected {
+  border-color: var(--line-color);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--line-color) 18%, transparent);
+}
+
+.train-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--line-color);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--line-color) 16%, transparent);
+}
+
+.train-main,
+.train-meta {
+  display: grid;
+  gap: 2px;
+}
+
+.train-main span,
+.train-meta span {
+  color: var(--twf-color-text-faint);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.train-meta {
+  justify-items: end;
+}
+
+.empty-trains {
+  margin: 0;
+  color: var(--twf-color-text-faint);
+  font-size: 0.72rem;
+  padding: 2px 4px 6px;
 }
 </style>

@@ -27,6 +27,7 @@ export const messages = {
         aria: "Map layers",
         title: "Layers",
         allOff: "All Off",
+        expandLine: "Expand {line}",
         expand: "Expand Layers sidebar",
         collapse: "Collapse Layers sidebar",
         moving: "Moving",
@@ -37,6 +38,7 @@ export const messages = {
         glow: "Glow",
         route: "Route",
         controls: "MRT layer controls",
+        noTrains: "No trains in the current live feed.",
       },
       map: {
         dashboard: "MRT map dashboard",
@@ -296,6 +298,7 @@ export const messages = {
         aria: "地圖圖層",
         title: "圖層",
         allOff: "全部關閉",
+        expandLine: "展開 {line}",
         expand: "展開圖層側欄",
         collapse: "收合圖層側欄",
         moving: "運行",
@@ -306,6 +309,7 @@ export const messages = {
         glow: "光暈",
         route: "路線",
         controls: "捷運圖層控制",
+        noTrains: "目前即時 feed 沒有列車資料。",
       },
       map: {
         dashboard: "捷運地圖儀表板",

@@ -59,4 +59,19 @@ describe("MRT dashboard store", () => {
     expect(store.timelineMode).toBe("paused");
     expect(store.liveRefreshIntervalMs).toBe(5000);
   });
+
+  it("keeps train selection only while the train still exists in the current rows", async () => {
+    const store = useMrtDashboardStore();
+
+    await store.selectStation("BL18");
+    const firstTrainId = store.selectedLiveBoards[0]?.id;
+
+    expect(firstTrainId).toBeDefined();
+
+    store.selectTrain(firstTrainId);
+    expect(store.selectedTrainId).toBe(firstTrainId);
+
+    await store.selectStation("unknown");
+    expect(store.selectedTrainId).toBeUndefined();
+  });
 });

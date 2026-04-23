@@ -15,6 +15,7 @@ export type TimelineMode = "live" | "paused";
 
 export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
   const selectedStationId = ref<string | undefined>();
+  const selectedTrainId = ref<string | undefined>();
   const selectedLiveBoards = ref(findLiveBoardRowsByStation(""));
   const liveBoardError = ref<string | undefined>();
   const liveBoardLoading = ref(false);
@@ -36,12 +37,14 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
     if (!station) {
       selectedLiveBoards.value = [];
       liveBoardUpdatedAt.value = undefined;
+      selectedTrainId.value = undefined;
       return;
     }
 
     if (appConfig.mrtLiveBoardSource === "mock") {
       selectedLiveBoards.value = findLiveBoardRowsByStation(station.id);
       liveBoardUpdatedAt.value = new Date().toISOString();
+      syncSelectedTrain();
       return;
     }
 
@@ -52,12 +55,14 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
     if (!selectedStationId.value) {
       selectedLiveBoards.value = [];
       liveBoardUpdatedAt.value = undefined;
+      selectedTrainId.value = undefined;
       return;
     }
 
     if (appConfig.mrtLiveBoardSource === "mock") {
       selectedLiveBoards.value = findLiveBoardRowsByStation(selectedStationId.value);
       liveBoardUpdatedAt.value = new Date().toISOString();
+      syncSelectedTrain();
       return;
     }
 
@@ -70,13 +75,29 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
       );
       selectedLiveBoards.value = payload.rows;
       liveBoardUpdatedAt.value = payload.updatedAt;
+      syncSelectedTrain();
     } catch (error) {
       liveBoardError.value =
         error instanceof Error ? error.message : "Unable to load TDX LiveBoard rows.";
       selectedLiveBoards.value = [];
       liveBoardUpdatedAt.value = undefined;
+      selectedTrainId.value = undefined;
     } finally {
       liveBoardLoading.value = false;
+    }
+  }
+
+  function selectTrain(trainId: string | undefined): void {
+    selectedTrainId.value = trainId;
+  }
+
+  function syncSelectedTrain(): void {
+    if (!selectedTrainId.value) {
+      return;
+    }
+
+    if (!selectedLiveBoards.value.some((row) => row.id === selectedTrainId.value)) {
+      selectedTrainId.value = undefined;
     }
   }
 
@@ -114,6 +135,7 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
 
   return {
     selectedStationId,
+    selectedTrainId,
     selectedStation,
     selectedLiveBoards,
     liveBoardError,
@@ -129,5 +151,6 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
     toggleOverlay,
     setTimelineMode,
     setLiveRefreshIntervalMs,
+    selectTrain,
   };
 });

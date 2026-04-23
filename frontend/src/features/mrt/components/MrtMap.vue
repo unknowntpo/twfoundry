@@ -40,6 +40,9 @@ const inferredTrains = computed(() =>
     store.visibleLineIds.includes(train.lineId),
   ),
 );
+const selectedTrain = computed(() =>
+  inferredTrains.value.find((train) => train.id === store.selectedTrainId),
+);
 const hoveredTrain = computed(() =>
   inferredTrains.value.find((train) => train.id === hoveredTrainId.value),
 );
@@ -54,6 +57,16 @@ onMounted(() => {
 
 watch(
   () => [props.lines, visibleStations.value, store.selectedStationId, store.selectedLiveBoards],
+  () => {
+    if (appConfig.mapProvider === "google" && googleReady.value) {
+      renderGoogleMapOverlays();
+    }
+  },
+  { deep: true },
+);
+
+watch(
+  () => [store.selectedTrainId, inferredTrains.value],
   () => {
     if (appConfig.mapProvider === "google" && googleReady.value) {
       renderGoogleMapOverlays();
@@ -127,6 +140,8 @@ function renderGoogleMapOverlays(): void {
   googleTrainMarkers = estimatedTrainOverlayVisible.value
     ? inferredTrains.value.map((train) => createGoogleTrainMarker(google, markerLibrary, map, train))
     : [];
+
+  focusSelectedTrain();
 }
 
 function createGoogleStationMarkerOverlay(
@@ -182,6 +197,7 @@ function createGoogleTrainMarker(
     });
 
     bindTrainHover(content, train);
+    marker.addListener("click", () => store.selectTrain(train.id));
 
     return {
       setMap: (nextMap) => {
@@ -190,7 +206,7 @@ function createGoogleTrainMarker(
     };
   }
 
-  return new google.maps.Marker({
+  const marker = new google.maps.Marker({
     map,
     position: train.position,
     title: `${train.destination} · ${train.arrivalMinutes} min`,
@@ -204,6 +220,8 @@ function createGoogleTrainMarker(
       scale: 1,
     },
   });
+  marker.addListener("click", () => store.selectTrain(train.id));
+  return marker;
 }
 
 function createGoogleStationMarker(station: MrtStation): HTMLElement {
@@ -223,6 +241,7 @@ function createGoogleTrainMarkerContent(
   const marker = document.createElement("div");
   marker.className = "google-train-marker";
   marker.dataset.status = train.status;
+  marker.dataset.selected = String(store.selectedTrainId === train.id);
   marker.title = `${train.destination} · ${train.arrivalMinutes} min`;
   marker.style.setProperty("--train-line-color", resolveLineColor(train.lineId));
   return marker;
@@ -287,7 +306,18 @@ function clearHoveredTrain(): void {
 }
 
 function formatTrainTooltip(train: ReturnType<typeof inferTrainMarkers>[number]): string {
-  return `${train.destination} · ${train.arrivalMinutes} min · ${train.status}`;
+  return `${train.destination} · ${train.direction} · ${train.arrivalMinutes} min · ${train.status}`;
+}
+
+function focusSelectedTrain(): void {
+  if (!googleMap || !selectedTrain.value) {
+    return;
+  }
+
+  googleMap.panTo?.(selectedTrain.value.position);
+  if ((googleMap.getZoom?.() ?? 0) < 14) {
+    googleMap.setZoom?.(14);
+  }
 }
 
 function readDesignToken(token: string, fallback: string): string {
@@ -381,7 +411,11 @@ interface GoogleMapsGlobal {
   };
 }
 
-type GoogleMapInstance = object;
+interface GoogleMapInstance {
+  getZoom?: () => number;
+  panTo?: (position: { lat: number; lng: number }) => void;
+  setZoom?: (zoom: number) => void;
+}
 
 interface GoogleImportLibrary {
   (name: "maps"): Promise<GoogleMapsLibrary>;
@@ -465,12 +499,14 @@ declare global {
       v-for="train in estimatedTrainOverlayVisible ? inferredTrains : []"
       :key="train.id"
       class="train-circle"
+      :class="{ selected: store.selectedTrainId === train.id }"
       :style="resolveMockTrainStyle(train)"
       :data-testid="`train-${train.id}`"
       :title="`${train.destination} · ${train.arrivalMinutes} min`"
       @mouseenter="updateHoveredTrain(train, $event)"
       @mousemove="updateHoveredTrain(train, $event)"
       @mouseleave="clearHoveredTrain()"
+      @click="store.selectTrain(train.id)"
     />
 
     <div
@@ -584,6 +620,13 @@ declare global {
     var(--twf-shadow-floating);
 }
 
+:global(.google-train-marker[data-selected="true"]) {
+  box-shadow:
+    0 0 0 4px #fffaf2,
+    0 0 0 10px color-mix(in srgb, var(--train-line-color) 26%, transparent),
+    var(--twf-shadow-floating);
+}
+
 .mock-lines {
   position: absolute;
   top: 45%;
@@ -655,6 +698,13 @@ declare global {
   background: var(--train-line-color);
   box-shadow:
     0 0 0 5px color-mix(in srgb, var(--train-line-color) 18%, transparent),
+    var(--twf-shadow-floating);
+}
+
+.train-circle.selected {
+  box-shadow:
+    0 0 0 3px #fffaf2,
+    0 0 0 9px color-mix(in srgb, var(--train-line-color) 24%, transparent),
     var(--twf-shadow-floating);
 }
 
