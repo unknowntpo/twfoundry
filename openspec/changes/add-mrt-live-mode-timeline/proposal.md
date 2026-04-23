@@ -13,6 +13,7 @@ This change upgrades the MRT timeline from live-only status display into a persi
 - Keep the existing frontend live mode with `live` and `paused` states.
 - Make the timeline draggable over persisted snapshots.
 - Make map train positions, sidebar rows, and station panel all derive from the selected timeline snapshot.
+- Keep replay persistence behind a replaceable storage boundary so the local slice can use embedded JDBC without binding the long-term platform direction away from StarRocks.
 - Keep train selection UI treat the train code as the primary identifier in the live sidebar.
 - Keep map-to-sidebar interaction return focus to the selected train card when a train marker is clicked.
 
@@ -26,6 +27,6 @@ This change upgrades the MRT timeline from live-only status display into a persi
 
 **Decision**: Persist recent MRT snapshots and expose them through a backend replay API.
 
-**Backend dependency**: Keep using the existing TDX latest-live fetch path as the ingestion source, but write normalized snapshots into a local persistence store before serving replay history.
+**Backend dependency**: Keep using the existing TDX latest-live fetch path as the ingestion source, but write normalized snapshots through a persistence abstraction before serving replay history. The current local slice may use embedded JDBC; the production platform can later swap in a StarRocks-backed implementation.
 
 **Replay contract**: When the operator drags the timeline, the currently displayed train rows and inferred train positions must update to the selected persisted snapshot instead of the latest live feed.

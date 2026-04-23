@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.twfoundry.backend.ingestion.application.MrtLiveBoardTimelineRepository;
+import io.twfoundry.backend.ingestion.application.MrtLiveBoardTimelineStore;
 import io.twfoundry.backend.ingestion.application.MrtLiveBoardService.MrtLiveBoardResponse;
 import io.twfoundry.backend.ingestion.application.MrtLiveBoardService.MrtLiveBoardTimelineResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,11 +19,11 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("e2e")
 class MrtLiveBoardControllerE2eTest {
   @Autowired private TestRestTemplate restTemplate;
-  @Autowired private MrtLiveBoardTimelineRepository timelineRepository;
+  @Autowired private MrtLiveBoardTimelineStore timelineStore;
 
   @BeforeEach
   void clearTimeline() {
-    timelineRepository.deleteAll();
+    timelineStore.deleteAll();
   }
 
   @Test

@@ -9,25 +9,24 @@ import org.springframework.stereotype.Service;
 @Service
 public class MrtLiveBoardService {
   private final TdxLiveBoardGateway gateway;
-  private final MrtLiveBoardTimelineRepository timelineRepository;
+  private final MrtLiveBoardTimelineStore timelineStore;
 
   public MrtLiveBoardService(
-      TdxLiveBoardGateway gateway, MrtLiveBoardTimelineRepository timelineRepository) {
+      TdxLiveBoardGateway gateway, MrtLiveBoardTimelineStore timelineStore) {
     this.gateway = gateway;
-    this.timelineRepository = timelineRepository;
+    this.timelineStore = timelineStore;
   }
 
   public MrtLiveBoardResponse fetch(String operator, String stationId) {
     List<JsonNode> rows = gateway.fetchLiveBoard(operator, stationId);
     Instant updatedAt = Instant.now();
     List<LiveBoardRow> normalizedRows = rows.stream().map(row -> normalize(row, stationId)).toList();
-    timelineRepository.saveSnapshot("tdx", operator, updatedAt, normalizedRows);
+    timelineStore.saveSnapshot("tdx", operator, updatedAt, normalizedRows);
     return new MrtLiveBoardResponse("tdx", updatedAt.toString(), normalizedRows);
   }
 
   public MrtLiveBoardTimelineResponse fetchTimeline(String operator, int limit) {
-    return new MrtLiveBoardTimelineResponse(
-        "tdx", timelineRepository.findRecentSnapshots(operator, limit));
+    return new MrtLiveBoardTimelineResponse("tdx", timelineStore.findRecentSnapshots(operator, limit));
   }
 
   private LiveBoardRow normalize(JsonNode row, String requestedStationId) {

@@ -9,21 +9,28 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.List;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class MrtLiveBoardTimelineRepository {
+@ConditionalOnProperty(
+    name = "twfoundry.mrt.timeline.store",
+    havingValue = "embedded-jdbc",
+    matchIfMissing = true)
+public class EmbeddedJdbcMrtLiveBoardTimelineStore implements MrtLiveBoardTimelineStore {
   private static final TypeReference<List<LiveBoardRow>> ROWS_TYPE = new TypeReference<>() {};
 
   private final JdbcTemplate jdbcTemplate;
   private final ObjectMapper objectMapper;
 
-  public MrtLiveBoardTimelineRepository(JdbcTemplate jdbcTemplate, ObjectMapper objectMapper) {
+  public EmbeddedJdbcMrtLiveBoardTimelineStore(
+      JdbcTemplate jdbcTemplate, ObjectMapper objectMapper) {
     this.jdbcTemplate = jdbcTemplate;
     this.objectMapper = objectMapper;
   }
 
+  @Override
   public void saveSnapshot(String source, String operator, Instant updatedAt, List<LiveBoardRow> rows) {
     jdbcTemplate.update(
         """
@@ -37,6 +44,7 @@ public class MrtLiveBoardTimelineRepository {
         writeRows(rows));
   }
 
+  @Override
   public List<MrtLiveBoardSnapshot> findRecentSnapshots(String operator, int limit) {
     int boundedLimit = Math.max(1, Math.min(limit, 500));
     return jdbcTemplate.query(
@@ -56,6 +64,7 @@ public class MrtLiveBoardTimelineRepository {
         boundedLimit);
   }
 
+  @Override
   public void deleteAll() {
     jdbcTemplate.update("DELETE FROM mrt_liveboard_snapshot");
   }

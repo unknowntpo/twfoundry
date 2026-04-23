@@ -13,6 +13,13 @@ TWFoundry SHALL persist normalized MRT liveboard snapshots so recent operator re
 - **THEN** the backend persists the normalized snapshot before returning the response
 - **AND** the persisted snapshot can later be queried for timeline replay
 
+#### Scenario: Replay persistence does not hard-code one storage engine into service logic
+
+- **GIVEN** TWFoundry Phase 1 uses `StarRocks` as the serving and latest-state platform direction
+- **WHEN** MRT timeline persistence is implemented for the local slice
+- **THEN** replay service logic depends on a persistence abstraction instead of a hard-coded storage engine
+- **AND** the persistence implementation can later be replaced by a `StarRocks`-backed adapter without changing the replay API contract
+
 ### Requirement: MRT Timeline Replay API
 
 TWFoundry SHALL expose a backend MRT timeline API that returns recent persisted snapshots in replay order.

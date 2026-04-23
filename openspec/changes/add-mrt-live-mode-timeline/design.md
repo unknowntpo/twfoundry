@@ -22,7 +22,7 @@ The backend persists each normalized MRT liveboard fetch as one snapshot:
 
 - frontend live mode continues polling `GET /api/mrt/liveboard`
 - backend fetches and normalizes TDX rows
-- backend writes the normalized snapshot into local persistence
+- backend writes the normalized snapshot through a timeline persistence port
 - backend returns the same latest snapshot response to the caller
 
 The write must happen before the response is considered complete so the latest snapshot is immediately replayable.
@@ -98,12 +98,13 @@ This change only needs an operator replay window, not a warehouse model.
 
 Allowed:
 
-- embedded local persistence for backend snapshots
+- embedded JDBC persistence for the current local backend slice
+- a later StarRocks-backed implementation without API or frontend contract changes
 - recent snapshot replay for the dashboard
 
 Not included:
 
-- StarRocks
+- direct StarRocks implementation in this change
 - analytical history queries
 - retention strategy for large-scale archival storage
 
