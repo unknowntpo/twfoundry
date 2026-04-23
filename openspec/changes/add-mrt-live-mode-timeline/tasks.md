@@ -1,21 +1,16 @@
 ## Implementation
 
-- [x] Add a new `add-mrt-live-mode-timeline` change with proposal, design, tasks, and spec delta.
-- [x] Add live timeline store state for mode, interval, and latest snapshot timestamp.
-- [x] Add frontend auto-follow polling for selected stations in `tdx` mode.
-- [x] Replace placeholder timeline values with live timestamp, relative freshness, mode, and interval controls.
-- [x] Keep `previous` and `next` disabled and explicitly non-historical.
-- [x] Make station panel freshness and timeline freshness share the same source of truth.
-- [x] Update empty-state wording so it is source-neutral.
-- [x] Make train code the primary live train label in the sidebar.
-- [x] Make train marker hover show only train code.
-- [x] Make map train selection expand, scroll, and focus the matching sidebar card.
+- [ ] Persist normalized MRT liveboard snapshots in backend local storage.
+- [ ] Add backend MRT timeline history endpoint.
+- [ ] Load persisted timeline snapshots into the MRT dashboard store.
+- [ ] Make the dashboard render from the selected timeline snapshot instead of latest-only rows.
+- [ ] Make previous/next and slider drag change the selected snapshot.
+- [ ] Make inferred train positions update when replay snapshot changes.
 
 ## Validation
 
-- [x] Add store tests for default live mode and supported interval switching.
-- [x] Add tests that store `updatedAt` from backend payloads.
-- [x] Add a UI-level test for live mode controls and auto-follow timer behavior.
-- [x] Keep full-stack e2e proving the frontend reads real backend live data.
-- [x] Run `spectra validate add-mrt-live-mode-timeline`.
-- [x] Run frontend unit tests and full-stack e2e.
+- [ ] Add backend tests proving snapshots are persisted and queryable.
+- [ ] Add frontend store or component tests proving timeline drag changes displayed snapshot rows.
+- [ ] Add frontend tests proving inferred train positions change with snapshot replay.
+- [ ] Run `spectra validate add-mrt-live-mode-timeline`.
+- [ ] Run targeted backend and frontend tests.

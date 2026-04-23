@@ -4,7 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.twfoundry.backend.ingestion.application.MrtLiveBoardTimelineRepository;
 import io.twfoundry.backend.ingestion.application.MrtLiveBoardService.MrtLiveBoardResponse;
+import io.twfoundry.backend.ingestion.application.MrtLiveBoardService.MrtLiveBoardTimelineResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +19,12 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("e2e")
 class MrtLiveBoardControllerE2eTest {
   @Autowired private TestRestTemplate restTemplate;
+  @Autowired private MrtLiveBoardTimelineRepository timelineRepository;
+
+  @BeforeEach
+  void clearTimeline() {
+    timelineRepository.deleteAll();
+  }
 
   @Test
   void returnsNormalizedLiveBoardRowsFromBackendEndpoint() {
@@ -47,5 +56,23 @@ class MrtLiveBoardControllerE2eTest {
     assertEquals(200, response.getStatusCode().value());
     assertEquals("tdx", response.getBody().source());
     assertTrue(response.getBody().rows().size() >= 3);
+  }
+
+  @Test
+  void persistsSnapshotsAndServesTimelineReplay() {
+    ResponseEntity<MrtLiveBoardResponse> liveResponse =
+        restTemplate.getForEntity("/api/mrt/liveboard?operator=TRTC", MrtLiveBoardResponse.class);
+
+    assertEquals(200, liveResponse.getStatusCode().value());
+    assertFalse(liveResponse.getBody().rows().isEmpty());
+
+    ResponseEntity<MrtLiveBoardTimelineResponse> timelineResponse =
+        restTemplate.getForEntity(
+            "/api/mrt/liveboard/timeline?operator=TRTC&limit=10", MrtLiveBoardTimelineResponse.class);
+
+    assertEquals(200, timelineResponse.getStatusCode().value());
+    assertEquals("tdx", timelineResponse.getBody().source());
+    assertFalse(timelineResponse.getBody().snapshots().isEmpty());
+    assertFalse(timelineResponse.getBody().snapshots().getLast().rows().isEmpty());
   }
 }

@@ -2,6 +2,7 @@ package io.twfoundry.backend.ingestion.api;
 
 import io.twfoundry.backend.ingestion.application.MrtLiveBoardService;
 import io.twfoundry.backend.ingestion.application.MrtLiveBoardService.MrtLiveBoardResponse;
+import io.twfoundry.backend.ingestion.application.MrtLiveBoardService.MrtLiveBoardTimelineResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +33,17 @@ public class MrtLiveBoardController {
               ? HttpStatus.SERVICE_UNAVAILABLE
               : HttpStatus.BAD_GATEWAY;
       throw new ResponseStatusException(status, error.getMessage(), error);
+    }
+  }
+
+  @GetMapping("/timeline")
+  public MrtLiveBoardTimelineResponse getTimeline(
+      @RequestParam(defaultValue = "TRTC") String operator,
+      @RequestParam(defaultValue = "120") int limit) {
+    try {
+      return service.fetchTimeline(operator, limit);
+    } catch (IllegalStateException error) {
+      throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, error.getMessage(), error);
     }
   }
 }

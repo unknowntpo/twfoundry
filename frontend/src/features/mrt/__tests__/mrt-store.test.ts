@@ -62,6 +62,19 @@ describe("MRT dashboard store", () => {
     expect(store.liveRefreshIntervalMs).toBe(5000);
   });
 
+  it("switches displayed snapshot rows when the timeline is scrubbed", async () => {
+    const store = useMrtDashboardStore();
+
+    await store.selectStation("BL18");
+    const latestArrival = store.selectedLiveBoards[0]?.arrivalMinutes;
+
+    store.scrubTimeline(0);
+
+    expect(store.timelineMode).toBe("paused");
+    expect(store.selectedLiveBoards[0]?.arrivalMinutes).not.toBe(latestArrival);
+    expect(store.displayedUpdatedAt).toBe("2026-04-23T08:00:00.000Z");
+  });
+
   it("keeps train selection only while the train still exists in the current rows", async () => {
     const store = useMrtDashboardStore();
 

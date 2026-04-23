@@ -9,6 +9,7 @@ spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-start
 spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
 spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation" }
 spring-boot-starter-jdbc = { module = "org.springframework.boot:spring-boot-starter-jdbc" }
+h2 = { module = "com.h2database:h2" }
 spring-retry = { module = "org.springframework.retry:spring-retry" }
 spring-kafka = { module = "org.springframework.kafka:spring-kafka" }
 micrometer-prometheus = { module = "io.micrometer:micrometer-registry-prometheus" }

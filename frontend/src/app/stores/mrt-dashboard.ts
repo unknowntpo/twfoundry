@@ -1,23 +1,25 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import { fetchTdxLiveBoard } from "@/features/mrt/api/tdx-liveboard";
+import { fetchTdxLiveBoard, fetchTdxLiveBoardTimeline } from "@/features/mrt/api/tdx-liveboard";
 import {
-  liveBoardRows,
-  findLiveBoardRowsByStation,
   findStationById,
+  liveBoardRows,
+  liveBoardSnapshots,
   mrtLines,
 } from "@/features/mrt/data/mrt-fixtures";
 import { defaultVisibleOverlayIds } from "@/features/mrt/map/overlay-registry";
-import type { MrtLineId } from "@/features/mrt/types";
+import type { LiveBoardRow, LiveBoardSnapshot, MrtLineId } from "@/features/mrt/types";
 import { appConfig } from "@/shared/config/env";
 
 export const supportedLiveRefreshIntervalsMs = [5000, 20000, 30000, 60000] as const;
 export type TimelineMode = "live" | "paused";
 
+const MAX_TIMELINE_SNAPSHOTS = 240;
+
 export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
   const selectedStationId = ref<string | undefined>();
   const selectedTrainId = ref<string | undefined>();
-  const networkLiveBoards = ref(findLiveBoardRowsByStation(""));
+  const networkLiveBoards = ref<LiveBoardRow[]>([]);
   const liveBoardError = ref<string | undefined>();
   const liveBoardLoading = ref(false);
   const liveBoardUpdatedAt = ref<string | undefined>();
@@ -25,16 +27,72 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
   const visibleOverlayIds = ref(defaultVisibleOverlayIds());
   const timelineMode = ref<TimelineMode>("live");
   const liveRefreshIntervalMs = ref<(typeof supportedLiveRefreshIntervalsMs)[number]>(30000);
+  const timelineSnapshots = ref<LiveBoardSnapshot[]>([]);
+  const timelineCursorIndex = ref(0);
 
   const selectedStation = computed(() => {
     return selectedStationId.value ? findStationById(selectedStationId.value) : undefined;
   });
+  const displayedSnapshot = computed<LiveBoardSnapshot | undefined>(() => {
+    if (timelineSnapshots.value.length > 0) {
+      const boundedIndex = Math.min(
+        Math.max(timelineCursorIndex.value, 0),
+        timelineSnapshots.value.length - 1,
+      );
+      return timelineSnapshots.value[boundedIndex];
+    }
+
+    if (liveBoardUpdatedAt.value) {
+      return {
+        updatedAt: liveBoardUpdatedAt.value,
+        rows: networkLiveBoards.value,
+      };
+    }
+
+    return undefined;
+  });
+  const displayedLiveBoards = computed(() => displayedSnapshot.value?.rows ?? []);
+  const displayedUpdatedAt = computed(() => displayedSnapshot.value?.updatedAt);
   const selectedLiveBoards = computed(() => {
     if (!selectedStationId.value) {
       return [];
     }
-    return networkLiveBoards.value.filter((row) => row.stationId === selectedStationId.value);
+    return displayedLiveBoards.value.filter((row) => row.stationId === selectedStationId.value);
   });
+
+  function replaceTimelineSnapshots(snapshots: LiveBoardSnapshot[]): void {
+    timelineSnapshots.value = [...snapshots]
+      .sort((left, right) => left.updatedAt.localeCompare(right.updatedAt))
+      .slice(-MAX_TIMELINE_SNAPSHOTS);
+    timelineCursorIndex.value =
+      timelineSnapshots.value.length === 0 ? 0 : timelineSnapshots.value.length - 1;
+  }
+
+  function appendTimelineSnapshot(snapshot: LiveBoardSnapshot): void {
+    const next = timelineSnapshots.value.filter((item) => item.updatedAt !== snapshot.updatedAt);
+    next.push(snapshot);
+    replaceTimelineSnapshots(next);
+    if (timelineMode.value === "live") {
+      goToLatestTimeline();
+    }
+  }
+
+  function goToLatestTimeline(): void {
+    if (timelineSnapshots.value.length === 0) {
+      timelineCursorIndex.value = 0;
+    } else {
+      timelineCursorIndex.value = timelineSnapshots.value.length - 1;
+    }
+    syncSelectedTrain();
+  }
+
+  function seedMockTimeline(): void {
+    replaceTimelineSnapshots(liveBoardSnapshots);
+    const latest = liveBoardSnapshots[liveBoardSnapshots.length - 1];
+    networkLiveBoards.value = latest?.rows ?? liveBoardRows;
+    liveBoardUpdatedAt.value = latest?.updatedAt ?? new Date().toISOString();
+    goToLatestTimeline();
+  }
 
   async function selectStation(stationId: string): Promise<void> {
     const station = findStationById(stationId);
@@ -42,25 +100,23 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
     liveBoardError.value = undefined;
 
     if (!station) {
-      liveBoardUpdatedAt.value = undefined;
       selectedTrainId.value = undefined;
       return;
     }
 
     if (appConfig.mrtLiveBoardSource === "mock") {
-      networkLiveBoards.value = liveBoardRows;
-      liveBoardUpdatedAt.value = new Date().toISOString();
+      seedMockTimeline();
       syncSelectedTrain();
       return;
     }
 
+    await loadTimelineSnapshots();
     await refreshLiveBoards();
   }
 
   async function refreshLiveBoards(): Promise<void> {
     if (appConfig.mrtLiveBoardSource === "mock") {
-      networkLiveBoards.value = liveBoardRows;
-      liveBoardUpdatedAt.value = new Date().toISOString();
+      seedMockTimeline();
       syncSelectedTrain();
       return;
     }
@@ -68,12 +124,13 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
     liveBoardLoading.value = true;
     liveBoardError.value = undefined;
     try {
-      const payload = await fetchTdxLiveBoard(
-        undefined,
-        appConfig.tdxProxyUrl,
-      );
+      const payload = await fetchTdxLiveBoard(undefined, appConfig.tdxProxyUrl);
       networkLiveBoards.value = payload.rows;
       liveBoardUpdatedAt.value = payload.updatedAt;
+      appendTimelineSnapshot({
+        updatedAt: payload.updatedAt,
+        rows: payload.rows,
+      });
       syncSelectedTrain();
     } catch (error) {
       liveBoardError.value =
@@ -86,6 +143,29 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
     }
   }
 
+  async function loadTimelineSnapshots(): Promise<void> {
+    if (appConfig.mrtLiveBoardSource === "mock") {
+      seedMockTimeline();
+      return;
+    }
+
+    try {
+      const payload = await fetchTdxLiveBoardTimeline(appConfig.tdxProxyUrl);
+      replaceTimelineSnapshots(payload.snapshots);
+      if (liveBoardUpdatedAt.value && networkLiveBoards.value.length > 0) {
+        appendTimelineSnapshot({
+          updatedAt: liveBoardUpdatedAt.value,
+          rows: networkLiveBoards.value,
+        });
+      } else {
+        syncSelectedTrain();
+      }
+    } catch (error) {
+      liveBoardError.value =
+        error instanceof Error ? error.message : "Unable to load TDX timeline snapshots.";
+    }
+  }
+
   function selectTrain(trainId: string | undefined): void {
     selectedTrainId.value = trainId;
   }
@@ -95,7 +175,7 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
       return;
     }
 
-    if (!networkLiveBoards.value.some((row) => row.id === selectedTrainId.value)) {
+    if (!displayedLiveBoards.value.some((row) => row.id === selectedTrainId.value)) {
       selectedTrainId.value = undefined;
     }
   }
@@ -120,6 +200,9 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
 
   function setTimelineMode(mode: TimelineMode): void {
     timelineMode.value = mode;
+    if (mode === "live") {
+      goToLatestTimeline();
+    }
   }
 
   function setLiveRefreshIntervalMs(intervalMs: number): void {
@@ -132,12 +215,35 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
     }
   }
 
+  function scrubTimeline(index: number): void {
+    if (timelineSnapshots.value.length === 0) {
+      return;
+    }
+
+    timelineMode.value = "paused";
+    timelineCursorIndex.value = Math.min(Math.max(Math.round(index), 0), timelineSnapshots.value.length - 1);
+    syncSelectedTrain();
+  }
+
+  function stepTimeline(delta: number): void {
+    scrubTimeline(timelineCursorIndex.value + delta);
+  }
+
+  if (appConfig.mrtLiveBoardSource === "mock") {
+    seedMockTimeline();
+  }
+
   return {
     selectedStationId,
     selectedTrainId,
     selectedStation,
     networkLiveBoards,
+    displayedLiveBoards,
     selectedLiveBoards,
+    displayedUpdatedAt,
+    displayedSnapshot,
+    timelineSnapshots,
+    timelineCursorIndex,
     liveBoardError,
     liveBoardLoading,
     liveBoardUpdatedAt,
@@ -146,11 +252,15 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
     timelineMode,
     liveRefreshIntervalMs,
     refreshLiveBoards,
+    loadTimelineSnapshots,
     selectStation,
     toggleLine,
     toggleOverlay,
     setTimelineMode,
     setLiveRefreshIntervalMs,
     selectTrain,
+    scrubTimeline,
+    stepTimeline,
+    goToLatestTimeline,
   };
 });

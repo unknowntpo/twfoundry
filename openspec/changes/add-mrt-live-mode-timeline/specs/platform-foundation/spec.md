@@ -2,52 +2,58 @@
 
 ## ADDED Requirements
 
-### Requirement: MRT Live Mode
+### Requirement: MRT Live Snapshot Persistence
 
-TWFoundry SHALL support a live-follow MRT mode for the selected station when the dashboard uses the TDX LiveBoard source.
+TWFoundry SHALL persist normalized MRT liveboard snapshots so recent operator replay does not depend on an in-memory frontend session.
 
-#### Scenario: Live-follow refresh is active
+#### Scenario: Latest MRT fetch is written as a replayable snapshot
 
-- **GIVEN** the dashboard is configured to use the `tdx` liveboard source
-- **AND** a station is selected
-- **WHEN** the operator keeps the timeline in `live` mode
-- **THEN** the frontend auto-refreshes the selected station liveboard from the existing backend liveboard endpoint
-- **AND** the operator can choose among `5s`, `20s`, `30s`, and `1m` polling intervals
+- **GIVEN** the backend fetches MRT liveboard rows from TDX
+- **WHEN** the backend normalizes the liveboard response
+- **THEN** the backend persists the normalized snapshot before returning the response
+- **AND** the persisted snapshot can later be queried for timeline replay
 
-### Requirement: Live Timeline Status
+### Requirement: MRT Timeline Replay API
 
-TWFoundry SHALL show the latest live snapshot time and freshness for the MRT timeline.
+TWFoundry SHALL expose a backend MRT timeline API that returns recent persisted snapshots in replay order.
 
-#### Scenario: Latest snapshot metadata is visible
+#### Scenario: Recent persisted snapshots are queryable
 
-- **GIVEN** the selected station has received a liveboard response
-- **WHEN** the MRT dashboard renders the timeline and station panel
-- **THEN** both surfaces show freshness derived from the same latest snapshot timestamp
-- **AND** the timeline does not display placeholder historical values as if they were real replay state
+- **GIVEN** MRT liveboard snapshots have been persisted
+- **WHEN** the frontend requests MRT timeline history
+- **THEN** the backend returns recent snapshots ordered from oldest to newest
+- **AND** each snapshot contains the normalized liveboard rows needed to replay dashboard state
 
-### Requirement: No Historical Implication Without History
+### Requirement: Timeline Drag Replay
 
-TWFoundry SHALL avoid implying historical replay capability before a persisted history model exists.
+TWFoundry SHALL let the operator drag the MRT timeline to inspect persisted snapshots.
 
-#### Scenario: History is not yet implemented
+#### Scenario: Dragging the timeline changes the displayed snapshot
 
-- **GIVEN** the MRT timeline has no persisted historical snapshot source
-- **WHEN** the operator views the timeline
-- **THEN** previous/next controls remain non-historical
-- **AND** the live mode can be paused without implying replay navigation
+- **GIVEN** the MRT dashboard has loaded persisted timeline snapshots
+- **WHEN** the operator drags the timeline away from the latest point
+- **THEN** the dashboard enters `paused` mode
+- **AND** the selected persisted snapshot becomes the source of truth for rendered MRT liveboard data
+- **AND** pressing `Now` returns the dashboard to the latest live snapshot
 
-### Requirement: Train-Centric Live Selection
+### Requirement: Snapshot-Driven Train Position Replay
 
-TWFoundry SHALL treat the train code as the primary identity for live train selection in the MRT dashboard.
+TWFoundry SHALL recompute train positions from the selected timeline snapshot.
 
-#### Scenario: Sidebar and map stay centered on the selected train
+#### Scenario: Train positions move when replay position changes
 
-- **GIVEN** the MRT dashboard renders train cards from the live feed
-- **WHEN** the operator views the sidebar
-- **THEN** each train card shows the train code as the primary label
-- **AND** destination and direction remain secondary metadata
-- **WHEN** the operator hovers an estimated train marker on the map
-- **THEN** the hover tooltip shows only the train code
-- **WHEN** the operator clicks an estimated train marker on the map
-- **THEN** the matching sidebar line group is expanded if needed
-- **AND** the matching train card is scrolled into view and focused
+- **GIVEN** two or more persisted MRT snapshots contain different liveboard timing states
+- **WHEN** the operator drags the timeline to another snapshot
+- **THEN** inferred train marker positions update according to the selected snapshot rows
+- **AND** sidebar train rows and station panel arrivals remain consistent with the same snapshot
+
+### Requirement: Train-Centric Replay Selection
+
+TWFoundry SHALL keep train-centric selection behavior during replay.
+
+#### Scenario: Replay keeps selection centered on the train
+
+- **GIVEN** the operator has selected a train from the map or sidebar
+- **WHEN** the timeline moves to another persisted snapshot
+- **THEN** the dashboard keeps `selectedTrainId` as the train-centric identity while that train exists in the selected snapshot
+- **AND** the selection is cleared only if the selected snapshot no longer contains that train

@@ -38,3 +38,8 @@ export interface LiveBoardRow {
   arrivalMinutes: number;
   status: "on-time" | "approaching" | "delayed";
 }
+
+export interface LiveBoardSnapshot {
+  updatedAt: string;
+  rows: LiveBoardRow[];
+}

@@ -17,14 +17,16 @@ import StationPanel from "./StationPanel.vue";
 const { t } = useI18n();
 const store = useMrtDashboardStore();
 const {
+  displayedLiveBoards,
+  displayedUpdatedAt,
   liveBoardError,
   liveBoardLoading,
-  liveBoardUpdatedAt,
-  networkLiveBoards,
   selectedStation,
   selectedStationId,
   selectedLiveBoards,
+  timelineCursorIndex,
   timelineMode,
+  timelineSnapshots,
   liveRefreshIntervalMs,
   visibleLineIds,
   visibleOverlayIds,
@@ -47,17 +49,18 @@ const lineTrainCounts = computed(() =>
   Object.fromEntries(
     mrtLines.map((line) => [
       line.id,
-      networkLiveBoards.value.filter((row) => row.lineId === line.id).length,
+      displayedLiveBoards.value.filter((row) => row.lineId === line.id).length,
     ]),
   ) as Record<string, number>,
 );
-const activeTrainCount = computed(() => networkLiveBoards.value.length);
+const activeTrainCount = computed(() => displayedLiveBoards.value.length);
 const liveBoardSourceLabel = computed(() =>
   appConfig.mrtLiveBoardSource === "tdx" ? "TDX live" : "Mock",
 );
 const clockNow = ref(Date.now());
+const timelineHasReplay = computed(() => timelineSnapshots.value.length > 1);
 const timelineTimestampLabel = computed(() => {
-  if (!liveBoardUpdatedAt.value) {
+  if (!displayedUpdatedAt.value) {
     return t("dashboard.timeline.noData");
   }
 
@@ -67,27 +70,27 @@ const timelineTimestampLabel = computed(() => {
     weekday: "short",
     hour: "2-digit",
     minute: "2-digit",
-  }).format(new Date(liveBoardUpdatedAt.value));
+  }).format(new Date(displayedUpdatedAt.value));
 });
 const timelineUpdatedLabel = computed(() => {
-  if (!liveBoardUpdatedAt.value) {
+  if (!displayedUpdatedAt.value) {
     return t("dashboard.timeline.noData");
   }
 
   const diffSeconds = Math.max(
     0,
-    Math.floor((clockNow.value - new Date(liveBoardUpdatedAt.value).getTime()) / 1000),
+    Math.floor((clockNow.value - new Date(displayedUpdatedAt.value).getTime()) / 1000),
   );
   const relative =
     diffSeconds < 60 ? `${diffSeconds}s ago` : `${Math.floor(diffSeconds / 60)}m ago`;
   return t("dashboard.timeline.updated", { relative });
 });
 const timelineTrackFill = computed(() => {
-  if (timelineMode.value !== "live") {
+  if (timelineSnapshots.value.length <= 1) {
     return "100%";
   }
 
-  const ratio = Math.min(1, Math.max(0.08, 5000 / liveRefreshIntervalMs.value));
+  const ratio = timelineCursorIndex.value / (timelineSnapshots.value.length - 1);
   return `${Math.round(ratio * 100)}%`;
 });
 const isLayerSidebarCollapsed = ref(false);
@@ -152,6 +155,7 @@ function syncLiveRefreshTimer(): void {
 function setLiveMode(mode: "live" | "paused"): void {
   store.setTimelineMode(mode);
   if (mode === "live") {
+    store.goToLatestTimeline();
     void store.refreshLiveBoards();
   }
 }
@@ -163,9 +167,21 @@ function setLiveRefreshInterval(intervalMs: number): void {
   }
 }
 
+function scrubTimelineFromEvent(event: Event): void {
+  const target = event.target;
+  if (!(target instanceof HTMLInputElement)) {
+    return;
+  }
+
+  store.scrubTimeline(Number(target.value));
+}
+
 onMounted(() => {
   if (appConfig.mrtLiveBoardSource === "tdx") {
-    void store.refreshLiveBoards();
+    void (async () => {
+      await store.loadTimelineSnapshots();
+      await store.refreshLiveBoards();
+    })();
   }
   syncLiveRefreshTimer();
   freshnessTicker = window.setInterval(() => {
@@ -389,7 +405,14 @@ watch([timelineMode, liveRefreshIntervalMs, selectedStationId], () => {
 
     <footer class="timeline" :aria-label="t('dashboard.timeline.aria')">
       <div class="timeline-buttons">
-        <button type="button" :aria-label="t('dashboard.timeline.previous')" disabled>‹</button>
+        <button
+          type="button"
+          :aria-label="t('dashboard.timeline.previous')"
+          :disabled="!timelineHasReplay || timelineCursorIndex <= 0"
+          @click="store.stepTimeline(-1)"
+        >
+          ‹
+        </button>
         <button
           type="button"
           :aria-label="
@@ -402,7 +425,14 @@ watch([timelineMode, liveRefreshIntervalMs, selectedStationId], () => {
         >
           {{ timelineMode === "live" ? "Ⅱ" : "▶" }}
         </button>
-        <button type="button" :aria-label="t('dashboard.timeline.next')" disabled>›</button>
+        <button
+          type="button"
+          :aria-label="t('dashboard.timeline.next')"
+          :disabled="!timelineHasReplay || timelineCursorIndex >= timelineSnapshots.length - 1"
+          @click="store.stepTimeline(1)"
+        >
+          ›
+        </button>
       </div>
       <span>{{ timelineTimestampLabel }}</span>
       <button type="button" class="now-button" @click="setLiveMode('live')">
@@ -424,6 +454,16 @@ watch([timelineMode, liveRefreshIntervalMs, selectedStationId], () => {
         </button>
       </div>
       <strong>{{ timelineUpdatedLabel }}</strong>
+      <input
+        class="timeline-slider"
+        type="range"
+        :min="0"
+        :max="Math.max(timelineSnapshots.length - 1, 0)"
+        :value="timelineCursorIndex"
+        :disabled="timelineSnapshots.length <= 1"
+        :aria-label="t('dashboard.timeline.aria')"
+        @input="scrubTimelineFromEvent"
+      />
       <div class="timeline-track" aria-hidden="true">
         <span :style="{ width: timelineTrackFill }" />
       </div>
@@ -759,7 +799,7 @@ h1 {
 
 .timeline {
   display: grid;
-  grid-template-columns: auto auto auto auto auto auto minmax(180px, 1fr) auto;
+  grid-template-columns: auto auto auto auto auto auto minmax(160px, 1fr) minmax(120px, 0.7fr) auto;
   align-items: center;
   gap: 12px;
   min-height: 52px;
@@ -800,6 +840,12 @@ h1 {
   overflow: hidden;
   border-radius: 999px;
   background: var(--border-soft);
+}
+
+.timeline-slider {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--twf-color-route-blue);
 }
 
 .timeline-track span {

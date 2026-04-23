@@ -37,4 +37,32 @@ describe("inferTrainMarkers", () => {
     expect(markers[0]?.layoutOffset.x).toBeGreaterThan(0);
     expect(markers[1]?.layoutOffset.x).toBeLessThan(0);
   });
+
+  it("changes inferred position when replayed snapshot timing changes", () => {
+    const earlySnapshot: LiveBoardRow[] = [
+      {
+        id: "tdx-BL18-1",
+        trainCode: "BL18-BL12",
+        stationId: "BL18",
+        lineId: "blue",
+        direction: "Inbound",
+        destination: "Taipei Main Station",
+        arrivalMinutes: 5,
+        status: "on-time",
+      },
+    ];
+    const lateSnapshot: LiveBoardRow[] = [
+      {
+        ...earlySnapshot[0],
+        arrivalMinutes: 1,
+        status: "approaching",
+      },
+    ];
+
+    const earlyMarkers = inferTrainMarkers(earlySnapshot, mrtStations, mrtLines);
+    const lateMarkers = inferTrainMarkers(lateSnapshot, mrtStations, mrtLines);
+
+    expect(earlyMarkers[0]?.position.lng).not.toBe(lateMarkers[0]?.position.lng);
+    expect(earlyMarkers[0]?.position.lat).not.toBe(lateMarkers[0]?.position.lat);
+  });
 });

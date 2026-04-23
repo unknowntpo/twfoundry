@@ -18,7 +18,7 @@ const trainCardRefs = ref<Record<string, HTMLButtonElement | null>>({});
 const liveRowsByLine = computed(() =>
   props.lines.map((line) => ({
     line,
-    rows: store.networkLiveBoards.filter((row) => row.lineId === line.id),
+    rows: store.displayedLiveBoards.filter((row) => row.lineId === line.id),
   })),
 );
 
@@ -56,7 +56,7 @@ watch(
       return;
     }
 
-    const row = store.networkLiveBoards.find((item) => item.id === selectedTrainId);
+    const row = store.displayedLiveBoards.find((item) => item.id === selectedTrainId);
     if (!row) {
       return;
     }

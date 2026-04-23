@@ -1,32 +1,31 @@
-# Change: Add MRT Live Mode Timeline
+# Change: Add MRT Persisted Timeline Replay
 
 ## Why
 
-The MRT dashboard already reads real TDX LiveBoard data, but the current timeline area is still a placeholder. It does not describe real historical capability, and it does not provide an operator-friendly live-follow mode for monitoring the latest feed.
+The MRT dashboard already reads real TDX LiveBoard data, but the timeline still cannot replay persisted snapshots. That means the operator cannot drag through recent history to inspect how train positions changed over time.
 
-Phase 1 should first make live monitoring complete before introducing persisted history, replay, or StarRocks-backed timeline queries.
+This change upgrades the MRT timeline from live-only status display into a persisted replay surface backed by backend snapshot storage.
 
 ## What Changes
 
-- Add a frontend MRT live mode with `live` and `paused` states.
-- Add auto-follow polling controls for `5s`, `20s`, `30s`, and `1m`.
-- Show the latest live snapshot timestamp and relative freshness in the timeline.
-- Reuse the existing backend `/api/mrt/liveboard` endpoint and its `updatedAt` field.
-- Make station panel freshness and timeline freshness share the same source of truth.
-- Make train selection UI treat the train code as the primary identifier in the live sidebar.
-- Make map-to-sidebar interaction return focus to the selected train card when a train marker is clicked.
+- Persist normalized MRT liveboard snapshots in the backend whenever the live feed is refreshed.
+- Add a backend MRT timeline API that returns recent persisted snapshots for replay.
+- Keep the existing frontend live mode with `live` and `paused` states.
+- Make the timeline draggable over persisted snapshots.
+- Make map train positions, sidebar rows, and station panel all derive from the selected timeline snapshot.
+- Keep train selection UI treat the train code as the primary identifier in the live sidebar.
+- Keep map-to-sidebar interaction return focus to the selected train card when a train marker is clicked.
 
 ## Out of Scope
 
 - StarRocks-backed timeline reads.
-- Historical snapshot persistence.
-- Replay, drag-to-replay, or previous/next navigation over history.
-- New backend timeline APIs.
+- Long-term analytics or warehouse-oriented historical modeling.
+- Cross-day retention policies beyond the recent operator replay window.
 
 ## Discussion Conclusion
 
-**Decision**: Ship MRT live mode first as a frontend-driven polling feature.
+**Decision**: Persist recent MRT snapshots and expose them through a backend replay API.
 
-**Backend dependency**: Keep using the existing latest-live fetch path. Do not couple this change to StarRocks or history storage.
+**Backend dependency**: Keep using the existing TDX latest-live fetch path as the ingestion source, but write normalized snapshots into a local persistence store before serving replay history.
 
-**Follow-up**: Historical playback will be handled in a separate change after storage and query contracts are defined.
+**Replay contract**: When the operator drags the timeline, the currently displayed train rows and inferred train positions must update to the selected persisted snapshot instead of the latest live feed.

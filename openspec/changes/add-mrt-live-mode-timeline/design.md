@@ -1,102 +1,117 @@
-# Design: Add MRT Live Mode Timeline
+# Design: Add MRT Persisted Timeline Replay
 
 ## Summary
 
-This change turns the MRT timeline from a static placeholder into a real live-monitoring control surface.
+This change turns the MRT timeline into a real replay surface backed by persisted liveboard snapshots.
 
-It does **not** introduce historical replay. The timeline is limited to the latest snapshot and auto-follow behavior.
+The latest TDX fetch path remains the source of new data, but the backend now stores normalized snapshots so the frontend can drag through recent history and recompute train positions from the selected snapshot.
 
-## Live Timeline Semantics
+## Backend Model
 
-- `timelineMode = live | paused`
+The backend persists each normalized MRT liveboard fetch as one snapshot:
+
+- `source`
+- `operator`
+- `updated_at`
+- `rows_json`
+- `row_count`
+
+`rows_json` stores the normalized `LiveBoardRow[]` payload, not raw TDX rows. This keeps replay behavior aligned with the same schema already used by the frontend.
+
+## Snapshot Write Path
+
+- frontend live mode continues polling `GET /api/mrt/liveboard`
+- backend fetches and normalizes TDX rows
+- backend writes the normalized snapshot into local persistence
+- backend returns the same latest snapshot response to the caller
+
+The write must happen before the response is considered complete so the latest snapshot is immediately replayable.
+
+## Timeline Read Path
+
+The backend exposes a new timeline endpoint returning recent persisted snapshots:
+
+- `GET /api/mrt/liveboard/timeline?operator=TRTC&limit=N`
+
+Response shape:
+
+- `source`
+- `snapshots[]`
+  - `updatedAt`
+  - `rows[]`
+
+Snapshots are returned oldest to newest so the frontend slider index maps naturally to timeline order.
+
+## Frontend State Model
+
+The MRT dashboard store owns two distinct concepts:
+
+- `networkLiveBoards`
+  - latest live rows from the newest backend fetch
+- `timelineSnapshots`
+  - replayable persisted snapshots
+
+The currently rendered dashboard state must come from:
+
+- `displayedSnapshot`
+- `displayedLiveBoards`
+- `displayedUpdatedAt`
+
+When timeline mode is `live`, the displayed snapshot is the latest snapshot.
+
+When the operator drags the timeline:
+
+- timeline mode becomes `paused`
+- the selected snapshot index becomes the source of truth
+- sidebar rows, station panel rows, and inferred train markers all re-render from the selected snapshot
+
+## Replay Semantics
+
 - `live`
-  - auto-follow polling is enabled
-  - `Now` keeps or returns the dashboard to live-follow mode
+  - polling continues
+  - latest snapshot is selected
 - `paused`
-  - auto-follow polling is stopped
-  - current selected station and latest snapshot remain visible
-  - this mode does **not** imply replay or history browsing
-- `previous` and `next`
-  - remain disabled in this change
-  - must not claim historical navigation capability
+  - polling stops
+  - selected persisted snapshot remains visible
+- `Now`
+  - returns to `live`
+  - jumps to the latest snapshot
+- `previous` / `next`
+  - move the selected snapshot backward or forward by one step
+- slider drag
+  - moves to the nearest persisted snapshot index
 
-## Polling Model
+## Train Position Contract
 
-- source of truth: existing `GET /api/mrt/liveboard`
-- polling starts only when:
-  - liveboard source is `tdx`
-  - a station is selected
-  - `timelineMode = live`
-- supported intervals:
-  - `5s`
-  - `20s`
-  - `30s`
-  - `1m`
-- default interval: `30s`
-- default mode: `live`
+Train positions are still inferred from liveboard rows and station geometry, but the input rows now come from `displayedLiveBoards` instead of the latest network-only payload.
 
-## UI Contract
+That means dragging the timeline updates:
 
-The timeline must show:
+- train card list contents
+- station panel arrivals
+- inferred train marker coordinates
+- selected train visibility and focus behavior
 
-- latest snapshot timestamp
-- relative freshness
-- current live or paused state
-- selected polling interval
-- feed source label
+## Persistence Scope
 
-The station panel must use the same freshness label source as the timeline.
+This change only needs an operator replay window, not a warehouse model.
 
-Empty-state copy must be source-neutral and must not imply the data is mock-only.
+Allowed:
 
-## Train Selection Interaction Contract
+- embedded local persistence for backend snapshots
+- recent snapshot replay for the dashboard
 
-For the MRT live sidebar and estimated train markers:
+Not included:
 
-- the primary train label in the sidebar must be the train code, not the destination station
-- destination and direction remain secondary metadata
-- hover state for estimated train markers must show only the train code
-- clicking a train marker on the map must keep `selectedTrainId` as the source of truth
-- when `selectedTrainId` changes from a map click, the sidebar must:
-  - expand the owning line group if needed
-  - scroll the selected train card into view
-  - move keyboard focus to the selected train card
+- StarRocks
+- analytical history queries
+- retention strategy for large-scale archival storage
 
-This keeps train selection centered on the moving vehicle instead of the currently observed station row.
+## Test Contract
 
-## Store Contract
+The implementation must prove:
 
-The MRT dashboard store owns the live timeline state:
-
-- `liveBoardUpdatedAt`
-- `timelineMode`
-- `liveRefreshIntervalMs`
-- `setTimelineMode(mode)`
-- `setLiveRefreshIntervalMs(intervalMs)`
-
-The page component owns the timer lifecycle:
-
-- create polling timer when live-follow is active
-- stop polling timer when paused or when no station is selected
-- refresh relative freshness on a clock tick so the UI stays current
-
-## Why History Is Deferred
-
-This change does not add historical navigation because the current backend only exposes the latest live query path.
-
-Current backend state:
-
-- real TDX fetch path exists
-- no persisted snapshot store is wired into frontend queries
-- no StarRocks-backed history query is exposed to the timeline
-- no timeline cursor or replay API exists
-
-Because of that, enabling `previous / next` would falsely imply historical capability that does not yet exist.
-
-## Non-Goals
-
-- persisted snapshots
-- StarRocks reads
-- backend timeline API
-- drag-to-replay
-- previous/next historical navigation
+- backend timeline snapshots are persisted after liveboard fetch
+- frontend can load persisted timeline snapshots
+- dragging the timeline changes displayed rows
+- dragging the timeline changes inferred train positions

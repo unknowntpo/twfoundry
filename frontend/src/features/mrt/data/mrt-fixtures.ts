@@ -1,4 +1,4 @@
-import type { LiveBoardRow, MrtStation } from "../types";
+import type { LiveBoardRow, LiveBoardSnapshot, MrtStation } from "../types";
 import { mrtLines, mrtStations } from "./mrt-network.generated";
 
 export { mrtLines, mrtStations };
@@ -55,6 +55,28 @@ export const liveBoardRows: LiveBoardRow[] = [
     destinationName: { Zh_tw: "松山", En: "Songshan" },
     arrivalMinutes: 4,
     status: "delayed",
+  },
+];
+
+export const liveBoardSnapshots: LiveBoardSnapshot[] = [
+  {
+    updatedAt: "2026-04-23T08:00:00.000Z",
+    rows: liveBoardRows.map((row) => ({
+      ...row,
+      arrivalMinutes: Math.max(0, row.arrivalMinutes + 3),
+      status: row.arrivalMinutes <= 1 ? row.status : "on-time",
+    })),
+  },
+  {
+    updatedAt: "2026-04-23T08:01:00.000Z",
+    rows: liveBoardRows.map((row) => ({
+      ...row,
+      arrivalMinutes: Math.max(0, row.arrivalMinutes + 1),
+    })),
+  },
+  {
+    updatedAt: "2026-04-23T08:02:00.000Z",
+    rows: liveBoardRows,
   },
 ];
 

@@ -37,7 +37,7 @@ const estimatedTrainOverlayVisible = computed(() =>
   store.visibleOverlayIds.includes("mrt-estimated-trains"),
 );
 const inferredTrains = computed(() =>
-  inferTrainMarkers(store.networkLiveBoards, props.stations, props.lines).filter((train) =>
+  inferTrainMarkers(store.displayedLiveBoards, props.stations, props.lines).filter((train) =>
     store.visibleLineIds.includes(train.lineId),
   ),
 );
@@ -53,7 +53,7 @@ function lineLabel(line: MrtLine): string {
     t,
     locale.value,
     line.id,
-    store.networkLiveBoards.find((row) => row.lineId === line.id)?.lineName,
+    store.displayedLiveBoards.find((row) => row.lineId === line.id)?.lineName,
   );
 }
 
@@ -66,7 +66,7 @@ onMounted(() => {
 });
 
 watch(
-  () => [props.lines, visibleStations.value, store.selectedStationId, store.networkLiveBoards],
+  () => [props.lines, visibleStations.value, store.selectedStationId, store.displayedLiveBoards],
   () => {
     if (appConfig.mapProvider === "google" && googleReady.value) {
       renderGoogleMapOverlays();

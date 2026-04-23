@@ -9,17 +9,25 @@ import org.springframework.stereotype.Service;
 @Service
 public class MrtLiveBoardService {
   private final TdxLiveBoardGateway gateway;
+  private final MrtLiveBoardTimelineRepository timelineRepository;
 
-  public MrtLiveBoardService(TdxLiveBoardGateway gateway) {
+  public MrtLiveBoardService(
+      TdxLiveBoardGateway gateway, MrtLiveBoardTimelineRepository timelineRepository) {
     this.gateway = gateway;
+    this.timelineRepository = timelineRepository;
   }
 
   public MrtLiveBoardResponse fetch(String operator, String stationId) {
     List<JsonNode> rows = gateway.fetchLiveBoard(operator, stationId);
-    return new MrtLiveBoardResponse(
-        "tdx",
-        Instant.now().toString(),
-        rows.stream().map(row -> normalize(row, stationId)).toList());
+    Instant updatedAt = Instant.now();
+    List<LiveBoardRow> normalizedRows = rows.stream().map(row -> normalize(row, stationId)).toList();
+    timelineRepository.saveSnapshot("tdx", operator, updatedAt, normalizedRows);
+    return new MrtLiveBoardResponse("tdx", updatedAt.toString(), normalizedRows);
+  }
+
+  public MrtLiveBoardTimelineResponse fetchTimeline(String operator, int limit) {
+    return new MrtLiveBoardTimelineResponse(
+        "tdx", timelineRepository.findRecentSnapshots(operator, limit));
   }
 
   private LiveBoardRow normalize(JsonNode row, String requestedStationId) {
@@ -177,6 +185,10 @@ public class MrtLiveBoardService {
   }
 
   public record MrtLiveBoardResponse(String source, String updatedAt, List<LiveBoardRow> rows) {}
+
+  public record MrtLiveBoardTimelineResponse(String source, List<MrtLiveBoardSnapshot> snapshots) {}
+
+  public record MrtLiveBoardSnapshot(String updatedAt, List<LiveBoardRow> rows) {}
 
   public record LiveBoardRow(
       String id,
