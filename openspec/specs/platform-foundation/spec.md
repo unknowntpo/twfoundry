@@ -458,6 +458,122 @@ code:
   - frontend/src/features/mrt/map/overlay-registry.ts
 -->
 
+
+<!-- @trace
+source: define-backend-platform-contracts
+updated: 2026-04-27
+code:
+  - frontend/package.json
+  - infra/redpanda/docker-compose.yml
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardTimelineStore.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PushSource.java
+  - gradlew
+  - README.md
+  - docs/git-worktree-layout.md
+  - frontend/src/shared/components/BaseButton.vue
+  - gradle/wrapper/gradle-wrapper.jar
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/Lifecycle.java
+  - frontend/src/features/design-system/components/DesignSystemPage.vue
+  - gradle/wrapper/gradle-wrapper.properties
+  - backend/ingestion/build.gradle.kts
+  - frontend/src/features/mrt/data/mrt-network.generated.ts
+  - docs/redpanda-local-dev.md
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/TopicNames.java
+  - infra/starrocks/sql/bootstrap.sql
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardService.java
+  - frontend/src/shared/design/tokens.css
+  - frontend/src/shared/components/BaseCard.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxProperties.java
+  - docs/TWFoundry-project-brief.md
+  - frontend/src/features/mrt/line-names.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/Datasource.java
+  - frontend/playwright.fullstack.config.ts
+  - frontend/src/shared/components/BaseBadge.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/E2eTdxLiveBoardGateway.java
+  - frontend/src/shared/components/LocaleSwitcher.vue
+  - docs/tdx-mrt-api-exploration.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardController.java
+  - frontend/bun.lockb
+  - infra/starrocks/docker-compose.yml
+  - gradlew.bat
+  - backend/common/build.gradle.kts
+  - frontend/src/app/router.ts
+  - frontend/src/features/mrt/localized-text.ts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/IngestionApplication.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStore.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobRequest.java
+  - frontend/src/features/mrt/tdx/normalize.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/IngestionMethod.java
+  - frontend/src/features/mrt/api/tdx-liveboard.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/RawEnvelope.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxHttpLiveBoardGateway.java
+  - docs/starrocks-vs-iceberg-evolution-note.md
+  - frontend/src/features/mrt/data/mrt-fixtures.ts
+  - frontend/src/features/mrt/map/map-provider.ts
+  - docs/overlay-registry-design-note.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxLiveBoardGateway.java
+  - frontend/scripts/tdx-proxy.ts
+  - frontend/src/features/mrt/map/inferred-trains.ts
+  - frontend/src/features/mrt/components/LayerControl.vue
+  - frontend/biome.json
+  - frontend/src/features/mrt/components/MrtDashboard.vue
+  - AGENTS.md
+  - backend/ingestion/src/main/resources/application.properties
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PullBatch.java
+  - docs/starrocks-local-dev.md
+  - frontend/src/style.css
+  - frontend/src/features/mrt/components/MrtMap.vue
+  - settings.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardBackfillStateStore.java
+  - backend/streams/build.gradle.kts
+  - frontend/src/main.ts
+  - frontend/src/shared/config/env.ts
+  - frontend/src/shared/components/BasePanel.vue
+  - backend/ingestion/src/main/resources/schema.sql
+  - frontend/src/features/mrt/types.ts
+  - gradle/libs.versions.toml
+  - frontend/src/features/mrt/tdx/proxy-core.ts
+  - backend/api/build.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobService.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobRunner.java
+  - frontend/src/env.d.ts
+  - backend/storage/build.gradle.kts
+  - frontend/src/shared/i18n/index.ts
+  - frontend/src/features/mrt/map/overlay-registry.ts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardTimelineStore.java
+  - build.gradle.kts
+  - frontend/src/app/stores/mrt-dashboard.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/RunMode.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PullSource.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/SourceDescriptor.java
+  - frontend/src/features/mrt/components/StationPanel.vue
+  - frontend/src/shared/i18n/locale.ts
+  - frontend/src/shared/components/BaseSectionLabel.vue
+  - frontend/src/shared/i18n/messages.ts
+  - frontend/.env.example
+tests:
+  - frontend/tests/e2e/mrt-dashboard.spec.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStoreE2eTest.java
+  - frontend/src/features/mrt/__tests__/inferred-trains.test.ts
+  - frontend/tests/e2e/design-system.spec.ts
+  - frontend/src/shared/i18n/locale.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-dashboard-live-mode.test.ts
+  - frontend/src/features/mrt/__tests__/overlay-registry.test.ts
+  - frontend/src/features/mrt/__tests__/map-provider.test.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/IngestionJobServiceTest.java
+  - frontend/src/features/mrt/__tests__/tdx-liveboard-api.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store.test.ts
+  - backend/common/src/test/java/io/twfoundry/backend/common/domain/TopicNamesTest.java
+  - backend/ingestion/src/test/resources/application-e2e.properties
+  - frontend/src/features/mrt/__tests__/tdx-proxy.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store-liveboard-source.test.ts
+  - frontend/src/shared/config/env.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-data.test.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardControllerE2eTest.java
+  - frontend/src/features/mrt/__tests__/tdx-normalize.test.ts
+  - frontend/tests/e2e/fullstack.spec.ts
+-->
+
 ---
 ### Requirement: Frontend CI
 
@@ -884,4 +1000,1822 @@ code:
   - frontend/src/shared/i18n/messages.ts
   - frontend/scripts/test.html
   - frontend/.DS_Store
+-->
+
+---
+### Requirement: Backend Platform Contracts
+
+TWFoundry SHALL define backend and data-platform contracts before implementing Phase 1 ingestion, streaming, storage, or API runtime flows.
+
+#### Scenario: Backend work is planned after frontend bootstrap
+
+- **GIVEN** the MRT-first frontend dashboard contract exists
+- **WHEN** backend platform implementation is planned
+- **THEN** raw envelope fields, source registry fields, pluggable datasource connector contracts, topic naming, latest-state storage schemas, backend module boundaries, and local infrastructure entrypoints are defined in a follow-up change
+
+
+<!-- @trace
+source: define-backend-platform-contracts
+updated: 2026-04-27
+code:
+  - frontend/package.json
+  - infra/redpanda/docker-compose.yml
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardTimelineStore.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PushSource.java
+  - gradlew
+  - README.md
+  - docs/git-worktree-layout.md
+  - frontend/src/shared/components/BaseButton.vue
+  - gradle/wrapper/gradle-wrapper.jar
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/Lifecycle.java
+  - frontend/src/features/design-system/components/DesignSystemPage.vue
+  - gradle/wrapper/gradle-wrapper.properties
+  - backend/ingestion/build.gradle.kts
+  - frontend/src/features/mrt/data/mrt-network.generated.ts
+  - docs/redpanda-local-dev.md
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/TopicNames.java
+  - infra/starrocks/sql/bootstrap.sql
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardService.java
+  - frontend/src/shared/design/tokens.css
+  - frontend/src/shared/components/BaseCard.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxProperties.java
+  - docs/TWFoundry-project-brief.md
+  - frontend/src/features/mrt/line-names.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/Datasource.java
+  - frontend/playwright.fullstack.config.ts
+  - frontend/src/shared/components/BaseBadge.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/E2eTdxLiveBoardGateway.java
+  - frontend/src/shared/components/LocaleSwitcher.vue
+  - docs/tdx-mrt-api-exploration.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardController.java
+  - frontend/bun.lockb
+  - infra/starrocks/docker-compose.yml
+  - gradlew.bat
+  - backend/common/build.gradle.kts
+  - frontend/src/app/router.ts
+  - frontend/src/features/mrt/localized-text.ts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/IngestionApplication.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStore.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobRequest.java
+  - frontend/src/features/mrt/tdx/normalize.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/IngestionMethod.java
+  - frontend/src/features/mrt/api/tdx-liveboard.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/RawEnvelope.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxHttpLiveBoardGateway.java
+  - docs/starrocks-vs-iceberg-evolution-note.md
+  - frontend/src/features/mrt/data/mrt-fixtures.ts
+  - frontend/src/features/mrt/map/map-provider.ts
+  - docs/overlay-registry-design-note.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxLiveBoardGateway.java
+  - frontend/scripts/tdx-proxy.ts
+  - frontend/src/features/mrt/map/inferred-trains.ts
+  - frontend/src/features/mrt/components/LayerControl.vue
+  - frontend/biome.json
+  - frontend/src/features/mrt/components/MrtDashboard.vue
+  - AGENTS.md
+  - backend/ingestion/src/main/resources/application.properties
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PullBatch.java
+  - docs/starrocks-local-dev.md
+  - frontend/src/style.css
+  - frontend/src/features/mrt/components/MrtMap.vue
+  - settings.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardBackfillStateStore.java
+  - backend/streams/build.gradle.kts
+  - frontend/src/main.ts
+  - frontend/src/shared/config/env.ts
+  - frontend/src/shared/components/BasePanel.vue
+  - backend/ingestion/src/main/resources/schema.sql
+  - frontend/src/features/mrt/types.ts
+  - gradle/libs.versions.toml
+  - frontend/src/features/mrt/tdx/proxy-core.ts
+  - backend/api/build.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobService.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobRunner.java
+  - frontend/src/env.d.ts
+  - backend/storage/build.gradle.kts
+  - frontend/src/shared/i18n/index.ts
+  - frontend/src/features/mrt/map/overlay-registry.ts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardTimelineStore.java
+  - build.gradle.kts
+  - frontend/src/app/stores/mrt-dashboard.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/RunMode.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PullSource.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/SourceDescriptor.java
+  - frontend/src/features/mrt/components/StationPanel.vue
+  - frontend/src/shared/i18n/locale.ts
+  - frontend/src/shared/components/BaseSectionLabel.vue
+  - frontend/src/shared/i18n/messages.ts
+  - frontend/.env.example
+tests:
+  - frontend/tests/e2e/mrt-dashboard.spec.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStoreE2eTest.java
+  - frontend/src/features/mrt/__tests__/inferred-trains.test.ts
+  - frontend/tests/e2e/design-system.spec.ts
+  - frontend/src/shared/i18n/locale.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-dashboard-live-mode.test.ts
+  - frontend/src/features/mrt/__tests__/overlay-registry.test.ts
+  - frontend/src/features/mrt/__tests__/map-provider.test.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/IngestionJobServiceTest.java
+  - frontend/src/features/mrt/__tests__/tdx-liveboard-api.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store.test.ts
+  - backend/common/src/test/java/io/twfoundry/backend/common/domain/TopicNamesTest.java
+  - backend/ingestion/src/test/resources/application-e2e.properties
+  - frontend/src/features/mrt/__tests__/tdx-proxy.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store-liveboard-source.test.ts
+  - frontend/src/shared/config/env.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-data.test.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardControllerE2eTest.java
+  - frontend/src/features/mrt/__tests__/tdx-normalize.test.ts
+  - frontend/tests/e2e/fullstack.spec.ts
+-->
+
+---
+### Requirement: Backend Scope Isolation
+
+TWFoundry SHALL keep backend platform contract work separate from the completed frontend bootstrap slice.
+
+#### Scenario: Bootstrap is completed
+
+- **GIVEN** `bootstrap-twfoundry-platform` has completed the frontend-first dashboard foundation
+- **WHEN** backend contract tasks remain
+- **THEN** those tasks are tracked by `define-backend-platform-contracts` instead of expanding the bootstrap change
+
+
+<!-- @trace
+source: define-backend-platform-contracts
+updated: 2026-04-27
+code:
+  - frontend/package.json
+  - infra/redpanda/docker-compose.yml
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardTimelineStore.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PushSource.java
+  - gradlew
+  - README.md
+  - docs/git-worktree-layout.md
+  - frontend/src/shared/components/BaseButton.vue
+  - gradle/wrapper/gradle-wrapper.jar
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/Lifecycle.java
+  - frontend/src/features/design-system/components/DesignSystemPage.vue
+  - gradle/wrapper/gradle-wrapper.properties
+  - backend/ingestion/build.gradle.kts
+  - frontend/src/features/mrt/data/mrt-network.generated.ts
+  - docs/redpanda-local-dev.md
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/TopicNames.java
+  - infra/starrocks/sql/bootstrap.sql
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardService.java
+  - frontend/src/shared/design/tokens.css
+  - frontend/src/shared/components/BaseCard.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxProperties.java
+  - docs/TWFoundry-project-brief.md
+  - frontend/src/features/mrt/line-names.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/Datasource.java
+  - frontend/playwright.fullstack.config.ts
+  - frontend/src/shared/components/BaseBadge.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/E2eTdxLiveBoardGateway.java
+  - frontend/src/shared/components/LocaleSwitcher.vue
+  - docs/tdx-mrt-api-exploration.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardController.java
+  - frontend/bun.lockb
+  - infra/starrocks/docker-compose.yml
+  - gradlew.bat
+  - backend/common/build.gradle.kts
+  - frontend/src/app/router.ts
+  - frontend/src/features/mrt/localized-text.ts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/IngestionApplication.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStore.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobRequest.java
+  - frontend/src/features/mrt/tdx/normalize.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/IngestionMethod.java
+  - frontend/src/features/mrt/api/tdx-liveboard.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/RawEnvelope.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxHttpLiveBoardGateway.java
+  - docs/starrocks-vs-iceberg-evolution-note.md
+  - frontend/src/features/mrt/data/mrt-fixtures.ts
+  - frontend/src/features/mrt/map/map-provider.ts
+  - docs/overlay-registry-design-note.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxLiveBoardGateway.java
+  - frontend/scripts/tdx-proxy.ts
+  - frontend/src/features/mrt/map/inferred-trains.ts
+  - frontend/src/features/mrt/components/LayerControl.vue
+  - frontend/biome.json
+  - frontend/src/features/mrt/components/MrtDashboard.vue
+  - AGENTS.md
+  - backend/ingestion/src/main/resources/application.properties
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PullBatch.java
+  - docs/starrocks-local-dev.md
+  - frontend/src/style.css
+  - frontend/src/features/mrt/components/MrtMap.vue
+  - settings.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardBackfillStateStore.java
+  - backend/streams/build.gradle.kts
+  - frontend/src/main.ts
+  - frontend/src/shared/config/env.ts
+  - frontend/src/shared/components/BasePanel.vue
+  - backend/ingestion/src/main/resources/schema.sql
+  - frontend/src/features/mrt/types.ts
+  - gradle/libs.versions.toml
+  - frontend/src/features/mrt/tdx/proxy-core.ts
+  - backend/api/build.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobService.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobRunner.java
+  - frontend/src/env.d.ts
+  - backend/storage/build.gradle.kts
+  - frontend/src/shared/i18n/index.ts
+  - frontend/src/features/mrt/map/overlay-registry.ts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardTimelineStore.java
+  - build.gradle.kts
+  - frontend/src/app/stores/mrt-dashboard.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/RunMode.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PullSource.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/SourceDescriptor.java
+  - frontend/src/features/mrt/components/StationPanel.vue
+  - frontend/src/shared/i18n/locale.ts
+  - frontend/src/shared/components/BaseSectionLabel.vue
+  - frontend/src/shared/i18n/messages.ts
+  - frontend/.env.example
+tests:
+  - frontend/tests/e2e/mrt-dashboard.spec.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStoreE2eTest.java
+  - frontend/src/features/mrt/__tests__/inferred-trains.test.ts
+  - frontend/tests/e2e/design-system.spec.ts
+  - frontend/src/shared/i18n/locale.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-dashboard-live-mode.test.ts
+  - frontend/src/features/mrt/__tests__/overlay-registry.test.ts
+  - frontend/src/features/mrt/__tests__/map-provider.test.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/IngestionJobServiceTest.java
+  - frontend/src/features/mrt/__tests__/tdx-liveboard-api.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store.test.ts
+  - backend/common/src/test/java/io/twfoundry/backend/common/domain/TopicNamesTest.java
+  - backend/ingestion/src/test/resources/application-e2e.properties
+  - frontend/src/features/mrt/__tests__/tdx-proxy.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store-liveboard-source.test.ts
+  - frontend/src/shared/config/env.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-data.test.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardControllerE2eTest.java
+  - frontend/src/features/mrt/__tests__/tdx-normalize.test.ts
+  - frontend/tests/e2e/fullstack.spec.ts
+-->
+
+---
+### Requirement: Phase 1 Backbone Direction
+
+TWFoundry SHALL use `Redpanda/Kafka -> Stream Processing -> StarRocks` as the Phase 1 backend backbone direction.
+
+#### Scenario: Backbone technology is selected
+
+- **GIVEN** the project needs a production-oriented backend direction for Phase 1 source ingestion and serving
+- **WHEN** the backend platform contracts are defined
+- **THEN** the change documents `Redpanda` or `Kafka` as the event backbone and `StarRocks` as the latest-state serving store
+- **AND** the change does not require Fluss as the primary Phase 1 backbone
+
+
+<!-- @trace
+source: define-backend-platform-contracts
+updated: 2026-04-27
+code:
+  - frontend/package.json
+  - infra/redpanda/docker-compose.yml
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardTimelineStore.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PushSource.java
+  - gradlew
+  - README.md
+  - docs/git-worktree-layout.md
+  - frontend/src/shared/components/BaseButton.vue
+  - gradle/wrapper/gradle-wrapper.jar
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/Lifecycle.java
+  - frontend/src/features/design-system/components/DesignSystemPage.vue
+  - gradle/wrapper/gradle-wrapper.properties
+  - backend/ingestion/build.gradle.kts
+  - frontend/src/features/mrt/data/mrt-network.generated.ts
+  - docs/redpanda-local-dev.md
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/TopicNames.java
+  - infra/starrocks/sql/bootstrap.sql
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardService.java
+  - frontend/src/shared/design/tokens.css
+  - frontend/src/shared/components/BaseCard.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxProperties.java
+  - docs/TWFoundry-project-brief.md
+  - frontend/src/features/mrt/line-names.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/Datasource.java
+  - frontend/playwright.fullstack.config.ts
+  - frontend/src/shared/components/BaseBadge.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/E2eTdxLiveBoardGateway.java
+  - frontend/src/shared/components/LocaleSwitcher.vue
+  - docs/tdx-mrt-api-exploration.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardController.java
+  - frontend/bun.lockb
+  - infra/starrocks/docker-compose.yml
+  - gradlew.bat
+  - backend/common/build.gradle.kts
+  - frontend/src/app/router.ts
+  - frontend/src/features/mrt/localized-text.ts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/IngestionApplication.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStore.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobRequest.java
+  - frontend/src/features/mrt/tdx/normalize.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/IngestionMethod.java
+  - frontend/src/features/mrt/api/tdx-liveboard.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/RawEnvelope.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxHttpLiveBoardGateway.java
+  - docs/starrocks-vs-iceberg-evolution-note.md
+  - frontend/src/features/mrt/data/mrt-fixtures.ts
+  - frontend/src/features/mrt/map/map-provider.ts
+  - docs/overlay-registry-design-note.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxLiveBoardGateway.java
+  - frontend/scripts/tdx-proxy.ts
+  - frontend/src/features/mrt/map/inferred-trains.ts
+  - frontend/src/features/mrt/components/LayerControl.vue
+  - frontend/biome.json
+  - frontend/src/features/mrt/components/MrtDashboard.vue
+  - AGENTS.md
+  - backend/ingestion/src/main/resources/application.properties
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PullBatch.java
+  - docs/starrocks-local-dev.md
+  - frontend/src/style.css
+  - frontend/src/features/mrt/components/MrtMap.vue
+  - settings.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardBackfillStateStore.java
+  - backend/streams/build.gradle.kts
+  - frontend/src/main.ts
+  - frontend/src/shared/config/env.ts
+  - frontend/src/shared/components/BasePanel.vue
+  - backend/ingestion/src/main/resources/schema.sql
+  - frontend/src/features/mrt/types.ts
+  - gradle/libs.versions.toml
+  - frontend/src/features/mrt/tdx/proxy-core.ts
+  - backend/api/build.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobService.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobRunner.java
+  - frontend/src/env.d.ts
+  - backend/storage/build.gradle.kts
+  - frontend/src/shared/i18n/index.ts
+  - frontend/src/features/mrt/map/overlay-registry.ts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardTimelineStore.java
+  - build.gradle.kts
+  - frontend/src/app/stores/mrt-dashboard.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/RunMode.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PullSource.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/SourceDescriptor.java
+  - frontend/src/features/mrt/components/StationPanel.vue
+  - frontend/src/shared/i18n/locale.ts
+  - frontend/src/shared/components/BaseSectionLabel.vue
+  - frontend/src/shared/i18n/messages.ts
+  - frontend/.env.example
+tests:
+  - frontend/tests/e2e/mrt-dashboard.spec.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStoreE2eTest.java
+  - frontend/src/features/mrt/__tests__/inferred-trains.test.ts
+  - frontend/tests/e2e/design-system.spec.ts
+  - frontend/src/shared/i18n/locale.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-dashboard-live-mode.test.ts
+  - frontend/src/features/mrt/__tests__/overlay-registry.test.ts
+  - frontend/src/features/mrt/__tests__/map-provider.test.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/IngestionJobServiceTest.java
+  - frontend/src/features/mrt/__tests__/tdx-liveboard-api.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store.test.ts
+  - backend/common/src/test/java/io/twfoundry/backend/common/domain/TopicNamesTest.java
+  - backend/ingestion/src/test/resources/application-e2e.properties
+  - frontend/src/features/mrt/__tests__/tdx-proxy.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store-liveboard-source.test.ts
+  - frontend/src/shared/config/env.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-data.test.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardControllerE2eTest.java
+  - frontend/src/features/mrt/__tests__/tdx-normalize.test.ts
+  - frontend/tests/e2e/fullstack.spec.ts
+-->
+
+---
+### Requirement: Source Registry Contract
+
+TWFoundry SHALL define a source registry contract so datasource onboarding is configuration-driven instead of spread through source-specific branching logic.
+
+#### Scenario: A new datasource is introduced
+
+- **GIVEN** a maintainer wants to add a new datasource such as TDX, YouBike, Civil IoT, or MRT static GTFS
+- **WHEN** the source is registered
+- **THEN** the registry captures source identity, dataset identity, ingestion method, auth strategy, cadence, schema version, and raw topic mapping
+
+
+<!-- @trace
+source: define-backend-platform-contracts
+updated: 2026-04-27
+code:
+  - frontend/package.json
+  - infra/redpanda/docker-compose.yml
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardTimelineStore.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PushSource.java
+  - gradlew
+  - README.md
+  - docs/git-worktree-layout.md
+  - frontend/src/shared/components/BaseButton.vue
+  - gradle/wrapper/gradle-wrapper.jar
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/Lifecycle.java
+  - frontend/src/features/design-system/components/DesignSystemPage.vue
+  - gradle/wrapper/gradle-wrapper.properties
+  - backend/ingestion/build.gradle.kts
+  - frontend/src/features/mrt/data/mrt-network.generated.ts
+  - docs/redpanda-local-dev.md
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/TopicNames.java
+  - infra/starrocks/sql/bootstrap.sql
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardService.java
+  - frontend/src/shared/design/tokens.css
+  - frontend/src/shared/components/BaseCard.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxProperties.java
+  - docs/TWFoundry-project-brief.md
+  - frontend/src/features/mrt/line-names.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/Datasource.java
+  - frontend/playwright.fullstack.config.ts
+  - frontend/src/shared/components/BaseBadge.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/E2eTdxLiveBoardGateway.java
+  - frontend/src/shared/components/LocaleSwitcher.vue
+  - docs/tdx-mrt-api-exploration.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardController.java
+  - frontend/bun.lockb
+  - infra/starrocks/docker-compose.yml
+  - gradlew.bat
+  - backend/common/build.gradle.kts
+  - frontend/src/app/router.ts
+  - frontend/src/features/mrt/localized-text.ts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/IngestionApplication.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStore.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobRequest.java
+  - frontend/src/features/mrt/tdx/normalize.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/IngestionMethod.java
+  - frontend/src/features/mrt/api/tdx-liveboard.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/RawEnvelope.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxHttpLiveBoardGateway.java
+  - docs/starrocks-vs-iceberg-evolution-note.md
+  - frontend/src/features/mrt/data/mrt-fixtures.ts
+  - frontend/src/features/mrt/map/map-provider.ts
+  - docs/overlay-registry-design-note.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxLiveBoardGateway.java
+  - frontend/scripts/tdx-proxy.ts
+  - frontend/src/features/mrt/map/inferred-trains.ts
+  - frontend/src/features/mrt/components/LayerControl.vue
+  - frontend/biome.json
+  - frontend/src/features/mrt/components/MrtDashboard.vue
+  - AGENTS.md
+  - backend/ingestion/src/main/resources/application.properties
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PullBatch.java
+  - docs/starrocks-local-dev.md
+  - frontend/src/style.css
+  - frontend/src/features/mrt/components/MrtMap.vue
+  - settings.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardBackfillStateStore.java
+  - backend/streams/build.gradle.kts
+  - frontend/src/main.ts
+  - frontend/src/shared/config/env.ts
+  - frontend/src/shared/components/BasePanel.vue
+  - backend/ingestion/src/main/resources/schema.sql
+  - frontend/src/features/mrt/types.ts
+  - gradle/libs.versions.toml
+  - frontend/src/features/mrt/tdx/proxy-core.ts
+  - backend/api/build.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobService.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobRunner.java
+  - frontend/src/env.d.ts
+  - backend/storage/build.gradle.kts
+  - frontend/src/shared/i18n/index.ts
+  - frontend/src/features/mrt/map/overlay-registry.ts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardTimelineStore.java
+  - build.gradle.kts
+  - frontend/src/app/stores/mrt-dashboard.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/RunMode.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PullSource.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/SourceDescriptor.java
+  - frontend/src/features/mrt/components/StationPanel.vue
+  - frontend/src/shared/i18n/locale.ts
+  - frontend/src/shared/components/BaseSectionLabel.vue
+  - frontend/src/shared/i18n/messages.ts
+  - frontend/.env.example
+tests:
+  - frontend/tests/e2e/mrt-dashboard.spec.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStoreE2eTest.java
+  - frontend/src/features/mrt/__tests__/inferred-trains.test.ts
+  - frontend/tests/e2e/design-system.spec.ts
+  - frontend/src/shared/i18n/locale.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-dashboard-live-mode.test.ts
+  - frontend/src/features/mrt/__tests__/overlay-registry.test.ts
+  - frontend/src/features/mrt/__tests__/map-provider.test.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/IngestionJobServiceTest.java
+  - frontend/src/features/mrt/__tests__/tdx-liveboard-api.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store.test.ts
+  - backend/common/src/test/java/io/twfoundry/backend/common/domain/TopicNamesTest.java
+  - backend/ingestion/src/test/resources/application-e2e.properties
+  - frontend/src/features/mrt/__tests__/tdx-proxy.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store-liveboard-source.test.ts
+  - frontend/src/shared/config/env.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-data.test.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardControllerE2eTest.java
+  - frontend/src/features/mrt/__tests__/tdx-normalize.test.ts
+  - frontend/tests/e2e/fullstack.spec.ts
+-->
+
+---
+### Requirement: Pluggable Datasource Connector Interface
+
+TWFoundry SHALL define a pluggable datasource connector interface that allows different ingestion methods to publish a common raw envelope into the event backbone.
+
+#### Scenario: Poll-based source is added
+
+- **GIVEN** a datasource such as TDX MRT LiveBoard uses scheduled polling
+- **WHEN** its connector is implemented
+- **THEN** the datasource contract describes the source dataset
+- **AND** a pull capability can fetch source records and return common raw envelope records for shared publication
+
+#### Scenario: File-based source is added
+
+- **GIVEN** a datasource such as MRT static GTFS uses file ingestion
+- **WHEN** its connector is implemented
+- **THEN** a push capability can ingest source artifacts and return common raw envelope records without changing the shared publisher contract
+
+
+<!-- @trace
+source: define-backend-platform-contracts
+updated: 2026-04-27
+code:
+  - frontend/package.json
+  - infra/redpanda/docker-compose.yml
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardTimelineStore.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PushSource.java
+  - gradlew
+  - README.md
+  - docs/git-worktree-layout.md
+  - frontend/src/shared/components/BaseButton.vue
+  - gradle/wrapper/gradle-wrapper.jar
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/Lifecycle.java
+  - frontend/src/features/design-system/components/DesignSystemPage.vue
+  - gradle/wrapper/gradle-wrapper.properties
+  - backend/ingestion/build.gradle.kts
+  - frontend/src/features/mrt/data/mrt-network.generated.ts
+  - docs/redpanda-local-dev.md
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/TopicNames.java
+  - infra/starrocks/sql/bootstrap.sql
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardService.java
+  - frontend/src/shared/design/tokens.css
+  - frontend/src/shared/components/BaseCard.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxProperties.java
+  - docs/TWFoundry-project-brief.md
+  - frontend/src/features/mrt/line-names.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/Datasource.java
+  - frontend/playwright.fullstack.config.ts
+  - frontend/src/shared/components/BaseBadge.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/E2eTdxLiveBoardGateway.java
+  - frontend/src/shared/components/LocaleSwitcher.vue
+  - docs/tdx-mrt-api-exploration.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardController.java
+  - frontend/bun.lockb
+  - infra/starrocks/docker-compose.yml
+  - gradlew.bat
+  - backend/common/build.gradle.kts
+  - frontend/src/app/router.ts
+  - frontend/src/features/mrt/localized-text.ts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/IngestionApplication.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStore.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobRequest.java
+  - frontend/src/features/mrt/tdx/normalize.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/IngestionMethod.java
+  - frontend/src/features/mrt/api/tdx-liveboard.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/RawEnvelope.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxHttpLiveBoardGateway.java
+  - docs/starrocks-vs-iceberg-evolution-note.md
+  - frontend/src/features/mrt/data/mrt-fixtures.ts
+  - frontend/src/features/mrt/map/map-provider.ts
+  - docs/overlay-registry-design-note.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxLiveBoardGateway.java
+  - frontend/scripts/tdx-proxy.ts
+  - frontend/src/features/mrt/map/inferred-trains.ts
+  - frontend/src/features/mrt/components/LayerControl.vue
+  - frontend/biome.json
+  - frontend/src/features/mrt/components/MrtDashboard.vue
+  - AGENTS.md
+  - backend/ingestion/src/main/resources/application.properties
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PullBatch.java
+  - docs/starrocks-local-dev.md
+  - frontend/src/style.css
+  - frontend/src/features/mrt/components/MrtMap.vue
+  - settings.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardBackfillStateStore.java
+  - backend/streams/build.gradle.kts
+  - frontend/src/main.ts
+  - frontend/src/shared/config/env.ts
+  - frontend/src/shared/components/BasePanel.vue
+  - backend/ingestion/src/main/resources/schema.sql
+  - frontend/src/features/mrt/types.ts
+  - gradle/libs.versions.toml
+  - frontend/src/features/mrt/tdx/proxy-core.ts
+  - backend/api/build.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobService.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobRunner.java
+  - frontend/src/env.d.ts
+  - backend/storage/build.gradle.kts
+  - frontend/src/shared/i18n/index.ts
+  - frontend/src/features/mrt/map/overlay-registry.ts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardTimelineStore.java
+  - build.gradle.kts
+  - frontend/src/app/stores/mrt-dashboard.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/RunMode.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PullSource.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/SourceDescriptor.java
+  - frontend/src/features/mrt/components/StationPanel.vue
+  - frontend/src/shared/i18n/locale.ts
+  - frontend/src/shared/components/BaseSectionLabel.vue
+  - frontend/src/shared/i18n/messages.ts
+  - frontend/.env.example
+tests:
+  - frontend/tests/e2e/mrt-dashboard.spec.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStoreE2eTest.java
+  - frontend/src/features/mrt/__tests__/inferred-trains.test.ts
+  - frontend/tests/e2e/design-system.spec.ts
+  - frontend/src/shared/i18n/locale.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-dashboard-live-mode.test.ts
+  - frontend/src/features/mrt/__tests__/overlay-registry.test.ts
+  - frontend/src/features/mrt/__tests__/map-provider.test.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/IngestionJobServiceTest.java
+  - frontend/src/features/mrt/__tests__/tdx-liveboard-api.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store.test.ts
+  - backend/common/src/test/java/io/twfoundry/backend/common/domain/TopicNamesTest.java
+  - backend/ingestion/src/test/resources/application-e2e.properties
+  - frontend/src/features/mrt/__tests__/tdx-proxy.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store-liveboard-source.test.ts
+  - frontend/src/shared/config/env.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-data.test.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardControllerE2eTest.java
+  - frontend/src/features/mrt/__tests__/tdx-normalize.test.ts
+  - frontend/tests/e2e/fullstack.spec.ts
+-->
+
+---
+### Requirement: Raw Envelope Contract
+
+TWFoundry SHALL define a shared raw record envelope for all datasource connectors.
+
+#### Scenario: A connector publishes a raw record
+
+- **GIVEN** any datasource connector emits source-owned data
+- **WHEN** it publishes to a raw topic
+- **THEN** the record includes at least `event_id`, `source`, `dataset`, `domain`, `ingestion_method`, `ingested_at`, `schema_version`, `content_type`, and `payload`
+
+
+<!-- @trace
+source: define-backend-platform-contracts
+updated: 2026-04-27
+code:
+  - frontend/package.json
+  - infra/redpanda/docker-compose.yml
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardTimelineStore.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PushSource.java
+  - gradlew
+  - README.md
+  - docs/git-worktree-layout.md
+  - frontend/src/shared/components/BaseButton.vue
+  - gradle/wrapper/gradle-wrapper.jar
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/Lifecycle.java
+  - frontend/src/features/design-system/components/DesignSystemPage.vue
+  - gradle/wrapper/gradle-wrapper.properties
+  - backend/ingestion/build.gradle.kts
+  - frontend/src/features/mrt/data/mrt-network.generated.ts
+  - docs/redpanda-local-dev.md
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/TopicNames.java
+  - infra/starrocks/sql/bootstrap.sql
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardService.java
+  - frontend/src/shared/design/tokens.css
+  - frontend/src/shared/components/BaseCard.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxProperties.java
+  - docs/TWFoundry-project-brief.md
+  - frontend/src/features/mrt/line-names.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/Datasource.java
+  - frontend/playwright.fullstack.config.ts
+  - frontend/src/shared/components/BaseBadge.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/E2eTdxLiveBoardGateway.java
+  - frontend/src/shared/components/LocaleSwitcher.vue
+  - docs/tdx-mrt-api-exploration.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardController.java
+  - frontend/bun.lockb
+  - infra/starrocks/docker-compose.yml
+  - gradlew.bat
+  - backend/common/build.gradle.kts
+  - frontend/src/app/router.ts
+  - frontend/src/features/mrt/localized-text.ts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/IngestionApplication.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStore.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobRequest.java
+  - frontend/src/features/mrt/tdx/normalize.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/IngestionMethod.java
+  - frontend/src/features/mrt/api/tdx-liveboard.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/RawEnvelope.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxHttpLiveBoardGateway.java
+  - docs/starrocks-vs-iceberg-evolution-note.md
+  - frontend/src/features/mrt/data/mrt-fixtures.ts
+  - frontend/src/features/mrt/map/map-provider.ts
+  - docs/overlay-registry-design-note.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxLiveBoardGateway.java
+  - frontend/scripts/tdx-proxy.ts
+  - frontend/src/features/mrt/map/inferred-trains.ts
+  - frontend/src/features/mrt/components/LayerControl.vue
+  - frontend/biome.json
+  - frontend/src/features/mrt/components/MrtDashboard.vue
+  - AGENTS.md
+  - backend/ingestion/src/main/resources/application.properties
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PullBatch.java
+  - docs/starrocks-local-dev.md
+  - frontend/src/style.css
+  - frontend/src/features/mrt/components/MrtMap.vue
+  - settings.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardBackfillStateStore.java
+  - backend/streams/build.gradle.kts
+  - frontend/src/main.ts
+  - frontend/src/shared/config/env.ts
+  - frontend/src/shared/components/BasePanel.vue
+  - backend/ingestion/src/main/resources/schema.sql
+  - frontend/src/features/mrt/types.ts
+  - gradle/libs.versions.toml
+  - frontend/src/features/mrt/tdx/proxy-core.ts
+  - backend/api/build.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobService.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobRunner.java
+  - frontend/src/env.d.ts
+  - backend/storage/build.gradle.kts
+  - frontend/src/shared/i18n/index.ts
+  - frontend/src/features/mrt/map/overlay-registry.ts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardTimelineStore.java
+  - build.gradle.kts
+  - frontend/src/app/stores/mrt-dashboard.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/RunMode.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PullSource.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/SourceDescriptor.java
+  - frontend/src/features/mrt/components/StationPanel.vue
+  - frontend/src/shared/i18n/locale.ts
+  - frontend/src/shared/components/BaseSectionLabel.vue
+  - frontend/src/shared/i18n/messages.ts
+  - frontend/.env.example
+tests:
+  - frontend/tests/e2e/mrt-dashboard.spec.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStoreE2eTest.java
+  - frontend/src/features/mrt/__tests__/inferred-trains.test.ts
+  - frontend/tests/e2e/design-system.spec.ts
+  - frontend/src/shared/i18n/locale.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-dashboard-live-mode.test.ts
+  - frontend/src/features/mrt/__tests__/overlay-registry.test.ts
+  - frontend/src/features/mrt/__tests__/map-provider.test.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/IngestionJobServiceTest.java
+  - frontend/src/features/mrt/__tests__/tdx-liveboard-api.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store.test.ts
+  - backend/common/src/test/java/io/twfoundry/backend/common/domain/TopicNamesTest.java
+  - backend/ingestion/src/test/resources/application-e2e.properties
+  - frontend/src/features/mrt/__tests__/tdx-proxy.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store-liveboard-source.test.ts
+  - frontend/src/shared/config/env.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-data.test.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardControllerE2eTest.java
+  - frontend/src/features/mrt/__tests__/tdx-normalize.test.ts
+  - frontend/tests/e2e/fullstack.spec.ts
+-->
+
+---
+### Requirement: Topic Taxonomy
+
+TWFoundry SHALL define topic families that separate raw ingestion, normalized events, latest-state projections, and dead-letter handling.
+
+#### Scenario: Raw ingestion is routed
+
+- **GIVEN** a datasource connector emits a raw record
+- **WHEN** the record is published
+- **THEN** it is sent to a topic named `raw.<domain>.<source>.<dataset>`
+
+#### Scenario: Processing failures are isolated
+
+- **GIVEN** a record cannot be processed or published successfully after retry policy is exhausted
+- **WHEN** the failure is classified as terminal for the current attempt
+- **THEN** the record is routed to `dlq.<domain>.<source>.<dataset>` instead of being silently dropped
+
+
+<!-- @trace
+source: define-backend-platform-contracts
+updated: 2026-04-27
+code:
+  - frontend/package.json
+  - infra/redpanda/docker-compose.yml
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardTimelineStore.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PushSource.java
+  - gradlew
+  - README.md
+  - docs/git-worktree-layout.md
+  - frontend/src/shared/components/BaseButton.vue
+  - gradle/wrapper/gradle-wrapper.jar
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/Lifecycle.java
+  - frontend/src/features/design-system/components/DesignSystemPage.vue
+  - gradle/wrapper/gradle-wrapper.properties
+  - backend/ingestion/build.gradle.kts
+  - frontend/src/features/mrt/data/mrt-network.generated.ts
+  - docs/redpanda-local-dev.md
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/TopicNames.java
+  - infra/starrocks/sql/bootstrap.sql
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardService.java
+  - frontend/src/shared/design/tokens.css
+  - frontend/src/shared/components/BaseCard.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxProperties.java
+  - docs/TWFoundry-project-brief.md
+  - frontend/src/features/mrt/line-names.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/Datasource.java
+  - frontend/playwright.fullstack.config.ts
+  - frontend/src/shared/components/BaseBadge.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/E2eTdxLiveBoardGateway.java
+  - frontend/src/shared/components/LocaleSwitcher.vue
+  - docs/tdx-mrt-api-exploration.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardController.java
+  - frontend/bun.lockb
+  - infra/starrocks/docker-compose.yml
+  - gradlew.bat
+  - backend/common/build.gradle.kts
+  - frontend/src/app/router.ts
+  - frontend/src/features/mrt/localized-text.ts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/IngestionApplication.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStore.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobRequest.java
+  - frontend/src/features/mrt/tdx/normalize.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/IngestionMethod.java
+  - frontend/src/features/mrt/api/tdx-liveboard.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/RawEnvelope.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxHttpLiveBoardGateway.java
+  - docs/starrocks-vs-iceberg-evolution-note.md
+  - frontend/src/features/mrt/data/mrt-fixtures.ts
+  - frontend/src/features/mrt/map/map-provider.ts
+  - docs/overlay-registry-design-note.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxLiveBoardGateway.java
+  - frontend/scripts/tdx-proxy.ts
+  - frontend/src/features/mrt/map/inferred-trains.ts
+  - frontend/src/features/mrt/components/LayerControl.vue
+  - frontend/biome.json
+  - frontend/src/features/mrt/components/MrtDashboard.vue
+  - AGENTS.md
+  - backend/ingestion/src/main/resources/application.properties
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PullBatch.java
+  - docs/starrocks-local-dev.md
+  - frontend/src/style.css
+  - frontend/src/features/mrt/components/MrtMap.vue
+  - settings.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardBackfillStateStore.java
+  - backend/streams/build.gradle.kts
+  - frontend/src/main.ts
+  - frontend/src/shared/config/env.ts
+  - frontend/src/shared/components/BasePanel.vue
+  - backend/ingestion/src/main/resources/schema.sql
+  - frontend/src/features/mrt/types.ts
+  - gradle/libs.versions.toml
+  - frontend/src/features/mrt/tdx/proxy-core.ts
+  - backend/api/build.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobService.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobRunner.java
+  - frontend/src/env.d.ts
+  - backend/storage/build.gradle.kts
+  - frontend/src/shared/i18n/index.ts
+  - frontend/src/features/mrt/map/overlay-registry.ts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardTimelineStore.java
+  - build.gradle.kts
+  - frontend/src/app/stores/mrt-dashboard.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/RunMode.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PullSource.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/SourceDescriptor.java
+  - frontend/src/features/mrt/components/StationPanel.vue
+  - frontend/src/shared/i18n/locale.ts
+  - frontend/src/shared/components/BaseSectionLabel.vue
+  - frontend/src/shared/i18n/messages.ts
+  - frontend/.env.example
+tests:
+  - frontend/tests/e2e/mrt-dashboard.spec.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStoreE2eTest.java
+  - frontend/src/features/mrt/__tests__/inferred-trains.test.ts
+  - frontend/tests/e2e/design-system.spec.ts
+  - frontend/src/shared/i18n/locale.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-dashboard-live-mode.test.ts
+  - frontend/src/features/mrt/__tests__/overlay-registry.test.ts
+  - frontend/src/features/mrt/__tests__/map-provider.test.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/IngestionJobServiceTest.java
+  - frontend/src/features/mrt/__tests__/tdx-liveboard-api.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store.test.ts
+  - backend/common/src/test/java/io/twfoundry/backend/common/domain/TopicNamesTest.java
+  - backend/ingestion/src/test/resources/application-e2e.properties
+  - frontend/src/features/mrt/__tests__/tdx-proxy.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store-liveboard-source.test.ts
+  - frontend/src/shared/config/env.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-data.test.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardControllerE2eTest.java
+  - frontend/src/features/mrt/__tests__/tdx-normalize.test.ts
+  - frontend/tests/e2e/fullstack.spec.ts
+-->
+
+---
+### Requirement: Latest-State Storage Direction
+
+TWFoundry SHALL use StarRocks Primary Key Table design for Phase 1 latest-state serving tables where entity state is updated in place.
+
+#### Scenario: Current station state is served
+
+- **GIVEN** stream processing has normalized source records into entity state updates
+- **WHEN** the platform materializes current operational state
+- **THEN** StarRocks stores the latest row by entity key for dashboard and API reads
+
+
+<!-- @trace
+source: define-backend-platform-contracts
+updated: 2026-04-27
+code:
+  - frontend/package.json
+  - infra/redpanda/docker-compose.yml
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardTimelineStore.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PushSource.java
+  - gradlew
+  - README.md
+  - docs/git-worktree-layout.md
+  - frontend/src/shared/components/BaseButton.vue
+  - gradle/wrapper/gradle-wrapper.jar
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/Lifecycle.java
+  - frontend/src/features/design-system/components/DesignSystemPage.vue
+  - gradle/wrapper/gradle-wrapper.properties
+  - backend/ingestion/build.gradle.kts
+  - frontend/src/features/mrt/data/mrt-network.generated.ts
+  - docs/redpanda-local-dev.md
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/TopicNames.java
+  - infra/starrocks/sql/bootstrap.sql
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardService.java
+  - frontend/src/shared/design/tokens.css
+  - frontend/src/shared/components/BaseCard.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxProperties.java
+  - docs/TWFoundry-project-brief.md
+  - frontend/src/features/mrt/line-names.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/Datasource.java
+  - frontend/playwright.fullstack.config.ts
+  - frontend/src/shared/components/BaseBadge.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/E2eTdxLiveBoardGateway.java
+  - frontend/src/shared/components/LocaleSwitcher.vue
+  - docs/tdx-mrt-api-exploration.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardController.java
+  - frontend/bun.lockb
+  - infra/starrocks/docker-compose.yml
+  - gradlew.bat
+  - backend/common/build.gradle.kts
+  - frontend/src/app/router.ts
+  - frontend/src/features/mrt/localized-text.ts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/IngestionApplication.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStore.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobRequest.java
+  - frontend/src/features/mrt/tdx/normalize.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/IngestionMethod.java
+  - frontend/src/features/mrt/api/tdx-liveboard.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/RawEnvelope.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxHttpLiveBoardGateway.java
+  - docs/starrocks-vs-iceberg-evolution-note.md
+  - frontend/src/features/mrt/data/mrt-fixtures.ts
+  - frontend/src/features/mrt/map/map-provider.ts
+  - docs/overlay-registry-design-note.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxLiveBoardGateway.java
+  - frontend/scripts/tdx-proxy.ts
+  - frontend/src/features/mrt/map/inferred-trains.ts
+  - frontend/src/features/mrt/components/LayerControl.vue
+  - frontend/biome.json
+  - frontend/src/features/mrt/components/MrtDashboard.vue
+  - AGENTS.md
+  - backend/ingestion/src/main/resources/application.properties
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PullBatch.java
+  - docs/starrocks-local-dev.md
+  - frontend/src/style.css
+  - frontend/src/features/mrt/components/MrtMap.vue
+  - settings.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardBackfillStateStore.java
+  - backend/streams/build.gradle.kts
+  - frontend/src/main.ts
+  - frontend/src/shared/config/env.ts
+  - frontend/src/shared/components/BasePanel.vue
+  - backend/ingestion/src/main/resources/schema.sql
+  - frontend/src/features/mrt/types.ts
+  - gradle/libs.versions.toml
+  - frontend/src/features/mrt/tdx/proxy-core.ts
+  - backend/api/build.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobService.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobRunner.java
+  - frontend/src/env.d.ts
+  - backend/storage/build.gradle.kts
+  - frontend/src/shared/i18n/index.ts
+  - frontend/src/features/mrt/map/overlay-registry.ts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardTimelineStore.java
+  - build.gradle.kts
+  - frontend/src/app/stores/mrt-dashboard.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/RunMode.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PullSource.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/SourceDescriptor.java
+  - frontend/src/features/mrt/components/StationPanel.vue
+  - frontend/src/shared/i18n/locale.ts
+  - frontend/src/shared/components/BaseSectionLabel.vue
+  - frontend/src/shared/i18n/messages.ts
+  - frontend/.env.example
+tests:
+  - frontend/tests/e2e/mrt-dashboard.spec.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStoreE2eTest.java
+  - frontend/src/features/mrt/__tests__/inferred-trains.test.ts
+  - frontend/tests/e2e/design-system.spec.ts
+  - frontend/src/shared/i18n/locale.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-dashboard-live-mode.test.ts
+  - frontend/src/features/mrt/__tests__/overlay-registry.test.ts
+  - frontend/src/features/mrt/__tests__/map-provider.test.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/IngestionJobServiceTest.java
+  - frontend/src/features/mrt/__tests__/tdx-liveboard-api.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store.test.ts
+  - backend/common/src/test/java/io/twfoundry/backend/common/domain/TopicNamesTest.java
+  - backend/ingestion/src/test/resources/application-e2e.properties
+  - frontend/src/features/mrt/__tests__/tdx-proxy.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store-liveboard-source.test.ts
+  - frontend/src/shared/config/env.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-data.test.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardControllerE2eTest.java
+  - frontend/src/features/mrt/__tests__/tdx-normalize.test.ts
+  - frontend/tests/e2e/fullstack.spec.ts
+-->
+
+---
+### Requirement: MRT Backend MVP Slice
+
+TWFoundry SHALL define the first backend MVP as an MRT real-data slice that can be viewed from the web UI.
+
+#### Scenario: MRT real data is visible through the product
+
+- **GIVEN** TDX MRT ingestion, backend processing, storage, and API paths are implemented
+- **WHEN** a user opens the MRT dashboard in the web UI
+- **THEN** the user can view MRT train positions and train information through the backend path instead of only mock frontend data
+- **AND** the MRT timeline supports dragging so the user can inspect how trains move over time
+
+
+<!-- @trace
+source: define-backend-platform-contracts
+updated: 2026-04-27
+code:
+  - frontend/package.json
+  - infra/redpanda/docker-compose.yml
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardTimelineStore.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PushSource.java
+  - gradlew
+  - README.md
+  - docs/git-worktree-layout.md
+  - frontend/src/shared/components/BaseButton.vue
+  - gradle/wrapper/gradle-wrapper.jar
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/Lifecycle.java
+  - frontend/src/features/design-system/components/DesignSystemPage.vue
+  - gradle/wrapper/gradle-wrapper.properties
+  - backend/ingestion/build.gradle.kts
+  - frontend/src/features/mrt/data/mrt-network.generated.ts
+  - docs/redpanda-local-dev.md
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/TopicNames.java
+  - infra/starrocks/sql/bootstrap.sql
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardService.java
+  - frontend/src/shared/design/tokens.css
+  - frontend/src/shared/components/BaseCard.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxProperties.java
+  - docs/TWFoundry-project-brief.md
+  - frontend/src/features/mrt/line-names.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/Datasource.java
+  - frontend/playwright.fullstack.config.ts
+  - frontend/src/shared/components/BaseBadge.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/E2eTdxLiveBoardGateway.java
+  - frontend/src/shared/components/LocaleSwitcher.vue
+  - docs/tdx-mrt-api-exploration.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardController.java
+  - frontend/bun.lockb
+  - infra/starrocks/docker-compose.yml
+  - gradlew.bat
+  - backend/common/build.gradle.kts
+  - frontend/src/app/router.ts
+  - frontend/src/features/mrt/localized-text.ts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/IngestionApplication.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStore.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobRequest.java
+  - frontend/src/features/mrt/tdx/normalize.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/IngestionMethod.java
+  - frontend/src/features/mrt/api/tdx-liveboard.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/RawEnvelope.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxHttpLiveBoardGateway.java
+  - docs/starrocks-vs-iceberg-evolution-note.md
+  - frontend/src/features/mrt/data/mrt-fixtures.ts
+  - frontend/src/features/mrt/map/map-provider.ts
+  - docs/overlay-registry-design-note.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxLiveBoardGateway.java
+  - frontend/scripts/tdx-proxy.ts
+  - frontend/src/features/mrt/map/inferred-trains.ts
+  - frontend/src/features/mrt/components/LayerControl.vue
+  - frontend/biome.json
+  - frontend/src/features/mrt/components/MrtDashboard.vue
+  - AGENTS.md
+  - backend/ingestion/src/main/resources/application.properties
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PullBatch.java
+  - docs/starrocks-local-dev.md
+  - frontend/src/style.css
+  - frontend/src/features/mrt/components/MrtMap.vue
+  - settings.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardBackfillStateStore.java
+  - backend/streams/build.gradle.kts
+  - frontend/src/main.ts
+  - frontend/src/shared/config/env.ts
+  - frontend/src/shared/components/BasePanel.vue
+  - backend/ingestion/src/main/resources/schema.sql
+  - frontend/src/features/mrt/types.ts
+  - gradle/libs.versions.toml
+  - frontend/src/features/mrt/tdx/proxy-core.ts
+  - backend/api/build.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobService.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobRunner.java
+  - frontend/src/env.d.ts
+  - backend/storage/build.gradle.kts
+  - frontend/src/shared/i18n/index.ts
+  - frontend/src/features/mrt/map/overlay-registry.ts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardTimelineStore.java
+  - build.gradle.kts
+  - frontend/src/app/stores/mrt-dashboard.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/RunMode.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PullSource.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/SourceDescriptor.java
+  - frontend/src/features/mrt/components/StationPanel.vue
+  - frontend/src/shared/i18n/locale.ts
+  - frontend/src/shared/components/BaseSectionLabel.vue
+  - frontend/src/shared/i18n/messages.ts
+  - frontend/.env.example
+tests:
+  - frontend/tests/e2e/mrt-dashboard.spec.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStoreE2eTest.java
+  - frontend/src/features/mrt/__tests__/inferred-trains.test.ts
+  - frontend/tests/e2e/design-system.spec.ts
+  - frontend/src/shared/i18n/locale.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-dashboard-live-mode.test.ts
+  - frontend/src/features/mrt/__tests__/overlay-registry.test.ts
+  - frontend/src/features/mrt/__tests__/map-provider.test.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/IngestionJobServiceTest.java
+  - frontend/src/features/mrt/__tests__/tdx-liveboard-api.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store.test.ts
+  - backend/common/src/test/java/io/twfoundry/backend/common/domain/TopicNamesTest.java
+  - backend/ingestion/src/test/resources/application-e2e.properties
+  - frontend/src/features/mrt/__tests__/tdx-proxy.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store-liveboard-source.test.ts
+  - frontend/src/shared/config/env.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-data.test.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardControllerE2eTest.java
+  - frontend/src/features/mrt/__tests__/tdx-normalize.test.ts
+  - frontend/tests/e2e/fullstack.spec.ts
+-->
+
+---
+### Requirement: Backend and Full-Stack End-to-End Coverage
+
+TWFoundry SHALL require end-to-end coverage for the MRT backend MVP slice.
+
+#### Scenario: Backend slice is verified
+
+- **GIVEN** the MRT backend MVP exists
+- **WHEN** automated backend validation runs
+- **THEN** backend end-to-end tests verify ingestion trigger, raw publication, and backend-visible outcome for the MRT slice
+
+#### Scenario: Full-stack MRT flow is verified
+
+- **GIVEN** the MRT backend MVP exists
+- **WHEN** automated product validation runs
+- **THEN** frontend plus backend end-to-end tests verify that real MRT train positions and train information can be viewed from the web UI
+- **AND** frontend plus backend end-to-end tests verify that the timeline can be dragged to inspect train movement over time
+
+
+<!-- @trace
+source: define-backend-platform-contracts
+updated: 2026-04-27
+code:
+  - frontend/package.json
+  - infra/redpanda/docker-compose.yml
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardTimelineStore.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PushSource.java
+  - gradlew
+  - README.md
+  - docs/git-worktree-layout.md
+  - frontend/src/shared/components/BaseButton.vue
+  - gradle/wrapper/gradle-wrapper.jar
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/Lifecycle.java
+  - frontend/src/features/design-system/components/DesignSystemPage.vue
+  - gradle/wrapper/gradle-wrapper.properties
+  - backend/ingestion/build.gradle.kts
+  - frontend/src/features/mrt/data/mrt-network.generated.ts
+  - docs/redpanda-local-dev.md
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/TopicNames.java
+  - infra/starrocks/sql/bootstrap.sql
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardService.java
+  - frontend/src/shared/design/tokens.css
+  - frontend/src/shared/components/BaseCard.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxProperties.java
+  - docs/TWFoundry-project-brief.md
+  - frontend/src/features/mrt/line-names.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/Datasource.java
+  - frontend/playwright.fullstack.config.ts
+  - frontend/src/shared/components/BaseBadge.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/E2eTdxLiveBoardGateway.java
+  - frontend/src/shared/components/LocaleSwitcher.vue
+  - docs/tdx-mrt-api-exploration.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardController.java
+  - frontend/bun.lockb
+  - infra/starrocks/docker-compose.yml
+  - gradlew.bat
+  - backend/common/build.gradle.kts
+  - frontend/src/app/router.ts
+  - frontend/src/features/mrt/localized-text.ts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/IngestionApplication.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStore.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobRequest.java
+  - frontend/src/features/mrt/tdx/normalize.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/IngestionMethod.java
+  - frontend/src/features/mrt/api/tdx-liveboard.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/RawEnvelope.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxHttpLiveBoardGateway.java
+  - docs/starrocks-vs-iceberg-evolution-note.md
+  - frontend/src/features/mrt/data/mrt-fixtures.ts
+  - frontend/src/features/mrt/map/map-provider.ts
+  - docs/overlay-registry-design-note.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxLiveBoardGateway.java
+  - frontend/scripts/tdx-proxy.ts
+  - frontend/src/features/mrt/map/inferred-trains.ts
+  - frontend/src/features/mrt/components/LayerControl.vue
+  - frontend/biome.json
+  - frontend/src/features/mrt/components/MrtDashboard.vue
+  - AGENTS.md
+  - backend/ingestion/src/main/resources/application.properties
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PullBatch.java
+  - docs/starrocks-local-dev.md
+  - frontend/src/style.css
+  - frontend/src/features/mrt/components/MrtMap.vue
+  - settings.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardBackfillStateStore.java
+  - backend/streams/build.gradle.kts
+  - frontend/src/main.ts
+  - frontend/src/shared/config/env.ts
+  - frontend/src/shared/components/BasePanel.vue
+  - backend/ingestion/src/main/resources/schema.sql
+  - frontend/src/features/mrt/types.ts
+  - gradle/libs.versions.toml
+  - frontend/src/features/mrt/tdx/proxy-core.ts
+  - backend/api/build.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobService.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobRunner.java
+  - frontend/src/env.d.ts
+  - backend/storage/build.gradle.kts
+  - frontend/src/shared/i18n/index.ts
+  - frontend/src/features/mrt/map/overlay-registry.ts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardTimelineStore.java
+  - build.gradle.kts
+  - frontend/src/app/stores/mrt-dashboard.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/RunMode.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PullSource.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/SourceDescriptor.java
+  - frontend/src/features/mrt/components/StationPanel.vue
+  - frontend/src/shared/i18n/locale.ts
+  - frontend/src/shared/components/BaseSectionLabel.vue
+  - frontend/src/shared/i18n/messages.ts
+  - frontend/.env.example
+tests:
+  - frontend/tests/e2e/mrt-dashboard.spec.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStoreE2eTest.java
+  - frontend/src/features/mrt/__tests__/inferred-trains.test.ts
+  - frontend/tests/e2e/design-system.spec.ts
+  - frontend/src/shared/i18n/locale.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-dashboard-live-mode.test.ts
+  - frontend/src/features/mrt/__tests__/overlay-registry.test.ts
+  - frontend/src/features/mrt/__tests__/map-provider.test.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/IngestionJobServiceTest.java
+  - frontend/src/features/mrt/__tests__/tdx-liveboard-api.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store.test.ts
+  - backend/common/src/test/java/io/twfoundry/backend/common/domain/TopicNamesTest.java
+  - backend/ingestion/src/test/resources/application-e2e.properties
+  - frontend/src/features/mrt/__tests__/tdx-proxy.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store-liveboard-source.test.ts
+  - frontend/src/shared/config/env.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-data.test.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardControllerE2eTest.java
+  - frontend/src/features/mrt/__tests__/tdx-normalize.test.ts
+  - frontend/tests/e2e/fullstack.spec.ts
+-->
+
+---
+### Requirement: Frontend Overlay Registry Contract
+
+TWFoundry SHALL define a frontend overlay registry contract so map-facing product modules are declared explicitly instead of being hard-coded inside one large map component.
+
+#### Scenario: MRT map overlays are defined
+
+- **GIVEN** the MRT dashboard needs route, station, train, and timeline presentation
+- **WHEN** frontend map contracts are defined
+- **THEN** the product-facing map modules are modeled as overlays rather than raw renderer layers
+- **AND** the MRT MVP defines at least `MrtRouteOverlay`, `MrtStationOverlay`, `EstimatedTrainOverlay`, and `TimelineOverlay`
+
+#### Scenario: Overlay controls drive the UI
+
+- **GIVEN** the layer sidebar and mobile panel switcher expose map controls
+- **WHEN** those controls are wired to map features
+- **THEN** the UI addresses overlay identity, visibility, and controls
+- **AND** it does not depend directly on renderer-specific layer names
+
+<!-- @trace
+source: define-backend-platform-contracts
+updated: 2026-04-27
+code:
+  - frontend/package.json
+  - infra/redpanda/docker-compose.yml
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardTimelineStore.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PushSource.java
+  - gradlew
+  - README.md
+  - docs/git-worktree-layout.md
+  - frontend/src/shared/components/BaseButton.vue
+  - gradle/wrapper/gradle-wrapper.jar
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/Lifecycle.java
+  - frontend/src/features/design-system/components/DesignSystemPage.vue
+  - gradle/wrapper/gradle-wrapper.properties
+  - backend/ingestion/build.gradle.kts
+  - frontend/src/features/mrt/data/mrt-network.generated.ts
+  - docs/redpanda-local-dev.md
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/TopicNames.java
+  - infra/starrocks/sql/bootstrap.sql
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardService.java
+  - frontend/src/shared/design/tokens.css
+  - frontend/src/shared/components/BaseCard.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxProperties.java
+  - docs/TWFoundry-project-brief.md
+  - frontend/src/features/mrt/line-names.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/Datasource.java
+  - frontend/playwright.fullstack.config.ts
+  - frontend/src/shared/components/BaseBadge.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/E2eTdxLiveBoardGateway.java
+  - frontend/src/shared/components/LocaleSwitcher.vue
+  - docs/tdx-mrt-api-exploration.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardController.java
+  - frontend/bun.lockb
+  - infra/starrocks/docker-compose.yml
+  - gradlew.bat
+  - backend/common/build.gradle.kts
+  - frontend/src/app/router.ts
+  - frontend/src/features/mrt/localized-text.ts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/IngestionApplication.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStore.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobRequest.java
+  - frontend/src/features/mrt/tdx/normalize.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/IngestionMethod.java
+  - frontend/src/features/mrt/api/tdx-liveboard.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/RawEnvelope.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxHttpLiveBoardGateway.java
+  - docs/starrocks-vs-iceberg-evolution-note.md
+  - frontend/src/features/mrt/data/mrt-fixtures.ts
+  - frontend/src/features/mrt/map/map-provider.ts
+  - docs/overlay-registry-design-note.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/TdxLiveBoardGateway.java
+  - frontend/scripts/tdx-proxy.ts
+  - frontend/src/features/mrt/map/inferred-trains.ts
+  - frontend/src/features/mrt/components/LayerControl.vue
+  - frontend/biome.json
+  - frontend/src/features/mrt/components/MrtDashboard.vue
+  - AGENTS.md
+  - backend/ingestion/src/main/resources/application.properties
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PullBatch.java
+  - docs/starrocks-local-dev.md
+  - frontend/src/style.css
+  - frontend/src/features/mrt/components/MrtMap.vue
+  - settings.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardBackfillStateStore.java
+  - backend/streams/build.gradle.kts
+  - frontend/src/main.ts
+  - frontend/src/shared/config/env.ts
+  - frontend/src/shared/components/BasePanel.vue
+  - backend/ingestion/src/main/resources/schema.sql
+  - frontend/src/features/mrt/types.ts
+  - gradle/libs.versions.toml
+  - frontend/src/features/mrt/tdx/proxy-core.ts
+  - backend/api/build.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobService.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/IngestionJobRunner.java
+  - frontend/src/env.d.ts
+  - backend/storage/build.gradle.kts
+  - frontend/src/shared/i18n/index.ts
+  - frontend/src/features/mrt/map/overlay-registry.ts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardTimelineStore.java
+  - build.gradle.kts
+  - frontend/src/app/stores/mrt-dashboard.ts
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/RunMode.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/PullSource.java
+  - backend/common/src/main/java/io/twfoundry/backend/common/domain/SourceDescriptor.java
+  - frontend/src/features/mrt/components/StationPanel.vue
+  - frontend/src/shared/i18n/locale.ts
+  - frontend/src/shared/components/BaseSectionLabel.vue
+  - frontend/src/shared/i18n/messages.ts
+  - frontend/.env.example
+tests:
+  - frontend/tests/e2e/mrt-dashboard.spec.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStoreE2eTest.java
+  - frontend/src/features/mrt/__tests__/inferred-trains.test.ts
+  - frontend/tests/e2e/design-system.spec.ts
+  - frontend/src/shared/i18n/locale.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-dashboard-live-mode.test.ts
+  - frontend/src/features/mrt/__tests__/overlay-registry.test.ts
+  - frontend/src/features/mrt/__tests__/map-provider.test.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/IngestionJobServiceTest.java
+  - frontend/src/features/mrt/__tests__/tdx-liveboard-api.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store.test.ts
+  - backend/common/src/test/java/io/twfoundry/backend/common/domain/TopicNamesTest.java
+  - backend/ingestion/src/test/resources/application-e2e.properties
+  - frontend/src/features/mrt/__tests__/tdx-proxy.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store-liveboard-source.test.ts
+  - frontend/src/shared/config/env.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-data.test.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardControllerE2eTest.java
+  - frontend/src/features/mrt/__tests__/tdx-normalize.test.ts
+  - frontend/tests/e2e/fullstack.spec.ts
+-->
+
+---
+### Requirement: MRT Live Snapshot Persistence
+
+TWFoundry SHALL persist normalized MRT liveboard snapshots so recent operator replay does not depend on an in-memory frontend session.
+
+#### Scenario: Latest MRT fetch is written as a replayable snapshot
+
+- **GIVEN** the backend fetches MRT liveboard rows from TDX
+- **WHEN** the backend normalizes the liveboard response
+- **THEN** the backend persists the normalized snapshot before returning the response
+- **AND** the persisted snapshot can later be queried for timeline replay
+
+#### Scenario: Replay persistence does not hard-code one storage engine into service logic
+
+- **GIVEN** TWFoundry Phase 1 uses `StarRocks` as the serving and latest-state platform direction
+- **WHEN** MRT timeline persistence is implemented for the local slice
+- **THEN** replay service logic depends on a persistence abstraction instead of a hard-coded storage engine
+- **AND** the persistence implementation can later be replaced by a `StarRocks`-backed adapter without changing the replay API contract
+
+
+<!-- @trace
+source: add-mrt-live-mode-timeline
+updated: 2026-04-27
+code:
+  - frontend/bun.lockb
+  - docs/TWFoundry-project-brief.md
+  - docs/git-worktree-layout.md
+  - docs/overlay-registry-design-note.md
+  - frontend/src/features/mrt/api/tdx-liveboard.ts
+  - frontend/src/features/mrt/components/StationPanel.vue
+  - backend/ingestion/src/main/resources/schema.sql
+  - frontend/src/shared/config/env.ts
+  - docs/starrocks-vs-iceberg-evolution-note.md
+  - docs/starrocks-local-dev.md
+  - gradle/libs.versions.toml
+  - frontend/src/features/mrt/line-names.ts
+  - frontend/src/features/mrt/map/map-provider.ts
+  - frontend/src/features/mrt/localized-text.ts
+  - frontend/src/app/stores/mrt-dashboard.ts
+  - frontend/src/features/mrt/tdx/normalize.ts
+  - backend/ingestion/src/main/resources/application.properties
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/E2eTdxLiveBoardGateway.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStore.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardTimelineStore.java
+  - frontend/src/env.d.ts
+  - frontend/src/features/mrt/components/LayerControl.vue
+  - infra/starrocks/docker-compose.yml
+  - README.md
+  - frontend/.env.example
+  - frontend/src/features/mrt/components/MrtMap.vue
+  - frontend/src/features/mrt/data/mrt-fixtures.ts
+  - frontend/src/features/mrt/map/inferred-trains.ts
+  - infra/redpanda/docker-compose.yml
+  - frontend/src/shared/components/BaseBadge.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardBackfillStateStore.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardController.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardTimelineStore.java
+  - frontend/src/features/mrt/data/mrt-network.generated.ts
+  - backend/ingestion/build.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardService.java
+  - frontend/src/features/mrt/components/MrtDashboard.vue
+  - frontend/src/shared/i18n/messages.ts
+  - frontend/src/features/mrt/types.ts
+  - frontend/src/features/mrt/map/overlay-registry.ts
+  - docs/redpanda-local-dev.md
+  - frontend/package.json
+  - frontend/src/features/design-system/components/DesignSystemPage.vue
+  - infra/starrocks/sql/bootstrap.sql
+tests:
+  - frontend/src/features/mrt/__tests__/map-provider.test.ts
+  - backend/ingestion/src/test/resources/application-e2e.properties
+  - frontend/src/features/mrt/__tests__/mrt-store-liveboard-source.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-data.test.ts
+  - frontend/tests/e2e/fullstack.spec.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStoreE2eTest.java
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardControllerE2eTest.java
+  - frontend/src/features/mrt/__tests__/tdx-normalize.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store.test.ts
+  - frontend/src/shared/config/env.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-dashboard-live-mode.test.ts
+  - frontend/src/features/mrt/__tests__/tdx-liveboard-api.test.ts
+  - frontend/src/features/mrt/__tests__/inferred-trains.test.ts
+-->
+
+---
+### Requirement: MRT Timeline Replay API
+
+TWFoundry SHALL expose a backend MRT timeline API that returns recent persisted snapshots in replay order.
+
+#### Scenario: Recent persisted snapshots are queryable
+
+- **GIVEN** MRT liveboard snapshots have been persisted
+- **WHEN** the frontend requests MRT timeline history
+- **THEN** the backend returns recent snapshots ordered from oldest to newest
+- **AND** each snapshot contains the normalized liveboard rows needed to replay dashboard state
+
+
+<!-- @trace
+source: add-mrt-live-mode-timeline
+updated: 2026-04-27
+code:
+  - frontend/bun.lockb
+  - docs/TWFoundry-project-brief.md
+  - docs/git-worktree-layout.md
+  - docs/overlay-registry-design-note.md
+  - frontend/src/features/mrt/api/tdx-liveboard.ts
+  - frontend/src/features/mrt/components/StationPanel.vue
+  - backend/ingestion/src/main/resources/schema.sql
+  - frontend/src/shared/config/env.ts
+  - docs/starrocks-vs-iceberg-evolution-note.md
+  - docs/starrocks-local-dev.md
+  - gradle/libs.versions.toml
+  - frontend/src/features/mrt/line-names.ts
+  - frontend/src/features/mrt/map/map-provider.ts
+  - frontend/src/features/mrt/localized-text.ts
+  - frontend/src/app/stores/mrt-dashboard.ts
+  - frontend/src/features/mrt/tdx/normalize.ts
+  - backend/ingestion/src/main/resources/application.properties
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/E2eTdxLiveBoardGateway.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStore.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardTimelineStore.java
+  - frontend/src/env.d.ts
+  - frontend/src/features/mrt/components/LayerControl.vue
+  - infra/starrocks/docker-compose.yml
+  - README.md
+  - frontend/.env.example
+  - frontend/src/features/mrt/components/MrtMap.vue
+  - frontend/src/features/mrt/data/mrt-fixtures.ts
+  - frontend/src/features/mrt/map/inferred-trains.ts
+  - infra/redpanda/docker-compose.yml
+  - frontend/src/shared/components/BaseBadge.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardBackfillStateStore.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardController.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardTimelineStore.java
+  - frontend/src/features/mrt/data/mrt-network.generated.ts
+  - backend/ingestion/build.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardService.java
+  - frontend/src/features/mrt/components/MrtDashboard.vue
+  - frontend/src/shared/i18n/messages.ts
+  - frontend/src/features/mrt/types.ts
+  - frontend/src/features/mrt/map/overlay-registry.ts
+  - docs/redpanda-local-dev.md
+  - frontend/package.json
+  - frontend/src/features/design-system/components/DesignSystemPage.vue
+  - infra/starrocks/sql/bootstrap.sql
+tests:
+  - frontend/src/features/mrt/__tests__/map-provider.test.ts
+  - backend/ingestion/src/test/resources/application-e2e.properties
+  - frontend/src/features/mrt/__tests__/mrt-store-liveboard-source.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-data.test.ts
+  - frontend/tests/e2e/fullstack.spec.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStoreE2eTest.java
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardControllerE2eTest.java
+  - frontend/src/features/mrt/__tests__/tdx-normalize.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store.test.ts
+  - frontend/src/shared/config/env.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-dashboard-live-mode.test.ts
+  - frontend/src/features/mrt/__tests__/tdx-liveboard-api.test.ts
+  - frontend/src/features/mrt/__tests__/inferred-trains.test.ts
+-->
+
+---
+### Requirement: Timeline Drag Replay
+
+TWFoundry SHALL let the operator drag the MRT timeline to inspect persisted snapshots.
+
+#### Scenario: Dragging the timeline changes the displayed snapshot
+
+- **GIVEN** the MRT dashboard has loaded persisted timeline snapshots
+- **WHEN** the operator drags the timeline away from the latest point
+- **THEN** the dashboard enters `paused` mode
+- **AND** the selected persisted snapshot becomes the source of truth for rendered MRT liveboard data
+- **AND** pressing `Now` returns the dashboard to the latest live snapshot
+
+
+<!-- @trace
+source: add-mrt-live-mode-timeline
+updated: 2026-04-27
+code:
+  - frontend/bun.lockb
+  - docs/TWFoundry-project-brief.md
+  - docs/git-worktree-layout.md
+  - docs/overlay-registry-design-note.md
+  - frontend/src/features/mrt/api/tdx-liveboard.ts
+  - frontend/src/features/mrt/components/StationPanel.vue
+  - backend/ingestion/src/main/resources/schema.sql
+  - frontend/src/shared/config/env.ts
+  - docs/starrocks-vs-iceberg-evolution-note.md
+  - docs/starrocks-local-dev.md
+  - gradle/libs.versions.toml
+  - frontend/src/features/mrt/line-names.ts
+  - frontend/src/features/mrt/map/map-provider.ts
+  - frontend/src/features/mrt/localized-text.ts
+  - frontend/src/app/stores/mrt-dashboard.ts
+  - frontend/src/features/mrt/tdx/normalize.ts
+  - backend/ingestion/src/main/resources/application.properties
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/E2eTdxLiveBoardGateway.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStore.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardTimelineStore.java
+  - frontend/src/env.d.ts
+  - frontend/src/features/mrt/components/LayerControl.vue
+  - infra/starrocks/docker-compose.yml
+  - README.md
+  - frontend/.env.example
+  - frontend/src/features/mrt/components/MrtMap.vue
+  - frontend/src/features/mrt/data/mrt-fixtures.ts
+  - frontend/src/features/mrt/map/inferred-trains.ts
+  - infra/redpanda/docker-compose.yml
+  - frontend/src/shared/components/BaseBadge.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardBackfillStateStore.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardController.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardTimelineStore.java
+  - frontend/src/features/mrt/data/mrt-network.generated.ts
+  - backend/ingestion/build.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardService.java
+  - frontend/src/features/mrt/components/MrtDashboard.vue
+  - frontend/src/shared/i18n/messages.ts
+  - frontend/src/features/mrt/types.ts
+  - frontend/src/features/mrt/map/overlay-registry.ts
+  - docs/redpanda-local-dev.md
+  - frontend/package.json
+  - frontend/src/features/design-system/components/DesignSystemPage.vue
+  - infra/starrocks/sql/bootstrap.sql
+tests:
+  - frontend/src/features/mrt/__tests__/map-provider.test.ts
+  - backend/ingestion/src/test/resources/application-e2e.properties
+  - frontend/src/features/mrt/__tests__/mrt-store-liveboard-source.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-data.test.ts
+  - frontend/tests/e2e/fullstack.spec.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStoreE2eTest.java
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardControllerE2eTest.java
+  - frontend/src/features/mrt/__tests__/tdx-normalize.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store.test.ts
+  - frontend/src/shared/config/env.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-dashboard-live-mode.test.ts
+  - frontend/src/features/mrt/__tests__/tdx-liveboard-api.test.ts
+  - frontend/src/features/mrt/__tests__/inferred-trains.test.ts
+-->
+
+---
+### Requirement: Snapshot-Driven Train Position Replay
+
+TWFoundry SHALL recompute train positions from the selected timeline snapshot.
+
+#### Scenario: Train positions move when replay position changes
+
+- **GIVEN** two or more persisted MRT snapshots contain different liveboard timing states
+- **WHEN** the operator drags the timeline to another snapshot
+- **THEN** inferred train marker positions update according to the selected snapshot rows
+- **AND** sidebar train rows and station panel arrivals remain consistent with the same snapshot
+
+
+<!-- @trace
+source: add-mrt-live-mode-timeline
+updated: 2026-04-27
+code:
+  - frontend/bun.lockb
+  - docs/TWFoundry-project-brief.md
+  - docs/git-worktree-layout.md
+  - docs/overlay-registry-design-note.md
+  - frontend/src/features/mrt/api/tdx-liveboard.ts
+  - frontend/src/features/mrt/components/StationPanel.vue
+  - backend/ingestion/src/main/resources/schema.sql
+  - frontend/src/shared/config/env.ts
+  - docs/starrocks-vs-iceberg-evolution-note.md
+  - docs/starrocks-local-dev.md
+  - gradle/libs.versions.toml
+  - frontend/src/features/mrt/line-names.ts
+  - frontend/src/features/mrt/map/map-provider.ts
+  - frontend/src/features/mrt/localized-text.ts
+  - frontend/src/app/stores/mrt-dashboard.ts
+  - frontend/src/features/mrt/tdx/normalize.ts
+  - backend/ingestion/src/main/resources/application.properties
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/E2eTdxLiveBoardGateway.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStore.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardTimelineStore.java
+  - frontend/src/env.d.ts
+  - frontend/src/features/mrt/components/LayerControl.vue
+  - infra/starrocks/docker-compose.yml
+  - README.md
+  - frontend/.env.example
+  - frontend/src/features/mrt/components/MrtMap.vue
+  - frontend/src/features/mrt/data/mrt-fixtures.ts
+  - frontend/src/features/mrt/map/inferred-trains.ts
+  - infra/redpanda/docker-compose.yml
+  - frontend/src/shared/components/BaseBadge.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardBackfillStateStore.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardController.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardTimelineStore.java
+  - frontend/src/features/mrt/data/mrt-network.generated.ts
+  - backend/ingestion/build.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardService.java
+  - frontend/src/features/mrt/components/MrtDashboard.vue
+  - frontend/src/shared/i18n/messages.ts
+  - frontend/src/features/mrt/types.ts
+  - frontend/src/features/mrt/map/overlay-registry.ts
+  - docs/redpanda-local-dev.md
+  - frontend/package.json
+  - frontend/src/features/design-system/components/DesignSystemPage.vue
+  - infra/starrocks/sql/bootstrap.sql
+tests:
+  - frontend/src/features/mrt/__tests__/map-provider.test.ts
+  - backend/ingestion/src/test/resources/application-e2e.properties
+  - frontend/src/features/mrt/__tests__/mrt-store-liveboard-source.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-data.test.ts
+  - frontend/tests/e2e/fullstack.spec.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStoreE2eTest.java
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardControllerE2eTest.java
+  - frontend/src/features/mrt/__tests__/tdx-normalize.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store.test.ts
+  - frontend/src/shared/config/env.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-dashboard-live-mode.test.ts
+  - frontend/src/features/mrt/__tests__/tdx-liveboard-api.test.ts
+  - frontend/src/features/mrt/__tests__/inferred-trains.test.ts
+-->
+
+---
+### Requirement: Train-Centric Replay Selection
+
+TWFoundry SHALL keep train-centric selection behavior during replay.
+
+#### Scenario: Replay keeps selection centered on the train
+
+- **GIVEN** the operator has selected a train from the map or sidebar
+- **WHEN** the timeline moves to another persisted snapshot
+- **THEN** the dashboard keeps `selectedTrainId` as the train-centric identity while that train exists in the selected snapshot
+- **AND** the selection is cleared only if the selected snapshot no longer contains that train
+
+<!-- @trace
+source: add-mrt-live-mode-timeline
+updated: 2026-04-27
+code:
+  - frontend/bun.lockb
+  - docs/TWFoundry-project-brief.md
+  - docs/git-worktree-layout.md
+  - docs/overlay-registry-design-note.md
+  - frontend/src/features/mrt/api/tdx-liveboard.ts
+  - frontend/src/features/mrt/components/StationPanel.vue
+  - backend/ingestion/src/main/resources/schema.sql
+  - frontend/src/shared/config/env.ts
+  - docs/starrocks-vs-iceberg-evolution-note.md
+  - docs/starrocks-local-dev.md
+  - gradle/libs.versions.toml
+  - frontend/src/features/mrt/line-names.ts
+  - frontend/src/features/mrt/map/map-provider.ts
+  - frontend/src/features/mrt/localized-text.ts
+  - frontend/src/app/stores/mrt-dashboard.ts
+  - frontend/src/features/mrt/tdx/normalize.ts
+  - backend/ingestion/src/main/resources/application.properties
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/infrastructure/tdx/E2eTdxLiveBoardGateway.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStore.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardTimelineStore.java
+  - frontend/src/env.d.ts
+  - frontend/src/features/mrt/components/LayerControl.vue
+  - infra/starrocks/docker-compose.yml
+  - README.md
+  - frontend/.env.example
+  - frontend/src/features/mrt/components/MrtMap.vue
+  - frontend/src/features/mrt/data/mrt-fixtures.ts
+  - frontend/src/features/mrt/map/inferred-trains.ts
+  - infra/redpanda/docker-compose.yml
+  - frontend/src/shared/components/BaseBadge.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardBackfillStateStore.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardController.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardTimelineStore.java
+  - frontend/src/features/mrt/data/mrt-network.generated.ts
+  - backend/ingestion/build.gradle.kts
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardService.java
+  - frontend/src/features/mrt/components/MrtDashboard.vue
+  - frontend/src/shared/i18n/messages.ts
+  - frontend/src/features/mrt/types.ts
+  - frontend/src/features/mrt/map/overlay-registry.ts
+  - docs/redpanda-local-dev.md
+  - frontend/package.json
+  - frontend/src/features/design-system/components/DesignSystemPage.vue
+  - infra/starrocks/sql/bootstrap.sql
+tests:
+  - frontend/src/features/mrt/__tests__/map-provider.test.ts
+  - backend/ingestion/src/test/resources/application-e2e.properties
+  - frontend/src/features/mrt/__tests__/mrt-store-liveboard-source.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-data.test.ts
+  - frontend/tests/e2e/fullstack.spec.ts
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/EmbeddedJdbcMrtLiveBoardBackfillStateStoreE2eTest.java
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/MrtLiveBoardControllerE2eTest.java
+  - frontend/src/features/mrt/__tests__/tdx-normalize.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-store.test.ts
+  - frontend/src/shared/config/env.test.ts
+  - frontend/src/features/mrt/__tests__/mrt-dashboard-live-mode.test.ts
+  - frontend/src/features/mrt/__tests__/tdx-liveboard-api.test.ts
+  - frontend/src/features/mrt/__tests__/inferred-trains.test.ts
 -->
