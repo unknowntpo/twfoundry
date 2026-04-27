@@ -14,15 +14,16 @@ const previewMobilePanel = ref<"layers" | "detail" | "time">("detail");
 const previewMobilePanelOpen = ref(true);
 
 const colorTokens = [
-  ["Canvas", "--twf-color-canvas", "#F7F3EE", "Warm page background."],
-  ["Surface", "--twf-color-surface", "#FBF8F3", "Panels, sidebars, and cards."],
-  ["Ink", "--twf-color-text", "#1F1B17", "Primary readable text."],
-  ["Muted ink", "--twf-color-text-muted", "#6C635B", "Metadata and secondary copy."],
-  ["Line", "--twf-color-border", "#E6DED2", "Soft borders and dividers."],
-  ["Warm accent", "--twf-color-accent-warm", "#C97B63", "Focused non-route emphasis."],
-  ["Route red", "--twf-color-route-red", "#D92D3A", "MRT route semantics."],
-  ["Route blue", "--twf-color-route-blue", "#2F6FD6", "MRT route semantics."],
-  ["Route green", "--twf-color-route-green", "#2F9E62", "MRT route semantics."],
+  ["Background", "--twf-color-canvas", "#FAFAFA", "App shell and document background."],
+  ["Foreground", "--twf-color-text", "#09090B", "Primary text and high-emphasis icons."],
+  ["Card", "--twf-color-surface", "#FFFFFF", "Panels, drawers, cards, and menus."],
+  ["Muted", "--twf-color-surface-muted", "#F4F4F5", "Subtle fills and inactive surfaces."],
+  ["Border", "--twf-color-border", "#E4E4E7", "Card, input, and control boundaries."],
+  ["Primary", "--twf-color-primary", "#18181B", "Primary commands and selected controls."],
+  ["Ring", "--twf-color-ring", "#71717A", "Keyboard focus ring and active outline."],
+  ["Route red", "--twf-color-route-red", "#D92D3A", "MRT route semantics only."],
+  ["Route blue", "--twf-color-route-blue", "#2F6FD6", "MRT route semantics only."],
+  ["Route green", "--twf-color-route-green", "#2F9E62", "MRT route semantics only."],
 ];
 
 const spacingTokens = [
@@ -35,21 +36,35 @@ const spacingTokens = [
 ];
 
 const breakpointTokens = computed(() => [
-  ["Mobile", "0-639px", "Single-column map-first layout; hide wide rails and timeline."],
-  ["Tablet", "640-1023px", "Map-first compact layout; reveal panels through compact controls."],
-  ["Desktop", "1024px+", "Full monitoring layout with topbar, rails, panels, map, and timeline."],
+  ["Mobile", "0-639px", "Map remains visible; sheet switch controls Layers, Detail, and Time."],
+  ["Tablet", "640-1023px", "Map-first layout with compact shadcn-style segmented sheet controls."],
+  ["Desktop", "1024px+", "Full operator layout with rails, side panels, map, and timeline."],
 ]);
 
 const libraryTradeoffs = computed(() => [
+  ["shadcn-vue", t("designSystem.tradeoffs.adopt"), "Adopt the primitive vocabulary for Vue."],
+  ["shadcn/ui", "Reference", "React source language; use as design/API reference, not dependency."],
+  ["Reka UI", "Foundation", "Headless primitive layer behind the Vue implementation."],
   [
     "Local Vue components",
-    t("designSystem.tradeoffs.firstPass"),
-    "Best fit for our map-first dashboard and custom light-mode identity.",
+    "Wrap",
+    "Keep project-owned wrappers for MRT-specific copy, tokens, and map chrome.",
   ],
-  ["shadcn/ui", "Concept only", "React-oriented; borrow vocabulary, not dependency."],
-  ["shadcn-vue", "Defer", "Useful later for richer primitives if we need them."],
-  ["Ant Design Vue", "Defer", "Strong enterprise style and heavier surface than we need now."],
-  ["Reka UI", "Later candidate", "Good for accessible headless primitives without visual lock-in."],
+  ["Ant Design Vue", "Avoid", "Too heavy and visually opinionated for this map-first tool."],
+]);
+
+const shadcnPrinciples = computed(() => [
+  [t("designSystem.shadcn.profilePrimitive"), t("designSystem.shadcn.profilePrimitiveBody")],
+  [t("designSystem.shadcn.profileNeutral"), t("designSystem.shadcn.profileNeutralBody")],
+  [t("designSystem.shadcn.profileComposable"), t("designSystem.shadcn.profileComposableBody")],
+]);
+
+const stateRules = computed(() => [
+  ["Default", "White card, zinc border, foreground text."],
+  ["Hover", "Border and muted surface shift, no layout movement."],
+  ["Focus", "2px ring with visible offset; keyboard-first."],
+  ["Loading", "Skeleton or reserved row; spinner only for active async work."],
+  ["Error", "Destructive tone plus source-backed recovery copy."],
 ]);
 
 const commonComponents = computed(
@@ -133,6 +148,33 @@ function componentStatusTone(status: string): "green" | "blue" | "warm" {
         <h2>{{ t("designSystem.principles.mapTitle") }}</h2>
         <p>{{ t("designSystem.principles.mapBody") }}</p>
       </BaseCard>
+    </section>
+
+    <section class="section-grid" aria-labelledby="shadcn-title">
+      <div>
+        <BaseSectionLabel>{{ t("designSystem.shadcn.label") }}</BaseSectionLabel>
+        <h2 id="shadcn-title">{{ t("designSystem.shadcn.title") }}</h2>
+        <p>{{ t("designSystem.shadcn.body") }}</p>
+      </div>
+      <div class="docs-stack">
+        <BaseCard>
+          <div class="principle-list">
+            <BasePanel v-for="[title, body] in shadcnPrinciples" :key="title">
+              <h3>{{ title }}</h3>
+              <p>{{ body }}</p>
+            </BasePanel>
+          </div>
+        </BaseCard>
+        <BaseCard>
+          <BaseSectionLabel>{{ t("designSystem.shadcn.stateLabel") }}</BaseSectionLabel>
+          <div class="state-rule-list">
+            <div v-for="[state, rule] in stateRules" :key="state">
+              <strong>{{ state }}</strong>
+              <span>{{ rule }}</span>
+            </div>
+          </div>
+        </BaseCard>
+      </div>
     </section>
 
     <section class="section-grid" aria-labelledby="color-title">
@@ -534,6 +576,23 @@ function componentStatusTone(status: string): "green" | "blue" | "warm" {
 
 <style scoped>
 .design-system-page {
+  --twf-color-canvas: #fafafa;
+  --twf-color-surface: #ffffff;
+  --twf-color-surface-raised: #ffffff;
+  --twf-color-border: #e4e4e7;
+  --twf-color-border-soft: #f1f1f3;
+  --twf-color-text: #09090b;
+  --twf-color-text-muted: #52525b;
+  --twf-color-text-faint: #71717a;
+  --twf-color-accent-warm: #18181b;
+  --twf-color-accent-warm-soft: #f4f4f5;
+  --twf-shadow-floating: 0 10px 30px rgba(9, 9, 11, 0.08);
+  --twf-shadow-panel: 0 1px 2px rgba(9, 9, 11, 0.06);
+  --twf-radius-sm: 6px;
+  --twf-radius-md: 8px;
+  --twf-radius-lg: 10px;
+  --twf-radius-xl: 12px;
+
   min-height: 100vh;
   padding: 32px clamp(18px, 4vw, 56px) 56px;
   background: var(--twf-color-canvas);
@@ -549,13 +608,20 @@ function componentStatusTone(status: string): "green" | "blue" | "warm" {
 .hero {
   border: 1px solid var(--twf-color-border);
   border-radius: var(--twf-radius-xl);
-  padding: clamp(24px, 5vw, 48px);
+  padding: clamp(22px, 4vw, 40px);
   background: var(--twf-color-surface);
+  box-shadow: var(--twf-shadow-panel);
+}
+
+.hero-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--twf-space-3);
+  margin-bottom: 22px;
 }
 
 .back-link {
   display: inline-flex;
-  margin-bottom: 22px;
   color: var(--twf-color-text-muted);
   font-size: 0.82rem;
   font-weight: 700;
@@ -574,12 +640,12 @@ p {
 }
 
 h1 {
-  max-width: 780px;
+  max-width: 860px;
   margin-top: 12px;
-  font-size: clamp(2.25rem, 7vw, 4.5rem);
-  font-weight: 600;
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 650;
   letter-spacing: 0;
-  line-height: 0.95;
+  line-height: 1;
 }
 
 .hero p {
@@ -605,6 +671,12 @@ h1 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--twf-space-4);
   margin: var(--twf-space-6) auto;
+}
+
+.principle-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--twf-space-3);
 }
 
 .principles h2,
@@ -640,6 +712,33 @@ li {
 .docs-stack {
   display: grid;
   gap: var(--twf-space-3);
+}
+
+.state-rule-list {
+  display: grid;
+  gap: 0;
+}
+
+.state-rule-list div {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: var(--twf-space-3);
+  border-bottom: 1px solid var(--twf-color-border-soft);
+  padding: var(--twf-space-3) 0;
+}
+
+.state-rule-list div:first-child {
+  padding-top: 0;
+}
+
+.state-rule-list div:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.state-rule-list span {
+  color: var(--twf-color-text-muted);
+  line-height: 1.55;
 }
 
 .inventory-groups {
@@ -1058,7 +1157,7 @@ li {
   width: 48px;
   height: 48px;
   border: 1px solid var(--twf-color-border);
-  border-radius: var(--twf-radius-lg);
+  border-radius: var(--twf-radius-md);
 }
 
 code {
@@ -1353,13 +1452,15 @@ ul {
   .token-grid,
   .component-grid,
   .overlay-grid,
-  .responsive-shell-preview {
+  .responsive-shell-preview,
+  .principle-list {
     grid-template-columns: 1fr;
   }
 
   .tradeoff-row,
   .breakpoint-list div,
-  .inventory-row {
+  .inventory-row,
+  .state-rule-list div {
     grid-template-columns: 1fr;
   }
 
