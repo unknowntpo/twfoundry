@@ -312,10 +312,17 @@ TWFoundry SHALL use Vue 3, Pinia, and MapLibre GL for the Phase 1 dashboard.
 - **WHEN** the dashboard loads
 - **THEN** it can display MRT route polylines, MRT station markers, and station LiveBoard information
 
+#### Scenario: MapLibre basemap covers Taiwan
+
+- **GIVEN** `VITE_MAPLIBRE_STYLE_URL` is not configured
+- **WHEN** the MRT dashboard initializes MapLibre
+- **THEN** the map uses the default OpenFreeMap style instead of MapLibre demo tiles
+- **AND** a raster tile fallback remains configurable through `VITE_MAPLIBRE_RASTER_TILES_URL`
+
 
 <!-- @trace
 source: bootstrap-twfoundry-platform
-updated: 2026-04-16
+updated: 2026-04-27
 code:
   - frontend/src/features/mrt/data/mrt-fixtures.ts
   - .github/workflows/frontend-ci.yml
@@ -336,6 +343,7 @@ code:
   - frontend/src/features/mrt/components/StationPanel.vue
 tests:
   - frontend/src/features/mrt/__tests__/mrt-data.test.ts
+  - frontend/src/shared/config/env.test.ts
 -->
 
 ---

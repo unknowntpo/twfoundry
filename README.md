@@ -6,7 +6,7 @@ The first implementation slice is an MRT-only frontend demo:
 
 - Vue 3 dashboard
 - MRT mock/static data
-- MapLibre GL for customizable, free local/demo maps
+- MapLibre GL with a configurable OpenFreeMap basemap for local/demo maps
 - Mock map provider for tests
 - Unit and integration tests before broader E2E coverage
 

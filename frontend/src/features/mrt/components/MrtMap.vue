@@ -112,7 +112,7 @@ async function initializeMapLibreMap(): Promise<void> {
       center: [121.5134, 25.044],
       container: mapElement.value,
       pitch: 45,
-      style: appConfig.mapLibreStyleUrl,
+      style: appConfig.mapLibreStyle,
       zoom: 12,
     });
 

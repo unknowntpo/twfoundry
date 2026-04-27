@@ -10,7 +10,7 @@
 
 - 整合 YouBike、台北捷運 LiveBoard、Civil IoT 等開放資料
 - 建立清晰且可維護的資料處理流程
-- 開發以 MapLibre 為主的可客製化視覺化 Dashboard
+- 開發以 MapLibre 為主、底圖可替換的視覺化 Dashboard
 - 保持架構簡單，方便後續擴展
 
 ## 2. 整體系統架構
@@ -72,7 +72,7 @@ graph TB
 
 ### 3.6 前端層 (Frontend Layer)
 
-- **技術**：Vue 3 + Pinia + MapLibre GL
+- **技術**：Vue 3 + Pinia + MapLibre GL，預設 OpenFreeMap style，底圖 style / raster tiles 由環境變數設定
 - 主要功能：
   - 顯示台北捷運路線（Polyline）
   - 顯示 YouBike 與 MRT 車站（動態 Markers）
