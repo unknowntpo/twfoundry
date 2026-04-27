@@ -8,7 +8,7 @@ Define TWFoundry's Phase 1 platform foundation: source candidates, frontend-firs
 
 ### Requirement: Phase 1 Layered Architecture
 
-TWFoundry SHALL define a Phase 1 architecture with data source, ingestion, Kafka Streams, StarRocks storage, Spring Boot API, and Vue + Google Maps frontend layers.
+TWFoundry SHALL define a Phase 1 architecture with data source, ingestion, Kafka Streams, StarRocks storage, Spring Boot API, and Vue + MapLibre frontend layers.
 
 #### Scenario: Stakeholder reviews the platform foundation
 
@@ -230,7 +230,7 @@ tests:
 ---
 ### Requirement: Frontend Stack Direction
 
-TWFoundry SHALL use Bun, Vite, Vue 3, TypeScript, Pinia, Vue Router, Google Maps JavaScript API, Vue scoped CSS, Vitest, and Playwright for the first frontend implementation.
+TWFoundry SHALL use Bun, Vite, Vue 3, TypeScript, Pinia, Vue Router, MapLibre GL, Vue scoped CSS, Vitest, and Playwright for the first frontend implementation.
 
 #### Scenario: Frontend project is scaffolded
 
@@ -304,7 +304,7 @@ tests:
 ---
 ### Requirement: Dashboard Visualization Direction
 
-TWFoundry SHALL use Vue 3, Pinia, and Google Maps JavaScript API for the Phase 1 dashboard.
+TWFoundry SHALL use Vue 3, Pinia, and MapLibre GL for the Phase 1 dashboard.
 
 #### Scenario: User opens the Phase 1 dashboard
 
@@ -384,13 +384,13 @@ tests:
 ---
 ### Requirement: Deterministic Map E2E
 
-TWFoundry SHALL provide a mock map provider for Playwright E2E tests while preserving Google Maps JavaScript API for local/demo usage.
+TWFoundry SHALL provide a mock map provider for Playwright E2E tests while preserving MapLibre GL for local/demo usage.
 
 #### Scenario: E2E tests run
 
 - **GIVEN** Playwright tests are executed
 - **WHEN** `VITE_MAP_PROVIDER=mock` is configured
-- **THEN** tests can verify dashboard load, station selection, and layer toggling without requiring Google Maps network access, quota, tile loading, or an API key
+- **THEN** tests can verify dashboard load, station selection, and layer toggling without requiring map tile network access
 
 
 <!-- @trace
@@ -668,7 +668,7 @@ TWFoundry SHALL apply the documented frontend design system to the MRT dashboard
 
 - **GIVEN** the design system is applied to dashboard components
 - **WHEN** a user opens the MRT dashboard
-- **THEN** the map remains the primary visual surface and existing station selection, layer toggle, foldable sidebar, mock map, Google Maps, and TDX opt-in behavior remain unchanged
+- **THEN** the map remains the primary visual surface and existing station selection, layer toggle, foldable sidebar, mock map, MapLibre map, and TDX opt-in behavior remain unchanged
 
 #### Scenario: Timeline control uses shared dashboard grammar
 

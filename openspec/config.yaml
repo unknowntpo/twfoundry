@@ -14,7 +14,7 @@ context: |
   - Process data with Spring Boot and Kafka Streams.
   - Store current operational state in StarRocks.
   - Expose dashboard-ready APIs.
-  - Build a Google Maps-based Vue dashboard.
+  - Build a MapLibre-based Vue dashboard.
   
   ## Source Brief
   

@@ -68,7 +68,7 @@ datasource(s)
 ### Overlay vs Layer
 
 - `overlay`: a map-facing product module with identity, controls, visibility, and data dependencies
-- `layer`: a renderer-facing drawing unit such as a Google marker collection, a Mapbox line layer, or a custom WebGL layer
+- `layer`: a renderer-facing drawing unit such as a MapLibre marker collection, a MapLibre line layer, or a custom WebGL layer
 
 The sidebar, mobile panel switcher, and future timeline should operate at `overlay` level, not at raw renderer-layer level.
 
@@ -124,7 +124,7 @@ export interface OverlayDescriptor {
 
 ### Renderer Boundary
 
-The overlay registry should not know Google Maps, Mapbox, or Three.js details directly.
+The overlay registry should not know MapLibre or Three.js details directly.
 
 Renderer implementations should sit behind a renderer contract so the map engine can evolve later without changing product-level overlay definitions.
 
@@ -132,7 +132,7 @@ Illustrative boundary:
 
 ```ts
 export interface OverlayRenderContext {
-  mapProvider: "google" | "mock";
+  mapProvider: "maplibre" | "mock";
   selectedStationId?: string;
   visibleLineIds: string[];
   timelineTime?: string;

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
 import BaseBadge from "@/shared/components/BaseBadge.vue";
+import { resolveMrtLineLabel } from "../line-names";
 import { resolveLocalizedText } from "../localized-text";
-import { formatMrtLineName, resolveMrtLineLabel } from "../line-names";
 import type { LiveBoardEntry, MrtStation } from "../types";
 
 const { locale, t } = useI18n();
@@ -21,10 +21,6 @@ defineEmits<{
   "toggle-collapse": [];
 }>();
 
-function formatLineName(lineId: string): string {
-  return formatMrtLineName(t, lineId);
-}
-
 function displayLineName(lineId: string): string {
   return resolveMrtLineLabel(
     t,
@@ -35,7 +31,9 @@ function displayLineName(lineId: string): string {
 }
 
 function displayDestination(row: LiveBoardEntry): string {
-  return resolveLocalizedText(locale.value, row.destinationName, row.destination) ?? row.destination;
+  return (
+    resolveLocalizedText(locale.value, row.destinationName, row.destination) ?? row.destination
+  );
 }
 
 function routeTone(lineId: string): "red" | "blue" | "green" | "orange" | "brown" | "neutral" {

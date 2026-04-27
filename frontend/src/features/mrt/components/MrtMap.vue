@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
+import "maplibre-gl/dist/maplibre-gl.css";
+import type * as MapLibreModule from "maplibre-gl";
+import type {
+  GeoJSONSource,
+  LngLatLike,
+  Map as MapLibreMap,
+  Marker as MapLibreMarker,
+} from "maplibre-gl";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useMrtDashboardStore } from "@/app/stores/mrt-dashboard";
 import { appConfig } from "@/shared/config/env";
@@ -16,15 +24,14 @@ const store = useMrtDashboardStore();
 const { locale, t } = useI18n();
 const mapElement = ref<HTMLElement | null>(null);
 const mapError = ref<string | undefined>();
-const googleReady = ref(false);
+const mapReady = ref(false);
 const hoveredTrainId = ref<string | undefined>();
 const hoveredTrainTooltip = ref<{ left: number; top: number } | null>(null);
-let googleMap: GoogleMapInstance | undefined;
-let googleApi: GoogleMapsGlobal | undefined;
-let googleMarkerLibrary: GoogleMarkerLibrary | undefined;
-let googleTransitLayer: GoogleTransitLayer | undefined;
-let googleStationMarkers: GoogleRenderableMarker[] = [];
-let googleTrainMarkers: GoogleRenderableMarker[] = [];
+type MapLibreRuntime = typeof MapLibreModule;
+let mapLibreMap: MapLibreMap | undefined;
+let mapLibreRuntime: MapLibreRuntime | undefined;
+let mapLibreStationMarkers: MapLibreMarker[] = [];
+let mapLibreTrainMarkers: MapLibreMarker[] = [];
 
 const visibleStations = computed(() =>
   props.stations.filter((station) =>
@@ -58,18 +65,24 @@ function lineLabel(line: MrtLine): string {
 }
 
 onMounted(() => {
-  if (appConfig.mapProvider !== "google") {
+  if (appConfig.mapProvider !== "maplibre") {
     return;
   }
 
-  void initializeGoogleMap();
+  void initializeMapLibreMap();
+});
+
+onBeforeUnmount(() => {
+  clearMapLibreMarkers();
+  mapLibreMap?.remove();
+  mapLibreMap = undefined;
 });
 
 watch(
   () => [props.lines, visibleStations.value, store.selectedStationId, store.displayedLiveBoards],
   () => {
-    if (appConfig.mapProvider === "google" && googleReady.value) {
-      renderGoogleMapOverlays();
+    if (appConfig.mapProvider === "maplibre" && mapReady.value) {
+      renderMapLibreOverlays();
     }
   },
   { deep: true },
@@ -78,187 +91,177 @@ watch(
 watch(
   () => [store.selectedTrainId, inferredTrains.value],
   () => {
-    if (appConfig.mapProvider === "google" && googleReady.value) {
-      renderGoogleMapOverlays();
+    if (appConfig.mapProvider === "maplibre" && mapReady.value) {
+      renderMapLibreOverlays();
     }
   },
   { deep: true },
 );
 
-async function initializeGoogleMap(): Promise<void> {
+async function initializeMapLibreMap(): Promise<void> {
   if (!mapElement.value) {
     return;
   }
 
-  if (!appConfig.googleMapsApiKey) {
-    mapError.value = t("dashboard.map.googleApiKeyMissing");
-    return;
-  }
-
   try {
-    googleApi = await loadGoogleMaps(appConfig.googleMapsApiKey);
-    googleMarkerLibrary = await loadGoogleMarkerLibrary(googleApi);
-    const GoogleMap = googleApi.maps.Map;
-    if (!GoogleMap) {
-      throw new Error(t("dashboard.map.googleUnavailable"));
-    }
-
-    googleMap = new GoogleMap(mapElement.value, {
-      center: { lat: 25.044, lng: 121.5134 },
+    const mapLibre = await import("maplibre-gl");
+    mapLibreRuntime = mapLibre;
+    mapLibreMap = new mapLibre.Map({
+      attributionControl: false,
+      bearing: 0,
+      center: [121.5134, 25.044],
+      container: mapElement.value,
+      pitch: 45,
+      style: appConfig.mapLibreStyleUrl,
       zoom: 12,
-      tilt: 45,
-      mapId: appConfig.googleMapsMapId,
-      disableDefaultUI: true,
-      gestureHandling: "greedy",
     });
 
-    googleTransitLayer = new googleApi.maps.TransitLayer();
-    renderGoogleMapOverlays();
-
-    googleReady.value = true;
-    mapError.value = undefined;
+    mapLibreMap.addControl(new mapLibre.NavigationControl({ visualizePitch: true }), "top-right");
+    mapLibreMap.addControl(new mapLibre.AttributionControl({ compact: true }), "bottom-left");
+    mapLibreMap.on("load", () => {
+      mapReady.value = true;
+      mapError.value = undefined;
+      renderMapLibreOverlays();
+    });
+    mapLibreMap.on("error", () => {
+      mapError.value = t("dashboard.map.mapLibreLoadFailed");
+    });
   } catch (error) {
-    mapError.value = error instanceof Error ? error.message : t("dashboard.map.googleUnknownError");
+    mapError.value =
+      error instanceof Error ? error.message : t("dashboard.map.mapLibreUnknownError");
   }
 }
 
-function renderGoogleMapOverlays(): void {
-  if (!googleMap || !googleApi) {
+function renderMapLibreOverlays(): void {
+  if (!mapLibreMap) {
     return;
   }
 
-  const map = googleMap;
-  const google = googleApi;
-  const markerLibrary = googleMarkerLibrary;
+  const map = mapLibreMap;
+  renderMapLibreRoutes(map);
+  clearMapLibreMarkers();
 
-  googleTransitLayer?.setMap(routeOverlayVisible.value ? map : null);
-
-  for (const marker of googleStationMarkers) {
-    marker.setMap(null);
-  }
-  for (const marker of googleTrainMarkers) {
-    marker.setMap(null);
-  }
-
-  googleStationMarkers = stationOverlayVisible.value
-    ? visibleStations.value.map((station) => {
-        const marker = createGoogleStationMarkerOverlay(google, markerLibrary, map, station);
-        marker.addListener?.("click", () => store.selectStation(station.id));
-        return marker;
-      })
+  mapLibreStationMarkers = stationOverlayVisible.value
+    ? visibleStations.value.map((station) => createMapLibreStationMarker(map, station))
     : [];
-  googleTrainMarkers = estimatedTrainOverlayVisible.value
-    ? inferredTrains.value.map((train) => createGoogleTrainMarker(google, markerLibrary, map, train))
+  mapLibreTrainMarkers = estimatedTrainOverlayVisible.value
+    ? inferredTrains.value.map((train) => createMapLibreTrainMarker(map, train))
     : [];
 
   focusSelectedTrain();
 }
 
-function createGoogleStationMarkerOverlay(
-  google: GoogleMapsGlobal,
-  markerLibrary: GoogleMarkerLibrary | undefined,
-  map: GoogleMapInstance,
-  station: MrtStation,
-): GoogleRenderableMarker {
-  if (markerLibrary) {
-    const marker = new markerLibrary.AdvancedMarkerElement({
-      map,
-      position: station.position,
-      title: station.name,
-      content: createGoogleStationMarker(station),
-      zIndex: station.id === store.selectedStationId ? 40 : 30,
-    });
+function renderMapLibreRoutes(map: MapLibreMap): void {
+  const sourceId = "mrt-routes";
+  const layerId = "mrt-routes-line";
+  const routeGeoJson = {
+    type: "FeatureCollection" as const,
+    features: routeOverlayVisible.value
+      ? props.lines
+          .filter((line) => store.visibleLineIds.includes(line.id))
+          .map((line) => ({
+            type: "Feature" as const,
+            properties: {
+              color: line.color,
+              id: line.id,
+            },
+            geometry: {
+              type: "LineString" as const,
+              coordinates: line.polyline.map((point) => [point.lng, point.lat]),
+            },
+          }))
+      : [],
+  };
 
-    return {
-      addListener: marker.addListener.bind(marker),
-      setMap: (nextMap) => {
-        marker.map = nextMap;
-      },
-    };
+  if (!map.getSource(sourceId)) {
+    map.addSource(sourceId, {
+      type: "geojson",
+      data: routeGeoJson,
+    });
+  } else {
+    const source = map.getSource(sourceId) as GeoJSONSource;
+    source.setData(routeGeoJson as Parameters<GeoJSONSource["setData"]>[0]);
   }
 
-  return new google.maps.Marker({
-    label: {
-      color: readDesignToken("--twf-color-text", "#1f1b17"),
-      fontWeight: "700",
-      text: station.name,
-    },
-    map,
-    position: station.position,
-    title: station.name,
-    zIndex: station.id === store.selectedStationId ? 40 : 30,
-  });
+  if (!map.getLayer(layerId)) {
+    map.addLayer({
+      id: layerId,
+      type: "line",
+      source: sourceId,
+      layout: {
+        "line-cap": "round",
+        "line-join": "round",
+      },
+      paint: {
+        "line-color": ["get", "color"],
+        "line-opacity": 0.9,
+        "line-width": 5,
+      },
+    });
+  }
 }
 
-function createGoogleTrainMarker(
-  google: GoogleMapsGlobal,
-  markerLibrary: GoogleMarkerLibrary | undefined,
-  map: GoogleMapInstance,
+function createMapLibreStationMarker(map: MapLibreMap, station: MrtStation): MapLibreMarker {
+  if (!mapLibreRuntime) {
+    throw new Error(t("dashboard.map.mapLibreUnknownError"));
+  }
+
+  const element = createMapLibreStationMarkerElement(station);
+  element.addEventListener("click", () => store.selectStation(station.id));
+
+  return new mapLibreRuntime.Marker({
+    anchor: "center",
+    element,
+  })
+    .setLngLat(toLngLat(station.position))
+    .addTo(map);
+}
+
+function createMapLibreTrainMarker(
+  map: MapLibreMap,
   train: ReturnType<typeof inferTrainMarkers>[number],
-): GoogleRenderableMarker {
-  if (markerLibrary) {
-    const content = createGoogleTrainMarkerContent(train);
-    const marker = new markerLibrary.AdvancedMarkerElement({
-      map,
-      position: train.position,
-      title: train.trainCode,
-      content,
-      zIndex: 90,
-    });
-
-    bindTrainHover(content, train);
-    marker.addListener("click", () => store.selectTrain(train.id));
-
-    return {
-      setMap: (nextMap) => {
-        marker.map = nextMap;
-      },
-    };
+): MapLibreMarker {
+  if (!mapLibreRuntime) {
+    throw new Error(t("dashboard.map.mapLibreUnknownError"));
   }
 
-  const marker = new google.maps.Marker({
-    map,
-    position: train.position,
-    title: train.trainCode,
-    zIndex: 90,
-    icon: {
-      path: "M -6 0 a 6 6 0 1 0 12 0 a 6 6 0 1 0 -12 0",
-      fillColor: resolveLineColor(train.lineId),
-      fillOpacity: 1,
-      strokeColor: "#fffaf2",
-      strokeWeight: 2,
-      scale: 1,
-    },
-  });
-  marker.addListener("click", () => store.selectTrain(train.id));
-  return marker;
+  const element = createMapLibreTrainMarkerElement(train);
+  bindTrainHover(element, train);
+  element.addEventListener("click", () => store.selectTrain(train.id));
+
+  return new mapLibreRuntime.Marker({
+    anchor: "center",
+    element,
+  })
+    .setLngLat(toLngLat(train.position))
+    .addTo(map);
 }
 
-function createGoogleStationMarker(station: MrtStation): HTMLElement {
+function createMapLibreStationMarkerElement(station: MrtStation): HTMLElement {
   const selected = station.id === store.selectedStationId;
   const marker = document.createElement("button");
   marker.type = "button";
-  marker.className = "google-station-marker";
+  marker.className = "maplibre-station-marker";
   marker.dataset.selected = String(selected);
   marker.setAttribute("aria-label", t("dashboard.map.selectStation", { station: station.name }));
   marker.style.setProperty("--station-line-color", resolveStationColor(station));
   const dot = document.createElement("span");
-  dot.className = "google-station-marker-dot";
+  dot.className = "maplibre-station-marker-dot";
   marker.append(dot);
   if (selected) {
     const label = document.createElement("span");
-    label.className = "google-station-marker-label";
+    label.className = "maplibre-station-marker-label";
     label.textContent = station.name;
     marker.append(label);
   }
   return marker;
 }
 
-function createGoogleTrainMarkerContent(
+function createMapLibreTrainMarkerElement(
   train: ReturnType<typeof inferTrainMarkers>[number],
 ): HTMLElement {
   const marker = document.createElement("div");
-  marker.className = "google-train-marker";
+  marker.className = "maplibre-train-marker";
   marker.dataset.status = train.status;
   marker.dataset.selected = String(store.selectedTrainId === train.id);
   marker.title = train.trainCode;
@@ -289,7 +292,9 @@ function resolveLineColor(lineId: string | undefined): string {
   return props.lines.find((line) => line.id === lineId)?.color ?? "var(--twf-color-route-red)";
 }
 
-function resolveMockTrainStyle(train: ReturnType<typeof inferTrainMarkers>[number]): Record<string, string> {
+function resolveMockTrainStyle(
+  train: ReturnType<typeof inferTrainMarkers>[number],
+): Record<string, string> {
   const stationIndex = visibleStations.value.findIndex((station) => station.id === train.stationId);
   if (stationIndex < 0) {
     return { display: "none" };
@@ -329,149 +334,30 @@ function formatTrainTooltip(train: ReturnType<typeof inferTrainMarkers>[number])
 }
 
 function focusSelectedTrain(): void {
-  if (!googleMap || !selectedTrain.value) {
+  if (!mapLibreMap || !selectedTrain.value) {
     return;
   }
 
-  googleMap.panTo?.(selectedTrain.value.position);
-  if ((googleMap.getZoom?.() ?? 0) < 14) {
-    googleMap.setZoom?.(14);
-  }
-}
-
-function readDesignToken(token: string, fallback: string): string {
-  const value = window.getComputedStyle(document.documentElement).getPropertyValue(token).trim();
-  return value || fallback;
-}
-
-function loadGoogleMaps(apiKey: string): Promise<GoogleMapsGlobal> {
-  const existing = window.google;
-  if (existing?.maps?.Map) {
-    return Promise.resolve(existing);
-  }
-
-  if (existing?.maps?.importLibrary) {
-    return ensureGoogleMapsLibrary(existing);
-  }
-
-  const scriptId = "google-maps-js";
-  const currentScript = document.getElementById(scriptId);
-  if (currentScript) {
-    return waitForGoogleMaps();
-  }
-
-  const script = document.createElement("script");
-  script.id = scriptId;
-  script.async = true;
-  script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&loading=async`;
-  script.onerror = () => {
-    mapError.value = t("dashboard.map.googleLoadFailed");
-  };
-  document.head.appendChild(script);
-
-  return waitForGoogleMaps();
-}
-
-async function ensureGoogleMapsLibrary(google: GoogleMapsGlobal): Promise<GoogleMapsGlobal> {
-  if (google.maps.Map) {
-    return google;
-  }
-
-  if (!google.maps.importLibrary) {
-    throw new Error(t("dashboard.map.googleUnavailable"));
-  }
-
-  const mapsLibrary = await google.maps.importLibrary("maps");
-  google.maps.Map = mapsLibrary.Map;
-  return google;
-}
-
-async function loadGoogleMarkerLibrary(
-  google: GoogleMapsGlobal,
-): Promise<GoogleMarkerLibrary | undefined> {
-  if (!google.maps.importLibrary) {
-    return undefined;
-  }
-
-  return google.maps.importLibrary("marker");
-}
-
-function waitForGoogleMaps(): Promise<GoogleMapsGlobal> {
-  return new Promise((resolve, reject) => {
-    const startedAt = Date.now();
-    const interval = window.setInterval(() => {
-      const google = window.google;
-      if (google?.maps?.Map) {
-        window.clearInterval(interval);
-        resolve(google);
-        return;
-      }
-
-      if (google?.maps?.importLibrary) {
-        window.clearInterval(interval);
-        ensureGoogleMapsLibrary(google).then(resolve, reject);
-        return;
-      }
-
-      if (Date.now() - startedAt > 8000) {
-        window.clearInterval(interval);
-        reject(new Error(t("dashboard.map.googleTimeout")));
-      }
-    }, 50);
+  mapLibreMap.easeTo({
+    center: toLngLat(selectedTrain.value.position),
+    duration: 500,
+    zoom: Math.max(mapLibreMap.getZoom(), 14),
   });
 }
 
-interface GoogleMapsGlobal {
-  maps: {
-    importLibrary?: GoogleImportLibrary;
-    Map?: new (element: HTMLElement, options: Record<string, unknown>) => GoogleMapInstance;
-    Marker: new (options: Record<string, unknown>) => GoogleLegacyMarkerInstance;
-    TransitLayer: new () => GoogleTransitLayer;
-  };
-}
-
-interface GoogleMapInstance {
-  getZoom?: () => number;
-  panTo?: (position: { lat: number; lng: number }) => void;
-  setZoom?: (zoom: number) => void;
-}
-
-interface GoogleImportLibrary {
-  (name: "maps"): Promise<GoogleMapsLibrary>;
-  (name: "marker"): Promise<GoogleMarkerLibrary>;
-}
-
-interface GoogleMapsLibrary {
-  Map: new (element: HTMLElement, options: Record<string, unknown>) => GoogleMapInstance;
-}
-
-interface GoogleAdvancedMarkerInstance {
-  map: GoogleMapInstance | null;
-  addListener: (eventName: "click", listener: () => void) => void;
-}
-
-interface GoogleMarkerLibrary {
-  AdvancedMarkerElement: new (options: Record<string, unknown>) => GoogleAdvancedMarkerInstance;
-}
-
-interface GoogleLegacyMarkerInstance {
-  addListener: (eventName: "click", listener: () => void) => void;
-  setMap: (map: GoogleMapInstance | null) => void;
-}
-
-interface GoogleRenderableMarker {
-  setMap: (map: GoogleMapInstance | null) => void;
-  addListener?: (eventName: "click", listener: () => void) => void;
-}
-
-interface GoogleTransitLayer {
-  setMap: (map: GoogleMapInstance | null) => void;
-}
-
-declare global {
-  interface Window {
-    google?: GoogleMapsGlobal;
+function clearMapLibreMarkers(): void {
+  for (const marker of mapLibreStationMarkers) {
+    marker.remove();
   }
+  for (const marker of mapLibreTrainMarkers) {
+    marker.remove();
+  }
+  mapLibreStationMarkers = [];
+  mapLibreTrainMarkers = [];
+}
+
+function toLngLat(position: { lat: number; lng: number }): LngLatLike {
+  return [position.lng, position.lat];
 }
 </script>
 
@@ -563,8 +449,8 @@ declare global {
     <div class="coords">25.0440, 121.5134 z12<br />tilt 45 bearing 0</div>
   </div>
 
-  <div v-else class="google-map-shell">
-    <div ref="mapElement" class="google-map" data-testid="google-map" />
+  <div v-else class="maplibre-map-shell">
+    <div ref="mapElement" class="maplibre-map" data-testid="maplibre-map" />
     <div
       v-if="hoveredTrain && hoveredTrainTooltip"
       class="train-tooltip"
@@ -582,7 +468,7 @@ declare global {
 
 <style scoped>
 .mock-map,
-.google-map-shell {
+.maplibre-map-shell {
   position: relative;
   width: 100%;
   height: 100%;
@@ -597,12 +483,12 @@ declare global {
   background-size: auto, auto, 160px 160px, 220px 220px, auto;
 }
 
-.google-map {
+.maplibre-map {
   position: absolute;
   inset: 0;
 }
 
-:global(.google-station-marker) {
+:global(.maplibre-station-marker) {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -612,7 +498,7 @@ declare global {
   cursor: pointer;
 }
 
-:global(.google-station-marker-dot) {
+:global(.maplibre-station-marker-dot) {
   width: 12px;
   height: 12px;
   border: 2px solid #fffaf2;
@@ -623,7 +509,7 @@ declare global {
     var(--twf-shadow-floating);
 }
 
-:global(.google-station-marker-label) {
+:global(.maplibre-station-marker-label) {
   max-width: 148px;
   border: 2px solid var(--station-line-color);
   border-radius: 8px;
@@ -634,21 +520,21 @@ declare global {
   box-shadow: var(--twf-shadow-floating);
 }
 
-:global(.google-station-marker[data-selected="true"] .google-station-marker-dot) {
+:global(.maplibre-station-marker[data-selected="true"] .maplibre-station-marker-dot) {
   box-shadow:
     0 0 0 3px #fffaf2,
     0 0 0 9px color-mix(in srgb, var(--station-line-color) 24%, transparent),
     var(--twf-shadow-floating);
 }
 
-:global(.google-station-marker[data-selected="true"] .google-station-marker-label) {
+:global(.maplibre-station-marker[data-selected="true"] .maplibre-station-marker-label) {
   border-color: var(--twf-color-route-blue);
   box-shadow:
     var(--twf-shadow-route-blue-ring),
     var(--twf-shadow-floating);
 }
 
-:global(.google-train-marker) {
+:global(.maplibre-train-marker) {
   width: 16px;
   height: 16px;
   border: 2px solid #fffaf2;
@@ -659,13 +545,13 @@ declare global {
     var(--twf-shadow-floating);
 }
 
-:global(.google-train-marker[data-status="approaching"]) {
+:global(.maplibre-train-marker[data-status="approaching"]) {
   box-shadow:
     0 0 0 7px color-mix(in srgb, var(--train-line-color) 24%, transparent),
     var(--twf-shadow-floating);
 }
 
-:global(.google-train-marker[data-selected="true"]) {
+:global(.maplibre-train-marker[data-selected="true"]) {
   box-shadow:
     0 0 0 4px #fffaf2,
     0 0 0 10px color-mix(in srgb, var(--train-line-color) 26%, transparent),
@@ -855,7 +741,7 @@ declare global {
 
 @media (max-width: 639px) {
   .mock-map,
-  .google-map-shell {
+  .maplibre-map-shell {
     height: 100%;
     min-height: 100%;
   }

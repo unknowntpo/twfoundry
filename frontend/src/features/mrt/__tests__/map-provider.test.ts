@@ -6,8 +6,8 @@ describe("map provider boundary", () => {
     expect(resolveMapProvider(undefined)).toBe("mock");
   });
 
-  it("accepts google and mock explicitly", () => {
-    expect(resolveMapProvider("google")).toBe("google");
+  it("accepts maplibre and mock explicitly", () => {
+    expect(resolveMapProvider("maplibre")).toBe("maplibre");
     expect(resolveMapProvider("mock")).toBe("mock");
   });
 

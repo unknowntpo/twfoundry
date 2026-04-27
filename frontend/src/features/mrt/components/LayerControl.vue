@@ -2,8 +2,8 @@
 import { computed, nextTick, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useMrtDashboardStore } from "@/app/stores/mrt-dashboard";
-import { resolveLocalizedText } from "../localized-text";
 import { resolveMrtLineLabel } from "../line-names";
+import { resolveLocalizedText } from "../localized-text";
 import type { LiveBoardEntry, MrtLine } from "../types";
 
 const props = defineProps<{
@@ -37,7 +37,9 @@ function displayLineLabel(line: MrtLine, rows: LiveBoardEntry[]): string {
 }
 
 function displayDestination(row: LiveBoardEntry): string {
-  return resolveLocalizedText(locale.value, row.destinationName, row.destination) ?? row.destination;
+  return (
+    resolveLocalizedText(locale.value, row.destinationName, row.destination) ?? row.destination
+  );
 }
 
 async function selectTrain(row: LiveBoardEntry): Promise<void> {
@@ -45,7 +47,7 @@ async function selectTrain(row: LiveBoardEntry): Promise<void> {
   store.selectTrain(row.id);
 }
 
-function registerTrainCardRef(trainId: string, element: Element | null): void {
+function registerTrainCardRef(trainId: string, element: unknown): void {
   trainCardRefs.value[trainId] = element instanceof HTMLButtonElement ? element : null;
 }
 

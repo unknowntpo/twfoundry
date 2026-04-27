@@ -53,9 +53,9 @@ A renderer-facing drawing unit.
 
 Examples:
 
-- Google AdvancedMarker collection
-- Mapbox `line` layer
-- Mapbox `circle` layer
+- MapLibre marker collection
+- MapLibre `line` layer
+- MapLibre `circle` layer
 - Three.js custom layer
 
 ## Core Principle
@@ -185,13 +185,13 @@ export const overlayRegistry: OverlayDescriptor[] = [
 
 ## Renderer Boundary
 
-The registry must not know Google Maps or Mapbox details.
+The registry must not know MapLibre implementation details.
 
 Renderer-specific logic should be behind a renderer contract.
 
 ```ts
 export interface OverlayRenderContext {
-  mapProvider: "google" | "mock";
+  mapProvider: "maplibre" | "mock";
   selectedStationId?: string;
   visibleLineIds: string[];
   timelineTime?: string;
@@ -208,7 +208,7 @@ If needed later, one overlay can own multiple renderer implementations:
 
 ```ts
 export interface OverlayRendererFactory {
-  google?: () => OverlayRenderer;
+  maplibre?: () => OverlayRenderer;
   mock?: () => OverlayRenderer;
 }
 ```
@@ -354,6 +354,6 @@ Phase 1 refactor order:
 2. extract `MrtStationOverlay`
 3. extract `EstimatedTrainOverlay`
 4. add `TimelineOverlay` state model
-5. keep Google Maps renderer behind overlay renderers
+5. keep MapLibre renderer behind overlay renderers
 
 Do not switch map engine yet just to get the overlay architecture right.

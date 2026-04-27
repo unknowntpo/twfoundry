@@ -1,8 +1,4 @@
-export type OverlayId =
-  | "mrt-routes"
-  | "mrt-stations"
-  | "mrt-estimated-trains"
-  | "timeline";
+export type OverlayId = "mrt-routes" | "mrt-stations" | "mrt-estimated-trains" | "timeline";
 
 export type OverlayCategory = "moving" | "station" | "route" | "time";
 
@@ -36,7 +32,7 @@ export interface OverlayDescriptor {
 }
 
 export interface OverlayRenderContext {
-  mapProvider: "google" | "mock";
+  mapProvider: "maplibre" | "mock";
   selectedStationId?: string;
   visibleLineIds: string[];
   visibleOverlayIds: OverlayId[];

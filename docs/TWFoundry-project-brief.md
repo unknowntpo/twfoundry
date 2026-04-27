@@ -10,7 +10,7 @@
 
 - 整合 YouBike、台北捷運 LiveBoard、Civil IoT 等開放資料
 - 建立清晰且可維護的資料處理流程
-- 開發以 Google Maps 為主的視覺化 Dashboard
+- 開發以 MapLibre 為主的可客製化視覺化 Dashboard
 - 保持架構簡單，方便後續擴展
 
 ## 2. 整體系統架構
@@ -22,7 +22,7 @@ graph TB
     B --> C[串流處理層 - Kafka Streams]
     C --> D[儲存層 - StarRocks]
     D --> E[服務層 - API Layer]
-    E --> F[前端層 - Vue.js + Google Maps]
+    E --> F[前端層 - Vue.js + MapLibre]
 ```
 
 ## 3. 各層詳細說明
@@ -72,7 +72,7 @@ graph TB
 
 ### 3.6 前端層 (Frontend Layer)
 
-- **技術**：Vue 3 + Pinia + Google Maps JavaScript API
+- **技術**：Vue 3 + Pinia + MapLibre GL
 - 主要功能：
   - 顯示台北捷運路線（Polyline）
   - 顯示 YouBike 與 MRT 車站（動態 Markers）
@@ -84,7 +84,7 @@ graph TB
 - **後端**：Spring Boot 3 + Gradle + Kafka Streams
 - **訊息佇列**：Kafka
 - **資料庫**：StarRocks
-- **前端**：Vue 3 + Google Maps JavaScript API
+- **前端**：Vue 3 + MapLibre GL
 - **資料來源**：TDX 運輸資料平台、YouBike 公開 API、Civil IoT
 
 ## 5. 設計原則
