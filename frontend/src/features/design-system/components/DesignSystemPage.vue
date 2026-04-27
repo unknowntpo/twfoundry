@@ -14,13 +14,19 @@ const previewMobilePanel = ref<"layers" | "detail" | "time">("detail");
 const previewMobilePanelOpen = ref(true);
 
 const colorTokens = [
-  ["Background", "--twf-color-canvas", "#FAFAFA", "App shell and document background."],
-  ["Foreground", "--twf-color-text", "#09090B", "Primary text and high-emphasis icons."],
-  ["Card", "--twf-color-surface", "#FFFFFF", "Panels, drawers, cards, and menus."],
-  ["Muted", "--twf-color-surface-muted", "#F4F4F5", "Subtle fills and inactive surfaces."],
-  ["Border", "--twf-color-border", "#E4E4E7", "Card, input, and control boundaries."],
-  ["Primary", "--twf-color-primary", "#18181B", "Primary commands and selected controls."],
-  ["Ring", "--twf-color-ring", "#71717A", "Keyboard focus ring and active outline."],
+  ["Canvas", "--twf-color-canvas", "#F7F3EE", "Warm app shell background."],
+  ["Surface", "--twf-color-surface", "#FBF8F3", "Panels, sidebars, sheets, and cards."],
+  ["Raised", "--twf-color-surface-raised", "#FFFFFF", "Interactive controls and elevated layers."],
+  ["Ink", "--twf-color-text", "#1F1B17", "Primary text and selected controls."],
+  ["Muted ink", "--twf-color-text-muted", "#6C635B", "Metadata and secondary copy."],
+  [
+    "Faint ink",
+    "--twf-color-text-faint",
+    "#8A7E72",
+    "Labels, helper text, and low-emphasis icons.",
+  ],
+  ["Line", "--twf-color-border", "#E6DED2", "Card, input, and control boundaries."],
+  ["Warm accent", "--twf-color-accent-warm", "#C97B63", "Focused non-route emphasis."],
   ["Route red", "--twf-color-route-red", "#D92D3A", "MRT route semantics only."],
   ["Route blue", "--twf-color-route-blue", "#2F6FD6", "MRT route semantics only."],
   ["Route green", "--twf-color-route-green", "#2F9E62", "MRT route semantics only."],
@@ -60,9 +66,9 @@ const shadcnPrinciples = computed(() => [
 ]);
 
 const stateRules = computed(() => [
-  ["Default", "White card, zinc border, foreground text."],
-  ["Hover", "Border and muted surface shift, no layout movement."],
-  ["Focus", "2px ring with visible offset; keyboard-first."],
+  ["Default", "TWFoundry warm surface, soft border, ink foreground."],
+  ["Hover", "Raised surface and stronger border, no layout movement."],
+  ["Focus", "2px ring using existing ink/accent tokens; keyboard-first."],
   ["Loading", "Skeleton or reserved row; spinner only for active async work."],
   ["Error", "Destructive tone plus source-backed recovery copy."],
 ]);
@@ -576,18 +582,6 @@ function componentStatusTone(status: string): "green" | "blue" | "warm" {
 
 <style scoped>
 .design-system-page {
-  --twf-color-canvas: #fafafa;
-  --twf-color-surface: #ffffff;
-  --twf-color-surface-raised: #ffffff;
-  --twf-color-border: #e4e4e7;
-  --twf-color-border-soft: #f1f1f3;
-  --twf-color-text: #09090b;
-  --twf-color-text-muted: #52525b;
-  --twf-color-text-faint: #71717a;
-  --twf-color-accent-warm: #18181b;
-  --twf-color-accent-warm-soft: #f4f4f5;
-  --twf-shadow-floating: 0 10px 30px rgba(9, 9, 11, 0.08);
-  --twf-shadow-panel: 0 1px 2px rgba(9, 9, 11, 0.06);
   --twf-radius-sm: 6px;
   --twf-radius-md: 8px;
   --twf-radius-lg: 10px;

@@ -103,9 +103,9 @@ export const messages = {
     designSystem: {
       back: "MRT dashboard",
       label: "TWFoundry Design System",
-      title: "shadcn-vue primitives for a map-first MRT console.",
+      title: "shadcn-vue primitives with TWFoundry colors reserved.",
       intro:
-        "This page defines the shadcn-vue direction before the MRT dashboard is redesigned: neutral primitives, explicit states, route-color semantics, and Vue components that can be applied back to production.",
+        "This page defines the shadcn-vue direction before the MRT dashboard is redesigned: reusable primitives, explicit states, preserved TWFoundry color tokens, and Vue components that can be applied back to production.",
       actions: {
         primary: "Adopt shadcn-vue",
         secondary: "Keep MRT features",
@@ -117,31 +117,31 @@ export const messages = {
         warmTitle: "Primitive before page",
         warmBody:
           "Define Button, Card, Sheet, Tabs, Badge, and Table behavior before redesigning routes.",
-        semanticTitle: "Neutral before decorative",
+        semanticTitle: "Color system before library",
         semanticBody:
-          "Use zinc-like neutral surfaces for UI chrome; keep route colors for transit meaning.",
+          "shadcn-vue provides component structure. TWFoundry keeps its warm surfaces, ink, borders, accent, and route colors.",
         mapTitle: "Map first",
         mapBody:
           "Panels and sheets support the map. They must not replace the map as the primary context.",
       },
       shadcn: {
         label: "shadcn-vue profile",
-        title: "Adopt the primitive model, not a React dependency",
+        title: "Adopt primitives without replacing product color",
         body: "This Vue app should use shadcn-vue primitives and project-owned wrappers. shadcn/ui remains the reference vocabulary; shadcn-vue is the implementation path.",
         stateLabel: "State contract",
         profilePrimitive: "Copy components into the app",
         profilePrimitiveBody:
           "Use local Vue source for primitives so we can tune density, i18n, accessibility, and MRT-specific behavior.",
-        profileNeutral: "Use neutral chrome",
+        profileNeutral: "Preserve TWFoundry color tokens",
         profileNeutralBody:
-          "Default UI should be white, zinc, and black. Route red, blue, green, orange, and brown remain data semantics.",
+          "Do not replace the existing palette with zinc defaults. Map shadcn roles onto --twf-color-* tokens.",
         profileComposable: "Compose sheets and panels",
         profileComposableBody:
           "Mobile/tablet controls should be Sheet, Tabs, and Button compositions instead of custom oversized blocks.",
       },
       colors: {
-        label: "shadcn token map",
-        title: "Neutral primitives plus MRT semantic routes",
+        label: "Reserved color system",
+        title: "TWFoundry palette mapped to shadcn roles",
       },
       typography: {
         label: "Typography and spacing",
@@ -410,9 +410,9 @@ export const messages = {
     designSystem: {
       back: "捷運儀表板",
       label: "TWFoundry 設計系統",
-      title: "用 shadcn-vue primitives 重整 MRT 地圖控制台。",
+      title: "使用 shadcn-vue primitives，但保留 TWFoundry 色彩系統。",
       intro:
-        "這個頁面先定義 MRT dashboard redesign 的 shadcn-vue 方向：中性 primitives、明確狀態、路線色語意，以及可套回 production 的 Vue 元件。",
+        "這個頁面先定義 MRT dashboard redesign 的 shadcn-vue 方向：可重用 primitives、明確狀態、保留 TWFoundry color tokens，以及可套回 production 的 Vue 元件。",
       actions: {
         primary: "採用 shadcn-vue",
         secondary: "保留 MRT 功能",
@@ -423,29 +423,30 @@ export const messages = {
         label: "原則",
         warmTitle: "先 primitive，再頁面",
         warmBody: "先定義 Button、Card、Sheet、Tabs、Badge、Table 行為，再 redesign 路由頁。",
-        semanticTitle: "先中性，再裝飾",
-        semanticBody: "UI chrome 使用 zinc-like neutral；紅、藍、綠、橘、棕保留給捷運資料語意。",
+        semanticTitle: "先保留色彩系統，再套 library",
+        semanticBody:
+          "shadcn-vue 提供元件結構；TWFoundry 保留既有暖色 surface、ink、border、accent 與路線色。",
         mapTitle: "地圖優先",
         mapBody: "Panel 與 Sheet 是輔助地圖的工具，不應取代地圖作為主要脈絡。",
       },
       shadcn: {
         label: "shadcn-vue profile",
-        title: "採用 primitive model，不採 React dependency",
+        title: "採用 primitives，但不替換產品色盤",
         body: "這個 Vue app 應採用 shadcn-vue primitives 與專案自己的 wrapper。shadcn/ui 作為 vocabulary 參考；shadcn-vue 才是實作路徑。",
         stateLabel: "狀態合約",
         profilePrimitive: "元件複製進 app",
         profilePrimitiveBody:
           "使用本地 Vue primitive source，方便調整密度、i18n、accessibility 與 MRT 專屬行為。",
-        profileNeutral: "使用中性 chrome",
+        profileNeutral: "保留 TWFoundry color tokens",
         profileNeutralBody:
-          "預設 UI 使用 white、zinc、black。捷運紅、藍、綠、橘、棕只保留給資料語意。",
+          "不要把既有色盤換成 zinc defaults。shadcn roles 要映射到 --twf-color-* tokens。",
         profileComposable: "用 Sheet 與 panel 組合",
         profileComposableBody:
           "Mobile/tablet 控制應由 Sheet、Tabs、Button 組合，不再使用客製過大的 block。",
       },
       colors: {
-        label: "shadcn token map",
-        title: "中性 primitives 加上 MRT 路線語意",
+        label: "保留色彩系統",
+        title: "TWFoundry palette 映射到 shadcn roles",
       },
       typography: {
         label: "字級與間距",
