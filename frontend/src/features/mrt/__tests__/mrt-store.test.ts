@@ -1,6 +1,8 @@
 import { createPinia, setActivePinia } from "pinia";
 import { beforeEach, describe, expect, it } from "vitest";
 import { useMrtDashboardStore } from "@/app/stores/mrt-dashboard";
+import { mrtLines, mrtStations } from "../data/mrt-fixtures";
+import { inferTrainMarkers } from "../map/inferred-trains";
 
 describe("MRT dashboard store", () => {
   beforeEach(() => {
@@ -73,6 +75,32 @@ describe("MRT dashboard store", () => {
     expect(store.timelineMode).toBe("paused");
     expect(store.selectedLiveBoards[0]?.arrivalMinutes).not.toBe(latestArrival);
     expect(store.displayedUpdatedAt).toBe("2026-04-23T08:00:00.000Z");
+  });
+
+  it("keeps the paused replay cursor when a newer live snapshot arrives", async () => {
+    const store = useMrtDashboardStore();
+
+    await store.selectStation("BL18");
+    store.scrubTimeline(0);
+    const pausedUpdatedAt = store.displayedUpdatedAt;
+
+    await store.refreshLiveBoards();
+
+    expect(store.timelineMode).toBe("paused");
+    expect(store.displayedUpdatedAt).toBe(pausedUpdatedAt);
+  });
+
+  it("changes inferred train positions from the selected replay snapshot", async () => {
+    const store = useMrtDashboardStore();
+
+    await store.selectStation("BL18");
+    const latestMarkers = inferTrainMarkers(store.displayedLiveBoards, mrtStations, mrtLines);
+
+    store.scrubTimeline(0);
+    const replayMarkers = inferTrainMarkers(store.displayedLiveBoards, mrtStations, mrtLines);
+
+    expect(replayMarkers[0]?.position.lng).not.toBe(latestMarkers[0]?.position.lng);
+    expect(replayMarkers[0]?.position.lat).not.toBe(latestMarkers[0]?.position.lat);
   });
 
   it("keeps train selection only while the train still exists in the current rows", async () => {

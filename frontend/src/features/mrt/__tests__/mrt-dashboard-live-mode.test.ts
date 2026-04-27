@@ -26,7 +26,7 @@ describe("MRT dashboard live mode", () => {
     vi.doMock("@/shared/config/env", () => ({
       appConfig: {
         mapProvider: "mock",
-        mapLibreStyleUrl: "https://demotiles.maplibre.org/style.json",
+        mapLibreStyle: "https://tiles.openfreemap.org/styles/liberty",
         mrtLiveBoardSource: "tdx",
         tdxProxyUrl: "http://localhost:5174",
       },
@@ -119,7 +119,7 @@ describe("MRT dashboard live mode", () => {
     vi.doMock("@/shared/config/env", () => ({
       appConfig: {
         mapProvider: "mock",
-        mapLibreStyleUrl: "https://demotiles.maplibre.org/style.json",
+        mapLibreStyle: "https://tiles.openfreemap.org/styles/liberty",
         mrtLiveBoardSource: "tdx",
         tdxProxyUrl: "http://localhost:5174",
       },

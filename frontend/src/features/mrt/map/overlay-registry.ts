@@ -1,6 +1,7 @@
 export type OverlayId = "mrt-routes" | "mrt-stations" | "mrt-estimated-trains" | "timeline";
 
 export type OverlayCategory = "moving" | "station" | "route" | "time";
+export type MapViewMode = "2d" | "3d";
 
 export interface OverlayVisibility {
   defaultVisible: boolean;
@@ -33,7 +34,9 @@ export interface OverlayDescriptor {
 
 export interface OverlayRenderContext {
   mapProvider: "maplibre" | "mock";
+  viewMode: MapViewMode;
   selectedStationId?: string;
+  timelineTime?: string;
   visibleLineIds: string[];
   visibleOverlayIds: OverlayId[];
 }

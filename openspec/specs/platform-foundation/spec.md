@@ -201,10 +201,16 @@ TWFoundry SHALL use StarRocks as the Phase 1 analytical storage layer and SHALL 
 - **WHEN** the dashboard requests current station or observation state
 - **THEN** the API can read a latest-state representation from StarRocks
 
+#### Scenario: Operator replays recent timeline history
+
+- **GIVEN** a source requires short-window operational replay
+- **WHEN** the dashboard requests recent historical state
+- **THEN** the API can read bounded timeline snapshots through a storage boundary without replacing the latest-state serving contract
+
 
 <!-- @trace
 source: bootstrap-twfoundry-platform
-updated: 2026-04-16
+updated: 2026-04-27
 code:
   - frontend/src/features/mrt/data/mrt-fixtures.ts
   - .github/workflows/frontend-ci.yml
@@ -223,6 +229,7 @@ code:
   - frontend/src/app/router.ts
   - frontend/src/shared/config/env.ts
   - frontend/src/features/mrt/components/StationPanel.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/MrtLiveBoardTimelineStore.java
 tests:
   - frontend/src/features/mrt/__tests__/mrt-data.test.ts
 -->
@@ -424,6 +431,31 @@ code:
   - frontend/src/features/mrt/components/StationPanel.vue
 tests:
   - frontend/src/features/mrt/__tests__/mrt-data.test.ts
+-->
+
+---
+### Requirement: Map View Extensibility
+
+TWFoundry SHALL keep map-facing contracts extensible for both 2D and 3D presentation modes.
+
+#### Scenario: Renderer receives view mode
+
+- **GIVEN** a frontend overlay renderer receives map context
+- **WHEN** the dashboard switches between flat map and 3D-capable presentation
+- **THEN** the render context exposes `2d` or `3d` view mode without changing overlay identity
+
+#### Scenario: Coordinates remain 3D-compatible
+
+- **GIVEN** future moving-object domains may include altitude
+- **WHEN** coordinates are represented in frontend map contracts
+- **THEN** they can include optional altitude while preserving existing latitude and longitude behavior
+
+<!-- @trace
+source: define-backend-platform-contracts
+updated: 2026-04-27
+code:
+  - frontend/src/features/mrt/types.ts
+  - frontend/src/features/mrt/map/overlay-registry.ts
 -->
 
 ---

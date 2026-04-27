@@ -60,10 +60,20 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
     return displayedLiveBoards.value.filter((row) => row.stationId === selectedStationId.value);
   });
 
-  function replaceTimelineSnapshots(snapshots: LiveBoardSnapshot[]): void {
+  function replaceTimelineSnapshots(snapshots: LiveBoardSnapshot[], keepCursor = false): void {
+    const currentSnapshot = timelineSnapshots.value[timelineCursorIndex.value];
     timelineSnapshots.value = [...snapshots]
       .sort((left, right) => left.updatedAt.localeCompare(right.updatedAt))
       .slice(-MAX_TIMELINE_SNAPSHOTS);
+    if (keepCursor && currentSnapshot) {
+      const preservedIndex = timelineSnapshots.value.findIndex(
+        (snapshot) => snapshot.updatedAt === currentSnapshot.updatedAt,
+      );
+      if (preservedIndex >= 0) {
+        timelineCursorIndex.value = preservedIndex;
+        return;
+      }
+    }
     timelineCursorIndex.value =
       timelineSnapshots.value.length === 0 ? 0 : timelineSnapshots.value.length - 1;
   }
@@ -71,7 +81,7 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
   function appendTimelineSnapshot(snapshot: LiveBoardSnapshot): void {
     const next = timelineSnapshots.value.filter((item) => item.updatedAt !== snapshot.updatedAt);
     next.push(snapshot);
-    replaceTimelineSnapshots(next);
+    replaceTimelineSnapshots(next, timelineMode.value === "paused");
     if (timelineMode.value === "live") {
       goToLatestTimeline();
     }
@@ -98,11 +108,13 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
   }
 
   function seedMockTimeline(): void {
-    replaceTimelineSnapshots(liveBoardSnapshots);
+    replaceTimelineSnapshots(liveBoardSnapshots, timelineMode.value === "paused");
     const latest = liveBoardSnapshots[liveBoardSnapshots.length - 1];
     networkLiveBoards.value = latest?.rows ?? liveBoardRows;
     liveBoardUpdatedAt.value = latest?.updatedAt ?? new Date().toISOString();
-    goToLatestTimeline();
+    if (timelineMode.value === "live") {
+      goToLatestTimeline();
+    }
   }
 
   async function selectStation(stationId: string): Promise<void> {
@@ -233,7 +245,10 @@ export const useMrtDashboardStore = defineStore("mrt-dashboard", () => {
     }
 
     timelineMode.value = "paused";
-    timelineCursorIndex.value = Math.min(Math.max(Math.round(index), 0), timelineSnapshots.value.length - 1);
+    timelineCursorIndex.value = Math.min(
+      Math.max(Math.round(index), 0),
+      timelineSnapshots.value.length - 1,
+    );
     syncSelectedTrain();
   }
 

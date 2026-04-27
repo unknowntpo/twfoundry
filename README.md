@@ -15,3 +15,5 @@ See `openspec/changes/bootstrap-twfoundry-platform/` for the current Spectra cha
 Development workflow notes:
 
 - [Git worktree layout](docs/git-worktree-layout.md)
+- [Redpanda local dev](docs/redpanda-local-dev.md)
+- [StarRocks local dev](docs/starrocks-local-dev.md)

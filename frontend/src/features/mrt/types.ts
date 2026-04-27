@@ -3,6 +3,7 @@ export type MrtLineId = "red" | "blue" | "green" | "orange" | "brown" | "yellow"
 export interface Coordinates {
   lat: number;
   lng: number;
+  altitudeMeters?: number;
 }
 
 export interface MrtLine {

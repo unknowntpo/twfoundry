@@ -133,6 +133,7 @@ Illustrative boundary:
 ```ts
 export interface OverlayRenderContext {
   mapProvider: "maplibre" | "mock";
+  viewMode: "2d" | "3d";
   selectedStationId?: string;
   visibleLineIds: string[];
   timelineTime?: string;
@@ -682,7 +683,7 @@ Typical Phase 1 tables:
 - `ciot_observation_current`
 - `station_master`
 
-Historical retention can be added later through append-only history tables or lake/object storage if the project chooses to expand beyond latest-state serving.
+The Phase 1 storage direction is latest-state serving plus bounded timeline snapshot history for operator replay. Latest-state tables remain the product-serving source of truth for current dashboard state. Bounded timeline snapshots are a replay-oriented history surface and should stay behind a storage port so local embedded JDBC can be replaced by StarRocks history tables, append-only tables, or lake/object storage later.
 
 ## Initial Connector Mapping
 

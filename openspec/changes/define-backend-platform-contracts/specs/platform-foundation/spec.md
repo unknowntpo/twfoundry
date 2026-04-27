@@ -135,6 +135,13 @@ TWFoundry SHALL keep the platform map model extensible for both 2D and 3D views.
 - **THEN** those contracts do not assume a strictly 2D-only view model
 - **AND** the platform remains compatible with both 2D and 3D map presentation modes
 
+#### Scenario: Frontend map contracts carry 3D-ready state
+
+- **GIVEN** the frontend overlay renderer receives map context and coordinates
+- **WHEN** a renderer chooses between 2D and 3D presentation
+- **THEN** the render context exposes a `2d` or `3d` view mode
+- **AND** coordinates can carry optional altitude without changing existing 2D MRT geometry
+
 ### Requirement: Frontend Overlay Registry Contract
 
 TWFoundry SHALL define a frontend overlay registry contract so map-facing product modules are declared explicitly instead of being hard-coded inside one large map component.
