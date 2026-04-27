@@ -670,6 +670,13 @@ TWFoundry SHALL apply the documented frontend design system to the MRT dashboard
 - **WHEN** a user opens the MRT dashboard
 - **THEN** the map remains the primary visual surface and existing station selection, layer toggle, foldable sidebar, mock map, Google Maps, and TDX opt-in behavior remain unchanged
 
+#### Scenario: Timeline control uses shared dashboard grammar
+
+- **GIVEN** the MRT dashboard renders the replay timeline on desktop width
+- **WHEN** the footer timeline chrome is shown
+- **THEN** playback transport controls, snapshot metadata, and scrubber feedback are separated into distinct grouped surfaces instead of one flat control row
+- **AND** the timeline shows the current snapshot time, feed freshness, feed/source label, and replay position while preserving live, pause, and replay behavior
+
 #### Scenario: Dashboard avoids premature UI kit adoption
 
 - **GIVEN** the design system can be implemented with local Vue components and CSS tokens
@@ -678,9 +685,11 @@ TWFoundry SHALL apply the documented frontend design system to the MRT dashboard
 
 <!-- @trace
 source: apply-design-system-to-mrt-dashboard
-updated: 2026-04-17
+updated: 2026-04-23
 code:
   - frontend/src/features/mrt/components/MrtDashboard.vue
+  - frontend/src/features/design-system/components/DesignSystemPage.vue
+  - frontend/src/shared/i18n/messages.ts
   - frontend/.DS_Store
   - frontend/src/features/mrt/components/MrtMap.vue
   - frontend/src/shared/design/tokens.css
@@ -824,11 +833,15 @@ TWFoundry SHALL document a common component catalog for the map-first dashboard 
 - **GIVEN** the MRT dashboard already ships some primitives
 - **WHEN** the Design System page is reviewed
 - **THEN** the page marks which common components are already implemented, partially matched, or still missing
+- **AND** `TimelineControl` is documented as an implemented map-chrome primitive instead of a placeholder
 
 <!-- @trace
 source: define-dashboard-common-components
-updated: 2026-04-22
+updated: 2026-04-23
 code:
+  - frontend/src/features/design-system/components/DesignSystemPage.vue
+  - frontend/src/features/mrt/components/MrtDashboard.vue
+  - frontend/src/shared/i18n/messages.ts
   - frontend/scripts/test.html
   - frontend/.DS_Store
 -->

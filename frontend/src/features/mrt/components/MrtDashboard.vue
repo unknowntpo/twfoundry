@@ -2,10 +2,7 @@
 import { storeToRefs } from "pinia";
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import {
-  supportedLiveRefreshIntervalsMs,
-  useMrtDashboardStore,
-} from "@/app/stores/mrt-dashboard";
+import { supportedLiveRefreshIntervalsMs, useMrtDashboardStore } from "@/app/stores/mrt-dashboard";
 import LocaleSwitcher from "@/shared/components/LocaleSwitcher.vue";
 import { appConfig } from "@/shared/config/env";
 import { mrtLines, mrtStations } from "../data/mrt-fixtures";
@@ -45,13 +42,14 @@ const stationOverlays = computed(() =>
   mrtOverlayRegistry.filter((overlay) => overlay.category === "station"),
 );
 
-const lineTrainCounts = computed(() =>
-  Object.fromEntries(
-    mrtLines.map((line) => [
-      line.id,
-      displayedLiveBoards.value.filter((row) => row.lineId === line.id).length,
-    ]),
-  ) as Record<string, number>,
+const lineTrainCounts = computed(
+  () =>
+    Object.fromEntries(
+      mrtLines.map((line) => [
+        line.id,
+        displayedLiveBoards.value.filter((row) => row.lineId === line.id).length,
+      ]),
+    ) as Record<string, number>,
 );
 const activeTrainCount = computed(() => displayedLiveBoards.value.length);
 const liveBoardSourceLabel = computed(() =>
@@ -84,6 +82,16 @@ const timelineUpdatedLabel = computed(() => {
   const relative =
     diffSeconds < 60 ? `${diffSeconds}s ago` : `${Math.floor(diffSeconds / 60)}m ago`;
   return t("dashboard.timeline.updated", { relative });
+});
+const timelineModeLabel = computed(() =>
+  timelineMode.value === "live" ? t("dashboard.timeline.live") : t("dashboard.timeline.paused"),
+);
+const timelineSnapshotPositionLabel = computed(() => {
+  if (timelineSnapshots.value.length <= 1) {
+    return timelineModeLabel.value;
+  }
+
+  return `${timelineCursorIndex.value + 1}/${timelineSnapshots.value.length}`;
 });
 const timelineTrackFill = computed(() => {
   if (timelineSnapshots.value.length <= 1) {
@@ -404,70 +412,96 @@ watch([timelineMode, liveRefreshIntervalMs, selectedStationId], () => {
     </div>
 
     <footer class="timeline" :aria-label="t('dashboard.timeline.aria')">
-      <div class="timeline-buttons">
-        <button
-          type="button"
-          :aria-label="t('dashboard.timeline.previous')"
-          :disabled="!timelineHasReplay || timelineCursorIndex <= 0"
-          @click="store.stepTimeline(-1)"
-        >
-          ‹
-        </button>
-        <button
-          type="button"
-          :aria-label="
-            timelineMode === 'live'
-              ? t('dashboard.timeline.pause')
-              : t('dashboard.timeline.live')
-          "
-          data-testid="timeline-live-toggle"
-          @click="setLiveMode(timelineMode === 'live' ? 'paused' : 'live')"
-        >
-          {{ timelineMode === "live" ? "Ⅱ" : "▶" }}
-        </button>
-        <button
-          type="button"
-          :aria-label="t('dashboard.timeline.next')"
-          :disabled="!timelineHasReplay || timelineCursorIndex >= timelineSnapshots.length - 1"
-          @click="store.stepTimeline(1)"
-        >
-          ›
-        </button>
-      </div>
-      <span>{{ timelineTimestampLabel }}</span>
-      <button type="button" class="now-button" @click="setLiveMode('live')">
-        {{ t("dashboard.timeline.now") }}
-      </button>
-      <span>{{ timelineMode === "live" ? t("dashboard.timeline.live") : t("dashboard.timeline.paused") }}</span>
-      <span>{{ t("dashboard.timeline.every") }}</span>
-      <div class="timeline-intervals" data-testid="timeline-intervals">
-        <button
-          v-for="intervalMs in supportedLiveRefreshIntervalsMs"
-          :key="intervalMs"
-          type="button"
-          class="interval-button"
-          :class="{ active: liveRefreshIntervalMs === intervalMs }"
-          :aria-pressed="liveRefreshIntervalMs === intervalMs"
-          @click="setLiveRefreshInterval(intervalMs)"
-        >
-          {{ intervalMs < 60000 ? `${intervalMs / 1000}s` : "1m" }}
-        </button>
-      </div>
-      <strong>{{ timelineUpdatedLabel }}</strong>
-      <input
-        class="timeline-slider"
-        type="range"
-        :min="0"
-        :max="Math.max(timelineSnapshots.length - 1, 0)"
-        :value="timelineCursorIndex"
-        :disabled="timelineSnapshots.length <= 1"
-        :aria-label="t('dashboard.timeline.aria')"
-        @input="scrubTimelineFromEvent"
-      />
-      <div class="timeline-track" aria-hidden="true">
-        <span :style="{ width: timelineTrackFill }" />
-      </div>
-      <small>{{ t("dashboard.timeline.feed", { source: liveBoardSourceLabel }) }}</small>
+      <section class="timeline-panel timeline-panel-meta">
+        <div class="timeline-meta-copy">
+          <strong class="timeline-timestamp">{{ timelineTimestampLabel }}</strong>
+          <span class="timeline-updated">{{ timelineUpdatedLabel }}</span>
+        </div>
+      </section>
+
+      <section class="timeline-panel timeline-panel-player">
+        <div class="timeline-scrubber-head">
+          <small>{{ t("dashboard.timeline.feed", { source: liveBoardSourceLabel }) }}</small>
+          <span class="timeline-position">{{ timelineSnapshotPositionLabel }}</span>
+        </div>
+
+        <div class="timeline-slider-shell">
+          <input
+            class="timeline-slider"
+            type="range"
+            :min="0"
+            :max="Math.max(timelineSnapshots.length - 1, 0)"
+            :value="timelineCursorIndex"
+            :disabled="timelineSnapshots.length <= 1"
+            :aria-label="t('dashboard.timeline.aria')"
+            @input="scrubTimelineFromEvent"
+          />
+          <div class="timeline-track" aria-hidden="true">
+            <span :style="{ width: timelineTrackFill }" />
+          </div>
+        </div>
+
+        <div class="timeline-controls-row">
+          <div class="timeline-buttons" role="group" :aria-label="t('dashboard.timeline.aria')">
+            <button
+              type="button"
+              :aria-label="t('dashboard.timeline.previous')"
+              :disabled="!timelineHasReplay || timelineCursorIndex <= 0"
+              @click="store.stepTimeline(-1)"
+            >
+              ‹
+            </button>
+            <button
+              type="button"
+              class="timeline-live-toggle"
+              :aria-label="
+                timelineMode === 'live'
+                  ? t('dashboard.timeline.pause')
+                  : t('dashboard.timeline.live')
+              "
+              data-testid="timeline-live-toggle"
+              @click="setLiveMode(timelineMode === 'live' ? 'paused' : 'live')"
+            >
+              {{ timelineMode === "live" ? "Ⅱ" : "▶" }}
+            </button>
+            <button
+              type="button"
+              :aria-label="t('dashboard.timeline.next')"
+              :disabled="!timelineHasReplay || timelineCursorIndex >= timelineSnapshots.length - 1"
+              @click="store.stepTimeline(1)"
+            >
+              ›
+            </button>
+          </div>
+
+          <button type="button" class="now-button" @click="setLiveMode('live')">
+            {{ t("dashboard.timeline.now") }}
+          </button>
+
+          <span class="timeline-mode-pill" :data-mode="timelineMode">
+            {{ timelineModeLabel }}
+          </span>
+        </div>
+      </section>
+
+      <section class="timeline-panel timeline-panel-sidecar">
+        <div class="timeline-frequency">
+          <span class="timeline-frequency-label">{{ t("dashboard.timeline.every") }}</span>
+          <div class="timeline-intervals" data-testid="timeline-intervals">
+            <button
+              v-for="intervalMs in supportedLiveRefreshIntervalsMs"
+              :key="intervalMs"
+              type="button"
+              class="interval-button"
+              :class="{ active: liveRefreshIntervalMs === intervalMs }"
+              :aria-pressed="liveRefreshIntervalMs === intervalMs"
+              @click="setLiveRefreshInterval(intervalMs)"
+            >
+              {{ intervalMs < 60000 ? `${intervalMs / 1000}s` : "1m" }}
+            </button>
+          </div>
+        </div>
+      </section>
     </footer>
   </main>
 </template>
@@ -799,30 +833,125 @@ h1 {
 
 .timeline {
   display: grid;
-  grid-template-columns: auto auto auto auto auto auto minmax(160px, 1fr) minmax(120px, 0.7fr) auto;
-  align-items: center;
-  gap: 12px;
-  min-height: 52px;
+  grid-template-columns: minmax(220px, 280px) minmax(420px, 1fr) minmax(220px, 280px);
+  align-items: stretch;
+  gap: 10px;
   border-top: 1px solid var(--border);
-  padding: 0 14px;
-  background: var(--white);
+  padding: 10px 14px 12px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--white) 84%, var(--twf-color-route-blue) 16%), var(--white));
   color: var(--text-muted);
   font-size: 0.75rem;
 }
 
-.timeline-buttons {
+.timeline-panel {
   display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  min-height: 64px;
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 10px 12px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--surface) 72%, white 28%), var(--white));
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--white) 78%, transparent);
+}
+
+.timeline-buttons {
+  display: inline-flex;
   gap: 4px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 3px;
+  background: var(--bg);
 }
 
 .timeline-buttons button {
-  width: 28px;
+  width: 32px;
+  min-height: 32px;
+  border: 0;
+  border-radius: 8px;
   padding: 0;
+  background: transparent;
+}
+
+.timeline-live-toggle {
+  background: var(--text) !important;
+  color: var(--white) !important;
+}
+
+.timeline-mode-pill {
+  display: flex;
+  align-items: center;
+  min-height: 30px;
+  border-radius: 999px;
+  padding: 0 11px;
+  background: var(--bg);
+  color: var(--text);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.timeline-mode-pill[data-mode="live"] {
+  background: color-mix(in srgb, var(--twf-color-route-green) 16%, var(--white));
+  color: color-mix(in srgb, var(--twf-color-route-green) 64%, var(--text));
+}
+
+.timeline-panel-meta {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: center;
+  gap: 4px;
+}
+
+.timeline-meta-copy {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.timeline-timestamp {
+  min-width: 0;
+  color: var(--text);
+  font-size: 0.96rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.timeline-updated {
+  color: var(--text-faint);
+}
+
+.timeline-frequency {
+  display: grid;
+  align-content: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.timeline-frequency-label {
+  color: var(--text-faint);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.timeline-panel-player {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: center;
+  gap: 12px;
 }
 
 .timeline-intervals {
   display: inline-flex;
   gap: 6px;
+  min-width: 0;
+  flex-wrap: wrap;
 }
 
 .interval-button {
@@ -835,22 +964,57 @@ h1 {
   color: var(--text);
 }
 
+.timeline-scrubber-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.timeline-position {
+  color: var(--text);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.timeline-slider-shell {
+  display: grid;
+  min-width: 0;
+  align-items: center;
+}
+
+.timeline-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.timeline-panel-sidecar {
+  justify-content: center;
+}
+
 .timeline-track {
-  height: 4px;
+  grid-area: 1 / 1;
+  height: 6px;
   overflow: hidden;
   border-radius: 999px;
   background: var(--border-soft);
 }
 
 .timeline-slider {
+  grid-area: 1 / 1;
+  z-index: 1;
   width: 100%;
   margin: 0;
-  accent-color: var(--twf-color-route-blue);
+  appearance: none;
+  background: transparent;
 }
 
 .timeline-track span {
   display: block;
-  width: 45%;
   height: 100%;
   border-radius: inherit;
   background: var(--twf-color-route-blue);
@@ -858,6 +1022,42 @@ h1 {
 
 .timeline small {
   color: var(--text-faint);
+}
+
+.timeline-slider::-webkit-slider-runnable-track {
+  height: 6px;
+  background: transparent;
+}
+
+.timeline-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -6px;
+  border: 3px solid var(--white);
+  border-radius: 999px;
+  background: var(--twf-color-route-blue);
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--twf-color-route-blue) 35%, transparent);
+}
+
+.timeline-slider::-moz-range-track {
+  height: 6px;
+  background: transparent;
+}
+
+.timeline-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border: 3px solid var(--white);
+  border-radius: 999px;
+  background: var(--twf-color-route-blue);
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--twf-color-route-blue) 35%, transparent);
+}
+
+.timeline button:disabled,
+.timeline-slider:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 @media (max-width: 1023px) {
@@ -931,15 +1131,35 @@ h1 {
 
   .workspace.mobile-panel-time + .timeline {
     display: grid;
-    grid-template-columns: auto auto auto auto minmax(90px, 1fr);
+    grid-template-columns: 1fr;
     gap: var(--twf-space-2);
-    min-height: auto;
     padding: var(--twf-space-2);
   }
 
-  .workspace.mobile-panel-time + .timeline .timeline-buttons,
-  .workspace.mobile-panel-time + .timeline small {
-    display: none;
+  .workspace.mobile-panel-time + .timeline .timeline-panel {
+    min-height: auto;
+    padding: 12px;
+  }
+
+  .workspace.mobile-panel-time + .timeline .timeline-panel-controls {
+    flex-wrap: wrap;
+  }
+
+  .workspace.mobile-panel-time + .timeline .timeline-controls-row {
+    justify-content: flex-start;
+  }
+
+  .workspace.mobile-panel-time + .timeline .timeline-frequency {
+    align-items: flex-start;
+  }
+
+  .workspace.mobile-panel-time + .timeline .timeline-scrubber-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .workspace.mobile-panel-time + .timeline .timeline-timestamp {
+    white-space: normal;
   }
 }
 </style>

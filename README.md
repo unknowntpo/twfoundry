@@ -11,3 +11,7 @@ The first implementation slice is an MRT-only frontend demo:
 - Unit and integration tests before broader E2E coverage
 
 See `openspec/changes/bootstrap-twfoundry-platform/` for the current Spectra change.
+
+Development workflow notes:
+
+- [Git worktree layout](docs/git-worktree-layout.md)

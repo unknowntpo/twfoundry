@@ -65,7 +65,7 @@ const commonComponents = computed(
       ["overlays", "tooltip", "gap"],
       ["data", "liveboard", "implemented"],
       ["data", "statChip", "partial"],
-      ["map", "timeline", "partial"],
+      ["map", "timeline", "implemented"],
       ["map", "mapControl", "implemented"],
     ] as const,
 );
@@ -207,6 +207,27 @@ function componentStatusTone(status: string): "green" | "blue" | "warm" {
             <strong>{{ t("designSystem.components.arrival") }}</strong>
           </div>
         </BaseCard>
+        <BaseCard>
+          <BaseSectionLabel>{{ t("designSystem.components.timelineControl") }}</BaseSectionLabel>
+          <div class="timeline-example">
+            <div class="timeline-example-transport">
+              <span>‹</span>
+              <span class="active">Ⅱ</span>
+              <span>›</span>
+              <span class="pill">{{ t("dashboard.timeline.now") }}</span>
+            </div>
+            <div class="timeline-example-meta">
+              <strong>{{ t("designSystem.components.timelineSnapshot") }}</strong>
+              <p>{{ t("designSystem.components.timelineStatus") }}</p>
+            </div>
+            <div class="timeline-example-scrubber">
+              <span>{{ t("designSystem.components.timelineSource") }}</span>
+              <div class="timeline-example-track">
+                <span />
+              </div>
+            </div>
+          </div>
+        </BaseCard>
       </div>
     </section>
 
@@ -314,6 +335,11 @@ function componentStatusTone(status: string): "green" | "blue" | "warm" {
                         18 trains
                       </div>
                       <div v-else-if="itemKey === 'timeline'" class="mini-timeline">
+                        <div class="mini-timeline-top">
+                          <span class="chip">▶</span>
+                          <span class="meta">09:12 PM</span>
+                          <span class="count">12/30</span>
+                        </div>
                         <span class="track" />
                       </div>
                       <div v-else-if="itemKey === 'mapControl'" class="mini-map-control">
@@ -565,7 +591,7 @@ li {
 .token-grid,
 .component-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: var(--twf-space-3);
 }
 
@@ -841,6 +867,40 @@ li {
 
 .mini-timeline {
   width: 100%;
+  display: grid;
+  gap: 8px;
+}
+
+.mini-timeline-top {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.mini-timeline .chip,
+.mini-timeline .count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 22px;
+  border-radius: 999px;
+  padding: 0 8px;
+  background: var(--twf-color-surface-raised);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.mini-timeline .chip {
+  background: var(--twf-color-text);
+  color: var(--twf-color-surface-raised);
+}
+
+.mini-timeline .meta {
+  color: var(--twf-color-text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
 }
 
 .mini-timeline .track {
@@ -1034,6 +1094,90 @@ code {
 
 .liveboard-example p {
   font-size: 0.82rem;
+}
+
+.timeline-example {
+  display: grid;
+  gap: var(--twf-space-3);
+  border: 1px solid var(--twf-color-border-soft);
+  border-radius: var(--twf-radius-lg);
+  padding: var(--twf-space-4);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--twf-color-surface) 82%, var(--twf-color-route-blue) 18%),
+      var(--twf-color-surface-raised)
+    );
+}
+
+.timeline-example-transport,
+.timeline-example-meta,
+.timeline-example-scrubber {
+  display: flex;
+  align-items: center;
+  gap: var(--twf-space-2);
+  min-width: 0;
+}
+
+.timeline-example-transport span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  min-height: 28px;
+  border: 1px solid var(--twf-color-border);
+  border-radius: var(--twf-radius-sm);
+  background: var(--twf-color-surface-raised);
+  color: var(--twf-color-text-muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.timeline-example-transport .active {
+  background: var(--twf-color-text);
+  color: var(--twf-color-surface-raised);
+}
+
+.timeline-example-transport .pill {
+  min-width: auto;
+  padding: 0 10px;
+  border-color: var(--twf-color-text);
+}
+
+.timeline-example-meta {
+  justify-content: space-between;
+}
+
+.timeline-example-meta strong {
+  color: var(--twf-color-text);
+  font-size: 0.9rem;
+}
+
+.timeline-example-meta p,
+.timeline-example-scrubber span {
+  margin: 0;
+  color: var(--twf-color-text-faint);
+  font-size: 0.74rem;
+}
+
+.timeline-example-scrubber {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.timeline-example-track {
+  overflow: hidden;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--twf-color-border-soft);
+}
+
+.timeline-example-track span {
+  display: block;
+  width: 58%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--twf-color-route-blue);
 }
 
 .tradeoff-table {

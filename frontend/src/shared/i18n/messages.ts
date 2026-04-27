@@ -153,6 +153,10 @@ export const messages = {
         destination: "Dingpu",
         direction: "Blue Line · Westbound",
         arrival: "2 min",
+        timelineControl: "Timeline control",
+        timelineSnapshot: "Thu, 4/23, 09:12 PM",
+        timelineStatus: "Live · Updated 53s ago",
+        timelineSource: "TDX LiveBoard feed · 12/30",
       },
       breakpoints: {
         label: "Responsive system",
@@ -242,7 +246,7 @@ export const messages = {
           statChip: ["StatChip", "Topbar service summary behaves like a metric pill pattern."],
           timeline: [
             "TimelineControl",
-            "Playback controls exist but are still dashboard-specific.",
+            "Playback transport, freshness metadata, and scrubber are now one reusable dashboard control pattern.",
           ],
           mapControl: [
             "MapControl",
@@ -427,6 +431,10 @@ export const messages = {
         destination: "頂埔",
         direction: "藍線 · 往西",
         arrival: "2 分",
+        timelineControl: "時間軸控制",
+        timelineSnapshot: "4/23（四）09:12 PM",
+        timelineStatus: "即時 · 更新於 53 秒前",
+        timelineSource: "TDX 即時看板資料 · 12/30",
       },
       breakpoints: {
         label: "Responsive 系統",
@@ -494,7 +502,10 @@ export const messages = {
           tooltip: ["Tooltip", "對密集 icon chrome 有用，但尚未定義。"],
           liveboard: ["LiveBoardEntry", "Station panel 已提供不錯的 row pattern 基礎。"],
           statChip: ["StatChip", "Topbar 服務摘要已接近 metric pill pattern。"],
-          timeline: ["TimelineControl", "播放控制已存在，但仍偏 dashboard-specific。"],
+          timeline: [
+            "TimelineControl",
+            "播放 transport、更新 freshness、scrubber 已整合成可重用的 dashboard control pattern。",
+          ],
           mapControl: ["MapControl", "Map-first chrome 已存在，應維持精簡且情境化。"],
         },
       },

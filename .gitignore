@@ -1,5 +1,7 @@
 .spectra/
 worktrees/
+.DS_Store
+.idea/
 .env
 .env.*
 !.env.example
@@ -9,9 +11,12 @@ frontend/node_modules/
 frontend/playwright-report/
 frontend/test-results/
 frontend/tsconfig.tsbuildinfo
+frontend/.DS_Store
+frontend/scripts/test.html
 frontend/.env
 frontend/.env.*
 !frontend/.env.example
 .gradle/
 build/
 backend/**/build/
+backend/**/data/
