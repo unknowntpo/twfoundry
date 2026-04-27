@@ -8,6 +8,7 @@ import { appConfig } from "@/shared/config/env";
 import { mrtLines, mrtStations } from "../data/mrt-fixtures";
 import { mrtOverlayRegistry } from "../map/overlay-registry";
 import LayerControl from "./LayerControl.vue";
+import MobilePanelSwitch from "./MobilePanelSwitch.vue";
 import MrtMap from "./MrtMap.vue";
 import StationPanel from "./StationPanel.vue";
 
@@ -104,10 +105,7 @@ const timelineTrackFill = computed(() => {
 const isLayerSidebarCollapsed = ref(false);
 const isStationPanelCollapsed = ref(false);
 const isMobileControlsOpen = ref(true);
-const activeMobilePanel = ref<"map" | "layers" | "detail" | "time">("map");
-const activeMobilePanelLabel = computed(() =>
-  t(`dashboard.compactPanels.${activeMobilePanel.value}`),
-);
+const activeMobilePanel = ref<"layers" | "detail" | "time">("detail");
 let liveRefreshTimer: number | undefined;
 let freshnessTicker: number | undefined;
 
@@ -129,9 +127,8 @@ function notifyMapLayoutChanged(): void {
   });
 }
 
-function showMobilePanel(panel: "map" | "layers" | "detail" | "time"): void {
+function showMobilePanel(panel: "layers" | "detail" | "time"): void {
   activeMobilePanel.value = panel;
-  isMobileControlsOpen.value = false;
   if (panel === "detail") {
     isStationPanelCollapsed.value = false;
   }
@@ -139,8 +136,8 @@ function showMobilePanel(panel: "map" | "layers" | "detail" | "time"): void {
   notifyMapLayoutChanged();
 }
 
-function toggleMobileControls(): void {
-  isMobileControlsOpen.value = !isMobileControlsOpen.value;
+function setMobileControlsOpen(open: boolean): void {
+  isMobileControlsOpen.value = open;
   notifyMapLayoutChanged();
 }
 
@@ -373,53 +370,13 @@ watch([timelineMode, liveRefreshIntervalMs, selectedStationId], () => {
         </div>
       </aside>
 
-      <nav
-        class="mobile-controls"
-        :data-open="isMobileControlsOpen"
-        :aria-label="t('dashboard.compactPanels.aria')"
-      >
-        <button
-          type="button"
-          class="mobile-controls-toggle"
-          :aria-expanded="isMobileControlsOpen"
-          @click="toggleMobileControls"
-        >
-          <span>{{ activeMobilePanelLabel }}</span>
-          <span class="mobile-controls-chevron" aria-hidden="true">
-            {{ isMobileControlsOpen ? "⌃" : "⌄" }}
-          </span>
-        </button>
-        <div class="mobile-control-options">
-          <button
-            type="button"
-            :aria-pressed="activeMobilePanel === 'map'"
-            @click="showMobilePanel('map')"
-          >
-            {{ t("dashboard.compactPanels.map") }}
-          </button>
-          <button
-            type="button"
-            :aria-pressed="activeMobilePanel === 'layers'"
-            @click="showMobilePanel('layers')"
-          >
-            {{ t("dashboard.compactPanels.layers") }}
-          </button>
-          <button
-            type="button"
-            :aria-pressed="activeMobilePanel === 'detail'"
-            @click="showMobilePanel('detail')"
-          >
-            {{ t("dashboard.compactPanels.detail") }}
-          </button>
-          <button
-            type="button"
-            :aria-pressed="activeMobilePanel === 'time'"
-            @click="showMobilePanel('time')"
-          >
-            {{ t("dashboard.compactPanels.time") }}
-          </button>
-        </div>
-      </nav>
+      <MobilePanelSwitch
+        class="mobile-panel-switch-shell"
+        :active-panel="activeMobilePanel"
+        :open="isMobileControlsOpen"
+        @select="showMobilePanel"
+        @update:open="setMobileControlsOpen"
+      />
 
       <section class="map-region" :aria-label="t('dashboard.map.dashboard')">
         <MrtMap :lines="visibleLines" :stations="mrtStations" />
@@ -854,7 +811,7 @@ h1 {
   min-width: 0;
 }
 
-.mobile-controls {
+.mobile-panel-switch-shell {
   display: none;
 }
 
@@ -1131,60 +1088,8 @@ h1 {
     min-height: 520px;
   }
 
-  .mobile-controls {
+  .mobile-panel-switch-shell {
     display: grid;
-    gap: 6px;
-    border-bottom: 1px solid var(--border);
-    padding: var(--twf-space-1) var(--twf-space-2);
-    background: var(--white);
-  }
-
-  .mobile-controls-toggle,
-  .mobile-control-options button {
-    min-height: 44px;
-    border: 0;
-    border-radius: var(--twf-radius-sm);
-    background: transparent;
-    color: var(--text-muted);
-    font: inherit;
-    font-size: 0.72rem;
-    font-weight: 800;
-  }
-
-  .mobile-controls-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border: 1px solid var(--border);
-    padding: 0 12px;
-    background: var(--surface);
-    color: var(--text);
-    text-align: left;
-  }
-
-  .mobile-controls-chevron {
-    display: grid;
-    width: 26px;
-    height: 26px;
-    place-items: center;
-    border-radius: 999px;
-    background: var(--white);
-    color: var(--text-muted);
-  }
-
-  .mobile-control-options {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 6px;
-  }
-
-  .mobile-controls[data-open="false"] .mobile-control-options {
-    display: none;
-  }
-
-  .mobile-control-options button[aria-pressed="true"] {
-    background: var(--text);
-    color: var(--white);
   }
 
   .workspace.mobile-panel-layers .layer-sidebar,

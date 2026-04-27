@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import MobilePanelSwitch from "@/features/mrt/components/MobilePanelSwitch.vue";
 import BaseBadge from "@/shared/components/BaseBadge.vue";
 import BaseButton from "@/shared/components/BaseButton.vue";
 import BaseCard from "@/shared/components/BaseCard.vue";
@@ -9,6 +10,8 @@ import BaseSectionLabel from "@/shared/components/BaseSectionLabel.vue";
 import LocaleSwitcher from "@/shared/components/LocaleSwitcher.vue";
 
 const { t } = useI18n();
+const previewMobilePanel = ref<"layers" | "detail" | "time">("detail");
+const previewMobilePanelOpen = ref(true);
 
 const colorTokens = [
   ["Canvas", "--twf-color-canvas", "#F7F3EE", "Warm page background."],
@@ -417,6 +420,45 @@ function componentStatusTone(status: string): "green" | "blue" | "warm" {
             <code>{{ range }}</code>
             <span>{{ behavior }}</span>
           </div>
+        </div>
+      </BaseCard>
+    </section>
+
+    <section class="section-grid" aria-labelledby="responsive-shell-title">
+      <div>
+        <BaseSectionLabel>{{ t("designSystem.responsiveShell.label") }}</BaseSectionLabel>
+        <h2 id="responsive-shell-title">{{ t("designSystem.responsiveShell.title") }}</h2>
+        <p>{{ t("designSystem.responsiveShell.body") }}</p>
+      </div>
+      <BaseCard>
+        <div class="responsive-shell-preview" data-testid="responsive-shell-preview">
+          <div class="responsive-phone">
+            <div class="responsive-topbar">
+              <strong>TWFoundry</strong>
+              <span>{{ t("dashboard.title") }}</span>
+            </div>
+            <MobilePanelSwitch
+              v-model:open="previewMobilePanelOpen"
+              :active-panel="previewMobilePanel"
+              @select="previewMobilePanel = $event"
+            />
+            <div class="responsive-map-surface">
+              <span class="route route-red" />
+              <span class="route route-blue" />
+              <span class="route route-green" />
+              <strong>{{ t("designSystem.responsiveShell.mapArea") }}</strong>
+            </div>
+            <div class="responsive-sheet">
+              <BaseSectionLabel>{{ t("dashboard.compactPanels.detail") }}</BaseSectionLabel>
+              <h3>{{ t("designSystem.responsiveShell.panelTitle") }}</h3>
+              <p>{{ t("designSystem.responsiveShell.panelBody") }}</p>
+            </div>
+          </div>
+          <BasePanel>
+            <BaseSectionLabel>{{ t("designSystem.responsiveShell.contractLabel") }}</BaseSectionLabel>
+            <h3>{{ t("designSystem.responsiveShell.contractTitle") }}</h3>
+            <p>{{ t("designSystem.responsiveShell.contractBody") }}</p>
+          </BasePanel>
         </div>
       </BaseCard>
     </section>
@@ -1190,6 +1232,94 @@ code {
   gap: var(--twf-space-3);
 }
 
+.responsive-shell-preview {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  gap: var(--twf-space-4);
+  align-items: stretch;
+}
+
+.responsive-phone {
+  overflow: hidden;
+  border: 1px solid var(--twf-color-border);
+  border-radius: var(--twf-radius-lg);
+  background: var(--twf-color-surface-raised);
+  box-shadow: var(--twf-shadow-panel);
+}
+
+.responsive-topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--twf-space-2);
+  min-height: 44px;
+  border-bottom: 1px solid var(--twf-color-border);
+  padding: 0 var(--twf-space-3);
+  background: var(--twf-color-surface-raised);
+}
+
+.responsive-topbar span {
+  color: var(--twf-color-text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.responsive-map-surface {
+  position: relative;
+  display: grid;
+  min-height: 210px;
+  place-items: center;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, rgba(47, 111, 214, 0.16) 1px, transparent 1px),
+    linear-gradient(rgba(47, 111, 214, 0.12) 1px, transparent 1px),
+    color-mix(in srgb, var(--twf-color-map-canvas) 68%, var(--twf-color-surface-raised));
+  background-size: 34px 34px;
+}
+
+.responsive-map-surface strong {
+  z-index: 1;
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: color-mix(in srgb, var(--twf-color-surface-raised) 82%, transparent);
+  color: var(--twf-color-text-muted);
+  font-size: 0.72rem;
+}
+
+.route {
+  position: absolute;
+  height: 5px;
+  border-radius: 999px;
+  opacity: 0.88;
+}
+
+.route-red {
+  width: 82%;
+  transform: rotate(36deg);
+  background: var(--twf-color-route-red);
+}
+
+.route-blue {
+  width: 92%;
+  transform: translateY(44px) rotate(-12deg);
+  background: var(--twf-color-route-blue);
+}
+
+.route-green {
+  width: 74%;
+  transform: translateX(56px) translateY(-48px) rotate(76deg);
+  background: var(--twf-color-route-green);
+}
+
+.responsive-sheet {
+  border-top: 1px solid var(--twf-color-border);
+  padding: var(--twf-space-4);
+  background: var(--twf-color-surface);
+}
+
+.responsive-sheet h3 {
+  margin-top: var(--twf-space-2);
+}
+
 .breakpoint-list div {
   grid-template-columns: 100px 110px minmax(0, 1fr);
   border-bottom: 1px solid var(--twf-color-border-soft);
@@ -1222,7 +1352,8 @@ ul {
   .section-grid,
   .token-grid,
   .component-grid,
-  .overlay-grid {
+  .overlay-grid,
+  .responsive-shell-preview {
     grid-template-columns: 1fr;
   }
 

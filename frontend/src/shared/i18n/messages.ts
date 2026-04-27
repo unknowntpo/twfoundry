@@ -159,6 +159,19 @@ export const messages = {
         label: "Responsive system",
         title: "Breakpoints are product behavior",
       },
+      responsiveShell: {
+        label: "Responsive shell",
+        title: "Map is persistent; catalog switches support panels",
+        body: "The compact catalog should not include Map as another tab because the map remains visible. It only switches layers, detail, and time panels.",
+        mapArea: "Persistent map canvas",
+        panelTitle: "Station detail sheet",
+        panelBody:
+          "This area is the scrollable support panel. It changes, while the map stays as the spatial context.",
+        contractLabel: "Vue source of truth",
+        contractTitle: "Design System uses the real component",
+        contractBody:
+          "This preview imports the same MobilePanelSwitch.vue used by the MRT dashboard, so control changes can be applied to the page instead of copied from a static mock.",
+      },
       tradeoffs: {
         label: "Library decision",
         title: "Trade-offs before dependencies",
@@ -433,6 +446,18 @@ export const messages = {
       breakpoints: {
         label: "Responsive 系統",
         title: "Breakpoint 是產品行為",
+      },
+      responsiveShell: {
+        label: "Responsive shell",
+        title: "地圖常駐；catalog 只切換輔助面板",
+        body: "精簡 catalog 不應再放「地圖」tab，因為地圖本來就一直可見。它只負責切換圖層、資訊與時間面板。",
+        mapArea: "常駐地圖畫布",
+        panelTitle: "車站資訊 Sheet",
+        panelBody: "這裡是可捲動的輔助面板。面板內容會切換，但地圖維持空間脈絡。",
+        contractLabel: "Vue source of truth",
+        contractTitle: "Design System 使用真實元件",
+        contractBody:
+          "這個預覽直接 import MRT dashboard 使用的同一個 MobilePanelSwitch.vue，因此調整控制列可以套回真實 Page，而不是從靜態 mock 複製樣式。",
       },
       tradeoffs: {
         label: "Library 決策",
