@@ -1074,6 +1074,7 @@ h1 {
   }
 
   .map-region {
+    grid-row: 2;
     min-height: 0;
     height: min(52vh, 560px);
   }
@@ -1089,11 +1090,13 @@ h1 {
   }
 
   .mobile-panel-switch-shell {
+    grid-row: 1;
     display: grid;
   }
 
   .workspace.mobile-panel-layers .layer-sidebar,
   .workspace.mobile-panel-detail .station-panel {
+    grid-row: 3;
     display: block;
   }
 
