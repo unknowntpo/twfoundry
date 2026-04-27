@@ -817,13 +817,12 @@ h1 {
 
 .timeline {
   display: grid;
-  grid-template-columns: minmax(220px, 280px) minmax(420px, 1fr) minmax(220px, 280px);
+  grid-template-columns: minmax(180px, 260px) minmax(420px, 1fr) minmax(180px, 240px);
   align-items: stretch;
-  gap: 10px;
+  gap: 8px;
   border-top: 1px solid var(--border);
-  padding: 10px 14px 12px;
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--white) 84%, var(--twf-color-route-blue) 16%), var(--white));
+  padding: 10px 14px;
+  background: var(--surface);
   color: var(--text-muted);
   font-size: 0.75rem;
 }
@@ -831,33 +830,39 @@ h1 {
 .timeline-panel {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
-  min-height: 64px;
+  min-height: 78px;
   border: 1px solid var(--border-soft);
-  border-radius: 14px;
-  padding: 10px 12px;
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--surface) 72%, white 28%), var(--white));
-  box-shadow: 0 1px 0 color-mix(in srgb, var(--white) 78%, transparent);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: var(--white);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 7%, transparent);
 }
 
 .timeline-buttons {
   display: inline-flex;
-  gap: 4px;
+  overflow: hidden;
+  gap: 0;
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 3px;
-  background: var(--bg);
+  border-radius: 9px;
+  padding: 0;
+  background: var(--white);
 }
 
 .timeline-buttons button {
-  width: 32px;
+  width: 34px;
   min-height: 32px;
   border: 0;
-  border-radius: 8px;
+  border-radius: 0;
   padding: 0;
   background: transparent;
+  color: var(--text-muted);
+  font-size: 0.86rem;
+}
+
+.timeline-buttons button + button {
+  border-left: 1px solid var(--border-soft);
 }
 
 .timeline-live-toggle {
@@ -868,10 +873,11 @@ h1 {
 .timeline-mode-pill {
   display: flex;
   align-items: center;
-  min-height: 30px;
+  min-height: 28px;
   border-radius: 999px;
-  padding: 0 11px;
-  background: var(--bg);
+  border: 1px solid var(--border-soft);
+  padding: 0 10px;
+  background: var(--surface);
   color: var(--text);
   font-weight: 700;
   white-space: nowrap;
@@ -886,12 +892,11 @@ h1 {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-content: center;
-  gap: 4px;
 }
 
 .timeline-meta-copy {
   display: grid;
-  gap: 3px;
+  gap: 5px;
   min-width: 0;
 }
 
@@ -912,7 +917,8 @@ h1 {
 .timeline-frequency {
   display: grid;
   align-content: center;
-  gap: 8px;
+  justify-items: center;
+  gap: 9px;
   min-width: 0;
 }
 
@@ -928,23 +934,39 @@ h1 {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-content: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .timeline-intervals {
-  display: inline-flex;
-  gap: 6px;
+  display: inline-grid;
+  grid-template-columns: repeat(4, minmax(38px, 1fr));
+  gap: 0;
   min-width: 0;
-  flex-wrap: wrap;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--white);
 }
 
 .interval-button {
-  min-width: 42px;
-  padding-inline: 10px;
+  min-width: 0;
+  min-height: 34px;
+  border: 0;
+  border-radius: 0;
+  padding-inline: 9px;
+  background: transparent;
+}
+
+.interval-button + .interval-button {
+  border-left: 1px solid var(--border-soft);
 }
 
 .interval-button.active {
-  border-color: var(--text);
+  background: var(--text);
+  color: var(--white);
+}
+
+.interval-button:not(.active) {
   color: var(--text);
 }
 
@@ -956,6 +978,13 @@ h1 {
 }
 
 .timeline-position {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  padding: 0 8px;
+  background: var(--surface);
   color: var(--text);
   font-size: 0.7rem;
   font-weight: 700;
@@ -971,8 +1000,8 @@ h1 {
 .timeline-controls-row {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  justify-content: flex-start;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
@@ -982,7 +1011,7 @@ h1 {
 
 .timeline-track {
   grid-area: 1 / 1;
-  height: 6px;
+  height: 7px;
   overflow: hidden;
   border-radius: 999px;
   background: var(--border-soft);
@@ -1009,7 +1038,7 @@ h1 {
 }
 
 .timeline-slider::-webkit-slider-runnable-track {
-  height: 6px;
+  height: 7px;
   background: transparent;
 }
 
@@ -1025,7 +1054,7 @@ h1 {
 }
 
 .timeline-slider::-moz-range-track {
-  height: 6px;
+  height: 7px;
   background: transparent;
 }
 
