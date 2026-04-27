@@ -103,7 +103,11 @@ const timelineTrackFill = computed(() => {
 });
 const isLayerSidebarCollapsed = ref(false);
 const isStationPanelCollapsed = ref(false);
+const isMobileControlsOpen = ref(true);
 const activeMobilePanel = ref<"map" | "layers" | "detail" | "time">("map");
+const activeMobilePanelLabel = computed(() =>
+  t(`dashboard.compactPanels.${activeMobilePanel.value}`),
+);
 let liveRefreshTimer: number | undefined;
 let freshnessTicker: number | undefined;
 
@@ -127,10 +131,16 @@ function notifyMapLayoutChanged(): void {
 
 function showMobilePanel(panel: "map" | "layers" | "detail" | "time"): void {
   activeMobilePanel.value = panel;
+  isMobileControlsOpen.value = false;
   if (panel === "detail") {
     isStationPanelCollapsed.value = false;
   }
 
+  notifyMapLayoutChanged();
+}
+
+function toggleMobileControls(): void {
+  isMobileControlsOpen.value = !isMobileControlsOpen.value;
   notifyMapLayoutChanged();
 }
 
@@ -363,40 +373,57 @@ watch([timelineMode, liveRefreshIntervalMs, selectedStationId], () => {
         </div>
       </aside>
 
+      <nav
+        class="mobile-controls"
+        :data-open="isMobileControlsOpen"
+        :aria-label="t('dashboard.compactPanels.aria')"
+      >
+        <button
+          type="button"
+          class="mobile-controls-toggle"
+          :aria-expanded="isMobileControlsOpen"
+          @click="toggleMobileControls"
+        >
+          <span>{{ activeMobilePanelLabel }}</span>
+          <span class="mobile-controls-chevron" aria-hidden="true">
+            {{ isMobileControlsOpen ? "⌃" : "⌄" }}
+          </span>
+        </button>
+        <div class="mobile-control-options">
+          <button
+            type="button"
+            :aria-pressed="activeMobilePanel === 'map'"
+            @click="showMobilePanel('map')"
+          >
+            {{ t("dashboard.compactPanels.map") }}
+          </button>
+          <button
+            type="button"
+            :aria-pressed="activeMobilePanel === 'layers'"
+            @click="showMobilePanel('layers')"
+          >
+            {{ t("dashboard.compactPanels.layers") }}
+          </button>
+          <button
+            type="button"
+            :aria-pressed="activeMobilePanel === 'detail'"
+            @click="showMobilePanel('detail')"
+          >
+            {{ t("dashboard.compactPanels.detail") }}
+          </button>
+          <button
+            type="button"
+            :aria-pressed="activeMobilePanel === 'time'"
+            @click="showMobilePanel('time')"
+          >
+            {{ t("dashboard.compactPanels.time") }}
+          </button>
+        </div>
+      </nav>
+
       <section class="map-region" :aria-label="t('dashboard.map.dashboard')">
         <MrtMap :lines="visibleLines" :stations="mrtStations" />
       </section>
-
-      <nav class="mobile-controls" :aria-label="t('dashboard.compactPanels.aria')">
-        <button
-          type="button"
-          :aria-pressed="activeMobilePanel === 'map'"
-          @click="showMobilePanel('map')"
-        >
-          {{ t("dashboard.compactPanels.map") }}
-        </button>
-        <button
-          type="button"
-          :aria-pressed="activeMobilePanel === 'layers'"
-          @click="showMobilePanel('layers')"
-        >
-          {{ t("dashboard.compactPanels.layers") }}
-        </button>
-        <button
-          type="button"
-          :aria-pressed="activeMobilePanel === 'detail'"
-          @click="showMobilePanel('detail')"
-        >
-          {{ t("dashboard.compactPanels.detail") }}
-        </button>
-        <button
-          type="button"
-          :aria-pressed="activeMobilePanel === 'time'"
-          @click="showMobilePanel('time')"
-        >
-          {{ t("dashboard.compactPanels.time") }}
-        </button>
-      </nav>
 
       <StationPanel
         class="station-panel"
@@ -1061,12 +1088,18 @@ h1 {
 }
 
 @media (max-width: 1023px) {
+  .dashboard-shell {
+    min-height: 100svh;
+    overflow: auto;
+  }
+
   .workspace {
     --layers-width: 0px;
     --station-width: auto;
 
+    flex: none;
     grid-template-columns: 1fr;
-    grid-template-rows: minmax(520px, 1fr) auto auto;
+    grid-template-rows: auto minmax(340px, 52vh) auto;
   }
 
   .topbar {
@@ -1084,18 +1117,30 @@ h1 {
   }
 
   .map-region {
+    min-height: 0;
+    height: min(52vh, 560px);
+  }
+
+  .workspace.mobile-panel-map {
+    flex: 1;
+    grid-template-rows: auto minmax(520px, 1fr);
+  }
+
+  .workspace.mobile-panel-map .map-region {
+    height: auto;
     min-height: 520px;
   }
 
   .mobile-controls {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    border-top: 1px solid var(--border);
+    gap: 6px;
+    border-bottom: 1px solid var(--border);
     padding: var(--twf-space-1) var(--twf-space-2);
     background: var(--white);
   }
 
-  .mobile-controls button {
+  .mobile-controls-toggle,
+  .mobile-control-options button {
     min-height: 44px;
     border: 0;
     border-radius: var(--twf-radius-sm);
@@ -1106,7 +1151,38 @@ h1 {
     font-weight: 800;
   }
 
-  .mobile-controls button[aria-pressed="true"] {
+  .mobile-controls-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid var(--border);
+    padding: 0 12px;
+    background: var(--surface);
+    color: var(--text);
+    text-align: left;
+  }
+
+  .mobile-controls-chevron {
+    display: grid;
+    width: 26px;
+    height: 26px;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--white);
+    color: var(--text-muted);
+  }
+
+  .mobile-control-options {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .mobile-controls[data-open="false"] .mobile-control-options {
+    display: none;
+  }
+
+  .mobile-control-options button[aria-pressed="true"] {
     background: var(--text);
     color: var(--white);
   }
@@ -1119,6 +1195,8 @@ h1 {
   .workspace.mobile-panel-layers .layer-sidebar {
     border-top: 1px solid var(--border);
     border-right: 0;
+    overflow: auto;
+    max-height: min(44vh, 520px);
   }
 
   .workspace.mobile-panel-layers .sidebar-content {
@@ -1126,13 +1204,16 @@ h1 {
   }
 
   .workspace.mobile-panel-detail .station-panel {
-    min-height: auto;
+    min-height: 280px;
+    max-height: min(44vh, 520px);
+    overflow: auto;
   }
 
   .workspace.mobile-panel-time + .timeline {
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--twf-space-2);
+    max-height: none;
     padding: var(--twf-space-2);
   }
 
