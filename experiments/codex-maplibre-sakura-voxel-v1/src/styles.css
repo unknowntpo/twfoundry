@@ -91,10 +91,14 @@ button {
   top: 22px;
   left: 22px;
   width: min(338px, calc(100vw - 44px));
+  max-height: calc(100vh - 148px);
   padding: 18px;
+  overflow-y: auto;
   transition:
     transform 220ms ease,
     opacity 180ms ease;
+  scrollbar-color: rgba(225, 107, 140, 0.42) transparent;
+  scrollbar-width: thin;
 }
 
 .hud-right {
@@ -229,8 +233,8 @@ button {
 
 .pipeline-strip {
   display: grid;
-  gap: 7px;
-  margin-top: 16px;
+  gap: 6px;
+  margin-top: 14px;
 }
 
 .pipeline-node,
@@ -270,8 +274,8 @@ button {
   align-items: center;
   gap: 10px;
   width: 100%;
-  min-height: 44px;
-  padding: 8px 10px;
+  min-height: 39px;
+  padding: 7px 10px;
   border-radius: 12px;
   text-align: left;
 }
@@ -328,8 +332,8 @@ button {
   display: grid;
   grid-template-columns: 1.3fr 0.8fr 0.8fr;
   gap: 8px;
-  margin-top: 12px;
-  padding: 10px;
+  margin-top: 10px;
+  padding: 9px;
   border-radius: 14px;
   background:
     rgba(255, 250, 252, 0.84);
@@ -359,7 +363,34 @@ button {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
-  margin-top: 12px;
+  margin-top: 8px;
+}
+
+.panel-domain {
+  margin-top: 10px;
+}
+
+.domain-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 7px;
+  padding: 0 2px;
+}
+
+.domain-heading span {
+  color: rgba(126, 74, 96, 0.72);
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+}
+
+.domain-heading small {
+  color: rgba(126, 74, 96, 0.58);
+  font-size: 10px;
+  font-weight: 700;
+  text-align: right;
 }
 
 .layer-pill {

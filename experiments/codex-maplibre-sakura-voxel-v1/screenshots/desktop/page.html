@@ -97,10 +97,14 @@ button {
   top: 22px;
   left: 22px;
   width: min(338px, calc(100vw - 44px));
+  max-height: calc(100vh - 148px);
   padding: 18px;
+  overflow-y: auto;
   transition:
     transform 220ms ease,
     opacity 180ms ease;
+  scrollbar-color: rgba(225, 107, 140, 0.42) transparent;
+  scrollbar-width: thin;
 }
 
 .hud-right {
@@ -235,8 +239,8 @@ button {
 
 .pipeline-strip {
   display: grid;
-  gap: 7px;
-  margin-top: 16px;
+  gap: 6px;
+  margin-top: 14px;
 }
 
 .pipeline-node,
@@ -276,8 +280,8 @@ button {
   align-items: center;
   gap: 10px;
   width: 100%;
-  min-height: 44px;
-  padding: 8px 10px;
+  min-height: 39px;
+  padding: 7px 10px;
   border-radius: 12px;
   text-align: left;
 }
@@ -334,8 +338,8 @@ button {
   display: grid;
   grid-template-columns: 1.3fr 0.8fr 0.8fr;
   gap: 8px;
-  margin-top: 12px;
-  padding: 10px;
+  margin-top: 10px;
+  padding: 9px;
   border-radius: 14px;
   background:
     rgba(255, 250, 252, 0.84);
@@ -365,7 +369,34 @@ button {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
-  margin-top: 12px;
+  margin-top: 8px;
+}
+
+.panel-domain {
+  margin-top: 10px;
+}
+
+.domain-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 7px;
+  padding: 0 2px;
+}
+
+.domain-heading span {
+  color: rgba(126, 74, 96, 0.72);
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+}
+
+.domain-heading small {
+  color: rgba(126, 74, 96, 0.58);
+  font-size: 10px;
+  font-weight: 700;
+  text-align: right;
 }
 
 .layer-pill {
@@ -646,8 +677,8 @@ button {
 }
 </style></head>
   <body>
-    <div id="app" data-v-app=""><main class="app-shell"><div class="world-stage" aria-label="Sakura voxel Taipei 3D scene"><canvas data-engine="three.js r176" width="1280" height="612" style="display: block; touch-action: none; width: 1280px; height: 612px;"></canvas></div><button class="panel-toggle panel-toggle-left hidden" type="button" aria-label="Open data layers panel"> Layers </button><button class="panel-toggle panel-toggle-right hidden" type="button" aria-label="Open ontology panel"> Object </button><section class="hud hud-left"><button class="collapse-button collapse-left" type="button" aria-label="Collapse data layers panel"> ‹ </button><div class="brand-block"><div class="brand-title">TWFoundry</div><div class="brand-subtitle">SAKURA VOXEL TAIPEI · MAPLIBRE READY</div></div><div class="pipeline-strip"><button class="pipeline-node active" type="button"><span class="node-dot"></span><span class="node-copy"><strong>MapLibre tiles</strong><b>tiles</b><small>16 chunks</small></span></button><button class="pipeline-node" type="button"><span class="node-dot"></span><span class="node-copy"><strong>visible chunks</strong><b>chunks</b><small>9 visible</small></span></button><button class="pipeline-node" type="button"><span class="node-dot"></span><span class="node-copy"><strong>observations</strong><b>obs</b><small>128 rows</small></span></button><button class="pipeline-node" type="button"><span class="node-dot"></span><span class="node-copy"><strong>ontology objects</strong><b>objects</b><small>22 objects</small></span></button><button class="pipeline-node" type="button"><span class="node-dot"></span><span class="node-copy"><strong>voxel entities</strong><b>voxels</b><small>812 blocks</small></span></button></div><div class="hud-section compact-readout"><div><span>Focus</span><strong>z14 / x13625 / y6194</strong></div><div><span>Visible chunks</span><strong>9</strong></div><div><span>Voxel entities</span><strong>812</strong></div></div><div class="layer-stack"><button class="layer-pill active" type="button"><span class="layer-swatch" style="background: rgb(88, 178, 220);"></span><span class="layer-main"><strong>Tile chunks</strong><small>TILE · ON</small></span></button><button class="layer-pill active" type="button"><span class="layer-swatch" style="background: rgb(225, 107, 140);"></span><span class="layer-main"><strong>MRT routes</strong><small>TDX · ON</small></span></button><button class="layer-pill active" type="button"><span class="layer-swatch" style="background: rgb(129, 199, 212);"></span><span class="layer-main"><strong>Rain cells</strong><small>RAIN · ON</small></span></button><button class="layer-pill active" type="button"><span class="layer-swatch" style="background: rgb(255, 177, 27);"></span><span class="layer-main"><strong>PM2.5 haze</strong><small>AIR · ON</small></span></button><button class="layer-pill active" type="button"><span class="layer-swatch" style="background: rgb(180, 129, 187);"></span><span class="layer-main"><strong>Incidents</strong><small>INC · ON</small></span></button></div></section><section class="hud hud-right"><button class="collapse-button collapse-right" type="button" aria-label="Collapse ontology panel"> › </button><div class="object-kicker">ONTOLOGY OBJECT</div><div class="object-title-row"><div><h1>Train R22</h1><p>Train · TDX MRT</p></div><span class="status-chip">live</span></div><p class="object-summary">淡水信義線南向列車，接近中山站。</p><div class="object-grid"><button class="object-token active" type="button">Train</button><button class="object-token" type="button">Station</button><button class="object-token" type="button">Rainfall Cell</button><button class="object-token" type="button">PM2.5 Sensor</button><button class="object-token" type="button">Incident</button></div><div class="object-list"><div><span>Properties</span><p>route: Tamsui-Xinyi</p><p>next_stop: Zhongshan</p><p>load: 67%</p><p>eta: 2 min</p></div><div><span>Relationships</span><p>belongs_to Route R</p><p>near Rain Cell R-042</p><p>affected_by Incident I-237</p></div></div></section><section class="hud hud-top-right"><div class="corner-big">VOXEL</div><div class="corner-small">MINIATURE · WORLD</div></section><section class="timeline-hud"><button class="round-control" type="button">II</button><button class="live-chip active" type="button">live · 11s ago</button><div class="time-readout"><strong>10:20</strong><small>worldTime controls observations</small></div><input class="time-slider" type="range" min="0" max="1439" value="620" style=""><div class="speed-group"><button class="speed-button" type="button">1x </button><button class="speed-button active" type="button">15x </button><button class="speed-button" type="button">60x </button><button class="speed-button" type="button">300x </button></div></section></main></div>
-    <script type="module" src="/src/main.js?t=1777475653690"></script>
+    <div id="app" data-v-app=""><main class="app-shell"><div class="world-stage" aria-label="Sakura voxel Taipei 3D scene"><canvas data-engine="three.js r176" width="1280" height="612" style="display: block; touch-action: none; width: 1280px; height: 612px;"></canvas></div><button class="panel-toggle panel-toggle-left hidden" type="button" aria-label="Open data layers panel"> Overlays </button><button class="panel-toggle panel-toggle-right hidden" type="button" aria-label="Open ontology panel"> Object </button><section class="hud hud-left"><button class="collapse-button collapse-left" type="button" aria-label="Collapse data layers panel"> ‹ </button><div class="brand-block"><div class="brand-title">TWFoundry</div><div class="brand-subtitle">SAKURA VOXEL TAIPEI · MAPLIBRE READY</div></div><div class="pipeline-strip"><button class="pipeline-node active" type="button"><span class="node-dot"></span><span class="node-copy"><strong>MapLibre tiles</strong><b>tiles</b><small>16 chunks</small></span></button><button class="pipeline-node" type="button"><span class="node-dot"></span><span class="node-copy"><strong>visible chunks</strong><b>chunks</b><small>9 visible</small></span></button><button class="pipeline-node" type="button"><span class="node-dot"></span><span class="node-copy"><strong>observations</strong><b>obs</b><small>128 rows</small></span></button><button class="pipeline-node" type="button"><span class="node-dot"></span><span class="node-copy"><strong>ontology objects</strong><b>objects</b><small>22 objects</small></span></button><button class="pipeline-node" type="button"><span class="node-dot"></span><span class="node-copy"><strong>voxel entities</strong><b>voxels</b><small>812 blocks</small></span></button></div><div class="hud-section compact-readout"><div><span>Focus</span><strong>z14 / x13625 / y6194</strong></div><div><span>Visible chunks</span><strong>9</strong></div><div><span>Voxel entities</span><strong>812</strong></div></div><div class="panel-domain overlay-domain"><div class="domain-heading"><span>OVERLAYS</span><small>4 active</small></div></div><div class="layer-stack overlay-stack"><button class="layer-pill active" type="button"><span class="layer-swatch" style="background: rgb(225, 107, 140);"></span><span class="layer-main"><strong>Taipei Metro</strong><small>TDX · ON</small></span></button><button class="layer-pill active" type="button"><span class="layer-swatch" style="background: rgb(129, 199, 212);"></span><span class="layer-main"><strong>Rainfall cells</strong><small>CWA · ON</small></span></button><button class="layer-pill active" type="button"><span class="layer-swatch" style="background: rgb(255, 177, 27);"></span><span class="layer-main"><strong>PM2.5 haze</strong><small>EPA · ON</small></span></button><button class="layer-pill active" type="button"><span class="layer-swatch" style="background: rgb(180, 129, 187);"></span><span class="layer-main"><strong>Incidents</strong><small>OPS · ON</small></span></button></div></section><section class="hud hud-right"><button class="collapse-button collapse-right" type="button" aria-label="Collapse ontology panel"> › </button><div class="object-kicker">ONTOLOGY OBJECT</div><div class="object-title-row"><div><h1>Train R22</h1><p>Train · TDX MRT</p></div><span class="status-chip">live</span></div><p class="object-summary">淡水信義線南向列車，接近中山站。</p><div class="object-grid"><button class="object-token active" type="button">Train</button><button class="object-token" type="button">Station</button><button class="object-token" type="button">Rainfall Cell</button><button class="object-token" type="button">PM2.5 Sensor</button><button class="object-token" type="button">Incident</button></div><div class="object-list"><div><span>Properties</span><p>route: Tamsui-Xinyi</p><p>next_stop: Zhongshan</p><p>load: 67%</p><p>eta: 2 min</p></div><div><span>Relationships</span><p>belongs_to Route R</p><p>near Rain Cell R-042</p><p>affected_by Incident I-237</p></div></div></section><section class="hud hud-top-right"><div class="corner-big">VOXEL</div><div class="corner-small">MINIATURE · WORLD</div></section><section class="timeline-hud"><button class="round-control" type="button">II</button><button class="live-chip active" type="button">live · 11s ago</button><div class="time-readout"><strong>10:20</strong><small>worldTime controls observations</small></div><input class="time-slider" type="range" min="0" max="1439" value="620" style=""><div class="speed-group"><button class="speed-button" type="button">1x </button><button class="speed-button active" type="button">15x </button><button class="speed-button" type="button">60x </button><button class="speed-button" type="button">300x </button></div></section></main></div>
+    <script type="module" src="/src/main.js?t=1777476985883"></script>
   
 
 </body></html>

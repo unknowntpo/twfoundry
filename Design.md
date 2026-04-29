@@ -362,11 +362,19 @@ geospatial tiles
   -> interactive voxel operational world
 ```
 
-## Data Layers
+## Overlay / Data Layers
 
-使用者可以開關資料層。資料層是 voxel world 中不同類型的 entities / volumes / signals。
+Overlay 是使用者可以開關的 domain visual layer。它不是 ontology object 本身，而是把一組 objects / observations 投影到 voxel world 的視覺層。
 
-第一階段資料層：
+```text
+observations / ontology objects
+  -> overlay projection
+  -> voxel entities / volumes / signals
+```
+
+使用者開關 overlay 時，是控制該 domain 的視覺投影是否顯示；不是刪除資料，也不是切換 MapLibre tile backbone。
+
+第一階段 overlays：
 
 - Taipei Metro
 - Rainfall
@@ -380,6 +388,13 @@ geospatial tiles
 - 相關 voxel entities 不顯示。
 - ontology object 不刪除。
 - inspector 若正在查看被隱藏 object，應顯示該 object 目前 layer hidden。
+
+UI 規則：
+
+- Overlay toggle 區塊必須明確標示 `OVERLAYS`。
+- MapLibre tiles / chunks 屬於 geospatial backbone，不應出現在主要 overlay toggle 區塊裡。
+- Tile / chunk debug 可以放在 pipeline 或 advanced diagnostic context，不應成為日常操作按鈕。
+- 每個 overlay toggle 要清楚顯示 domain name、source shorthand 與 ON/OFF state。
 
 ## Timeline
 

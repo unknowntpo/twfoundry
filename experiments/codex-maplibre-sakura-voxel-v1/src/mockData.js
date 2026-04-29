@@ -38,10 +38,10 @@ export const pipelineSteps = [
 
 export const layers = [
   { key: 'tiles', label: 'Tile chunks', color: '#58B2DC', short: 'TILE' },
-  { key: 'mrt', label: 'MRT routes', color: '#E16B8C', short: 'TDX' },
-  { key: 'rain', label: 'Rain cells', color: '#81C7D4', short: 'RAIN' },
-  { key: 'pm25', label: 'PM2.5 haze', color: '#FFB11B', short: 'AIR' },
-  { key: 'incident', label: 'Incidents', color: '#B481BB', short: 'INC' },
+  { key: 'mrt', label: 'Taipei Metro', color: '#E16B8C', short: 'TDX' },
+  { key: 'rain', label: 'Rainfall cells', color: '#81C7D4', short: 'CWA' },
+  { key: 'pm25', label: 'PM2.5 haze', color: '#FFB11B', short: 'EPA' },
+  { key: 'incident', label: 'Incidents', color: '#B481BB', short: 'OPS' },
 ];
 
 export const ontologyObjects = [

@@ -37,6 +37,8 @@ const freshnessLabel = computed(() => {
 });
 
 const activePipeline = computed(() => pipelineSteps.find((step) => step.key === selectedPipeline.value) ?? pipelineSteps[0]);
+const overlayLayers = computed(() => layers.filter((layer) => layer.key !== 'tiles'));
+const activeOverlayCount = computed(() => overlayLayers.value.filter((layer) => layerState[layer.key]).length);
 
 function toggleLayer(key) {
   layerState[key] = !layerState[key];
@@ -107,7 +109,7 @@ onBeforeUnmount(() => {
       aria-label="Open data layers panel"
       @click="leftCollapsed = false"
     >
-      Layers
+      Overlays
     </button>
 
     <button
@@ -168,9 +170,16 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <div class="layer-stack">
+      <div class="panel-domain overlay-domain">
+        <div class="domain-heading">
+          <span>OVERLAYS</span>
+          <small>{{ activeOverlayCount }} active</small>
+        </div>
+      </div>
+
+      <div class="layer-stack overlay-stack">
         <button
-          v-for="layer in layers"
+          v-for="layer in overlayLayers"
           :key="layer.key"
           class="layer-pill"
           :class="{ active: layerState[layer.key] }"

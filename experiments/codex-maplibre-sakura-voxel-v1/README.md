@@ -39,6 +39,7 @@
 - 右側 Ontology Object 按鈕現在會呼叫 `focusObject(id)`，把 voxel world focus 到對應 train / station / rain cell / AQMS / incident anchor。
 - 3D 物件建立時會註冊 object anchor，讓 panel selection 與 canvas click 可以雙向同步。
 - 左右兩側 HUD panel 可折疊，收合後只保留 `Layers` / `Object` 小膠囊按鈕，減少遮擋 voxel world。
+- 左側控制只把 `Taipei Metro`、`Rainfall cells`、`PM2.5 haze`、`Incidents` 放在 `OVERLAYS`。`Tile chunks` 是 MapLibre-ready tile preview，保留在 pipeline / diagnostic 語意裡，不作為日常 overlay toggle。
 
 ## How To Run
 
