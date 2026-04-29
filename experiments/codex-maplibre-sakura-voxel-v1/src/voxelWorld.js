@@ -110,6 +110,8 @@ export class VoxelWorld {
     this.clock = new THREE.Clock();
     this.raycaster = new THREE.Raycaster();
     this.pointer = new THREE.Vector2();
+    this.pointerDown = null;
+    this.suppressNextClick = false;
     this.layers = {};
     this.clickables = [];
     this.trains = [];
@@ -660,11 +662,17 @@ export class VoxelWorld {
 
   bindEvents() {
     this.onResize = () => this.resize();
+    this.onPointerDown = (event) => this.handlePointerDown(event);
+    this.onPointerUp = (event) => this.handlePointerUp(event);
     this.onPointerMove = (event) => this.updatePointer(event);
     this.onClick = (event) => this.handleClick(event);
+    this.onContextMenu = (event) => event.preventDefault();
     window.addEventListener('resize', this.onResize);
+    this.renderer.domElement.addEventListener('pointerdown', this.onPointerDown);
+    this.renderer.domElement.addEventListener('pointerup', this.onPointerUp);
     this.renderer.domElement.addEventListener('pointermove', this.onPointerMove);
     this.renderer.domElement.addEventListener('click', this.onClick);
+    this.renderer.domElement.addEventListener('contextmenu', this.onContextMenu);
   }
 
   registerAnchor(id, object3d) {
@@ -678,7 +686,29 @@ export class VoxelWorld {
     this.pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
   }
 
+  handlePointerDown(event) {
+    this.pointerDown = {
+      x: event.clientX,
+      y: event.clientY,
+      button: event.button,
+    };
+    this.suppressNextClick = false;
+  }
+
+  handlePointerUp(event) {
+    if (!this.pointerDown) return;
+    const dx = event.clientX - this.pointerDown.x;
+    const dy = event.clientY - this.pointerDown.y;
+    const distance = Math.hypot(dx, dy);
+    this.suppressNextClick = distance > 7;
+    this.pointerDown = null;
+  }
+
   handleClick(event) {
+    if (this.suppressNextClick) {
+      this.suppressNextClick = false;
+      return;
+    }
     this.updatePointer(event);
     this.raycaster.setFromCamera(this.pointer, this.camera);
     const hits = this.raycaster.intersectObjects(this.clickables, true);
@@ -839,8 +869,11 @@ export class VoxelWorld {
   destroy() {
     cancelAnimationFrame(this.frame);
     window.removeEventListener('resize', this.onResize);
+    this.renderer.domElement.removeEventListener('pointerdown', this.onPointerDown);
+    this.renderer.domElement.removeEventListener('pointerup', this.onPointerUp);
     this.renderer.domElement.removeEventListener('pointermove', this.onPointerMove);
     this.renderer.domElement.removeEventListener('click', this.onClick);
+    this.renderer.domElement.removeEventListener('contextmenu', this.onContextMenu);
     this.renderer.dispose();
     this.container.innerHTML = '';
   }

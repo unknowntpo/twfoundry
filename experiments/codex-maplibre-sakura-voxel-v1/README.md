@@ -33,9 +33,11 @@
 - 依照新的設計回饋，HUD / inspector / timeline 改回柔和紙感粉色 panel，不再強調水晶或琉璃材質；水晶感只保留在 voxel 與資料 volume。
 - OrbitControls 明確啟用 pan、rotate、zoom，並把 `maxDistance` 放寬到 205，讓視角不被鎖在正中央。
 - Camera controls 改成左鍵拖曳平移、右鍵拖曳旋轉、滾輪縮放，讓使用者可以把掌中世界往上、下、左、右移動，而不是只能繞中心旋轉。
+- 長距離拖曳會被判定為 camera gesture，不再在 pointer release 後觸發 canvas click / object focus，避免拖動時突然跳到另一個物件。
 - Timeline 的 `worldMinutes` 現在會驅動 Three.js 天空、霧、ambient light、hemisphere light、sun、rose fill 與 exposure，能呈現白天、黃昏與夜晚。
 - 右側 Ontology Object 按鈕現在會呼叫 `focusObject(id)`，把 voxel world focus 到對應 train / station / rain cell / AQMS / incident anchor。
 - 3D 物件建立時會註冊 object anchor，讓 panel selection 與 canvas click 可以雙向同步。
+- 左右兩側 HUD panel 可折疊，收合後只保留 `Layers` / `Object` 小膠囊按鈕，減少遮擋 voxel world。
 
 ## How To Run
 

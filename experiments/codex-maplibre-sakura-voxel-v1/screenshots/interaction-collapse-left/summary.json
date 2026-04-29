@@ -8,14 +8,14 @@
     "height": 720
   },
   "timings": {
-    "gotoMs": 329.561958,
-    "screenshotMs": 5185.159542,
-    "totalMs": 7442.528708
+    "gotoMs": 315.15820800000006,
+    "screenshotMs": 2110.3253750000003,
+    "totalMs": 11570.339666
   },
   "artifacts": {
-    "screenshot": "/Users/unknowntpo/repo/unknowntpo/twfoundry/claude-desktop-mockup/experiments/codex-maplibre-sakura-voxel-v1/screenshots/desktop/screenshot.png",
-    "html": "/Users/unknowntpo/repo/unknowntpo/twfoundry/claude-desktop-mockup/experiments/codex-maplibre-sakura-voxel-v1/screenshots/desktop/page.html",
-    "summary": "/Users/unknowntpo/repo/unknowntpo/twfoundry/claude-desktop-mockup/experiments/codex-maplibre-sakura-voxel-v1/screenshots/desktop/summary.json"
+    "screenshot": "/Users/unknowntpo/repo/unknowntpo/twfoundry/claude-desktop-mockup/experiments/codex-maplibre-sakura-voxel-v1/screenshots/interaction-collapse-left/screenshot.png",
+    "html": "/Users/unknowntpo/repo/unknowntpo/twfoundry/claude-desktop-mockup/experiments/codex-maplibre-sakura-voxel-v1/screenshots/interaction-collapse-left/page.html",
+    "summary": "/Users/unknowntpo/repo/unknowntpo/twfoundry/claude-desktop-mockup/experiments/codex-maplibre-sakura-voxel-v1/screenshots/interaction-collapse-left/summary.json"
   },
   "consoleMessages": [
     {
@@ -75,5 +75,5 @@
   ],
   "pageErrors": [],
   "failedRequests": [],
-  "visibleTextSample": "Layers\nObject\n‹\nTWFoundry\nSAKURA VOXEL TAIPEI · MAPLIBRE READY\nMapLibre tiles\n16 chunks\nvisible chunks\n9 visible\nobservations\n128 rows\nontology objects\n22 objects\nvoxel entities\n812 blocks\nFOCUS\nz14 / x13625 / y6194\nVISIBLE CHUNKS\n9\nVOXEL ENTITIES\n812\nTile chunks\nTILE · ON\nMRT routes\nTDX · ON\nRain cells\nRAIN · ON\nPM2.5 haze\nAIR · ON\nIncidents\nINC · ON\n›\nONTOLOGY OBJECT\nTrain R22\n\nTrain · TDX MRT\n\nLIVE\n\n淡水信義線南向列車，接近中山站。\n\nTrain\nStation\nRainfall Cell\nPM2.5 Sensor\nIncident\nPROPERTIES\n\nroute: Tamsui-Xinyi\n\nnext_stop: Zhongshan\n\nload: 67%\n\neta: 2 min\n\nRELATIONSHIPS\n\nbelongs_to Route R\n\nnear Rain Cell R-042\n\naffected_by Incident I-237\n\nVOXEL\nMINIATURE · WORLD\nII\nLIVE · 11S AGO\n10:22\nworldTime controls observations\n1x\n15x\n60x\n300x"
+  "visibleTextSample": "Layers\nObject\n‹\nTWFoundry\nSAKURA VOXEL TAIPEI · MAPLIBRE READY\nMapLibre tiles\n16 chunks\nvisible chunks\n9 visible\nobservations\n128 rows\nontology objects\n22 objects\nvoxel entities\n812 blocks\nFOCUS\nz14 / x13625 / y6194\nVISIBLE CHUNKS\n9\nVOXEL ENTITIES\n812\nTile chunks\nTILE · ON\nMRT routes\nTDX · ON\nRain cells\nRAIN · ON\nPM2.5 haze\nAIR · ON\nIncidents\nINC · ON\n›\nONTOLOGY OBJECT\nTrain R22\n\nTrain · TDX MRT\n\nLIVE\n\n淡水信義線南向列車，接近中山站。\n\nTrain\nStation\nRainfall Cell\nPM2.5 Sensor\nIncident\nPROPERTIES\n\nroute: Tamsui-Xinyi\n\nnext_stop: Zhongshan\n\nload: 67%\n\neta: 2 min\n\nRELATIONSHIPS\n\nbelongs_to Route R\n\nnear Rain Cell R-042\n\naffected_by Incident I-237\n\nVOXEL\nMINIATURE · WORLD\nII\nLIVE · 12S AGO\n10:35\nworldTime controls observations\n1x\n15x\n60x\n300x"
 }

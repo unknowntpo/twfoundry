@@ -9,6 +9,8 @@ const selectedObject = ref(defaultObject);
 const selectedPipeline = ref('tiles');
 const isPlaying = ref(true);
 const isLive = ref(true);
+const leftCollapsed = ref(false);
+const rightCollapsed = ref(false);
 const speed = ref(15);
 const worldMinutes = ref(610);
 const stats = reactive({
@@ -98,7 +100,36 @@ onBeforeUnmount(() => {
   <main class="app-shell">
     <div ref="worldEl" class="world-stage" aria-label="Sakura voxel Taipei 3D scene"></div>
 
-    <section class="hud hud-left">
+    <button
+      class="panel-toggle panel-toggle-left"
+      :class="{ hidden: !leftCollapsed }"
+      type="button"
+      aria-label="Open data layers panel"
+      @click="leftCollapsed = false"
+    >
+      Layers
+    </button>
+
+    <button
+      class="panel-toggle panel-toggle-right"
+      :class="{ hidden: !rightCollapsed }"
+      type="button"
+      aria-label="Open ontology panel"
+      @click="rightCollapsed = false"
+    >
+      Object
+    </button>
+
+    <section class="hud hud-left" :class="{ collapsed: leftCollapsed }">
+      <button
+        class="collapse-button collapse-left"
+        type="button"
+        aria-label="Collapse data layers panel"
+        @click="leftCollapsed = true"
+      >
+        ‹
+      </button>
+
       <div class="brand-block">
         <div class="brand-title">TWFoundry</div>
         <div class="brand-subtitle">SAKURA VOXEL TAIPEI · MAPLIBRE READY</div>
@@ -155,7 +186,16 @@ onBeforeUnmount(() => {
       </div>
     </section>
 
-    <section class="hud hud-right">
+    <section class="hud hud-right" :class="{ collapsed: rightCollapsed }">
+      <button
+        class="collapse-button collapse-right"
+        type="button"
+        aria-label="Collapse ontology panel"
+        @click="rightCollapsed = true"
+      >
+        ›
+      </button>
+
       <div class="object-kicker">ONTOLOGY OBJECT</div>
       <div class="object-title-row">
         <div>
