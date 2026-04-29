@@ -8,9 +8,9 @@
     "height": 720
   },
   "timings": {
-    "gotoMs": 329.561958,
-    "screenshotMs": 5185.159542,
-    "totalMs": 7442.528708
+    "gotoMs": 348.00087499999995,
+    "screenshotMs": 4228.457542,
+    "totalMs": 6102.729542
   },
   "artifacts": {
     "screenshot": "/Users/unknowntpo/repo/unknowntpo/twfoundry/claude-desktop-mockup/experiments/codex-maplibre-sakura-voxel-v1/screenshots/desktop/screenshot.png",
@@ -38,7 +38,7 @@
     },
     {
       "type": "warning",
-      "text": "[.WebGL-0x12c001c1e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+      "text": "[.WebGL-0x13c001c5a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
       "location": {
         "url": "http://localhost:5220/",
         "lineNumber": 0,
@@ -47,7 +47,7 @@
     },
     {
       "type": "warning",
-      "text": "[.WebGL-0x12c001c1e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+      "text": "[.WebGL-0x13c001c5a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
       "location": {
         "url": "http://localhost:5220/",
         "lineNumber": 0,
@@ -56,7 +56,7 @@
     },
     {
       "type": "warning",
-      "text": "[.WebGL-0x12c001c1e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+      "text": "[.WebGL-0x13c001c5a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
       "location": {
         "url": "http://localhost:5220/",
         "lineNumber": 0,
@@ -65,7 +65,7 @@
     },
     {
       "type": "warning",
-      "text": "[.WebGL-0x12c001c1e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+      "text": "[.WebGL-0x13c001c5a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
       "location": {
         "url": "http://localhost:5220/",
         "lineNumber": 0,

@@ -517,8 +517,9 @@ Sensor object 應顯示：
 - 世界需要有可見底座與邊界，像立體模型被放在眼前。
 - 3D material 產生層次
 - UI panel 像遊戲 HUD：輕、圓、柔和、可讀。
-- Panel / HUD 不應過度水晶化或琉璃化；它們要保持清楚、可讀、柔和，像 RPG 操作介面。
-- 半透明琉璃感 / 水晶感主要屬於 voxel world：城市方塊、資料 volume、列車、感測器、事件 marker 可以少量使用。
+- Panel / HUD 不應水晶化或琉璃化；它們要保持清楚、可讀、柔和，像 RPG 操作介面。
+- Voxel city 的主體必須是實體方塊，不能大面積透明。實心量體讓臺北微縮模型更清楚、更像可觸摸的掌中世界。
+- 半透明琉璃感 / 水晶感只適合少量用在資料 volume、雨量、PM2.5、selection halo、地圖 tile preview 等 overlay，不應套在整個城市、列車或站點上。
 - 重要 operational state 保持高辨識度，不用恐怖或壓迫的警示色。
 
 ## Color System

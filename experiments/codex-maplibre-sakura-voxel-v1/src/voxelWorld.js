@@ -140,7 +140,7 @@ export class VoxelWorld {
 
   initScene() {
     this.scene.background = new THREE.Color(COLORS.sky);
-    this.scene.fog = new THREE.FogExp2(COLORS.sakuraMist, 0.008);
+    this.scene.fog = new THREE.FogExp2(COLORS.sakuraMist, 0.0035);
 
     this.ambient = new THREE.AmbientLight('#FFF7FA', 1.18);
     this.scene.add(this.ambient);
@@ -216,25 +216,15 @@ export class VoxelWorld {
   buildTileLayer() {
     const group = new THREE.Group();
     const plate = box(GRID * CELL + 7, 0.7, GRID * CELL + 7, COLORS.base, {
-      glass: true,
-      opacity: 0.82,
-      transmission: 0.24,
-      roughness: 0.32,
       emissive: '#FFD2DC',
-      emissiveIntensity: 0.04,
-      depthWrite: true,
+      emissiveIntensity: 0.025,
     });
     plate.position.y = -0.45;
     group.add(plate);
 
     const rim = box(GRID * CELL + 8.2, 1.1, GRID * CELL + 8.2, '#EFB9CC', {
-      glass: true,
-      opacity: 0.68,
-      transmission: 0.3,
-      roughness: 0.28,
       emissive: '#F596AA',
-      emissiveIntensity: 0.04,
-      depthWrite: true,
+      emissiveIntensity: 0.02,
     });
     rim.position.y = -1.15;
     group.add(rim);
@@ -302,19 +292,16 @@ export class VoxelWorld {
 
     const dummy = new THREE.Object3D();
     Object.entries(buckets).forEach(([type, cells]) => {
-      const glassProfile = {
-        river: { opacity: 0.58, transmission: 0.44, roughness: 0.12, emissiveIntensity: 0.1 },
-        park: { opacity: 0.72, transmission: 0.2, roughness: 0.26, emissiveIntensity: 0.03 },
-        urban: { opacity: 0.82, transmission: 0.22, roughness: 0.22, emissiveIntensity: 0.055 },
-        dense: { opacity: 0.84, transmission: 0.2, roughness: 0.22, emissiveIntensity: 0.075 },
-        tall: { opacity: 0.88, transmission: 0.18, roughness: 0.2, emissiveIntensity: 0.12 },
-        hill: { opacity: 0.72, transmission: 0.16, roughness: 0.34, emissiveIntensity: 0.025 },
-      }[type];
       const mesh = new THREE.InstancedMesh(geom, makeMat(typeColor[type], {
-        glass: true,
-        ...glassProfile,
         emissive: type === 'river' ? COLORS.water : typeColor[type],
-        depthWrite: true,
+        emissiveIntensity: {
+          river: 0.06,
+          park: 0.015,
+          urban: 0.025,
+          dense: 0.035,
+          tall: 0.065,
+          hill: 0.012,
+        }[type],
       }), cells.length);
       mesh.castShadow = true;
       mesh.receiveShadow = true;
@@ -332,13 +319,8 @@ export class VoxelWorld {
     });
 
     const tower = box(CELL * 0.9, 14, CELL * 0.9, '#F58CA5', {
-      glass: true,
-      opacity: 0.76,
-      transmission: 0.2,
-      roughness: 0.18,
       emissive: '#F596AA',
-      emissiveIntensity: 0.16,
-      depthWrite: true,
+      emissiveIntensity: 0.08,
     });
     const [twx, twz] = gridToWorld(21, 17);
     tower.position.set(twx, 7.2, twz);
@@ -379,13 +361,8 @@ export class VoxelWorld {
       const tube = new THREE.Mesh(
         new THREE.TubeGeometry(curve, 84, 0.13, 6, false),
         makeMat(line.color, {
-          glass: true,
-          opacity: 0.84,
-          transmission: 0.22,
-          roughness: 0.2,
           emissive: line.color,
-          emissiveIntensity: 0.24,
-          depthWrite: true,
+          emissiveIntensity: 0.18,
         }),
       );
       group.add(tube);
@@ -395,13 +372,8 @@ export class VoxelWorld {
         const object = ontologyObjects.find((item) => item.id === line.objectId) ?? ontologyObjects[1];
         const [wx, wz] = gridToWorld(gx, gz);
         const station = box(0.9, 0.76, 0.9, '#FFFFFF', {
-          glass: true,
-          opacity: 0.82,
-          transmission: 0.5,
-          roughness: 0.16,
           emissive: line.color,
-          emissiveIntensity: 0.32,
-          depthWrite: true,
+          emissiveIntensity: 0.18,
         });
         station.position.set(wx, this.heightAt(gx, gz) + 1.45, wz);
         station.userData.twObject = object;
@@ -426,21 +398,13 @@ export class VoxelWorld {
     const group = new THREE.Group();
     for (let i = 0; i < 3; i++) {
       const car = box(0.78, 0.56, 1.18, color, {
-        glass: true,
-        opacity: 0.82,
-        transmission: 0.32,
-        roughness: 0.2,
         emissive: color,
-        emissiveIntensity: 0.14,
-        depthWrite: true,
+        emissiveIntensity: 0.1,
       });
       car.position.z = (i - 1) * 1.26;
       const roof = box(0.8, 0.08, 1.12, '#FFFFFF', {
-        glass: true,
-        opacity: 0.78,
-        transmission: 0.58,
-        roughness: 0.12,
-        depthWrite: true,
+        emissive: '#FFF7FA',
+        emissiveIntensity: 0.04,
       });
       roof.position.set(0, 0.34, car.position.z);
       group.add(car, roof);
@@ -460,11 +424,11 @@ export class VoxelWorld {
         const h = 1.2 + rng() * 6 * (1.35 - z / 7);
         const bar = box(5.4, 1, 5.4, COLORS.water, {
           glass: true,
-          opacity: 0.28,
-          transmission: 0.68,
+          opacity: 0.12,
+          transmission: 0.76,
           roughness: 0.08,
           emissive: '#81C7D4',
-          emissiveIntensity: 0.12,
+          emissiveIntensity: 0.055,
         });
         bar.position.set(wx, base + h / 2, wz);
         bar.scale.y = h;
@@ -487,11 +451,11 @@ export class VoxelWorld {
       const [wx, wz] = gridToWorld(gx, gz);
       const puff = box(0.55 + rng() * 0.5, 0.55 + rng() * 0.5, 0.55 + rng() * 0.5, rng() > 0.55 ? COLORS.gold : '#F7D94C', {
         glass: true,
-        opacity: 0.44,
+        opacity: 0.34,
         transmission: 0.36,
         roughness: 0.24,
         emissive: '#FFD966',
-        emissiveIntensity: 0.1,
+        emissiveIntensity: 0.075,
       });
       puff.position.set(wx, this.heightAt(gx, gz) + 2.2 + rng() * 5, wz);
       puff.userData = { phase: rng() * Math.PI * 2, drift: 0.2 + rng() * 0.5, twObject: ontologyObjects[3] };
@@ -503,13 +467,8 @@ export class VoxelWorld {
     [[9, 18], [18, 12], [24, 19]].forEach(([gx, gz]) => {
       const [wx, wz] = gridToWorld(gx, gz);
       const sensor = box(0.78, 4.2, 0.78, COLORS.gold, {
-        glass: true,
-        opacity: 0.78,
-        transmission: 0.28,
-        roughness: 0.2,
         emissive: COLORS.gold,
-        emissiveIntensity: 0.18,
-        depthWrite: true,
+        emissiveIntensity: 0.12,
       });
       sensor.position.set(wx, this.heightAt(gx, gz) + 2.1, wz);
       sensor.userData.twObject = ontologyObjects[3];
@@ -527,13 +486,8 @@ export class VoxelWorld {
       const marker = new THREE.Group();
       for (let y = 0; y < 3; y++) {
         const m = box(0.92 - y * 0.08, 0.52, 0.92 - y * 0.08, y === 1 ? COLORS.fuji : COLORS.rose, {
-          glass: true,
-          opacity: 0.82,
-          transmission: 0.24,
-          roughness: 0.2,
           emissive: y === 1 ? COLORS.fuji : COLORS.rose,
-          emissiveIntensity: 0.2,
-          depthWrite: true,
+          emissiveIntensity: 0.14,
         });
         m.position.y = y * 0.58;
         marker.add(m);
@@ -554,13 +508,8 @@ export class VoxelWorld {
     const colors = [COLORS.skyDeep, COLORS.water, COLORS.gold, COLORS.fuji, COLORS.rose];
     keys.forEach((key, index) => {
       const node = box(2.1, 0.75 + index * 0.14, 2.1, colors[index], {
-        glass: true,
-        opacity: 0.78,
-        transmission: 0.34,
-        roughness: 0.18,
         emissive: colors[index],
-        emissiveIntensity: 0.08,
-        depthWrite: true,
+        emissiveIntensity: 0.06,
       });
       node.position.set(-22 + index * 5.3, 1.1 + index * 0.08, 31.5);
       node.userData = {
@@ -596,22 +545,12 @@ export class VoxelWorld {
     const group = new THREE.Group();
     const [wx, wz] = gridToWorld(16, 19);
     const body = box(0.85, 0.95, 0.85, '#FFF9FB', {
-      glass: true,
-      opacity: 0.84,
-      transmission: 0.48,
-      roughness: 0.15,
       emissive: COLORS.sakuraMid,
-      emissiveIntensity: 0.22,
-      depthWrite: true,
+      emissiveIntensity: 0.12,
     });
     const head = box(0.64, 0.64, 0.64, COLORS.sakuraHot, {
-      glass: true,
-      opacity: 0.82,
-      transmission: 0.34,
-      roughness: 0.18,
       emissive: COLORS.sakuraHot,
-      emissiveIntensity: 0.14,
-      depthWrite: true,
+      emissiveIntensity: 0.08,
     });
     body.position.y = 0.48;
     head.position.y = 1.28;
@@ -851,7 +790,7 @@ export class VoxelWorld {
 
     const fog = new THREE.Color('#2C3260').lerp(new THREE.Color(COLORS.sakuraMist), daylight).lerp(new THREE.Color('#F8C5D6'), twilight * 0.35);
     this.scene.fog.color.copy(fog);
-    this.scene.fog.density = 0.006 + night * 0.007 + twilight * 0.002;
+    this.scene.fog.density = 0.0025 + night * 0.006 + twilight * 0.0018;
 
     this.ambient.color.set(new THREE.Color('#AFC8FF').lerp(new THREE.Color('#FFF7FA'), daylight).lerp(new THREE.Color('#FFD6E4'), twilight * 0.35));
     this.ambient.intensity = 0.54 + daylight * 0.78 + twilight * 0.2;
