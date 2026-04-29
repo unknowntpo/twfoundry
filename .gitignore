@@ -16,6 +16,8 @@ frontend/scripts/test.html
 frontend/.env
 frontend/.env.*
 !frontend/.env.example
+experiments/**/node_modules/
+experiments/**/dist/
 .gradle/
 build/
 backend/**/build/
