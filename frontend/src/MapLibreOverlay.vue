@@ -31,6 +31,43 @@ const mrtLayerIds = [
   'twf-mrt-station-label',
 ];
 
+function applySakuraStyleOverride() {
+  if (!map || !loaded) return;
+
+  map.getStyle().layers?.forEach((layer) => {
+    try {
+      if (layer.type === 'background') {
+        map.setPaintProperty(layer.id, 'background-color', '#FFF7FA');
+      }
+      if (layer.type === 'fill') {
+        map.setPaintProperty(layer.id, 'fill-color', [
+          'match',
+          ['get', 'class'],
+          'park',
+          '#DDECCF',
+          'water',
+          '#BFE8F4',
+          'landcover',
+          '#F9E8EF',
+          '#FFF7FA',
+        ]);
+        map.setPaintProperty(layer.id, 'fill-opacity', 0.82);
+      }
+      if (layer.type === 'line') {
+        map.setPaintProperty(layer.id, 'line-opacity', 0.48);
+      }
+      if (layer.type === 'symbol') {
+        map.setPaintProperty(layer.id, 'text-opacity', 0.64);
+        map.setPaintProperty(layer.id, 'text-color', '#6F5060');
+        map.setPaintProperty(layer.id, 'text-halo-color', '#FFF9FB');
+        map.setPaintProperty(layer.id, 'text-halo-width', 1.1);
+      }
+    } catch {
+      // MapLibre styles differ by provider; unsupported paint properties are skipped.
+    }
+  });
+}
+
 function setMrtVisibility(visible) {
   if (!map || !loaded) return;
   const value = visible ? 'visible' : 'none';
@@ -153,6 +190,7 @@ onMounted(() => {
 
   map.on('load', () => {
     loaded = true;
+    applySakuraStyleOverride();
     addMrtOverlay();
     emit('status', 'ready');
   });

@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { lngLatToGrid } from './geoProjection.js';
 import { mrtRouteGeoJson, mrtStationGeoJson } from './mrtMapData.js';
 import { ontologyObjects } from './mockData.js';
+import { mrtRouteFeatureToProjection, mrtStationFeatureToProjection, projectLineToGrid, projectPointToGrid } from './ontologyProjection.js';
 import { createMrtTrain } from './voxelTrain.js';
 
 const GRID = 30;
@@ -353,9 +353,8 @@ export class VoxelWorld {
     }), false, 'catmullrom', 0.42);
   }
 
-  makeGeoCurve(coordinates) {
-    return new THREE.CatmullRomCurve3(coordinates.map((lngLat) => {
-      const [gx, gz] = lngLatToGrid(lngLat, GRID);
+  makeGridCurve(points) {
+    return new THREE.CatmullRomCurve3(points.map(([gx, gz]) => {
       const [wx, wz] = gridToWorld(gx, gz);
       return new THREE.Vector3(wx, this.heightAt(gx, gz) + 1.05, wz);
     }), false, 'catmullrom', 0.28);
@@ -373,8 +372,13 @@ export class VoxelWorld {
     });
 
     mrtRouteGeoJson.features.forEach((feature, lineIndex) => {
-      const line = feature.properties;
-      const curve = this.makeGeoCurve(feature.geometry.coordinates);
+      const routeProjection = mrtRouteFeatureToProjection(feature);
+      const line = {
+        id: feature.properties.id,
+        name: routeProjection.state.name,
+        color: routeProjection.state.color,
+      };
+      const curve = this.makeGridCurve(projectLineToGrid(routeProjection, GRID));
       const tube = new THREE.Mesh(
         new THREE.TubeGeometry(curve, 84, 0.13, 6, false),
         makeMat(line.color, {
@@ -386,7 +390,8 @@ export class VoxelWorld {
 
       const routeStations = stationsByRoute.get(line.id) ?? [];
       routeStations.forEach((stationFeature) => {
-        const [gx, gz] = lngLatToGrid(stationFeature.geometry.coordinates, GRID);
+        const stationProjection = mrtStationFeatureToProjection(stationFeature);
+        const [gx, gz] = projectPointToGrid(stationProjection, GRID);
         const [wx, wz] = gridToWorld(gx, gz);
         const station = box(0.9, 0.76, 0.9, '#FFFFFF', {
           emissive: line.color,
@@ -402,12 +407,12 @@ export class VoxelWorld {
             status: 'normal',
             summary: `${stationFeature.properties.name} station projected from MRT GeoJSON into the voxel world.`,
             properties: [
-              `stationId: ${stationFeature.properties.id}`,
+              `stationId: ${stationProjection.state.stationId}`,
               `route: ${line.name}`,
-              `source: ${stationFeature.properties.source}`,
+              `source: ${stationProjection.source}`,
               `projection: Taipei bounds`,
             ],
-            relationships: ['belongs_to MRT route', 'rendered_by Taipei Metro overlay', 'anchored_to MapLibre base'],
+            relationships: [...stationProjection.relationships, 'anchored_to MapLibre base'],
           };
         this.clickables.push(station);
         if (stationFeature.properties.id === 'BL12') this.registerAnchor(stationObject.id, station);

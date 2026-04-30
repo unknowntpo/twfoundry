@@ -48,6 +48,7 @@ const mapStatusLabel = computed(() => {
   if (mapStatus.value === 'error') return 'ERROR';
   return 'LOADING';
 });
+const effectiveMapVisible = computed(() => mapBaseVisible.value && mapStatus.value !== 'error');
 
 function toggleLayer(key) {
   layerState[key] = !layerState[key];
@@ -56,7 +57,12 @@ function toggleLayer(key) {
 
 function toggleMapBase() {
   mapBaseVisible.value = !mapBaseVisible.value;
-  world.value?.setMapBaseVisible(mapBaseVisible.value);
+  world.value?.setMapBaseVisible(effectiveMapVisible.value);
+}
+
+function onMapStatus(nextStatus) {
+  mapStatus.value = nextStatus;
+  world.value?.setMapBaseVisible(effectiveMapVisible.value);
 }
 
 function selectPipeline(key) {
@@ -97,7 +103,7 @@ onMounted(() => {
       Object.assign(stats, payload);
     },
   });
-  world.value.setMapBaseVisible(mapBaseVisible.value);
+  world.value.setMapBaseVisible(effectiveMapVisible.value);
 
   timer = window.setInterval(() => {
     if (!isPlaying.value) return;
@@ -116,9 +122,9 @@ onBeforeUnmount(() => {
 <template>
   <main class="app-shell">
     <MapLibreOverlay
-      :visible="mapBaseVisible"
+      :visible="effectiveMapVisible"
       :mrt-visible="layerState.mrt"
-      @status="mapStatus = $event"
+      @status="onMapStatus"
     />
     <div
       ref="worldEl"
@@ -214,6 +220,10 @@ onBeforeUnmount(() => {
           <small>BASE · {{ mapBaseVisible ? 'ON' : 'OFF' }}</small>
         </span>
       </button>
+
+      <p v-if="mapStatus === 'error'" class="map-error-note">
+        Map source unavailable. Showing fallback voxel diorama.
+      </p>
 
       <div class="panel-domain overlay-domain">
         <div class="domain-heading">

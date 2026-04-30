@@ -1,6 +1,12 @@
 import assert from 'node:assert/strict';
 import { gridToLngLat, lngLatToGrid, TAIPEI_MAP_VIEW } from '../src/geoProjection.js';
 import { mrtMapSummary, mrtRouteGeoJson, mrtStationGeoJson } from '../src/mrtMapData.js';
+import {
+  mrtRouteFeatureToProjection,
+  mrtStationFeatureToProjection,
+  projectLineToGrid,
+  projectPointToGrid,
+} from '../src/ontologyProjection.js';
 
 assert.equal(mrtRouteGeoJson.type, 'FeatureCollection');
 assert.equal(mrtStationGeoJson.type, 'FeatureCollection');
@@ -33,5 +39,15 @@ assert.ok(Math.abs(roundTrip[0] - taipeiMain[0]) < 0.000001);
 assert.ok(Math.abs(roundTrip[1] - taipeiMain[1]) < 0.000001);
 
 assert.deepEqual(TAIPEI_MAP_VIEW.center, [121.535, 25.049]);
+
+const routeProjection = mrtRouteFeatureToProjection(mrtRouteGeoJson.features[0]);
+assert.equal(routeProjection.kind, 'MrtRoute');
+assert.equal(routeProjection.renderModule, 'MrtRouteTube');
+assert.ok(projectLineToGrid(routeProjection).length >= 2);
+
+const stationProjection = mrtStationFeatureToProjection(mrtStationGeoJson.features[0]);
+assert.equal(stationProjection.kind, 'MrtStation');
+assert.equal(stationProjection.renderModule, 'StationAnchor');
+assert.equal(projectPointToGrid(stationProjection).length, 2);
 
 console.log('mapOverlayData tests passed');
