@@ -3,9 +3,12 @@ import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import MapLibreOverlay from './MapLibreOverlay.vue';
 import { defaultObject, layers, ontologyObjects, pipelineSteps } from './mockData.js';
 import { VoxelWorld } from './voxelWorld.js';
+import { loadWorldViewPayload, summarizeWorldView, toUiOntologyObjects } from './worldViewPayload.js';
 
 const worldEl = ref(null);
 const world = ref(null);
+const worldPayloadSource = ref('local');
+const worldPayload = ref(null);
 const selectedObject = ref(defaultObject);
 const selectedPipeline = ref('tiles');
 const isPlaying = ref(true);
@@ -25,6 +28,12 @@ const stats = reactive({
 const layerState = reactive(Object.fromEntries(layers.map((layer) => [layer.key, true])));
 
 let timer = 0;
+
+const uiOntologyObjects = computed(() => {
+  if (!worldPayload.value) return ontologyObjects;
+  const objects = toUiOntologyObjects(worldPayload.value);
+  return objects.length > 0 ? objects : ontologyObjects;
+});
 
 const timeLabel = computed(() => {
   const total = worldMinutes.value % 1440;
@@ -49,6 +58,7 @@ const mapStatusLabel = computed(() => {
   return 'LOADING';
 });
 const effectiveMapVisible = computed(() => mapBaseVisible.value && mapStatus.value !== 'error');
+const payloadStatusLabel = computed(() => worldPayloadSource.value === 'api' ? 'API' : 'FALLBACK');
 
 function toggleLayer(key) {
   layerState[key] = !layerState[key];
@@ -104,6 +114,15 @@ onMounted(() => {
     },
   });
   world.value.setMapBaseVisible(effectiveMapVisible.value);
+
+  loadWorldViewPayload().then(({ payload, source }) => {
+    worldPayload.value = payload;
+    worldPayloadSource.value = source;
+    Object.assign(stats, summarizeWorldView(payload));
+    const objects = toUiOntologyObjects(payload);
+    world.value?.setOntologyObjects(objects);
+    selectedObject.value = objects.find((object) => object.id === selectedObject.value.id) ?? objects[0] ?? selectedObject.value;
+  });
 
   timer = window.setInterval(() => {
     if (!isPlaying.value) return;
@@ -189,7 +208,7 @@ onBeforeUnmount(() => {
       <div class="hud-section compact-readout">
         <div>
           <span>Focus</span>
-          <strong>{{ activePipeline.detail }}</strong>
+          <strong>{{ activePipeline.detail }} · {{ payloadStatusLabel }}</strong>
         </div>
         <div>
           <span>Visible chunks</span>
@@ -272,7 +291,7 @@ onBeforeUnmount(() => {
 
       <div class="object-grid">
         <button
-          v-for="object in ontologyObjects"
+          v-for="object in uiOntologyObjects"
           :key="object.id"
           class="object-token"
           :class="{ active: object.id === selectedObject.id }"

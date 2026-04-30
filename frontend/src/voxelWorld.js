@@ -712,6 +712,21 @@ export class VoxelWorld {
     this.focusMesh(anchor, 1);
   }
 
+  setOntologyObjects(objects) {
+    const byId = new Map(objects.map((object) => [object.id, object]));
+    this.clickables.forEach((object3d) => {
+      const current = object3d.userData?.twObject;
+      if (current?.id && byId.has(current.id)) {
+        object3d.userData.twObject = byId.get(current.id);
+      }
+    });
+    this.objectAnchors.forEach((object3d, id) => {
+      if (byId.has(id)) {
+        object3d.userData.twObject = byId.get(id);
+      }
+    });
+  }
+
   focusMesh(mesh, mix = 1) {
     const position = new THREE.Vector3();
     mesh.getWorldPosition(position);
