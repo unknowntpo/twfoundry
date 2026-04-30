@@ -1,7 +1,9 @@
 <script setup>
 import { computed, ref } from 'vue';
+import OntologyPreview from './OntologyPreview.vue';
 import TrainPreview from './TrainPreview.vue';
 import { layers, ontologyObjects, pipelineSteps } from './mockData.js';
+import { createPm25Sensor, createStationAnchor, createWeatherCell } from './voxelEntities.js';
 import { MRT_TRAIN_BLUEPRINT, createMrtTrain } from './voxelTrain.js';
 
 const routeColors = [
@@ -14,6 +16,57 @@ const routeColors = [
 const selectedRoute = ref(routeColors[0]);
 const carCount = ref(4);
 const debug = ref(false);
+
+const backendSources = [
+  {
+    name: 'MRT LiveBoard',
+    status: 'implemented backend',
+    endpoint: '/api/mrt/liveboard',
+    fields: ['id', 'trainCode', 'stationId', 'stationName', 'lineId', 'destinationName', 'arrivalMinutes', 'status'],
+  },
+  {
+    name: 'PM2.5 AQMS',
+    status: 'frontend-ready planned shape',
+    endpoint: 'planned: EPA AQMS ingestion',
+    fields: ['sensorId', 'pm25', 'trend', 'updatedAt', 'location'],
+  },
+  {
+    name: 'Weather / Rainfall',
+    status: 'frontend-ready planned shape',
+    endpoint: 'planned: CWA weather ingestion',
+    fields: ['cellId', 'intensityMmHr', 'trend', 'confidence', 'geometry'],
+  },
+];
+
+const ontologyComponentCards = [
+  {
+    key: 'station',
+    title: 'Station Anchor',
+    type: 'Station',
+    source: 'TDX MRT LiveBoard stationId',
+    renderer: 'createStationAnchor()',
+    fields: ['stationId', 'stationName', 'lineId', 'status'],
+    build: () => createStationAnchor({ lineColor: '#0070BD', stationId: 'BL18', stationName: 'Taipei City Hall', debug: debug.value }),
+  },
+  {
+    key: 'pm25',
+    title: 'PM2.5 Sensor',
+    type: 'PM2.5 Sensor',
+    source: 'EPA AQMS planned ingestion',
+    renderer: 'createPm25Sensor()',
+    fields: ['sensorId', 'pm25', 'trend', 'updatedAt', 'location'],
+    build: () => createPm25Sensor({ sensorId: 'AQMS A-07', value: 31, status: 'watch', debug: debug.value }),
+  },
+  {
+    key: 'weather',
+    title: 'Rainfall Cell',
+    type: 'Weather / Rainfall Cell',
+    source: 'CWA weather planned ingestion',
+    renderer: 'createWeatherCell()',
+    fields: ['cellId', 'intensityMmHr', 'trend', 'confidence', 'geometry'],
+    build: () => createWeatherCell({ cellId: 'Rain Cell R-042', intensity: 38, trend: 'rising', debug: debug.value }),
+  },
+];
 
 const tokenFamilies = [
   { name: 'Sky / Water', role: 'world background, rain, map chunk affordance', swatches: ['#78C8F8', '#D8EEF8', '#81C7D4'] },
@@ -82,6 +135,16 @@ const trainSummary = computed(() => {
   });
   return train.userData.voxelBlueprint;
 });
+
+const ontologyComponentSummaries = computed(() => ontologyComponentCards.map((card) => {
+  const entity = card.build();
+  return {
+    ...card,
+    voxelCount: entity.userData.voxelBlueprint.voxelCount,
+    geometryVariants: entity.userData.voxelBlueprint.geometryVariants,
+    contract: entity.userData.voxelBlueprint.backendContract,
+  };
+}));
 </script>
 
 <template>
@@ -238,6 +301,54 @@ const trainSummary = computed(() => {
             <div>
               <dt>Preview note</dt>
               <dd>{{ module.preview }}</dd>
+            </div>
+          </dl>
+        </article>
+      </div>
+    </section>
+
+    <section class="ds-section">
+      <div class="section-title">
+        <p>Backend Coverage</p>
+        <h2>Ontology Components From Data Shapes</h2>
+        <span>Each backend or planned ingestion shape gets a visible voxel component so we can verify the frontend can render the object class.</span>
+      </div>
+
+      <div class="backend-source-grid">
+        <article v-for="source in backendSources" :key="source.name" class="backend-source-card">
+          <span>{{ source.status }}</span>
+          <h3>{{ source.name }}</h3>
+          <p>{{ source.endpoint }}</p>
+          <small>{{ source.fields.join(' · ') }}</small>
+        </article>
+      </div>
+
+      <div class="ontology-component-grid">
+        <article v-for="card in ontologyComponentSummaries" :key="card.key" class="ontology-component-card">
+          <div class="ds-panel-head">
+            <div>
+              <p>{{ card.type }}</p>
+              <h2>{{ card.title }}</h2>
+            </div>
+            <span class="ds-chip">{{ card.source }}</span>
+          </div>
+          <OntologyPreview :kind="card.key" :debug="debug" />
+          <dl class="metric-list compact">
+            <div>
+              <dt>Renderer</dt>
+              <dd>{{ card.renderer }}</dd>
+            </div>
+            <div>
+              <dt>Fields</dt>
+              <dd>{{ card.fields.join(' · ') }}</dd>
+            </div>
+            <div>
+              <dt>Voxels</dt>
+              <dd>{{ card.voxelCount }}</dd>
+            </div>
+            <div>
+              <dt>Geometry variants</dt>
+              <dd>{{ card.geometryVariants }}</dd>
             </div>
           </dl>
         </article>

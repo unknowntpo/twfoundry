@@ -7,8 +7,9 @@
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
-    "test": "bun ./tests/mrtTrain.test.mjs",
-    "test:mrt-train": "bun ./tests/mrtTrain.test.mjs"
+    "test": "bun ./tests/run.mjs",
+    "test:mrt-train": "bun ./tests/mrtTrain.test.mjs",
+    "test:ontology-components": "bun ./tests/ontologyComponents.test.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-vue": "^5.2.3",

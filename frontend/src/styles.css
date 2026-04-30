@@ -703,7 +703,9 @@ button {
 
 .capture-grid,
 .module-grid,
-.foundation-grid {
+.foundation-grid,
+.backend-source-grid,
+.ontology-component-grid {
   display: grid;
   gap: 14px;
 }
@@ -717,6 +719,15 @@ button {
 }
 
 .foundation-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.backend-source-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 14px;
+}
+
+.ontology-component-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
@@ -734,7 +745,9 @@ button {
 }
 
 .capture-card,
-.module-card {
+.module-card,
+.backend-source-card,
+.ontology-component-card {
   border: 1px solid rgba(234, 170, 194, 0.5);
   border-radius: 20px;
   padding: 16px;
@@ -747,7 +760,8 @@ button {
 }
 
 .capture-card h3,
-.module-card h3 {
+.module-card h3,
+.backend-source-card h3 {
   margin: 0;
   color: #c05070;
   font-size: 18px;
@@ -756,6 +770,7 @@ button {
 
 .capture-card p,
 .module-card p,
+.backend-source-card p,
 .token-family p,
 .primitive-list p,
 .state-list p {
@@ -763,6 +778,31 @@ button {
   color: rgba(85, 50, 70, 0.72);
   font-size: 12px;
   line-height: 1.45;
+}
+
+.backend-source-card span {
+  display: inline-flex;
+  border: 1px solid rgba(255, 177, 27, 0.38);
+  border-radius: 999px;
+  padding: 5px 8px;
+  color: #8f3a58;
+  font-size: 9px;
+  font-weight: 950;
+  text-transform: uppercase;
+  background: rgba(255, 177, 27, 0.16);
+}
+
+.backend-source-card h3 {
+  margin-top: 10px;
+}
+
+.backend-source-card small {
+  display: block;
+  margin-top: 10px;
+  color: rgba(89, 54, 74, 0.76);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.4;
 }
 
 .capture-card ul {
@@ -852,6 +892,25 @@ button {
   display: block;
   width: 100%;
   height: 100%;
+}
+
+.ontology-preview {
+  position: relative;
+  min-height: 260px;
+  overflow: hidden;
+  border: 1px solid rgba(230, 160, 188, 0.44);
+  border-radius: 18px;
+  background: #d8eef8;
+}
+
+.ontology-preview canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.metric-list.compact {
+  margin-top: 14px;
 }
 
 .ds-control-panel {
@@ -1094,7 +1153,9 @@ button {
 
   .capture-grid,
   .module-grid,
-  .foundation-grid {
+  .foundation-grid,
+  .backend-source-grid,
+  .ontology-component-grid {
     grid-template-columns: 1fr;
   }
 
