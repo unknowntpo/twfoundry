@@ -104,13 +104,8 @@ export const messages = {
       brand: "TWFoundry",
       status: {
         live: "Live stream",
-        error: "Source error",
         taipei: "Taipei voxel",
         timeline: "Timeline ready",
-        source: "{source}",
-      },
-      source: {
-        mock: "Mock API",
       },
       actions: {
         designSystem: "Design System",
@@ -157,15 +152,19 @@ export const messages = {
       metrics: {
         trains: {
           label: "Active trains",
+          value: "49",
         },
-        stations: {
-          label: "Observed stations",
+        rainfall: {
+          label: "Rainfall peak",
+          value: "38 mm/h",
         },
-        timeline: {
-          label: "Timeline snapshots",
+        pm25: {
+          label: "PM2.5 mean",
+          value: "18",
         },
-        source: {
-          label: "Data source",
+        incidents: {
+          label: "Open events",
+          value: "7",
         },
       },
       inspector: {
@@ -173,29 +172,13 @@ export const messages = {
         title: "Selected object",
         body: "Clicking a voxel entity should focus the world and open its live metrics, relationships, and event history.",
         objectTitle: "Train T1005",
-        emptyObject: "No train selected",
-        loading: "Loading LiveBoard rows...",
         kind: "Kind",
-        trainKind: "Train / LiveBoard object",
         overlay: "Overlay",
         overlayValue: "Taipei Metro",
         relationship: "Relationship",
         relationshipValue: "next_stop -> Yuanshan",
-        route: "Route",
-        station: "Station",
-        destination: "Destination",
-        eta: "ETA",
-        minutes: "{count} min",
       },
       events: {
-        liveboard: {
-          title: "LiveBoard observation",
-          body: "{station} reports next train toward {destination}.",
-        },
-        timeline: {
-          title: "Timeline replay state",
-          body: "The selected snapshot controls ontology values and visible train entities.",
-        },
         signal: {
           time: "20:52",
           title: "Signal hold near Zhongxiao Fuxing",
@@ -217,7 +200,6 @@ export const messages = {
         play: "Play",
         time: "20:52",
         live: "Live",
-        paused: "Paused",
         replay: "Replay",
       },
     },
@@ -532,13 +514,8 @@ export const messages = {
       brand: "TWFoundry",
       status: {
         live: "即時資料流",
-        error: "資料源錯誤",
         taipei: "台北 voxel",
         timeline: "時間軸就緒",
-        source: "{source}",
-      },
-      source: {
-        mock: "Mock API",
       },
       actions: {
         designSystem: "設計系統",
@@ -585,15 +562,19 @@ export const messages = {
       metrics: {
         trains: {
           label: "運行列車",
+          value: "49",
         },
-        stations: {
-          label: "觀測車站",
+        rainfall: {
+          label: "雨量峰值",
+          value: "38 mm/h",
         },
-        timeline: {
-          label: "時間快照",
+        pm25: {
+          label: "PM2.5 平均",
+          value: "18",
         },
-        source: {
-          label: "資料來源",
+        incidents: {
+          label: "開放事件",
+          value: "7",
         },
       },
       inspector: {
@@ -601,29 +582,13 @@ export const messages = {
         title: "選取物件",
         body: "點擊 voxel entity 後，世界應 focus 到該物件，並打開它的 live metrics、關係與事件歷史。",
         objectTitle: "列車 T1005",
-        emptyObject: "尚未選取列車",
-        loading: "正在載入即時看板...",
         kind: "類型",
-        trainKind: "列車 / LiveBoard 物件",
         overlay: "Overlay",
         overlayValue: "台北捷運",
         relationship: "關係",
         relationshipValue: "next_stop -> 圓山",
-        route: "路線",
-        station: "車站",
-        destination: "目的地",
-        eta: "ETA",
-        minutes: "{count} 分",
       },
       events: {
-        liveboard: {
-          title: "LiveBoard 觀測",
-          body: "{station} 回報下一班往 {destination} 的列車。",
-        },
-        timeline: {
-          title: "時間軸回放狀態",
-          body: "選取的快照會控制 ontology 數值與可見列車 entities。",
-        },
         signal: {
           time: "20:52",
           title: "忠孝復興附近號誌等待",
@@ -645,7 +610,6 @@ export const messages = {
         play: "播放",
         time: "20:52",
         live: "即時",
-        paused: "暫停",
         replay: "回放",
       },
     },

@@ -1,224 +1,30 @@
 <script setup lang="ts">
-import { storeToRefs } from "pinia";
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { supportedLiveRefreshIntervalsMs, useMrtDashboardStore } from "@/app/stores/mrt-dashboard";
 import { type VoxelModuleKey, voxelModules } from "@/features/design-system/voxel/modules";
 import VoxelPreview from "@/features/design-system/voxel/VoxelPreview.vue";
-import { mrtLines, mrtStations } from "@/features/mrt/data/mrt-fixtures";
-import { resolveMrtLineLabel } from "@/features/mrt/line-names";
-import { resolveLocalizedText } from "@/features/mrt/localized-text";
-import { inferTrainMarkers } from "@/features/mrt/map/inferred-trains";
-import type { OverlayId } from "@/features/mrt/map/overlay-registry";
-import type { LiveBoardEntry } from "@/features/mrt/types";
 import BaseBadge from "@/shared/components/BaseBadge.vue";
 import LocaleSwitcher from "@/shared/components/LocaleSwitcher.vue";
-import { appConfig } from "@/shared/config/env";
 
-const { locale, t } = useI18n();
-const store = useMrtDashboardStore();
-const {
-  displayedLiveBoards,
-  displayedUpdatedAt,
-  liveBoardError,
-  liveBoardLoading,
-  liveRefreshIntervalMs,
-  selectedTrainId,
-  timelineCursorIndex,
-  timelineMode,
-  timelineSnapshots,
-  visibleOverlayIds,
-} = storeToRefs(store);
+const { t } = useI18n();
 
 const selectedModule = ref<VoxelModuleKey>("moving-object");
-const localPrototypeOverlays = ref(["rain", "air", "incidents"]);
+const timelineMode = ref<"live" | "replay">("live");
+const activeOverlays = ref(["metro", "rain", "air", "incidents"]);
 
-const overlayGroups = [
-  {
-    key: "metro",
-    source: "TDX LiveBoard",
-    storeIds: ["mrt-routes", "mrt-stations", "mrt-estimated-trains"] satisfies OverlayId[],
-  },
-  { key: "rain", source: "prototype", storeIds: [] },
-  { key: "air", source: "prototype", storeIds: [] },
-  { key: "incidents", source: "prototype", storeIds: [] },
-] as const;
+const overlayKeys = ["metro", "rain", "air", "incidents"] as const;
+const metricKeys = ["trains", "rainfall", "pm25", "incidents"] as const;
+const eventKeys = ["signal", "rain", "air"] as const;
 
 const selectedModuleDetail = computed(
   () => voxelModules.find((module) => module.key === selectedModule.value) ?? voxelModules[0],
 );
-const trainMarkers = computed(() =>
-  inferTrainMarkers(displayedLiveBoards.value, mrtStations, mrtLines),
-);
-const selectedTrain = computed(
-  () =>
-    displayedLiveBoards.value.find((row) => row.id === selectedTrainId.value) ??
-    displayedLiveBoards.value[0],
-);
-const sourceLabel = computed(() =>
-  appConfig.mrtLiveBoardSource === "tdx" ? "TDX API" : t("voxelCockpit.source.mock"),
-);
-const timelinePosition = computed(() =>
-  timelineSnapshots.value.length > 0
-    ? `${timelineCursorIndex.value + 1}/${timelineSnapshots.value.length}`
-    : "0/0",
-);
-const timelineTrackFill = computed(() => {
-  if (timelineSnapshots.value.length <= 1) {
-    return "100%";
-  }
 
-  return `${Math.round((timelineCursorIndex.value / (timelineSnapshots.value.length - 1)) * 100)}%`;
-});
-const metricCards = computed(() => [
-  {
-    key: "trains",
-    label: t("voxelCockpit.metrics.trains.label"),
-    value: String(displayedLiveBoards.value.length),
-  },
-  {
-    key: "stations",
-    label: t("voxelCockpit.metrics.stations.label"),
-    value: String(new Set(displayedLiveBoards.value.map((row) => row.stationId)).size),
-  },
-  {
-    key: "timeline",
-    label: t("voxelCockpit.metrics.timeline.label"),
-    value: timelinePosition.value,
-  },
-  {
-    key: "source",
-    label: t("voxelCockpit.metrics.source.label"),
-    value: sourceLabel.value,
-  },
-]);
-const objectRelationships = computed(() => {
-  const row = selectedTrain.value;
-  if (!row) {
-    return [];
-  }
-
-  return [
-    [t("voxelCockpit.inspector.route"), lineLabel(row)],
-    [t("voxelCockpit.inspector.station"), stationLabel(row)],
-    [t("voxelCockpit.inspector.destination"), destinationLabel(row)],
-    [
-      t("voxelCockpit.inspector.eta"),
-      t("voxelCockpit.inspector.minutes", { count: row.arrivalMinutes }),
-    ],
-  ];
-});
-let liveRefreshTimer: number | undefined;
-
-function isOverlayActive(group: (typeof overlayGroups)[number]): boolean {
-  if (group.storeIds.length > 0) {
-    return group.storeIds.every((overlayId) => visibleOverlayIds.value.includes(overlayId));
-  }
-
-  return localPrototypeOverlays.value.includes(group.key);
+function toggleOverlay(key: string): void {
+  activeOverlays.value = activeOverlays.value.includes(key)
+    ? activeOverlays.value.filter((item) => item !== key)
+    : [...activeOverlays.value, key];
 }
-
-function toggleOverlay(group: (typeof overlayGroups)[number]): void {
-  if (group.storeIds.length === 0) {
-    localPrototypeOverlays.value = localPrototypeOverlays.value.includes(group.key)
-      ? localPrototypeOverlays.value.filter((item) => item !== group.key)
-      : [...localPrototypeOverlays.value, group.key];
-    return;
-  }
-
-  const shouldHide = isOverlayActive(group);
-  group.storeIds.forEach((overlayId) => {
-    const isVisible = visibleOverlayIds.value.includes(overlayId);
-    if ((shouldHide && isVisible) || (!shouldHide && !isVisible)) {
-      store.toggleOverlay(overlayId);
-    }
-  });
-}
-
-function lineLabel(row: LiveBoardEntry): string {
-  return resolveMrtLineLabel(t, locale.value, row.lineId, row.lineName);
-}
-
-function stationLabel(row: LiveBoardEntry): string {
-  return resolveLocalizedText(locale.value, row.stationName, row.stationId) ?? row.stationId;
-}
-
-function destinationLabel(row: LiveBoardEntry): string {
-  return (
-    resolveLocalizedText(locale.value, row.destinationName, row.destination) ?? row.destination
-  );
-}
-
-function selectTrain(row: LiveBoardEntry): void {
-  selectedModule.value = "moving-object";
-  store.selectTrain(row.id);
-}
-
-function selectTrainMarker(markerId: string): void {
-  const row = displayedLiveBoards.value.find((item) => item.id === markerId);
-  if (row) {
-    selectTrain(row);
-  }
-}
-
-function trainMarkerStyle(marker: (typeof trainMarkers.value)[number]): Record<string, string> {
-  const station = mrtStations.find((item) => item.id === marker.stationId);
-  const line = mrtLines.find((item) => item.id === marker.lineId);
-  const lineIndex = mrtLines.findIndex((item) => item.id === marker.lineId);
-  const stationIndex = station ? Math.max(0, station.lineIds.indexOf(marker.lineId)) : 0;
-  return {
-    "--line-color": line?.color ?? "#4f93df",
-    "--marker-left": `${18 + ((lineIndex + stationIndex * 2 + marker.arrivalMinutes) % 7) * 9}%`,
-    "--marker-top": `${26 + ((lineIndex * 11 + marker.arrivalMinutes * 3) % 5) * 10}%`,
-  };
-}
-
-function toggleTimelineMode(): void {
-  if (timelineMode.value === "live") {
-    store.setTimelineMode("paused");
-    return;
-  }
-
-  store.setTimelineMode("live");
-  store.goToLatestTimeline();
-  void store.refreshLiveBoards();
-}
-
-function setRefreshInterval(intervalMs: number): void {
-  store.setLiveRefreshIntervalMs(intervalMs);
-  if (timelineMode.value === "live") {
-    void store.refreshLiveBoards();
-  }
-}
-
-function syncLiveRefreshTimer(): void {
-  if (liveRefreshTimer !== undefined) {
-    window.clearInterval(liveRefreshTimer);
-    liveRefreshTimer = undefined;
-  }
-
-  if (appConfig.mrtLiveBoardSource !== "tdx" || timelineMode.value !== "live") {
-    return;
-  }
-
-  liveRefreshTimer = window.setInterval(() => {
-    void store.refreshLiveBoards();
-  }, liveRefreshIntervalMs.value);
-}
-
-onMounted(() => {
-  void store.loadTimelineSnapshots();
-  void store.refreshLiveBoards();
-  syncLiveRefreshTimer();
-});
-
-onBeforeUnmount(() => {
-  if (liveRefreshTimer !== undefined) {
-    window.clearInterval(liveRefreshTimer);
-  }
-});
-
-watch([timelineMode, liveRefreshIntervalMs], syncLiveRefreshTimer);
 </script>
 
 <template>
@@ -230,11 +36,9 @@ watch([timelineMode, liveRefreshIntervalMs], syncLiveRefreshTimer);
       </RouterLink>
 
       <div class="status-strip" aria-label="Operational status">
-        <BaseBadge :tone="liveBoardError ? 'red' : 'green'">
-          {{ liveBoardError ? t("voxelCockpit.status.error") : t("voxelCockpit.status.live") }}
-        </BaseBadge>
+        <BaseBadge tone="green">{{ t("voxelCockpit.status.live") }}</BaseBadge>
         <BaseBadge tone="blue">{{ t("voxelCockpit.status.taipei") }}</BaseBadge>
-        <BaseBadge tone="warm">{{ t("voxelCockpit.status.source", { source: sourceLabel }) }}</BaseBadge>
+        <BaseBadge tone="warm">{{ t("voxelCockpit.status.timeline") }}</BaseBadge>
       </div>
 
       <nav class="topbar-actions" aria-label="Cockpit actions">
@@ -252,20 +56,20 @@ watch([timelineMode, liveRefreshIntervalMs], syncLiveRefreshTimer);
 
         <div class="overlay-list">
           <button
-            v-for="group in overlayGroups"
-            :key="group.key"
+            v-for="key in overlayKeys"
+            :key="key"
             type="button"
-            :class="{ active: isOverlayActive(group) }"
-            @click="toggleOverlay(group)"
+            :class="{ active: activeOverlays.includes(key) }"
+            @click="toggleOverlay(key)"
           >
-            <span class="overlay-dot" :data-overlay="group.key" aria-hidden="true" />
+            <span class="overlay-dot" :data-overlay="key" aria-hidden="true" />
             <span>
-              <strong>{{ t(`voxelCockpit.overlays.${group.key}.title`) }}</strong>
-              <small>{{ t(`voxelCockpit.overlays.${group.key}.body`, { source: group.source }) }}</small>
+              <strong>{{ t(`voxelCockpit.overlays.${key}.title`) }}</strong>
+              <small>{{ t(`voxelCockpit.overlays.${key}.body`) }}</small>
             </span>
-            <BaseBadge :tone="isOverlayActive(group) ? 'red' : 'neutral'">
+            <BaseBadge :tone="activeOverlays.includes(key) ? 'red' : 'neutral'">
               {{
-                isOverlayActive(group)
+                activeOverlays.includes(key)
                   ? t("voxelCockpit.overlays.on")
                   : t("voxelCockpit.overlays.off")
               }}
@@ -293,32 +97,12 @@ watch([timelineMode, liveRefreshIntervalMs], syncLiveRefreshTimer);
           </div>
         </div>
 
-        <div class="world-canvas">
-          <VoxelPreview class="world-preview" :module-key="selectedModule" />
-          <div
-            v-if="visibleOverlayIds.includes('mrt-estimated-trains')"
-            class="live-entity-layer"
-            aria-label="Live MRT ontology objects"
-          >
-            <button
-              v-for="marker in trainMarkers"
-              :key="marker.id"
-              type="button"
-              class="train-entity"
-              :class="{ selected: marker.id === selectedTrainId }"
-              :style="trainMarkerStyle(marker)"
-              @click="selectTrainMarker(marker.id)"
-            >
-              <span>{{ marker.trainCode }}</span>
-              <small>{{ marker.arrivalMinutes }}m</small>
-            </button>
-          </div>
-        </div>
+        <VoxelPreview class="world-preview" :module-key="selectedModule" />
 
         <div class="world-metrics" aria-label="Live metrics">
-          <article v-for="metric in metricCards" :key="metric.key">
-            <span>{{ metric.label }}</span>
-            <strong>{{ metric.value }}</strong>
+          <article v-for="key in metricKeys" :key="key">
+            <span>{{ t(`voxelCockpit.metrics.${key}.label`) }}</span>
+            <strong>{{ t(`voxelCockpit.metrics.${key}.value`) }}</strong>
           </article>
         </div>
       </section>
@@ -330,42 +114,28 @@ watch([timelineMode, liveRefreshIntervalMs], syncLiveRefreshTimer);
 
         <div class="object-card">
           <BaseBadge tone="red">{{ selectedModuleDetail.renderer }}</BaseBadge>
-          <h3>{{ selectedTrain?.trainCode ?? t("voxelCockpit.inspector.emptyObject") }}</h3>
-          <p v-if="liveBoardLoading" class="object-note">{{ t("voxelCockpit.inspector.loading") }}</p>
-          <p v-else-if="liveBoardError" class="object-note">{{ liveBoardError }}</p>
-          <dl v-if="selectedTrain">
+          <h3>{{ t("voxelCockpit.inspector.objectTitle") }}</h3>
+          <dl>
             <div>
               <dt>{{ t("voxelCockpit.inspector.kind") }}</dt>
-              <dd>{{ t("voxelCockpit.inspector.trainKind") }}</dd>
+              <dd>{{ selectedModuleDetail.visualRole }}</dd>
             </div>
             <div>
               <dt>{{ t("voxelCockpit.inspector.overlay") }}</dt>
               <dd>{{ t("voxelCockpit.inspector.overlayValue") }}</dd>
             </div>
-            <div v-for="[label, value] in objectRelationships" :key="label">
-              <dt>{{ label }}</dt>
-              <dd>{{ value }}</dd>
+            <div>
+              <dt>{{ t("voxelCockpit.inspector.relationship") }}</dt>
+              <dd>{{ t("voxelCockpit.inspector.relationshipValue") }}</dd>
             </div>
           </dl>
         </div>
 
         <div class="event-list">
-          <article v-if="selectedTrain">
-            <span>{{ displayedUpdatedAt ? new Date(displayedUpdatedAt).toLocaleTimeString() : "--" }}</span>
-            <strong>{{ t("voxelCockpit.events.liveboard.title") }}</strong>
-            <p>
-              {{
-                t("voxelCockpit.events.liveboard.body", {
-                  station: stationLabel(selectedTrain),
-                  destination: destinationLabel(selectedTrain),
-                })
-              }}
-            </p>
-          </article>
-          <article>
-            <span>{{ timelinePosition }}</span>
-            <strong>{{ t("voxelCockpit.events.timeline.title") }}</strong>
-            <p>{{ t("voxelCockpit.events.timeline.body") }}</p>
+          <article v-for="key in eventKeys" :key="key">
+            <span>{{ t(`voxelCockpit.events.${key}.time`) }}</span>
+            <strong>{{ t(`voxelCockpit.events.${key}.title`) }}</strong>
+            <p>{{ t(`voxelCockpit.events.${key}.body`) }}</p>
           </article>
         </div>
       </aside>
@@ -373,27 +143,21 @@ watch([timelineMode, liveRefreshIntervalMs], syncLiveRefreshTimer);
 
     <footer class="timeline">
       <div class="transport">
-        <button type="button" @click="toggleTimelineMode">
+        <button type="button" @click="timelineMode = timelineMode === 'live' ? 'replay' : 'live'">
           {{ timelineMode === "live" ? t("voxelCockpit.timeline.pause") : t("voxelCockpit.timeline.play") }}
         </button>
-        <strong>{{ displayedUpdatedAt ? new Date(displayedUpdatedAt).toLocaleTimeString() : "--:--" }}</strong>
+        <strong>{{ t("voxelCockpit.timeline.time") }}</strong>
         <BaseBadge :tone="timelineMode === 'live' ? 'green' : 'warm'">
-          {{ timelineMode === "live" ? t("voxelCockpit.timeline.live") : t("voxelCockpit.timeline.paused") }}
+          {{ timelineMode === "live" ? t("voxelCockpit.timeline.live") : t("voxelCockpit.timeline.replay") }}
         </BaseBadge>
       </div>
       <div class="track" aria-hidden="true">
-        <span :style="{ width: timelineTrackFill }" />
+        <span />
       </div>
       <div class="speed">
-        <button
-          v-for="interval in supportedLiveRefreshIntervalsMs"
-          :key="interval"
-          type="button"
-          :class="{ active: interval === liveRefreshIntervalMs }"
-          @click="setRefreshInterval(interval)"
-        >
-          {{ interval / 1000 }}s
-        </button>
+        <button type="button">1x</button>
+        <button type="button" class="active">20x</button>
+        <button type="button">60x</button>
       </div>
     </footer>
   </main>
@@ -633,54 +397,8 @@ p {
   color: var(--twf-color-surface);
 }
 
-.world-canvas {
-  position: relative;
-  min-height: 100%;
-}
-
 .world-preview {
   min-height: 100%;
-}
-
-.live-entity-layer {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.train-entity {
-  position: absolute;
-  left: var(--marker-left);
-  top: var(--marker-top);
-  z-index: 2;
-  display: grid;
-  min-width: 88px;
-  gap: 2px;
-  border: 2px solid color-mix(in srgb, var(--line-color) 72%, white);
-  border-radius: 14px;
-  padding: 8px 10px;
-  background: rgba(255, 249, 243, 0.9);
-  box-shadow:
-    0 8px 0 rgba(43, 35, 48, 0.12),
-    0 0 0 6px color-mix(in srgb, var(--line-color) 22%, transparent);
-  color: #8b3f59;
-  cursor: pointer;
-  font-size: 0.78rem;
-  font-weight: 900;
-  pointer-events: auto;
-  transform: translate(-50%, -50%);
-}
-
-.train-entity.selected {
-  background: #ffe7ef;
-  box-shadow:
-    0 8px 0 rgba(43, 35, 48, 0.14),
-    0 0 0 8px color-mix(in srgb, var(--line-color) 34%, transparent);
-}
-
-.train-entity small {
-  color: var(--line-color);
-  font-size: 0.7rem;
 }
 
 .world-metrics {
@@ -726,11 +444,6 @@ dt,
 .object-card h3 {
   margin-top: 12px;
   font-size: 1.6rem;
-}
-
-.object-note {
-  margin-top: 10px;
-  font-size: 0.92rem;
 }
 
 dl {
