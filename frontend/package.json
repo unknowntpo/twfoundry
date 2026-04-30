@@ -1,37 +1,18 @@
 {
   "name": "twfoundry-frontend",
+  "version": "0.1.0",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc -b && vite build",
-    "preview": "vite preview",
-    "tdx:proxy": "bun run scripts/tdx-proxy.ts",
-    "check": "biome check .",
-    "check:fix": "biome check --write .",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "e2e": "playwright test",
-    "e2e:fullstack": "playwright test -c playwright.fullstack.config.ts"
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0"
   },
   "dependencies": {
-    "@vitejs/plugin-vue": "^5.2.1",
-    "maplibre-gl": "^5.24.0",
-    "pinia": "^2.3.0",
-    "typescript": "^5.7.2",
-    "vite": "^5.4.21",
-    "vue": "^3.5.13",
-    "vue-i18n": "^10.0.0",
-    "vue-router": "^4.5.0",
-    "vue-tsc": "^2.1.10"
+    "@vitejs/plugin-vue": "^5.2.3",
+    "three": "^0.176.0",
+    "vite": "^6.3.4",
+    "vue": "^3.5.13"
   },
-  "devDependencies": {
-    "@biomejs/biome": "^2.4.12",
-    "@playwright/test": "^1.49.1",
-    "@types/node": "^22.10.2",
-    "@vue/test-utils": "^2.4.6",
-    "jsdom": "^25.0.1",
-    "vitest": "^2.1.8"
-  }
+  "devDependencies": {}
 }
