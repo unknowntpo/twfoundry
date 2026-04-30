@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
+import MapLibreOverlay from './MapLibreOverlay.vue';
 import { defaultObject, layers, ontologyObjects, pipelineSteps } from './mockData.js';
 import { VoxelWorld } from './voxelWorld.js';
 
@@ -11,6 +12,8 @@ const isPlaying = ref(true);
 const isLive = ref(true);
 const leftCollapsed = ref(false);
 const rightCollapsed = ref(false);
+const mapBaseVisible = ref(true);
+const mapStatus = ref('loading');
 const speed = ref(15);
 const worldMinutes = ref(610);
 const stats = reactive({
@@ -39,10 +42,21 @@ const freshnessLabel = computed(() => {
 const activePipeline = computed(() => pipelineSteps.find((step) => step.key === selectedPipeline.value) ?? pipelineSteps[0]);
 const overlayLayers = computed(() => layers.filter((layer) => layer.key !== 'tiles'));
 const activeOverlayCount = computed(() => overlayLayers.value.filter((layer) => layerState[layer.key]).length);
+const mapStatusLabel = computed(() => {
+  if (!mapBaseVisible.value) return 'OFF';
+  if (mapStatus.value === 'ready') return 'ON';
+  if (mapStatus.value === 'error') return 'ERROR';
+  return 'LOADING';
+});
 
 function toggleLayer(key) {
   layerState[key] = !layerState[key];
   world.value?.setLayer(key, layerState[key]);
+}
+
+function toggleMapBase() {
+  mapBaseVisible.value = !mapBaseVisible.value;
+  world.value?.setMapBaseVisible(mapBaseVisible.value);
 }
 
 function selectPipeline(key) {
@@ -83,6 +97,7 @@ onMounted(() => {
       Object.assign(stats, payload);
     },
   });
+  world.value.setMapBaseVisible(mapBaseVisible.value);
 
   timer = window.setInterval(() => {
     if (!isPlaying.value) return;
@@ -100,7 +115,17 @@ onBeforeUnmount(() => {
 
 <template>
   <main class="app-shell">
-    <div ref="worldEl" class="world-stage" aria-label="Sakura voxel Taipei 3D scene"></div>
+    <MapLibreOverlay
+      :visible="mapBaseVisible"
+      :mrt-visible="layerState.mrt"
+      @status="mapStatus = $event"
+    />
+    <div
+      ref="worldEl"
+      class="world-stage"
+      :class="{ 'map-backed': mapBaseVisible }"
+      aria-label="Sakura voxel Taipei 3D scene"
+    ></div>
 
     <button
       class="panel-toggle panel-toggle-left"
@@ -169,6 +194,26 @@ onBeforeUnmount(() => {
           <strong>{{ stats.voxelEntities }}</strong>
         </div>
       </div>
+
+      <div class="panel-domain map-domain">
+        <div class="domain-heading">
+          <span>MAP BASE</span>
+          <small>OpenFreeMap · {{ mapStatusLabel }}</small>
+        </div>
+      </div>
+
+      <button
+        class="layer-pill map-base-pill"
+        :class="{ active: mapBaseVisible }"
+        type="button"
+        @click="toggleMapBase"
+      >
+        <span class="layer-swatch map-swatch"></span>
+        <span class="layer-main">
+          <strong>Actual Taipei map</strong>
+          <small>BASE · {{ mapBaseVisible ? 'ON' : 'OFF' }}</small>
+        </span>
+      </button>
 
       <div class="panel-domain overlay-domain">
         <div class="domain-heading">

@@ -48,8 +48,13 @@ button {
 .world-stage {
   position: absolute;
   inset: 0 0 clamp(108px, 14vh, 138px) 0;
+  z-index: 1;
   cursor: grab;
   touch-action: none;
+}
+
+.world-stage.map-backed {
+  background: linear-gradient(180deg, rgba(255, 223, 232, 0.08), rgba(255, 249, 251, 0.16));
 }
 
 .world-stage:active {
@@ -60,6 +65,39 @@ button {
   display: block;
   width: 100%;
   height: 100%;
+}
+
+.maplibre-overlay {
+  position: absolute;
+  inset: 0 0 clamp(108px, 14vh, 138px) 0;
+  z-index: 0;
+  overflow: hidden;
+  background: #d8eef8;
+  opacity: 1;
+  transition:
+    opacity 220ms ease,
+    filter 220ms ease;
+}
+
+.maplibre-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+  filter: blur(3px);
+}
+
+.maplibre-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.maplibre-tint {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 42% 38%, rgba(255, 223, 232, 0.26), transparent 28rem),
+    linear-gradient(180deg, rgba(255, 246, 250, 0.08), rgba(255, 214, 228, 0.22));
+  mix-blend-mode: soft-light;
 }
 
 .hud {
@@ -370,6 +408,10 @@ button {
   margin-top: 10px;
 }
 
+.map-domain {
+  margin-top: 12px;
+}
+
 .domain-heading {
   display: flex;
   align-items: flex-end;
@@ -408,6 +450,15 @@ button {
   background:
     linear-gradient(180deg, rgba(255, 246, 250, 0.98), rgba(255, 216, 228, 0.92)),
     rgba(255, 210, 220, 0.9);
+}
+
+.map-base-pill {
+  width: 100%;
+  min-height: 46px;
+}
+
+.map-swatch {
+  background: linear-gradient(135deg, #58b2dc, #f596aa);
 }
 
 .layer-swatch {

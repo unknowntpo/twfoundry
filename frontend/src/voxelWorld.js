@@ -125,6 +125,7 @@ export class VoxelWorld {
     this.selected = null;
     this.worldMinutes = 610;
     this.pipelineFocus = 'tiles';
+    this.mapBaseVisible = true;
     this.layerVisibility = {
       tiles: true,
       mrt: true,
@@ -185,6 +186,7 @@ export class VoxelWorld {
     this.scene.add(this.layers.avatar);
 
     this.applyPipelineFocus('tiles');
+    this.setMapBaseVisible(true);
     this.callbacks.onReady?.({
       visibleChunks: 9,
       observations: 128,
@@ -691,8 +693,20 @@ export class VoxelWorld {
 
   setLayer(key, visible) {
     this.layerVisibility[key] = visible;
-    if (key === 'tiles' && this.layers.tiles) this.layers.tiles.visible = visible;
+    if (key === 'tiles' && this.layers.tiles) this.layers.tiles.visible = visible && !this.mapBaseVisible;
     if (this.layers[key]) this.layers[key].visible = visible;
+    if (key === 'tiles' && this.layers.tiles) this.layers.tiles.visible = visible && !this.mapBaseVisible;
+  }
+
+  setMapBaseVisible(visible) {
+    this.mapBaseVisible = visible;
+    if (this.layers.tiles) this.layers.tiles.visible = !visible && this.layerVisibility.tiles;
+    if (this.layers.map) this.layers.map.visible = !visible;
+    if (this.layers.pipeline) this.layers.pipeline.visible = !visible;
+    if (visible) {
+      this.scene.background = null;
+      this.renderer.setClearColor(0x000000, 0);
+    }
   }
 
   setTime(minutes) {
@@ -773,11 +787,16 @@ export class VoxelWorld {
     const sunsetSky = new THREE.Color('#F8BBD0');
     const nightSky = new THREE.Color('#16244A');
     const sky = nightSky.clone().lerp(daySky, daylight).lerp(noonSky, Math.max(0, daylight - 0.72) * 0.5).lerp(sunsetSky, twilight * 0.48);
-    this.scene.background = sky;
+    if (this.mapBaseVisible) {
+      this.scene.background = null;
+      this.scene.fog.density = 0.0012 + night * 0.002 + twilight * 0.0008;
+    } else {
+      this.scene.background = sky;
+    }
 
     const fog = new THREE.Color('#2C3260').lerp(new THREE.Color(COLORS.sakuraMist), daylight).lerp(new THREE.Color('#F8C5D6'), twilight * 0.35);
     this.scene.fog.color.copy(fog);
-    this.scene.fog.density = 0.0025 + night * 0.006 + twilight * 0.0018;
+    if (!this.mapBaseVisible) this.scene.fog.density = 0.0025 + night * 0.006 + twilight * 0.0018;
 
     this.ambient.color.set(new THREE.Color('#AFC8FF').lerp(new THREE.Color('#FFF7FA'), daylight).lerp(new THREE.Color('#FFD6E4'), twilight * 0.35));
     this.ambient.intensity = 0.54 + daylight * 0.78 + twilight * 0.2;
