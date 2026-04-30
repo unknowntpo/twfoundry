@@ -712,20 +712,47 @@ Reduced motion：
 - 完整 action writeback
 - 全臺灣資料
 
-## Future Backend Direction
+## Backend Compute / Frontend Render Direction
 
-未來若加入資料平台，建議資料流如下：
+TWFoundry 的長期架構應採用 backend-computed world view，而不是讓前端自行解析地圖資料、計算 chunk、裁切跨區域事件。
 
 ```text
 TDX / weather / sensor / incident sources
   -> ingestion
-  -> observations
-  -> object state projection
-  -> world state API / WebSocket
-  -> frontend voxel world
+Map / vector tile / static route sources
+  -> GeoFeature normalization
+  -> OntologyObject assembly
+  -> DioramaChunk generation
+  -> ChunkProjection generation
+  -> WorldViewPayload API
+  -> frontend render modules
 ```
 
-Kafka Connect 可作為 ingestion 邊界，但不應直接扮演 ontology runtime。
+後端擁有：
+
+- truth assembly
+- geospatial normalization
+- spatial index
+- cross-chunk clipping
+- chunk generation
+- timeline snapshot / replay state
+
+前端擁有：
+
+- Three.js diorama rendering
+- camera / selection / hover / inspector
+- render module registry
+- animation polish
+- local fallback fixture for development
+
+正式邊界：
+
+```text
+Backend computes world.
+Frontend renders world.
+```
+
+第一版 backend compute 可以先使用 Java + mock/static data，重點是建立 `WorldViewPayload` contract。Kafka Connect 可作為 ingestion 邊界，但不應直接扮演 ontology runtime。Go / Rust 只在 profiling 證明 Java/JTS 幾何運算不足時，才作為專用 worker 引入。
 
 ## Public References
 
