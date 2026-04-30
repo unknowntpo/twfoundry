@@ -91,7 +91,9 @@ public final class WorldView {
       String id, String kind, List<String> capabilities, Map<String, Object> defaults) {}
 
   public record Freshness(
-      String status, String generatedAt, String sourceUpdatedAt, int maxAgeSeconds) {}
+      String mode, String generatedAt, int maxSourceLagSeconds, List<SourceFreshness> sources) {}
+
+  public record SourceFreshness(String source, String status, String updatedAt, int lagSeconds) {}
 
   public record Completeness(String status, List<String> missingOverlays, List<String> warnings) {}
 

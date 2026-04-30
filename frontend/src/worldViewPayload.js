@@ -71,10 +71,12 @@ export const fallbackWorldViewPayload = {
     { id: 'voxel.ops.incidentPulse', kind: 'marker' },
   ],
   freshness: {
-    status: 'fallback',
+    mode: 'fallback',
     generatedAt: new Date(0).toISOString(),
-    sourceUpdatedAt: new Date(0).toISOString(),
-    maxAgeSeconds: 60,
+    maxSourceLagSeconds: 60,
+    sources: [
+      { source: 'frontend:fallback', status: 'fallback', updatedAt: new Date(0).toISOString(), lagSeconds: 60 },
+    ],
   },
   completeness: { status: 'complete', missingOverlays: [], warnings: ['frontend fallback payload'] },
 };
@@ -82,14 +84,6 @@ export const fallbackWorldViewPayload = {
 export async function loadWorldViewPayload(fetcher = globalThis.fetch) {
   if (typeof fetcher !== 'function') {
     return { payload: fallbackWorldViewPayload, source: 'fallback' };
-  }
-
-  if (import.meta.env?.DEV ?? process.env.NODE_ENV !== 'production') {
-    const urls = [
-      'http://localhost:8081/api/world/view?focusId=taipei-core&lod=city&time=live',
-      '/api/world/view?focusId=taipei-core&lod=city&time=live',
-    ];
-    return loadWorldViewPayloadFromUrls(fetcher, urls);
   }
 
   const urls = ['/api/world/view?focusId=taipei-core&lod=city&time=live'];
@@ -141,6 +135,9 @@ export function validateWorldViewPayload(payload) {
   if (!payload.completeness?.status) {
     throw new Error('World view payload missing completeness status');
   }
+  if (!payload.freshness?.mode || typeof payload.freshness.maxSourceLagSeconds !== 'number' || !Array.isArray(payload.freshness.sources)) {
+    throw new Error('World view payload missing freshness metadata');
+  }
 }
 
 export function summarizeWorldView(payload) {
@@ -162,7 +159,7 @@ export function toUiOntologyObjects(payload) {
       type: formatType(object.type),
       layer,
       status: object.status,
-      freshness: payload.freshness?.status ?? 'unknown',
+      freshness: payload.freshness?.mode ?? payload.freshness?.status ?? 'unknown',
       summary: object.summary,
       properties: Object.entries(object.properties ?? {})
         .filter(([key]) => key !== 'overlay')

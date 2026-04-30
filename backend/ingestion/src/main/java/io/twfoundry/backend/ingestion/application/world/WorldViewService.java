@@ -19,6 +19,7 @@ import io.twfoundry.backend.ingestion.application.world.WorldView.Relationship;
 import io.twfoundry.backend.ingestion.application.world.WorldView.RenderModuleDescriptor;
 import io.twfoundry.backend.ingestion.application.world.WorldView.Request;
 import io.twfoundry.backend.ingestion.application.world.WorldView.SemanticZone;
+import io.twfoundry.backend.ingestion.application.world.WorldView.SourceFreshness;
 import io.twfoundry.backend.ingestion.application.world.WorldView.StaticFeatureProjection;
 import io.twfoundry.backend.ingestion.application.world.WorldView.TerrainCell;
 import io.twfoundry.backend.ingestion.application.world.WorldView.WorldFocus;
@@ -80,9 +81,19 @@ public class WorldViewService {
         filterObjects(objects, activeOverlays),
         projections,
         renderModules(),
-        new Freshness("live".equals(request.time()) ? "live" : "replay", now.toString(), now.minusSeconds(12).toString(), 60),
+        freshness(request, now),
         completeness,
         debugGeo ? new Diagnostics(true, geoFeatures, List.of("tdx:mrt-liveboard", "cwa:rainfall-mock", "epa:aqms-mock")) : null);
+  }
+
+  private Freshness freshness(Request request, Instant now) {
+    List<SourceFreshness> sources =
+        List.of(
+            new SourceFreshness("tdx:mrt-liveboard", "live", now.minusSeconds(12).toString(), 12),
+            new SourceFreshness("cwa:rainfall-mock", "live", now.minusSeconds(36).toString(), 36),
+            new SourceFreshness("epa:aqms-mock", "live", now.minusSeconds(58).toString(), 58));
+    int maxLag = sources.stream().mapToInt(SourceFreshness::lagSeconds).max().orElse(0);
+    return new Freshness("live".equals(request.time()) ? "live" : "replay", now.toString(), maxLag, sources);
   }
 
   public OntologyObject findObject(String objectId) {

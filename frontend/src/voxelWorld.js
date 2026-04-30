@@ -677,22 +677,26 @@ export class VoxelWorld {
     this.updatePointer(event);
     this.raycaster.setFromCamera(this.pointer, this.camera);
     const hits = this.raycaster.intersectObjects(this.clickables, true);
-    const hit = hits.find((item) => {
-      let obj = item.object;
-      while (obj) {
-        if (obj.userData?.twObject || obj.userData?.pipelineKey) return true;
-        obj = obj.parent;
-      }
-      return false;
-    });
-    if (!hit) return;
+    const obj = hits.map((item) => this.findSelectableAncestor(item.object)).find(Boolean);
+    if (!obj) return;
 
-    let obj = hit.object;
-    while (obj && !obj.userData?.twObject && !obj.userData?.pipelineKey) obj = obj.parent;
     const selected = obj.userData.twObject;
     this.setSelected(obj, selected);
     if (obj.userData.pipelineKey) this.applyPipelineFocus(obj.userData.pipelineKey);
     this.callbacks.onSelect?.(selected);
+  }
+
+  findSelectableAncestor(object3d) {
+    let obj = object3d;
+    let selectable = null;
+    while (obj) {
+      if (!obj.visible) return null;
+      if (!selectable && (obj.userData?.twObject || obj.userData?.pipelineKey)) {
+        selectable = obj;
+      }
+      obj = obj.parent;
+    }
+    return selectable;
   }
 
   setSelected(mesh, object) {
@@ -733,6 +737,7 @@ export class VoxelWorld {
 
   setWorldViewPayload(payload, objects = this.payloadObjects) {
     const nextLayer = createWorldViewLayer(payload, objects);
+    this.clearPayloadOverlayAnimationState();
     const overlayGroups = {
       mrt: new THREE.Group(),
       rain: new THREE.Group(),
@@ -760,6 +765,13 @@ export class VoxelWorld {
     });
 
     this.payloadLayer = nextLayer;
+  }
+
+  clearPayloadOverlayAnimationState() {
+    this.trains = [];
+    this.rainBars = [];
+    this.pmPuffs = [];
+    this.incidentMarkers = [];
   }
 
   replaceLayer(key, group) {

@@ -33,6 +33,9 @@ class WorldViewControllerE2eTest {
     assertTrue(body.path("objects").size() >= 5);
     assertTrue(body.path("projections").size() >= 4);
     assertTrue(body.path("renderModules").size() >= 4);
+    assertEquals("live", body.path("freshness").path("mode").asText());
+    assertTrue(body.path("freshness").path("maxSourceLagSeconds").asInt() > 0);
+    assertTrue(body.path("freshness").path("sources").size() >= 3);
   }
 
   @Test

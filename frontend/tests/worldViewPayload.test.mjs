@@ -13,6 +13,9 @@ const summary = summarizeWorldView(fallbackWorldViewPayload);
 assert.equal(summary.visibleChunks, 2);
 assert.equal(summary.ontologyObjects, 3);
 assert.ok(summary.voxelEntities >= fallbackWorldViewPayload.projections.length);
+assert.equal(fallbackWorldViewPayload.freshness.mode, 'fallback');
+assert.equal(typeof fallbackWorldViewPayload.freshness.maxSourceLagSeconds, 'number');
+assert.ok(fallbackWorldViewPayload.freshness.sources.length > 0);
 
 const uiObjects = toUiOntologyObjects(fallbackWorldViewPayload);
 assert.equal(uiObjects[0].id, 'train-R22');
@@ -24,12 +27,17 @@ const apiPayload = {
   ...fallbackWorldViewPayload,
   chunks: [...fallbackWorldViewPayload.chunks, { id: 'chunk-extra' }],
 };
-const apiResult = await loadWorldViewPayload(async () => ({
+const requestedUrls = [];
+const apiResult = await loadWorldViewPayload(async (url) => {
+  requestedUrls.push(url);
+  return {
   ok: true,
   json: async () => apiPayload,
-}));
+  };
+});
 assert.equal(apiResult.source, 'api');
 assert.equal(apiResult.payload.chunks.length, 3);
+assert.deepEqual(requestedUrls, ['/api/world/view?focusId=taipei-core&lod=city&time=live']);
 
 const fallbackResult = await loadWorldViewPayload(async () => ({
   ok: false,
