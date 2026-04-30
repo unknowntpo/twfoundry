@@ -11,6 +11,13 @@ export const TAIPEI_MAP_VIEW = {
   bearing: -17,
 };
 
+export const TAIPEI_DIORAMA_SURFACE_VIEW = {
+  ...TAIPEI_MAP_VIEW,
+  zoom: 11.05,
+  pitch: 0,
+  bearing: 0,
+};
+
 export function lngLatToGrid([lng, lat], gridSize = 30) {
   const { west, south, east, north } = TAIPEI_MAP_VIEW.bounds;
   const x = ((lng - west) / (east - west)) * (gridSize - 1);

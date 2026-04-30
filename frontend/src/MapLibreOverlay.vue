@@ -2,7 +2,7 @@
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { TAIPEI_MAP_VIEW } from './geoProjection.js';
+import { TAIPEI_DIORAMA_SURFACE_VIEW } from './geoProjection.js';
 import { mrtRouteGeoJson, mrtStationGeoJson } from './mrtMapData.js';
 
 const props = defineProps({
@@ -178,10 +178,10 @@ onMounted(() => {
   map = new maplibregl.Map({
     container: mapEl.value,
     style: 'https://tiles.openfreemap.org/styles/bright',
-    center: TAIPEI_MAP_VIEW.center,
-    zoom: TAIPEI_MAP_VIEW.zoom,
-    pitch: TAIPEI_MAP_VIEW.pitch,
-    bearing: TAIPEI_MAP_VIEW.bearing,
+    center: TAIPEI_DIORAMA_SURFACE_VIEW.center,
+    zoom: TAIPEI_DIORAMA_SURFACE_VIEW.zoom,
+    pitch: TAIPEI_DIORAMA_SURFACE_VIEW.pitch,
+    bearing: TAIPEI_DIORAMA_SURFACE_VIEW.bearing,
     attributionControl: false,
     interactive: false,
   });

@@ -734,12 +734,17 @@ export class VoxelWorld {
 
   setMapBaseVisible(visible) {
     this.mapBaseVisible = visible;
-    if (this.layers.tiles) this.layers.tiles.visible = !visible && this.layerVisibility.tiles;
-    if (this.layers.map) this.layers.map.visible = !visible;
-    if (this.layers.pipeline) this.layers.pipeline.visible = !visible;
+    if (this.layers.tiles) this.layers.tiles.visible = false;
+    if (this.layers.map) this.layers.map.visible = false;
+    if (this.layers.pipeline) this.layers.pipeline.visible = false;
     if (visible) {
       this.scene.background = null;
       this.renderer.setClearColor(0x000000, 0);
+    } else {
+      this.scene.background = new THREE.Color('#FFF7FA');
+      this.scene.fog.color.set('#FFF7FA');
+      this.scene.fog.density = 0.0018;
+      this.renderer.setClearColor('#FFF7FA', 1);
     }
   }
 

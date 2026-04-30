@@ -129,7 +129,7 @@ onBeforeUnmount(() => {
     <div
       ref="worldEl"
       class="world-stage"
-      :class="{ 'map-backed': mapBaseVisible }"
+      :class="{ 'map-backed': effectiveMapVisible }"
       aria-label="Sakura voxel Taipei 3D scene"
     ></div>
 
@@ -217,7 +217,7 @@ onBeforeUnmount(() => {
         <span class="layer-swatch map-swatch"></span>
         <span class="layer-main">
           <strong>Actual Taipei map</strong>
-          <small>BASE · {{ mapBaseVisible ? 'ON' : 'OFF' }}</small>
+          <small>DIORAMA SURFACE · {{ mapBaseVisible ? 'ON' : 'OFF' }}</small>
         </span>
       </button>
 
