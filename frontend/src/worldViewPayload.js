@@ -84,8 +84,39 @@ export async function loadWorldViewPayload(fetcher = globalThis.fetch) {
     return { payload: fallbackWorldViewPayload, source: 'fallback' };
   }
 
+  if (import.meta.env?.DEV ?? process.env.NODE_ENV !== 'production') {
+    const urls = [
+      'http://localhost:8081/api/world/view?focusId=taipei-core&lod=city&time=live',
+      '/api/world/view?focusId=taipei-core&lod=city&time=live',
+    ];
+    return loadWorldViewPayloadFromUrls(fetcher, urls);
+  }
+
+  const urls = ['/api/world/view?focusId=taipei-core&lod=city&time=live'];
+  return loadWorldViewPayloadFromUrls(fetcher, urls);
+}
+
+async function loadWorldViewPayloadFromUrls(fetcher, urls) {
+  for (const url of urls) {
+    try {
+      const response = await fetcher(url);
+      if (!response.ok) {
+        throw new Error(`World view request failed: ${response.status}`);
+      }
+      const payload = await response.json();
+      validateWorldViewPayload(payload);
+      return { payload, source: 'api' };
+    } catch {
+      // Try the next configured endpoint before falling back to local fixtures.
+    }
+  }
+
+  return { payload: fallbackWorldViewPayload, source: 'fallback' };
+}
+
+export async function loadWorldViewPayloadFromUrl(fetcher = globalThis.fetch, url) {
   try {
-    const response = await fetcher('/api/world/view?focusId=taipei-core&lod=city&time=live');
+    const response = await fetcher(url);
     if (!response.ok) {
       throw new Error(`World view request failed: ${response.status}`);
     }

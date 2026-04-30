@@ -814,7 +814,8 @@ button {
 .module-grid,
 .foundation-grid,
 .backend-source-grid,
-.ontology-component-grid {
+.ontology-component-grid,
+.render-preview-grid {
   display: grid;
   gap: 14px;
 }
@@ -840,6 +841,10 @@ button {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.render-preview-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .ds-panel {
   border: 1px solid rgba(234, 170, 194, 0.5);
   border-radius: 24px;
@@ -856,7 +861,8 @@ button {
 .capture-card,
 .module-card,
 .backend-source-card,
-.ontology-component-card {
+.ontology-component-card,
+.render-preview-card {
   border: 1px solid rgba(234, 170, 194, 0.5);
   border-radius: 20px;
   padding: 16px;
@@ -1001,6 +1007,25 @@ button {
   display: block;
   width: 100%;
   height: 100%;
+}
+
+.render-module-preview {
+  position: relative;
+  min-height: 260px;
+  overflow: hidden;
+  border: 1px solid rgba(230, 160, 188, 0.44);
+  border-radius: 18px;
+  background: #d8eef8;
+}
+
+.render-module-preview canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.secondary-title {
+  margin-top: 26px;
 }
 
 .ontology-preview {

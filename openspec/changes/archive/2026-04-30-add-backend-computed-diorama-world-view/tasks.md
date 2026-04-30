@@ -10,7 +10,7 @@
 - [x] Add backend tests proving one canonical object can produce projections in multiple chunks.
 - [x] Add contract fixture tests validating complete, partial, multi-chunk, and debugGeo payload shapes.
 - [x] Add frontend `WorldViewPayload` client and local fixture fallback.
-- [ ] Adapt frontend diorama renderer to consume chunks/objects/projections instead of assembling the world directly from local mock arrays.
-- [ ] Add frontend tests for projection click -> ontology object identity.
-- [ ] Add `/design-system` examples for payload-driven render modules.
-- [ ] Add Playwright screenshots for live world view and cross-chunk event selection.
+- [x] Adapt frontend diorama renderer to consume chunks/objects/projections instead of assembling the world directly from local mock arrays.
+- [x] Add frontend tests for projection click -> ontology object identity.
+- [x] Add `/design-system` examples for payload-driven render modules.
+- [x] Add Playwright screenshots for live world view and cross-chunk event selection.

@@ -1,10 +1,12 @@
 <script setup>
 import { computed, ref } from 'vue';
 import OntologyPreview from './OntologyPreview.vue';
+import RenderModulePreview from './RenderModulePreview.vue';
 import TrainPreview from './TrainPreview.vue';
 import { layers, ontologyObjects, pipelineSteps } from './mockData.js';
 import { createPm25Sensor, createStationAnchor, createWeatherCell } from './voxelEntities.js';
 import { MRT_TRAIN_BLUEPRINT, createMrtTrain } from './voxelTrain.js';
+import { fallbackWorldViewPayload, toUiOntologyObjects } from './worldViewPayload.js';
 
 const routeColors = [
   { name: 'Tamsui-Xinyi', color: '#E3002C' },
@@ -94,6 +96,14 @@ const voxelModules = [
   { name: 'Tile Chunk', renderer: 'transparent tile plate', source: 'MapLibre viewport', preview: 'Diagnostic geospatial backbone.' },
   { name: 'Voxel Avatar', renderer: 'local context character', source: 'user/cursor context', preview: 'Future position-aware risk query.' },
 ];
+
+const payloadObjects = toUiOntologyObjects(fallbackWorldViewPayload);
+const payloadChunks = new Map(fallbackWorldViewPayload.chunks.map((chunk) => [chunk.id, chunk]));
+const payloadRenderPreviews = fallbackWorldViewPayload.projections.map((projection) => ({
+  projection,
+  chunk: payloadChunks.get(projection.chunkId) ?? fallbackWorldViewPayload.chunks[0],
+  object: payloadObjects.find((object) => object.id === projection.objectId),
+}));
 
 const stateRules = [
   { state: 'Live', rule: 'worldTime advances, freshness chip stays active, observations remain current.' },
@@ -301,6 +311,38 @@ const ontologyComponentSummaries = computed(() => ontologyComponentCards.map((ca
             <div>
               <dt>Preview note</dt>
               <dd>{{ module.preview }}</dd>
+            </div>
+          </dl>
+        </article>
+      </div>
+
+      <div class="section-title secondary-title">
+        <p>Payload Driven</p>
+        <h2>Render Module Previews</h2>
+        <span>These previews are rendered from `WorldViewPayload.projections`, using the same projection renderer as the cockpit.</span>
+      </div>
+      <div class="render-preview-grid">
+        <article v-for="preview in payloadRenderPreviews" :key="preview.projection.id" class="render-preview-card">
+          <div class="ds-panel-head">
+            <div>
+              <p>{{ preview.projection.overlay }}</p>
+              <h2>{{ preview.projection.renderModule }}</h2>
+            </div>
+            <span class="ds-chip">{{ preview.object?.type }}</span>
+          </div>
+          <RenderModulePreview
+            :projection="preview.projection"
+            :chunk="preview.chunk"
+            :object="preview.object"
+          />
+          <dl class="metric-list compact">
+            <div>
+              <dt>Object</dt>
+              <dd>{{ preview.projection.objectId }}</dd>
+            </div>
+            <div>
+              <dt>Chunk</dt>
+              <dd>{{ preview.projection.chunkId }}</dd>
             </div>
           </dl>
         </article>

@@ -121,6 +121,7 @@ onMounted(() => {
     Object.assign(stats, summarizeWorldView(payload));
     const objects = toUiOntologyObjects(payload);
     world.value?.setOntologyObjects(objects);
+    world.value?.setWorldViewPayload(payload, objects);
     selectedObject.value = objects.find((object) => object.id === selectedObject.value.id) ?? objects[0] ?? selectedObject.value;
   });
 

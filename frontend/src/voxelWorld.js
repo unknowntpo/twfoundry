@@ -4,6 +4,7 @@ import { mrtRouteGeoJson, mrtStationGeoJson } from './mrtMapData.js';
 import { ontologyObjects } from './mockData.js';
 import { mrtRouteFeatureToProjection, mrtStationFeatureToProjection, projectLineToGrid, projectPointToGrid } from './ontologyProjection.js';
 import { createMrtTrain } from './voxelTrain.js';
+import { createWorldViewLayer } from './worldViewRenderModules.js';
 
 const GRID = 30;
 const CELL = 1.85;
@@ -124,6 +125,8 @@ export class VoxelWorld {
     this.incidentMarkers = [];
     this.pipelineNodes = {};
     this.objectAnchors = new Map();
+    this.payloadObjects = [];
+    this.payloadLayer = null;
     this.selected = null;
     this.worldMinutes = 610;
     this.pipelineFocus = 'tiles';
@@ -713,6 +716,7 @@ export class VoxelWorld {
   }
 
   setOntologyObjects(objects) {
+    this.payloadObjects = objects;
     const byId = new Map(objects.map((object) => [object.id, object]));
     this.clickables.forEach((object3d) => {
       const current = object3d.userData?.twObject;
@@ -723,6 +727,58 @@ export class VoxelWorld {
     this.objectAnchors.forEach((object3d, id) => {
       if (byId.has(id)) {
         object3d.userData.twObject = byId.get(id);
+      }
+    });
+  }
+
+  setWorldViewPayload(payload, objects = this.payloadObjects) {
+    const nextLayer = createWorldViewLayer(payload, objects);
+    const overlayGroups = {
+      mrt: new THREE.Group(),
+      rain: new THREE.Group(),
+      pm25: new THREE.Group(),
+      incident: new THREE.Group(),
+    };
+
+    nextLayer.children.slice().forEach((child) => {
+      const overlay = child.userData?.overlay;
+      if (overlayGroups[overlay]) {
+        overlayGroups[overlay].add(child);
+      }
+    });
+
+    Object.entries(overlayGroups).forEach(([key, group]) => {
+      group.name = `payload ${key} overlay`;
+      this.replaceLayer(key, group);
+      group.traverse((object3d) => {
+        if (object3d.userData?.twObject) {
+          this.registerAnchor(object3d.userData.twObject.id, object3d);
+          this.clickables.push(object3d);
+        }
+      });
+      group.visible = this.layerVisibility[key] ?? true;
+    });
+
+    this.payloadLayer = nextLayer;
+  }
+
+  replaceLayer(key, group) {
+    const previous = this.layers[key];
+    if (previous) {
+      this.scene.remove(previous);
+      this.removeClickablesForRoot(previous);
+    }
+    this.layers[key] = group;
+    this.scene.add(group);
+  }
+
+  removeClickablesForRoot(root) {
+    const removed = new Set();
+    root.traverse((object3d) => removed.add(object3d));
+    this.clickables = this.clickables.filter((object3d) => !removed.has(object3d));
+    this.objectAnchors.forEach((object3d, id) => {
+      if (removed.has(object3d)) {
+        this.objectAnchors.delete(id);
       }
     });
   }
