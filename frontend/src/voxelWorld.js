@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { lngLatToGrid } from './geoProjection.js';
+import { mrtRouteGeoJson, mrtStationGeoJson } from './mrtMapData.js';
 import { ontologyObjects } from './mockData.js';
 import { createMrtTrain } from './voxelTrain.js';
 
@@ -351,16 +353,28 @@ export class VoxelWorld {
     }), false, 'catmullrom', 0.42);
   }
 
+  makeGeoCurve(coordinates) {
+    return new THREE.CatmullRomCurve3(coordinates.map((lngLat) => {
+      const [gx, gz] = lngLatToGrid(lngLat, GRID);
+      const [wx, wz] = gridToWorld(gx, gz);
+      return new THREE.Vector3(wx, this.heightAt(gx, gz) + 1.05, wz);
+    }), false, 'catmullrom', 0.28);
+  }
+
   buildMrtLayer() {
     const group = new THREE.Group();
-    const lines = [
-      { name: '淡水信義線', color: '#E3002C', objectId: 'train-R22', pts: [[3, 2], [6, 5], [9, 8], [12, 11], [14, 14], [17, 16], [21, 17]] },
-      { name: '板南線', color: '#0070BD', objectId: 'station-BL12', pts: [[4, 15], [8, 15], [12, 14], [16, 14], [20, 14], [25, 14], [28, 14]] },
-      { name: '松山新店線', color: '#008659', objectId: 'station-BL12', pts: [[23, 8], [19, 10], [15, 12], [12, 16], [12, 21], [12, 27]] },
-    ];
+    const stationObject = ontologyObjects.find((item) => item.id === 'station-BL12') ?? ontologyObjects[1];
+    const trainObject = ontologyObjects.find((item) => item.id === 'train-R22') ?? ontologyObjects[0];
+    const stationsByRoute = new Map();
+    mrtStationGeoJson.features.forEach((feature) => {
+      const routeId = feature.properties.routeId;
+      if (!stationsByRoute.has(routeId)) stationsByRoute.set(routeId, []);
+      stationsByRoute.get(routeId).push(feature);
+    });
 
-    lines.forEach((line, lineIndex) => {
-      const curve = this.makeCurve(line.pts);
+    mrtRouteGeoJson.features.forEach((feature, lineIndex) => {
+      const line = feature.properties;
+      const curve = this.makeGeoCurve(feature.geometry.coordinates);
       const tube = new THREE.Mesh(
         new THREE.TubeGeometry(curve, 84, 0.13, 6, false),
         makeMat(line.color, {
@@ -370,26 +384,41 @@ export class VoxelWorld {
       );
       group.add(tube);
 
-      line.pts.forEach(([gx, gz], i) => {
-        if (i % 2 !== 0 && i !== line.pts.length - 1) return;
-        const object = ontologyObjects.find((item) => item.id === line.objectId) ?? ontologyObjects[1];
+      const routeStations = stationsByRoute.get(line.id) ?? [];
+      routeStations.forEach((stationFeature) => {
+        const [gx, gz] = lngLatToGrid(stationFeature.geometry.coordinates, GRID);
         const [wx, wz] = gridToWorld(gx, gz);
         const station = box(0.9, 0.76, 0.9, '#FFFFFF', {
           emissive: line.color,
           emissiveIntensity: 0.18,
         });
         station.position.set(wx, this.heightAt(gx, gz) + 1.45, wz);
-        station.userData.twObject = object;
+        station.userData.twObject = stationFeature.properties.id === 'BL12'
+          ? stationObject
+          : {
+            ...stationObject,
+            id: `station-${stationFeature.properties.id}`,
+            name: stationFeature.properties.name,
+            status: 'normal',
+            summary: `${stationFeature.properties.name} station projected from MRT GeoJSON into the voxel world.`,
+            properties: [
+              `stationId: ${stationFeature.properties.id}`,
+              `route: ${line.name}`,
+              `source: ${stationFeature.properties.source}`,
+              `projection: Taipei bounds`,
+            ],
+            relationships: ['belongs_to MRT route', 'rendered_by Taipei Metro overlay', 'anchored_to MapLibre base'],
+          };
         this.clickables.push(station);
-        this.registerAnchor(object.id, station);
+        if (stationFeature.properties.id === 'BL12') this.registerAnchor(stationObject.id, station);
         group.add(station);
       });
 
       for (let i = 0; i < 2; i++) {
         const train = this.makeTrain(line.color);
-        train.userData.twObject = ontologyObjects.find((item) => item.id === 'train-R22');
+        train.userData.twObject = trainObject;
         this.clickables.push(train);
-        if (i === 0 && lineIndex === 0) this.registerAnchor('train-R22', train);
+        if (i === 0 && line.id === 'tamsui-xinyi') this.registerAnchor('train-R22', train);
         this.trains.push({ mesh: train, curve, progress: (i / 2 + lineIndex * 0.17) % 1, speed: 0.035 + lineIndex * 0.006 });
         group.add(train);
       }
