@@ -9,6 +9,7 @@ import { createWorldViewLayer } from './worldViewRenderModules.js';
 const GRID = 30;
 const CELL = 1.85;
 const OFF = -GRID * CELL / 2;
+const MAP_REFERENCE_DISTANCE = 92;
 
 const COLORS = {
   sky: '#D8EEF8',
@@ -131,6 +132,7 @@ export class VoxelWorld {
     this.worldMinutes = 610;
     this.pipelineFocus = 'tiles';
     this.mapBaseVisible = true;
+    this.viewLod = 'map-reference';
     this.layerVisibility = {
       tiles: true,
       mrt: true,
@@ -810,16 +812,14 @@ export class VoxelWorld {
 
   setLayer(key, visible) {
     this.layerVisibility[key] = visible;
-    if (key === 'tiles' && this.layers.tiles) this.layers.tiles.visible = visible && !this.mapBaseVisible;
-    if (this.layers[key]) this.layers[key].visible = visible;
-    if (key === 'tiles' && this.layers.tiles) this.layers.tiles.visible = visible && !this.mapBaseVisible;
+    if (!this.mapBaseVisible && this.layers[key]) {
+      this.layers[key].visible = visible;
+    }
   }
 
   setMapBaseVisible(visible) {
     this.mapBaseVisible = visible;
-    if (this.layers.tiles) this.layers.tiles.visible = false;
-    if (this.layers.map) this.layers.map.visible = false;
-    if (this.layers.pipeline) this.layers.pipeline.visible = false;
+    this.applySceneLodVisibility();
     if (visible) {
       this.scene.background = null;
       this.renderer.setClearColor(0x000000, 0);
@@ -829,6 +829,17 @@ export class VoxelWorld {
       this.scene.fog.density = 0.0018;
       this.renderer.setClearColor('#FFF7FA', 1);
     }
+  }
+
+  applySceneLodVisibility() {
+    const showVoxelWorld = !this.mapBaseVisible;
+    if (this.layers.tiles) this.layers.tiles.visible = showVoxelWorld && (this.layerVisibility.tiles ?? true);
+    if (this.layers.map) this.layers.map.visible = showVoxelWorld;
+    if (this.layers.pipeline) this.layers.pipeline.visible = showVoxelWorld;
+    if (this.layers.avatar) this.layers.avatar.visible = showVoxelWorld;
+    ['mrt', 'rain', 'pm25', 'incident'].forEach((key) => {
+      if (this.layers[key]) this.layers[key].visible = showVoxelWorld && (this.layerVisibility[key] ?? true);
+    });
   }
 
   setTime(minutes) {
@@ -857,6 +868,7 @@ export class VoxelWorld {
     const dt = Math.min(this.clock.getDelta(), 0.05);
     const t = this.clock.elapsedTime;
     const daylight = this.updateSkyForTime(this.worldMinutes);
+    this.updateViewLod();
 
     this.trains.forEach((train) => {
       train.progress = (train.progress + dt * train.speed * (0.75 + daylight * 0.6)) % 1;
@@ -894,6 +906,14 @@ export class VoxelWorld {
 
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
+  }
+
+  updateViewLod() {
+    const distance = this.camera.position.distanceTo(this.controls.target);
+    const next = distance > MAP_REFERENCE_DISTANCE ? 'map-reference' : 'voxel-diorama';
+    if (next === this.viewLod) return;
+    this.viewLod = next;
+    this.callbacks.onLodChange?.(next);
   }
 
   updateSkyForTime(minutes) {

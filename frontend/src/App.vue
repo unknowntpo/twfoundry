@@ -17,6 +17,7 @@ const leftCollapsed = ref(false);
 const rightCollapsed = ref(false);
 const mapBaseVisible = ref(true);
 const mapStatus = ref('loading');
+const worldLod = ref('map-reference');
 const speed = ref(15);
 const worldMinutes = ref(610);
 const stats = reactive({
@@ -53,11 +54,12 @@ const overlayLayers = computed(() => layers.filter((layer) => layer.key !== 'til
 const activeOverlayCount = computed(() => overlayLayers.value.filter((layer) => layerState[layer.key]).length);
 const mapStatusLabel = computed(() => {
   if (!mapBaseVisible.value) return 'OFF';
+  if (worldLod.value === 'voxel-diorama') return 'ZOOMED IN';
   if (mapStatus.value === 'ready') return 'ON';
   if (mapStatus.value === 'error') return 'ERROR';
   return 'LOADING';
 });
-const effectiveMapVisible = computed(() => mapBaseVisible.value && mapStatus.value !== 'error');
+const effectiveMapVisible = computed(() => mapBaseVisible.value && mapStatus.value !== 'error' && worldLod.value === 'map-reference');
 const payloadStatusLabel = computed(() => worldPayloadSource.value === 'api' ? 'API' : 'FALLBACK');
 
 function toggleLayer(key) {
@@ -104,6 +106,10 @@ watch(worldMinutes, (value) => {
   world.value?.setTime(value);
 });
 
+watch(effectiveMapVisible, (visible) => {
+  world.value?.setMapBaseVisible(visible);
+});
+
 onMounted(() => {
   world.value = new VoxelWorld(worldEl.value, {
     onSelect: (object) => {
@@ -111,6 +117,9 @@ onMounted(() => {
     },
     onReady: (payload) => {
       Object.assign(stats, payload);
+    },
+    onLodChange: (lod) => {
+      worldLod.value = lod;
     },
   });
   world.value.setMapBaseVisible(effectiveMapVisible.value);
@@ -237,7 +246,7 @@ onBeforeUnmount(() => {
         <span class="layer-swatch map-swatch"></span>
         <span class="layer-main">
           <strong>Actual Taipei map</strong>
-          <small>DIORAMA SURFACE · {{ mapBaseVisible ? 'ON' : 'OFF' }}</small>
+          <small>REFERENCE LOD · {{ mapBaseVisible ? mapStatusLabel : 'OFF' }}</small>
         </span>
       </button>
 

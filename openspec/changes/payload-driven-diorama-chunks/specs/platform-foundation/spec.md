@@ -21,3 +21,17 @@ The frontend SHALL render the operational diorama from `WorldViewPayload` rather
 - **WHEN** the frontend builds the diorama scene
 - **THEN** projection render modules are placed in chunk-local coordinates over the rendered chunk base
 - **AND** domain overlay toggles hide and disable interaction for projection objects owned by that overlay
+
+#### Scenario: Zoomed-out map reference does not mix with voxel chunk entities
+
+- **GIVEN** the user zooms out beyond the diorama detail threshold
+- **WHEN** the frontend enters `map-reference` LOD
+- **THEN** real map tiles may be shown as a reference surface
+- **AND** voxel chunk entities are hidden so they do not appear detached from the map surface
+
+#### Scenario: Zoomed-in view restores the voxel diorama
+
+- **GIVEN** the user zooms into the operational focus area
+- **WHEN** the frontend enters `voxel-diorama` LOD
+- **THEN** the real map reference is hidden
+- **AND** the Sakura Voxel chunk world, domain overlays, and ontology interactions are visible

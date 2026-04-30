@@ -20,6 +20,7 @@ backend compute
      -> overlay/domain entities
 
 frontend
+  -> map reference LOD
   -> chunk base renderer
   -> projection renderer
   -> object selection / inspector
@@ -33,6 +34,7 @@ frontend
 - Render chunk base geometry before overlay projections.
 - Keep overlay toggles scoped to operational domains, not implementation-only chunk debug layers.
 - Allow future focus changes to replace the world by replacing the payload.
+- Use real map tiles as a zoomed-out reference LOD, then switch to voxel chunk rendering when the user zooms in.
 
 **Non-Goals:**
 
@@ -43,6 +45,8 @@ frontend
 ## Decisions
 
 - Add a chunk renderer separate from the projection renderer.
+- Treat MapLibre/OpenFreeMap as a reference surface, not as the final world surface.
+- Switch between `map-reference` and `voxel-diorama` LOD by camera distance until backend focus/zoom contracts are introduced.
 - Treat `terrain` as base surface voxels.
 - Treat `staticFeatures` as stable physical anchors such as station markers, bridges, route support pillars, or landmark blocks.
 - Treat `semanticZones` as low-opacity contextual volumes or tinted terrain regions.
@@ -54,3 +58,4 @@ frontend
 - Rendering every terrain cell as an individual mesh can become expensive; use merged geometry or instancing when payload size grows.
 - Chunk seams need deterministic local transforms, otherwise neighboring chunks will visually drift.
 - If semantic zones are too opaque they will recreate the old glass overlay problem; default opacity should stay subtle.
+- The temporary camera-distance LOD threshold is a frontend heuristic. Later backend world focus should provide explicit LOD and chunk window metadata.

@@ -4,6 +4,7 @@
 - [ ] 1.2 Add reusable renderer for `DioramaChunk.staticFeatures`.
 - [ ] 1.3 Add reusable renderer for `DioramaChunk.semanticZones`.
 - [ ] 1.4 Compose chunk base layer before projection overlays.
+- [x] 1.5 Add temporary camera-distance LOD switch between map reference and voxel diorama.
 
 ## 2. Interaction And Identity
 
