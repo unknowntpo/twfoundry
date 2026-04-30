@@ -1,219 +1,579 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import {
-  paletteTokens,
-  registryRules,
-  type VoxelModuleKey,
-  voxelModules,
-} from "@/features/design-system/voxel/modules";
-import VoxelPreview from "@/features/design-system/voxel/VoxelPreview.vue";
+import { useI18n } from "vue-i18n";
+import MobilePanelSwitch from "@/features/mrt/components/MobilePanelSwitch.vue";
 import BaseBadge from "@/shared/components/BaseBadge.vue";
 import BaseButton from "@/shared/components/BaseButton.vue";
 import BaseCard from "@/shared/components/BaseCard.vue";
 import BasePanel from "@/shared/components/BasePanel.vue";
 import BaseSectionLabel from "@/shared/components/BaseSectionLabel.vue";
+import LocaleSwitcher from "@/shared/components/LocaleSwitcher.vue";
 
-const selectedModule = ref<VoxelModuleKey>("moving-object");
+const { t } = useI18n();
+const previewMobilePanel = ref<"layers" | "detail" | "time">("detail");
+const previewMobilePanelOpen = ref(true);
 
-const selectedModuleDetail = computed(
-  () => voxelModules.find((module) => module.key === selectedModule.value) ?? voxelModules[0],
+const colorTokens = [
+  ["Canvas", "--twf-color-canvas", "#F7F3EE", "Warm app shell background."],
+  ["Surface", "--twf-color-surface", "#FBF8F3", "Panels, sidebars, sheets, and cards."],
+  ["Raised", "--twf-color-surface-raised", "#FFFFFF", "Interactive controls and elevated layers."],
+  ["Ink", "--twf-color-text", "#1F1B17", "Primary text and selected controls."],
+  ["Muted ink", "--twf-color-text-muted", "#6C635B", "Metadata and secondary copy."],
+  [
+    "Faint ink",
+    "--twf-color-text-faint",
+    "#8A7E72",
+    "Labels, helper text, and low-emphasis icons.",
+  ],
+  ["Line", "--twf-color-border", "#E6DED2", "Card, input, and control boundaries."],
+  ["Warm accent", "--twf-color-accent-warm", "#C97B63", "Focused non-route emphasis."],
+  ["Route red", "--twf-color-route-red", "#D92D3A", "MRT route semantics only."],
+  ["Route blue", "--twf-color-route-blue", "#2F6FD6", "MRT route semantics only."],
+  ["Route green", "--twf-color-route-green", "#2F9E62", "MRT route semantics only."],
+];
+
+const spacingTokens = [
+  ["4px", "Micro alignment"],
+  ["8px", "Compact clusters"],
+  ["12px", "Small controls"],
+  ["16px", "Default component gap"],
+  ["24px", "Card and panel padding"],
+  ["40px", "Major section rhythm"],
+];
+
+const breakpointTokens = computed(() => [
+  ["Mobile", "0-639px", "Map remains visible; sheet switch controls Layers, Detail, and Time."],
+  ["Tablet", "640-1023px", "Map-first layout with compact shadcn-style segmented sheet controls."],
+  ["Desktop", "1024px+", "Full operator layout with rails, side panels, map, and timeline."],
+]);
+
+const libraryTradeoffs = computed(() => [
+  ["shadcn-vue", t("designSystem.tradeoffs.adopt"), "Adopt the primitive vocabulary for Vue."],
+  ["shadcn/ui", "Reference", "React source language; use as design/API reference, not dependency."],
+  ["Reka UI", "Foundation", "Headless primitive layer behind the Vue implementation."],
+  [
+    "Local Vue components",
+    "Wrap",
+    "Keep project-owned wrappers for MRT-specific copy, tokens, and map chrome.",
+  ],
+  ["Ant Design Vue", "Avoid", "Too heavy and visually opinionated for this map-first tool."],
+]);
+
+const shadcnPrinciples = computed(() => [
+  [t("designSystem.shadcn.profilePrimitive"), t("designSystem.shadcn.profilePrimitiveBody")],
+  [t("designSystem.shadcn.profileNeutral"), t("designSystem.shadcn.profileNeutralBody")],
+  [t("designSystem.shadcn.profileComposable"), t("designSystem.shadcn.profileComposableBody")],
+]);
+
+const stateRules = computed(() => [
+  ["Default", "TWFoundry warm surface, soft border, ink foreground."],
+  ["Hover", "Raised surface and stronger border, no layout movement."],
+  ["Focus", "2px ring using existing ink/accent tokens; keyboard-first."],
+  ["Loading", "Skeleton or reserved row; spinner only for active async work."],
+  ["Error", "Destructive tone plus source-backed recovery copy."],
+]);
+
+const commonComponents = computed(
+  () =>
+    [
+      ["actions", "button", "implemented"],
+      ["actions", "iconButton", "partial"],
+      ["actions", "segmentedControl", "partial"],
+      ["feedback", "badge", "implemented"],
+      ["feedback", "inlineAlert", "partial"],
+      ["feedback", "emptyState", "partial"],
+      ["feedback", "loadingState", "partial"],
+      ["feedback", "toast", "gap"],
+      ["overlays", "dialog", "gap"],
+      ["overlays", "drawer", "gap"],
+      ["overlays", "tooltip", "gap"],
+      ["data", "liveboard", "implemented"],
+      ["data", "statChip", "partial"],
+      ["map", "timeline", "implemented"],
+      ["map", "mapControl", "implemented"],
+    ] as const,
 );
 
-const componentLayers = [
-  ["Primitive", "BaseButton, BaseBadge, BaseCard, BasePanel", "local shadcn-style wrappers"],
-  ["Domain", "OverlayToggle, TimelineControl, OntologyInspector", "semantic app components"],
-  ["Renderer", "MovingObjectRenderer, FieldVolumeRenderer", "Three.js scene modules"],
-  ["Projection", "OverlayDefinition -> VoxelEntityRef", "data-driven rendering contract"],
-];
+const statusSummary = computed(() => ({
+  implemented: commonComponents.value.filter(([, , status]) => status === "implemented").length,
+  partial: commonComponents.value.filter(([, , status]) => status === "partial").length,
+  gap: commonComponents.value.filter(([, , status]) => status === "gap").length,
+}));
 
-const objectRelationshipRows = [
-  ["Overlay", "Taipei Metro", "Controls visibility and interaction boundary."],
-  ["Ontology object", "Train T1005", "Stable operational object across live and historical time."],
-  [
-    "Data points",
-    "position, speed, headway, next stop",
-    "Many observations can describe one object.",
-  ],
-  [
-    "Voxel entities",
-    "train mesh, hover hit area, focus ring",
-    "One object may project into multiple visible entities.",
-  ],
-];
+const componentGroups = computed(() => {
+  const order = ["actions", "feedback", "overlays", "data", "map"] as const;
+  return order.map((category) => ({
+    category,
+    items: commonComponents.value.filter(([itemCategory]) => itemCategory === category),
+  }));
+});
+
+function componentStatusTone(status: string): "green" | "blue" | "warm" {
+  if (status === "implemented") {
+    return "green";
+  }
+
+  if (status === "partial") {
+    return "blue";
+  }
+
+  return "warm";
+}
 </script>
 
 <template>
   <main class="design-system-page">
     <header class="hero">
-      <nav class="hero-nav" aria-label="Design system navigation">
-        <RouterLink class="back-link" to="/">Back to cockpit</RouterLink>
-        <BaseBadge tone="red">Sakura Voxel</BaseBadge>
-        <BaseBadge tone="blue">Vue + Three.js</BaseBadge>
-      </nav>
-
-      <BaseSectionLabel>TWFoundry Design System</BaseSectionLabel>
-      <h1>Sakura Voxel Operations UI</h1>
-      <p>
-        Design System for the current TWFoundry direction: a bright, gentle, palm-sized Taipei
-        voxel world. Panels stay readable and solid; glass/crystal effects belong to selected
-        voxel entities, rainfall volumes, and incident tension states.
-      </p>
-
+      <div class="hero-nav">
+        <RouterLink class="back-link" to="/">{{ t("designSystem.back") }}</RouterLink>
+        <LocaleSwitcher />
+      </div>
+      <BaseSectionLabel>{{ t("designSystem.label") }}</BaseSectionLabel>
+      <h1>{{ t("designSystem.title") }}</h1>
+      <p>{{ t("designSystem.intro") }}</p>
       <div class="hero-actions">
-        <BaseButton variant="primary">Renderer registry first</BaseButton>
-        <BaseButton>Local Vue primitives</BaseButton>
+        <BaseButton variant="primary">{{ t("designSystem.actions.primary") }}</BaseButton>
+        <BaseButton>{{ t("designSystem.actions.secondary") }}</BaseButton>
+        <BaseBadge tone="warm">{{ t("designSystem.actions.direction") }}</BaseBadge>
       </div>
     </header>
 
-    <section class="overview-grid" aria-label="Design principles">
+    <section class="principles" :aria-label="t('designSystem.principles.aria')">
       <BaseCard>
-        <BaseSectionLabel>Visual Direction</BaseSectionLabel>
-        <h2>明亮、溫柔、櫻花紛飛</h2>
-        <p>
-          Use Japanese nature-inspired colors: sakura, sora, mizu, wakatake, yamabuki, and fuji.
-          The city should read as a cute solid voxel RPG diorama, not a flat dashboard skin.
-        </p>
+        <BaseSectionLabel>{{ t("designSystem.principles.label") }}</BaseSectionLabel>
+        <h2>{{ t("designSystem.principles.warmTitle") }}</h2>
+        <p>{{ t("designSystem.principles.warmBody") }}</p>
       </BaseCard>
       <BaseCard>
-        <BaseSectionLabel>Interaction Direction</BaseSectionLabel>
-        <h2>Operational, not decorative</h2>
-        <p>
-          Every voxel entity is traceable to an overlay, ontology object, or observation stream.
-          Hover, selection, timeline replay, and overlay toggles must share the same object model.
-        </p>
+        <BaseSectionLabel>{{ t("designSystem.principles.label") }}</BaseSectionLabel>
+        <h2>{{ t("designSystem.principles.semanticTitle") }}</h2>
+        <p>{{ t("designSystem.principles.semanticBody") }}</p>
       </BaseCard>
       <BaseCard>
-        <BaseSectionLabel>Component Direction</BaseSectionLabel>
-        <h2>shadcn-like local components</h2>
-        <p>
-          Use owned Vue wrappers with semantic variants. The public API is token and role based,
-          not raw hex values or one-off CSS classes.
-        </p>
+        <BaseSectionLabel>{{ t("designSystem.principles.label") }}</BaseSectionLabel>
+        <h2>{{ t("designSystem.principles.mapTitle") }}</h2>
+        <p>{{ t("designSystem.principles.mapBody") }}</p>
       </BaseCard>
     </section>
 
-    <section class="section-grid" aria-labelledby="palette-title">
+    <section class="section-grid" aria-labelledby="shadcn-title">
       <div>
-        <BaseSectionLabel>Semantic Tokens</BaseSectionLabel>
-        <h2 id="palette-title">Sakura Voxel palette</h2>
-        <p>
-          These colors are the current system direction. They are exposed as semantic families so
-          renderer modules can request meaning, not hardcoded hex values.
-        </p>
+        <BaseSectionLabel>{{ t("designSystem.shadcn.label") }}</BaseSectionLabel>
+        <h2 id="shadcn-title">{{ t("designSystem.shadcn.title") }}</h2>
+        <p>{{ t("designSystem.shadcn.body") }}</p>
       </div>
-      <div class="token-grid">
-        <BasePanel v-for="[name, token, hex, usage] in paletteTokens" :key="token" class="token-card">
-          <span class="swatch" :style="{ backgroundColor: hex }" aria-hidden="true" />
-          <div>
-            <h3>{{ name }}</h3>
-            <code>{{ token }}</code>
-            <p>{{ usage }}</p>
+      <div class="docs-stack">
+        <BaseCard>
+          <div class="principle-list">
+            <BasePanel v-for="[title, body] in shadcnPrinciples" :key="title">
+              <h3>{{ title }}</h3>
+              <p>{{ body }}</p>
+            </BasePanel>
           </div>
+        </BaseCard>
+        <BaseCard>
+          <BaseSectionLabel>{{ t("designSystem.shadcn.stateLabel") }}</BaseSectionLabel>
+          <div class="state-rule-list">
+            <div v-for="[state, rule] in stateRules" :key="state">
+              <strong>{{ state }}</strong>
+              <span>{{ rule }}</span>
+            </div>
+          </div>
+        </BaseCard>
+      </div>
+    </section>
+
+    <section class="section-grid" aria-labelledby="color-title">
+      <div>
+        <BaseSectionLabel>{{ t("designSystem.colors.label") }}</BaseSectionLabel>
+        <h2 id="color-title">{{ t("designSystem.colors.title") }}</h2>
+      </div>
+      <div class="token-grid" data-testid="design-token-grid">
+        <BasePanel v-for="[name, token, hex, usage] in colorTokens" :key="token">
+          <div class="swatch-row">
+            <span class="swatch" :style="{ backgroundColor: hex }" aria-hidden="true" />
+            <div>
+              <h3>{{ name }}</h3>
+              <code>{{ token }}</code>
+            </div>
+          </div>
+          <p>{{ usage }}</p>
         </BasePanel>
       </div>
     </section>
 
-    <section class="section-grid render-lab" aria-labelledby="render-title">
+    <section class="section-grid" aria-labelledby="type-title">
       <div>
-        <BaseSectionLabel>Render Modules</BaseSectionLabel>
-        <h2 id="render-title">Three.js voxel previews</h2>
-        <p>
-          Each module is a reusable renderer class target. New backend overlays should match
-          geometry, visual role, object type, style token, and time mode into this registry.
-        </p>
-
-        <div class="module-list" role="tablist" aria-label="Voxel renderer modules">
-          <button
-            v-for="module in voxelModules"
-            :key="module.key"
-            type="button"
-            :class="{ active: selectedModule === module.key }"
-            @click="selectedModule = module.key"
-          >
-            <span>{{ module.renderer }}</span>
-            <small>{{ module.input }}</small>
-          </button>
-        </div>
+        <BaseSectionLabel>{{ t("designSystem.typography.label") }}</BaseSectionLabel>
+        <h2 id="type-title">{{ t("designSystem.typography.title") }}</h2>
       </div>
-
-      <BaseCard class="preview-card">
-        <VoxelPreview :module-key="selectedModule" />
-        <div class="preview-meta">
-          <div>
-            <BaseSectionLabel>{{ selectedModuleDetail.visualRole }} renderer</BaseSectionLabel>
-            <h3>{{ selectedModuleDetail.title }}</h3>
-            <p>{{ selectedModuleDetail.description }}</p>
+      <div class="docs-stack">
+        <BaseCard>
+          <div class="type-sample display">{{ t("designSystem.typography.display") }}</div>
+          <div class="type-sample heading">{{ t("designSystem.typography.heading") }}</div>
+          <div class="type-sample body">{{ t("designSystem.typography.body") }}</div>
+          <div class="type-sample meta">{{ t("designSystem.typography.meta") }}</div>
+        </BaseCard>
+        <BaseCard>
+          <BaseSectionLabel>{{ t("designSystem.typography.cjkLabel") }}</BaseSectionLabel>
+          <h3>{{ t("designSystem.typography.cjkTitle") }}</h3>
+          <p>{{ t("designSystem.typography.cjkBody") }}</p>
+          <div class="type-sample cjk">{{ t("designSystem.typography.cjkSample") }}</div>
+          <code>--twf-font-family-cjk</code>
+        </BaseCard>
+        <BaseCard>
+          <div class="spacing-list">
+            <div v-for="[size, usage] in spacingTokens" :key="size">
+              <strong>{{ size }}</strong>
+              <span>{{ usage }}</span>
+            </div>
           </div>
-          <div class="badge-row">
-            <BaseBadge tone="blue">{{ selectedModuleDetail.geometryType }}</BaseBadge>
-            <BaseBadge tone="green">{{ selectedModuleDetail.timeMode }}</BaseBadge>
-            <BaseBadge tone="warm">{{ selectedModuleDetail.styleToken }}</BaseBadge>
+        </BaseCard>
+      </div>
+    </section>
+
+    <section class="section-grid" aria-labelledby="components-title">
+      <div>
+        <BaseSectionLabel>{{ t("designSystem.components.label") }}</BaseSectionLabel>
+        <h2 id="components-title">{{ t("designSystem.components.title") }}</h2>
+      </div>
+      <div class="component-grid">
+        <BaseCard>
+          <BaseSectionLabel>{{ t("designSystem.components.buttons") }}</BaseSectionLabel>
+          <div class="component-row">
+            <BaseButton variant="primary">{{ t("designSystem.components.refresh") }}</BaseButton>
+            <BaseButton>{{ t("designSystem.components.openLayers") }}</BaseButton>
+            <BaseBadge tone="blue">{{ t("designSystem.components.blueLine") }}</BaseBadge>
+            <BaseBadge tone="green">{{ t("designSystem.components.onTime") }}</BaseBadge>
+          </div>
+        </BaseCard>
+        <BaseCard>
+          <BaseSectionLabel>{{ t("designSystem.components.liveBoardRow") }}</BaseSectionLabel>
+          <div class="liveboard-example">
+            <span class="route-line" aria-hidden="true" />
+            <div>
+              <h3>{{ t("designSystem.components.destination") }}</h3>
+              <p>{{ t("designSystem.components.direction") }}</p>
+            </div>
+            <strong>{{ t("designSystem.components.arrival") }}</strong>
+          </div>
+        </BaseCard>
+        <BaseCard>
+          <BaseSectionLabel>{{ t("designSystem.components.timelineControl") }}</BaseSectionLabel>
+          <div class="timeline-example">
+            <div class="timeline-example-transport">
+              <span>‹</span>
+              <span class="active">Ⅱ</span>
+              <span>›</span>
+              <span class="pill">{{ t("dashboard.timeline.now") }}</span>
+            </div>
+            <div class="timeline-example-meta">
+              <strong>{{ t("designSystem.components.timelineSnapshot") }}</strong>
+              <p>{{ t("designSystem.components.timelineStatus") }}</p>
+            </div>
+            <div class="timeline-example-scrubber">
+              <span>{{ t("designSystem.components.timelineSource") }}</span>
+              <div class="timeline-example-track">
+                <span />
+              </div>
+            </div>
+          </div>
+        </BaseCard>
+      </div>
+    </section>
+
+    <section class="section-grid" aria-labelledby="common-components-title">
+      <div>
+        <BaseSectionLabel>{{ t("designSystem.commonComponents.label") }}</BaseSectionLabel>
+        <h2 id="common-components-title">{{ t("designSystem.commonComponents.title") }}</h2>
+      </div>
+      <div class="docs-stack">
+        <BaseCard data-testid="common-component-inventory">
+          <BaseSectionLabel>{{ t("designSystem.commonComponents.inventory") }}</BaseSectionLabel>
+          <div class="summary-badges">
+            <BaseBadge tone="green">
+              {{ t("designSystem.commonComponents.statusImplemented") }} · {{ statusSummary.implemented }}
+            </BaseBadge>
+            <BaseBadge tone="blue">
+              {{ t("designSystem.commonComponents.statusPartial") }} · {{ statusSummary.partial }}
+            </BaseBadge>
+            <BaseBadge tone="warm">
+              {{ t("designSystem.commonComponents.statusGap") }} · {{ statusSummary.gap }}
+            </BaseBadge>
+          </div>
+          <div class="inventory-groups">
+            <details
+              v-for="({ category, items }, index) in componentGroups"
+              :key="category"
+              class="inventory-group"
+              :open="index === 0"
+            >
+              <summary class="inventory-summary">
+                <div>
+                  <strong>{{ t(`designSystem.commonComponents.categories.${category}`) }}</strong>
+                  <p>{{ items.length }} components</p>
+                </div>
+                <span>{{ index === 0 ? "−" : "+" }}</span>
+              </summary>
+
+              <div class="inventory-list">
+                <article
+                  v-for="[, itemKey, status] in items"
+                  :key="itemKey"
+                  class="inventory-row"
+                >
+                  <div>
+                    <strong>{{ t(`designSystem.commonComponents.items.${itemKey}.0`) }}</strong>
+                    <p>{{ t(`designSystem.commonComponents.items.${itemKey}.1`) }}</p>
+                  </div>
+                  <div class="inventory-preview">
+                    <div class="preview-surface" :data-component="itemKey">
+                      <BaseButton
+                        v-if="itemKey === 'button'"
+                        size="sm"
+                        variant="primary"
+                      >
+                        Run
+                      </BaseButton>
+                      <button
+                        v-else-if="itemKey === 'iconButton'"
+                        type="button"
+                        class="mini-icon-button"
+                        aria-label="Preview icon button"
+                      >
+                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                          <path d="M3 8h10M8 3v10" />
+                        </svg>
+                      </button>
+                      <div v-else-if="itemKey === 'segmentedControl'" class="mini-segmented">
+                        <span class="active">Map</span>
+                        <span>Detail</span>
+                      </div>
+                      <BaseBadge v-else-if="itemKey === 'badge'" tone="green">On time</BaseBadge>
+                      <div v-else-if="itemKey === 'inlineAlert'" class="mini-alert">
+                        Feed unavailable
+                      </div>
+                      <div v-else-if="itemKey === 'emptyState'" class="mini-empty">
+                        <strong>No rows</strong>
+                        <span>Select a station</span>
+                      </div>
+                      <div v-else-if="itemKey === 'loadingState'" class="mini-loading">
+                        <span />
+                        <span />
+                      </div>
+                      <div v-else-if="itemKey === 'toast'" class="mini-toast">
+                        Synced
+                      </div>
+                      <div v-else-if="itemKey === 'dialog'" class="mini-dialog">
+                        <strong>Confirm</strong>
+                        <div class="mini-dialog-actions">
+                          <span />
+                          <span class="primary" />
+                        </div>
+                      </div>
+                      <div v-else-if="itemKey === 'drawer'" class="mini-drawer">
+                        <span class="handle" />
+                        <strong>Sheet</strong>
+                      </div>
+                      <div v-else-if="itemKey === 'tooltip'" class="mini-tooltip">
+                        Layers
+                      </div>
+                      <div v-else-if="itemKey === 'liveboard'" class="mini-liveboard">
+                        <span class="route" />
+                        <strong>2 min</strong>
+                      </div>
+                      <div v-else-if="itemKey === 'statChip'" class="mini-stat-chip">
+                        18 trains
+                      </div>
+                      <div v-else-if="itemKey === 'timeline'" class="mini-timeline">
+                        <div class="mini-timeline-top">
+                          <span class="chip">▶</span>
+                          <span class="meta">09:12 PM</span>
+                          <span class="count">12/30</span>
+                        </div>
+                        <span class="track" />
+                      </div>
+                      <div v-else-if="itemKey === 'mapControl'" class="mini-map-control">
+                        <span>3D</span>
+                      </div>
+                    </div>
+                    <div class="inventory-meta">
+                      <span>{{ t(`designSystem.commonComponents.categories.${category}`) }}</span>
+                      <BaseBadge :tone="componentStatusTone(status)">
+                        {{
+                          t(
+                            `designSystem.commonComponents.status${status.charAt(0).toUpperCase()}${status.slice(1)}`,
+                          )
+                        }}
+                      </BaseBadge>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </details>
+          </div>
+        </BaseCard>
+
+        <BaseCard data-testid="overlay-patterns">
+          <BaseSectionLabel>{{ t("designSystem.commonComponents.overlayLabel") }}</BaseSectionLabel>
+          <h3>{{ t("designSystem.commonComponents.overlayTitle") }}</h3>
+          <div class="overlay-grid">
+            <BasePanel class="overlay-preview dialog-preview">
+              <BaseSectionLabel>{{ t("designSystem.commonComponents.dialogTitle") }}</BaseSectionLabel>
+              <div class="dialog-box">
+                <strong>{{ t("designSystem.commonComponents.previewDialogTitle") }}</strong>
+                <p>{{ t("designSystem.commonComponents.previewDialogBody") }}</p>
+                <div class="component-row compact-row">
+                  <BaseButton>{{ t("designSystem.commonComponents.previewDialogCancel") }}</BaseButton>
+                  <BaseButton variant="primary">
+                    {{ t("designSystem.commonComponents.previewDialogConfirm") }}
+                  </BaseButton>
+                </div>
+              </div>
+              <p>{{ t("designSystem.commonComponents.dialogBody") }}</p>
+            </BasePanel>
+
+            <BasePanel class="overlay-preview toast-preview">
+              <BaseSectionLabel>{{ t("designSystem.commonComponents.toastTitle") }}</BaseSectionLabel>
+              <div class="toast-box">
+                <strong>{{ t("designSystem.commonComponents.previewToastTitle") }}</strong>
+                <p>{{ t("designSystem.commonComponents.previewToastBody") }}</p>
+              </div>
+              <p>{{ t("designSystem.commonComponents.toastBody") }}</p>
+            </BasePanel>
+
+            <BasePanel class="overlay-preview drawer-preview">
+              <BaseSectionLabel>{{ t("designSystem.commonComponents.drawerTitle") }}</BaseSectionLabel>
+              <div class="drawer-shell">
+                <div class="drawer-handle" aria-hidden="true" />
+                <strong>{{ t("designSystem.commonComponents.previewDrawerTitle") }}</strong>
+                <p>{{ t("designSystem.commonComponents.previewDrawerBody") }}</p>
+              </div>
+              <p>{{ t("designSystem.commonComponents.drawerBody") }}</p>
+            </BasePanel>
+          </div>
+        </BaseCard>
+      </div>
+    </section>
+
+    <section class="section-grid" aria-labelledby="breakpoint-title">
+      <div>
+        <BaseSectionLabel>{{ t("designSystem.breakpoints.label") }}</BaseSectionLabel>
+        <h2 id="breakpoint-title">{{ t("designSystem.breakpoints.title") }}</h2>
+      </div>
+      <BaseCard>
+        <div class="breakpoint-list" data-testid="breakpoint-rules">
+          <div v-for="[name, range, behavior] in breakpointTokens" :key="name">
+            <strong>{{ name }}</strong>
+            <code>{{ range }}</code>
+            <span>{{ behavior }}</span>
           </div>
         </div>
       </BaseCard>
     </section>
 
-    <section class="section-grid" aria-labelledby="registry-title">
+    <section class="section-grid" aria-labelledby="responsive-shell-title">
       <div>
-        <BaseSectionLabel>Overlay Registry</BaseSectionLabel>
-        <h2 id="registry-title">Avoid hardcoded overlay rendering</h2>
-        <p>
-          Backend can keep creating overlays. The frontend maps metadata into a compatible
-          renderer, then binds hover, focus, timeline, and ontology interactions through
-          `VoxelEntityRef`.
-        </p>
-      </div>
-
-      <BaseCard>
-        <div class="registry-table">
-          <div class="registry-row header">
-            <span>Match key</span>
-            <span>Renderer</span>
-            <span>Examples</span>
-          </div>
-          <div v-for="[match, renderer, examples] in registryRules" :key="match" class="registry-row">
-            <code>{{ match }}</code>
-            <strong>{{ renderer }}</strong>
-            <span>{{ examples }}</span>
-          </div>
-        </div>
-      </BaseCard>
-    </section>
-
-    <section class="section-grid" aria-labelledby="object-title">
-      <div>
-        <BaseSectionLabel>Ontology Binding</BaseSectionLabel>
-        <h2 id="object-title">Data point to object relationship</h2>
-        <p>
-          Multiple observations can describe one ontology object. One object can generate several
-          voxel entities, but the overlay owns their visibility boundary.
-        </p>
+        <BaseSectionLabel>{{ t("designSystem.responsiveShell.label") }}</BaseSectionLabel>
+        <h2 id="responsive-shell-title">{{ t("designSystem.responsiveShell.title") }}</h2>
+        <p>{{ t("designSystem.responsiveShell.body") }}</p>
       </div>
       <BaseCard>
-        <div class="relationship-grid">
-          <BasePanel v-for="[type, example, rule] in objectRelationshipRows" :key="type">
-            <BaseSectionLabel>{{ type }}</BaseSectionLabel>
-            <h3>{{ example }}</h3>
-            <p>{{ rule }}</p>
+        <div class="responsive-shell-preview" data-testid="responsive-shell-preview">
+          <div class="responsive-phone">
+            <div class="responsive-topbar">
+              <strong>TWFoundry</strong>
+              <span>{{ t("dashboard.title") }}</span>
+            </div>
+            <MobilePanelSwitch
+              v-model:open="previewMobilePanelOpen"
+              :active-panel="previewMobilePanel"
+              @select="previewMobilePanel = $event"
+            />
+            <div class="responsive-map-surface">
+              <span class="route route-red" />
+              <span class="route route-blue" />
+              <span class="route route-green" />
+              <strong>{{ t("designSystem.responsiveShell.mapArea") }}</strong>
+            </div>
+            <div class="responsive-sheet">
+              <BaseSectionLabel>{{ t("dashboard.compactPanels.detail") }}</BaseSectionLabel>
+              <h3>{{ t("designSystem.responsiveShell.panelTitle") }}</h3>
+              <p>{{ t("designSystem.responsiveShell.panelBody") }}</p>
+            </div>
+          </div>
+          <BasePanel>
+            <BaseSectionLabel>{{ t("designSystem.responsiveShell.contractLabel") }}</BaseSectionLabel>
+            <h3>{{ t("designSystem.responsiveShell.contractTitle") }}</h3>
+            <p>{{ t("designSystem.responsiveShell.contractBody") }}</p>
           </BasePanel>
         </div>
       </BaseCard>
     </section>
 
-    <section class="section-grid" aria-labelledby="architecture-title">
+    <section class="section-grid" aria-labelledby="tradeoff-title">
       <div>
-        <BaseSectionLabel>Component Architecture</BaseSectionLabel>
-        <h2 id="architecture-title">Reusable layers</h2>
-        <p>
-          The page uses a shadcn-like pattern without importing a heavy UI kit: local primitives,
-          domain components, renderer modules, and a projection contract.
-        </p>
+        <BaseSectionLabel>{{ t("designSystem.tradeoffs.label") }}</BaseSectionLabel>
+        <h2 id="tradeoff-title">{{ t("designSystem.tradeoffs.title") }}</h2>
       </div>
-      <div class="layer-stack">
-        <BasePanel v-for="[layer, examples, responsibility] in componentLayers" :key="layer">
-          <h3>{{ layer }}</h3>
-          <code>{{ examples }}</code>
-          <p>{{ responsibility }}</p>
+      <BaseCard>
+        <div class="tradeoff-table" data-testid="library-tradeoffs">
+          <div v-for="[option, decision, reason] in libraryTradeoffs" :key="option" class="tradeoff-row">
+            <strong>{{ option }}</strong>
+            <BaseBadge :tone="decision === t('designSystem.tradeoffs.firstPass') ? 'warm' : 'neutral'">{{ decision }}</BaseBadge>
+            <span>{{ reason }}</span>
+          </div>
+        </div>
+      </BaseCard>
+    </section>
+
+    <section class="section-grid" aria-labelledby="i18n-title">
+      <div>
+        <BaseSectionLabel>{{ t("designSystem.i18n.label") }}</BaseSectionLabel>
+        <h2 id="i18n-title">{{ t("designSystem.i18n.title") }}</h2>
+      </div>
+      <BaseCard>
+        <p>{{ t("designSystem.i18n.body") }}</p>
+        <div class="component-grid compact">
+          <BasePanel>
+            <h3>{{ t("designSystem.rules.do") }}</h3>
+            <ul>
+              <li>{{ t("designSystem.i18n.doOne") }}</li>
+              <li>{{ t("designSystem.i18n.doTwo") }}</li>
+            </ul>
+          </BasePanel>
+          <BasePanel>
+            <h3>{{ t("designSystem.rules.avoid") }}</h3>
+            <ul>
+              <li>{{ t("designSystem.i18n.avoidOne") }}</li>
+              <li>{{ t("designSystem.i18n.avoidTwo") }}</li>
+            </ul>
+          </BasePanel>
+        </div>
+      </BaseCard>
+    </section>
+
+    <section class="section-grid" aria-labelledby="rules-title">
+      <div>
+        <BaseSectionLabel>{{ t("designSystem.rules.label") }}</BaseSectionLabel>
+        <h2 id="rules-title">{{ t("designSystem.rules.title") }}</h2>
+      </div>
+      <div class="component-grid">
+        <BasePanel>
+          <h3>{{ t("designSystem.rules.do") }}</h3>
+          <ul>
+            <li>{{ t("designSystem.rules.doRoute") }}</li>
+            <li>{{ t("designSystem.rules.doSurface") }}</li>
+            <li>{{ t("designSystem.rules.doMap") }}</li>
+          </ul>
+        </BasePanel>
+        <BasePanel>
+          <h3>{{ t("designSystem.rules.avoid") }}</h3>
+          <ul>
+            <li>{{ t("designSystem.rules.avoidFinance") }}</li>
+            <li>{{ t("designSystem.rules.avoidDependency") }}</li>
+            <li>{{ t("designSystem.rules.avoidGradient") }}</li>
+          </ul>
         </BasePanel>
       </div>
     </section>
@@ -222,41 +582,43 @@ const objectRelationshipRows = [
 
 <style scoped>
 .design-system-page {
+  --twf-radius-sm: 6px;
+  --twf-radius-md: 8px;
+  --twf-radius-lg: 10px;
+  --twf-radius-xl: 12px;
+
   min-height: 100vh;
-  padding: 32px clamp(18px, 4vw, 56px) 64px;
-  background:
-    radial-gradient(circle at 78% 8%, rgba(255, 249, 243, 0.84), transparent 28%),
-    linear-gradient(135deg, var(--twf-color-canvas) 0%, #e7f5ff 100%);
+  padding: 32px clamp(18px, 4vw, 56px) 56px;
+  background: var(--twf-color-canvas);
   color: var(--twf-color-text);
 }
 
 .hero,
-.overview-grid,
 .section-grid {
-  max-width: 1240px;
+  max-width: 1180px;
   margin: 0 auto;
 }
 
 .hero {
-  border: 1px solid rgba(240, 191, 208, 0.88);
-  border-radius: 24px;
-  padding: clamp(24px, 4vw, 44px);
-  background: rgba(255, 249, 243, 0.92);
+  border: 1px solid var(--twf-color-border);
+  border-radius: var(--twf-radius-xl);
+  padding: clamp(22px, 4vw, 40px);
+  background: var(--twf-color-surface);
   box-shadow: var(--twf-shadow-panel);
 }
 
 .hero-nav {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 26px;
+  gap: var(--twf-space-3);
+  margin-bottom: 22px;
 }
 
 .back-link {
+  display: inline-flex;
   color: var(--twf-color-text-muted);
-  font-size: 0.84rem;
-  font-weight: 800;
+  font-size: 0.82rem;
+  font-weight: 700;
   text-decoration: none;
 }
 
@@ -272,221 +634,832 @@ p {
 }
 
 h1 {
-  max-width: 920px;
-  margin-top: 8px;
-  color: #8b3f59;
-  font-size: clamp(2.8rem, 8vw, 6.8rem);
-  line-height: 0.92;
+  max-width: 860px;
+  margin-top: 12px;
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 650;
+  letter-spacing: 0;
+  line-height: 1;
 }
 
-h2 {
-  margin-top: 8px;
-  color: #8b3f59;
-  font-size: clamp(1.7rem, 3vw, 2.6rem);
-  line-height: 1.05;
-}
-
-h3 {
-  color: #8b3f59;
-  font-size: 1.04rem;
-}
-
-p {
+.hero p {
+  max-width: 680px;
+  margin-top: 18px;
   color: var(--twf-color-text-muted);
   font-size: 1rem;
-  line-height: 1.68;
-}
-
-.hero > p {
-  max-width: 780px;
-  margin-top: 20px;
-  font-size: 1.12rem;
+  line-height: 1.75;
 }
 
 .hero-actions,
-.badge-row {
+.component-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 24px;
+  align-items: center;
+  gap: var(--twf-space-2);
+  margin-top: var(--twf-space-6);
 }
 
-.overview-grid {
+.principles {
+  display: grid;
+  max-width: 1180px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--twf-space-4);
+  margin: var(--twf-space-6) auto;
+}
+
+.principle-list {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-  margin-top: 20px;
+  gap: var(--twf-space-3);
 }
 
-.overview-grid :deep(.base-card),
-.section-grid :deep(.base-card),
-.layer-stack :deep(.base-panel),
-.relationship-grid :deep(.base-panel),
-.token-card {
-  background: rgba(255, 249, 243, 0.9);
-  border-color: rgba(240, 191, 208, 0.9);
+.principles h2,
+.section-grid h2 {
+  margin-top: 10px;
+  font-size: 1.55rem;
+  line-height: 1.15;
+}
+
+.principles p,
+.section-grid p,
+li {
+  color: var(--twf-color-text-muted);
+  line-height: 1.65;
 }
 
 .section-grid {
   display: grid;
-  grid-template-columns: minmax(260px, 0.38fr) minmax(0, 1fr);
-  gap: 28px;
-  margin-top: 42px;
-  align-items: start;
+  grid-template-columns: 0.42fr minmax(0, 1fr);
+  gap: var(--twf-space-6);
+  border-top: 1px solid var(--twf-color-border);
+  padding-top: var(--twf-space-6);
+  margin-top: var(--twf-space-6);
 }
 
-.section-grid > div:first-child {
-  position: sticky;
-  top: 24px;
-}
-
-.section-grid > div:first-child > p {
-  margin-top: 14px;
-}
-
-.token-grid {
+.token-grid,
+.component-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--twf-space-3);
 }
 
-.token-card {
+.docs-stack {
   display: grid;
-  grid-template-columns: 72px 1fr;
-  gap: 16px;
-  align-items: center;
+  gap: var(--twf-space-3);
 }
 
-.swatch {
-  display: block;
-  width: 72px;
-  height: 72px;
-  border: 1px solid rgba(139, 63, 89, 0.2);
-  border-radius: 16px;
-  box-shadow: inset 0 -18px 0 rgba(255, 255, 255, 0.28);
+.state-rule-list {
+  display: grid;
+  gap: 0;
 }
 
-code {
+.state-rule-list div {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: var(--twf-space-3);
+  border-bottom: 1px solid var(--twf-color-border-soft);
+  padding: var(--twf-space-3) 0;
+}
+
+.state-rule-list div:first-child {
+  padding-top: 0;
+}
+
+.state-rule-list div:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.state-rule-list span {
   color: var(--twf-color-text-muted);
-  font-family: "SFMono-Regular", Consolas, monospace;
+  line-height: 1.55;
+}
+
+.inventory-groups {
+  display: grid;
+  gap: var(--twf-space-3);
+}
+
+.inventory-group {
+  border: 1px solid var(--twf-color-border-soft);
+  border-radius: var(--twf-radius-lg);
+  background: var(--twf-color-surface-raised);
+}
+
+.inventory-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--twf-space-3);
+  padding: var(--twf-space-4);
+  cursor: pointer;
+  list-style: none;
+}
+
+.inventory-summary::-webkit-details-marker {
+  display: none;
+}
+
+.inventory-summary p {
+  margin-top: 4px;
+  color: var(--twf-color-text-faint);
   font-size: 0.78rem;
 }
 
-.module-list {
+.inventory-group[open] .inventory-summary {
+  border-bottom: 1px solid var(--twf-color-border-soft);
+}
+
+.inventory-list {
+  display: grid;
+  gap: 0;
+  padding: 0 var(--twf-space-4) var(--twf-space-4);
+}
+
+.summary-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--twf-space-2);
+  margin-bottom: var(--twf-space-4);
+}
+
+.inventory-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 240px;
+  gap: var(--twf-space-3);
+  align-items: start;
+  border-bottom: 1px solid var(--twf-color-border-soft);
+  padding: var(--twf-space-4) 0;
+}
+
+.inventory-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.inventory-preview {
+  display: grid;
+  gap: var(--twf-space-2);
+}
+
+.inventory-meta {
+  display: grid;
+  justify-items: end;
+  gap: var(--twf-space-2);
+  color: var(--twf-color-text-faint);
+  font-size: 0.74rem;
+}
+
+.preview-surface {
+  display: grid;
+  min-height: 78px;
+  align-content: center;
+  justify-items: center;
+  gap: var(--twf-space-2);
+  border: 1px solid var(--twf-color-border-soft);
+  border-radius: var(--twf-radius-md);
+  padding: var(--twf-space-3);
+  background: color-mix(in srgb, var(--twf-color-surface) 96%, transparent);
+}
+
+.mini-icon-button {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid var(--twf-color-border);
+  border-radius: var(--twf-radius-sm);
+  background: var(--twf-color-surface-raised);
+  color: var(--twf-color-text-muted);
+}
+
+.mini-icon-button svg {
+  width: 15px;
+  height: 15px;
+}
+
+.mini-segmented {
+  display: inline-grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 4px;
+  border: 1px solid var(--twf-color-border);
+  border-radius: 999px;
+  padding: 4px;
+  background: var(--twf-color-surface);
+}
+
+.mini-segmented span {
+  border-radius: 999px;
+  padding: 6px 10px;
+  color: var(--twf-color-text-faint);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.mini-segmented .active {
+  background: var(--twf-color-text);
+  color: var(--twf-color-surface-raised);
+}
+
+.mini-alert,
+.mini-toast,
+.mini-tooltip,
+.mini-stat-chip,
+.mini-map-control {
+  border-radius: var(--twf-radius-sm);
+  padding: 8px 10px;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.mini-alert {
+  border: 1px solid color-mix(in srgb, var(--twf-color-route-red) 28%, transparent);
+  background: var(--twf-color-route-red-soft);
+  color: var(--twf-color-route-red);
+}
+
+.mini-empty {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+}
+
+.mini-empty strong {
+  font-size: 0.84rem;
+}
+
+.mini-empty span {
+  color: var(--twf-color-text-faint);
+  font-size: 0.72rem;
+}
+
+.mini-loading {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+
+.mini-loading span {
+  display: block;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--twf-color-border-soft);
+}
+
+.mini-loading span:first-child {
+  width: 100%;
+}
+
+.mini-loading span:last-child {
+  width: 70%;
+}
+
+.mini-toast {
+  border-left: 4px solid var(--twf-color-route-blue);
+  background: var(--twf-color-route-blue-soft);
+  color: var(--twf-color-route-blue);
+}
+
+.mini-dialog {
   display: grid;
   gap: 10px;
-  margin-top: 22px;
-}
-
-.module-list button {
   width: 100%;
-  border: 1px solid rgba(240, 191, 208, 0.85);
-  border-radius: 14px;
-  padding: 12px 14px;
-  background: rgba(255, 249, 243, 0.78);
-  color: #94506a;
-  cursor: pointer;
-  text-align: left;
-  transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+  border: 1px solid var(--twf-color-border);
+  border-radius: var(--twf-radius-md);
+  padding: 10px;
+  background: var(--twf-color-surface-raised);
+  box-shadow: var(--twf-shadow-panel);
 }
 
-.module-list button:hover,
-.module-list button.active {
-  border-color: #dc7898;
-  background: #ffe7ef;
-  transform: translateY(-1px);
+.mini-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
 }
 
-.module-list span,
-.module-list small {
-  display: block;
+.mini-dialog-actions span {
+  width: 34px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--twf-color-border);
 }
 
-.module-list span {
-  font-weight: 900;
+.mini-dialog-actions .primary {
+  background: var(--twf-color-text);
 }
 
-.module-list small {
-  margin-top: 4px;
-  color: var(--twf-color-text-faint);
-  font-size: 0.76rem;
-}
-
-.preview-card {
-  padding: 14px;
-}
-
-.preview-meta {
+.mini-drawer {
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 16px;
-  padding: 18px 4px 4px;
+  justify-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 70px;
+  border: 1px solid var(--twf-color-border-soft);
+  border-radius: var(--twf-radius-md);
+  padding: 10px;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--twf-color-route-blue-soft) 92%, transparent),
+      var(--twf-color-surface-raised) 42%
+    );
 }
 
-.preview-meta p {
-  margin-top: 8px;
+.mini-drawer .handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--twf-color-border);
 }
 
-.registry-table {
+.mini-tooltip {
+  background: var(--twf-color-text);
+  color: var(--twf-color-surface-raised);
+}
+
+.mini-liveboard {
   display: grid;
-  gap: 2px;
-}
-
-.registry-row {
-  display: grid;
-  grid-template-columns: 0.9fr 1fr 1.35fr;
-  gap: 14px;
+  grid-template-columns: 4px auto;
+  gap: 10px;
   align-items: center;
-  border-bottom: 1px solid rgba(240, 191, 208, 0.62);
-  padding: 13px 0;
+  width: 100%;
+  border: 1px solid var(--twf-color-border-soft);
+  border-radius: var(--twf-radius-md);
+  padding: 10px;
 }
 
-.registry-row.header {
+.mini-liveboard .route {
+  width: 4px;
+  height: 34px;
+  border-radius: 999px;
+  background: var(--twf-color-route-blue);
+}
+
+.mini-stat-chip {
+  background: var(--twf-color-surface-raised);
+  box-shadow: var(--twf-shadow-hairline);
+}
+
+.mini-timeline {
+  width: 100%;
+  display: grid;
+  gap: 8px;
+}
+
+.mini-timeline-top {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.mini-timeline .chip,
+.mini-timeline .count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 22px;
+  border-radius: 999px;
+  padding: 0 8px;
+  background: var(--twf-color-surface-raised);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.mini-timeline .chip {
+  background: var(--twf-color-text);
+  color: var(--twf-color-surface-raised);
+}
+
+.mini-timeline .meta {
+  color: var(--twf-color-text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.mini-timeline .track {
+  display: block;
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      90deg,
+      var(--twf-color-route-blue) 0 58%,
+      var(--twf-color-border-soft) 58% 100%
+    );
+}
+
+.mini-map-control {
+  border: 1px solid var(--twf-color-border);
+  background: var(--twf-color-surface-raised);
+  color: var(--twf-color-text);
+}
+
+.overlay-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--twf-space-3);
+  margin-top: var(--twf-space-4);
+}
+
+.overlay-preview {
+  display: grid;
+  gap: var(--twf-space-3);
+}
+
+.dialog-preview,
+.toast-preview,
+.drawer-preview {
+  min-height: 100%;
+}
+
+.dialog-box,
+.toast-box,
+.drawer-shell {
+  border: 1px solid var(--twf-color-border-soft);
+  border-radius: var(--twf-radius-lg);
+  background: var(--twf-color-surface-raised);
+}
+
+.dialog-box {
+  display: grid;
+  gap: var(--twf-space-3);
+  padding: var(--twf-space-4);
+  box-shadow: var(--twf-shadow-panel);
+}
+
+.toast-box {
+  display: grid;
+  gap: 6px;
+  width: min(280px, 100%);
+  justify-self: center;
+  padding: 14px 16px;
+  border-color: var(--twf-color-border-soft);
+  border-radius: var(--twf-radius-md);
+  background: var(--twf-color-surface-raised);
+  box-shadow: var(--twf-shadow-floating);
+}
+
+.toast-box strong {
+  color: var(--twf-color-text);
+  font-size: 0.86rem;
+  line-height: 1.3;
+}
+
+.toast-box p {
+  color: var(--twf-color-text-muted);
+  font-size: 0.74rem;
+  line-height: 1.45;
+}
+
+.drawer-shell {
+  display: grid;
+  gap: var(--twf-space-3);
+  align-content: start;
+  min-height: 200px;
+  padding: var(--twf-space-4);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--twf-color-route-blue-soft) 90%, transparent),
+      var(--twf-color-surface-raised) 35%
+    );
+}
+
+.drawer-handle {
+  width: 48px;
+  height: 5px;
+  border-radius: 999px;
+  margin: 0 auto;
+  background: var(--twf-color-border);
+}
+
+.compact-row {
+  margin-top: 0;
+}
+
+.swatch-row {
+  display: flex;
+  align-items: center;
+  gap: var(--twf-space-3);
+  margin-bottom: var(--twf-space-3);
+}
+
+.swatch {
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--twf-color-border);
+  border-radius: var(--twf-radius-md);
+}
+
+code {
   color: var(--twf-color-text-faint);
-  font-size: 0.76rem;
-  font-weight: 900;
+  font-size: 0.78rem;
+}
+
+.type-sample + .type-sample {
+  margin-top: var(--twf-space-3);
+}
+
+.display {
+  font-size: 2.3rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.heading {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.body {
+  color: var(--twf-color-text-muted);
+  line-height: 1.65;
+}
+
+.meta {
+  color: var(--twf-color-text-faint);
+  font-size: 0.72rem;
+  font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
-.registry-row:last-child {
-  border-bottom: 0;
+.cjk {
+  font-family: var(--twf-font-family-cjk);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.55;
 }
 
-.relationship-grid,
-.layer-stack {
+.spacing-list {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: var(--twf-space-3);
 }
 
-.relationship-grid p,
-.layer-stack p {
-  margin-top: 8px;
+.spacing-list div,
+.tradeoff-row,
+.breakpoint-list div {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: var(--twf-space-3);
+  align-items: center;
 }
 
-.layer-stack code {
+.liveboard-example {
+  display: grid;
+  grid-template-columns: 4px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--twf-space-3);
+  border: 1px solid var(--twf-color-border-soft);
+  border-radius: var(--twf-radius-lg);
+  padding: var(--twf-space-4);
+  background: var(--twf-color-surface-raised);
+}
+
+.route-line {
+  width: 4px;
+  height: 46px;
+  border-radius: 999px;
+  background: var(--twf-color-route-blue);
+}
+
+.liveboard-example p {
+  font-size: 0.82rem;
+}
+
+.timeline-example {
+  display: grid;
+  gap: var(--twf-space-3);
+  border: 1px solid var(--twf-color-border-soft);
+  border-radius: var(--twf-radius-lg);
+  padding: var(--twf-space-4);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--twf-color-surface) 82%, var(--twf-color-route-blue) 18%),
+      var(--twf-color-surface-raised)
+    );
+}
+
+.timeline-example-transport,
+.timeline-example-meta,
+.timeline-example-scrubber {
+  display: flex;
+  align-items: center;
+  gap: var(--twf-space-2);
+  min-width: 0;
+}
+
+.timeline-example-transport span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  min-height: 28px;
+  border: 1px solid var(--twf-color-border);
+  border-radius: var(--twf-radius-sm);
+  background: var(--twf-color-surface-raised);
+  color: var(--twf-color-text-muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.timeline-example-transport .active {
+  background: var(--twf-color-text);
+  color: var(--twf-color-surface-raised);
+}
+
+.timeline-example-transport .pill {
+  min-width: auto;
+  padding: 0 10px;
+  border-color: var(--twf-color-text);
+}
+
+.timeline-example-meta {
+  justify-content: space-between;
+}
+
+.timeline-example-meta strong {
+  color: var(--twf-color-text);
+  font-size: 0.9rem;
+}
+
+.timeline-example-meta p,
+.timeline-example-scrubber span {
+  margin: 0;
+  color: var(--twf-color-text-faint);
+  font-size: 0.74rem;
+}
+
+.timeline-example-scrubber {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.timeline-example-track {
+  overflow: hidden;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--twf-color-border-soft);
+}
+
+.timeline-example-track span {
   display: block;
-  margin-top: 10px;
+  width: 58%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--twf-color-route-blue);
 }
 
-@media (max-width: 920px) {
-  .overview-grid,
+.tradeoff-table {
+  display: grid;
+  gap: var(--twf-space-3);
+}
+
+.breakpoint-list {
+  display: grid;
+  gap: var(--twf-space-3);
+}
+
+.responsive-shell-preview {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  gap: var(--twf-space-4);
+  align-items: stretch;
+}
+
+.responsive-phone {
+  overflow: hidden;
+  border: 1px solid var(--twf-color-border);
+  border-radius: var(--twf-radius-lg);
+  background: var(--twf-color-surface-raised);
+  box-shadow: var(--twf-shadow-panel);
+}
+
+.responsive-topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--twf-space-2);
+  min-height: 44px;
+  border-bottom: 1px solid var(--twf-color-border);
+  padding: 0 var(--twf-space-3);
+  background: var(--twf-color-surface-raised);
+}
+
+.responsive-topbar span {
+  color: var(--twf-color-text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.responsive-map-surface {
+  position: relative;
+  display: grid;
+  min-height: 210px;
+  place-items: center;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, rgba(47, 111, 214, 0.16) 1px, transparent 1px),
+    linear-gradient(rgba(47, 111, 214, 0.12) 1px, transparent 1px),
+    color-mix(in srgb, var(--twf-color-map-canvas) 68%, var(--twf-color-surface-raised));
+  background-size: 34px 34px;
+}
+
+.responsive-map-surface strong {
+  z-index: 1;
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: color-mix(in srgb, var(--twf-color-surface-raised) 82%, transparent);
+  color: var(--twf-color-text-muted);
+  font-size: 0.72rem;
+}
+
+.route {
+  position: absolute;
+  height: 5px;
+  border-radius: 999px;
+  opacity: 0.88;
+}
+
+.route-red {
+  width: 82%;
+  transform: rotate(36deg);
+  background: var(--twf-color-route-red);
+}
+
+.route-blue {
+  width: 92%;
+  transform: translateY(44px) rotate(-12deg);
+  background: var(--twf-color-route-blue);
+}
+
+.route-green {
+  width: 74%;
+  transform: translateX(56px) translateY(-48px) rotate(76deg);
+  background: var(--twf-color-route-green);
+}
+
+.responsive-sheet {
+  border-top: 1px solid var(--twf-color-border);
+  padding: var(--twf-space-4);
+  background: var(--twf-color-surface);
+}
+
+.responsive-sheet h3 {
+  margin-top: var(--twf-space-2);
+}
+
+.breakpoint-list div {
+  grid-template-columns: 100px 110px minmax(0, 1fr);
+  border-bottom: 1px solid var(--twf-color-border-soft);
+  padding-bottom: var(--twf-space-3);
+}
+
+.breakpoint-list div:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.tradeoff-row {
+  grid-template-columns: 160px 110px minmax(0, 1fr);
+  border-bottom: 1px solid var(--twf-color-border-soft);
+  padding-bottom: var(--twf-space-3);
+}
+
+.tradeoff-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+ul {
+  margin: var(--twf-space-3) 0 0;
+  padding-left: 18px;
+}
+
+@media (max-width: 639px) {
+  .principles,
   .section-grid,
-  .preview-meta,
-  .relationship-grid,
-  .layer-stack,
   .token-grid,
-  .registry-row {
+  .component-grid,
+  .overlay-grid,
+  .responsive-shell-preview,
+  .principle-list {
     grid-template-columns: 1fr;
   }
 
-  .section-grid > div:first-child {
-    position: static;
+  .tradeoff-row,
+  .breakpoint-list div,
+  .inventory-row,
+  .state-rule-list div {
+    grid-template-columns: 1fr;
   }
 
-  h1 {
-    font-size: clamp(2.4rem, 12vw, 4rem);
+  .inventory-meta {
+    justify-items: start;
   }
 }
 </style>
