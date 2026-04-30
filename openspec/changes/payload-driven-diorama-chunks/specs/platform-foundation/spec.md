@@ -15,6 +15,20 @@ The frontend SHALL render the operational diorama from `WorldViewPayload` rather
 - **THEN** it renders base terrain, stable anchors, and semantic zones from those chunk fields
 - **AND** it does not use the legacy hard-coded terrain or city builders as formal cockpit geometry
 
+#### Scenario: Zhongshan focus includes multimodal mobility context
+
+- **GIVEN** the active focus is `Zhongshan Station / Nanjing West Road`
+- **WHEN** the backend returns `WorldViewPayload`
+- **THEN** the payload includes MRT train/station objects, a bus stop object, and a YouBike station object
+- **AND** those mobility objects are rendered by distinct reusable projection modules
+
+#### Scenario: Zhongshan landmarks use reusable voxel builders
+
+- **GIVEN** a Zhongshan static feature with kind `department-store`, `bookstore-mall`, `lane-shop`, or `station-anchor`
+- **WHEN** the frontend renders chunk static features
+- **THEN** it uses reusable procedural landmark modules rather than one-off hard-coded meshes
+- **AND** the generated object keeps local coordinate metadata for debugging and reuse
+
 #### Scenario: Frontend renders overlay projections on top of chunk base
 
 - **GIVEN** a `WorldViewPayload` with chunk base data and `projections`

@@ -26,7 +26,7 @@ public class WorldViewController {
 
   @GetMapping("/view")
   public Payload getWorldView(
-      @RequestParam(defaultValue = "taipei-core") String focusId,
+      @RequestParam(defaultValue = "zhongshan-station") String focusId,
       @RequestParam(defaultValue = "city") String lod,
       @RequestParam(defaultValue = "live") String time,
       @RequestParam(required = false) String overlays,

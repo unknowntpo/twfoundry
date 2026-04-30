@@ -35,7 +35,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class WorldViewService {
   private static final String SCHEMA_VERSION = "world-view.v1";
-  private static final List<String> DEFAULT_OVERLAYS = List.of("mrt", "rain", "pm25", "incident");
+  private static final List<String> DEFAULT_OVERLAYS = List.of("mrt", "bus", "ubike", "rain", "pm25", "incident");
   private static final Set<String> SUPPORTED_OVERLAYS = new LinkedHashSet<>(DEFAULT_OVERLAYS);
 
   public Payload buildView(
@@ -51,7 +51,7 @@ public class WorldViewService {
 
     Request request =
         new Request(
-            blankToDefault(focusId, "taipei-core"),
+            blankToDefault(focusId, "zhongshan-station"),
             blankToDefault(lod, "city"),
             blankToDefault(time, "live"),
             activeOverlays,
@@ -74,9 +74,9 @@ public class WorldViewService {
         request,
         new WorldFocus(
             request.focusId(),
-            "Taipei core diorama",
-            new GeoBounds(121.4920, 25.0180, 121.5700, 25.0860),
-            "taipei-core-v1"),
+            "Zhongshan Station / Nanjing West Road",
+            new GeoBounds(121.5165, 25.0492, 121.5248, 25.0558),
+            "zhongshan-station-v1"),
         chunks,
         filterObjects(objects, activeOverlays),
         projections,
@@ -90,6 +90,8 @@ public class WorldViewService {
     List<SourceFreshness> sources =
         List.of(
             new SourceFreshness("tdx:mrt-liveboard", "live", now.minusSeconds(12).toString(), 12),
+            new SourceFreshness("tdx:bus-eta-mock", "live", now.minusSeconds(18).toString(), 18),
+            new SourceFreshness("tdx:bike-availability-mock", "live", now.minusSeconds(22).toString(), 22),
             new SourceFreshness("cwa:rainfall-mock", "live", now.minusSeconds(36).toString(), 36),
             new SourceFreshness("epa:aqms-mock", "live", now.minusSeconds(58).toString(), 58));
     int maxLag = sources.stream().mapToInt(SourceFreshness::lagSeconds).max().orElse(0);
@@ -115,38 +117,51 @@ public class WorldViewService {
   private List<DioramaChunk> chunks() {
     return List.of(
         new DioramaChunk(
-            "chunk-taipei-core-west",
-            "Taipei core west",
-            new LocalPoint(-14, 0, 0),
-            95,
-            new LocalTransform(new LocalPoint(-14, 0, 0), 1, 0),
-            new LocalBounds(-14, -12, 0, 12),
-            terrain("west", "#F8DDE7"),
-            List.of(
-                stationAnchor("station-anchor-R10", "station-R10", -4, -2, "#E16B8C"),
-                stationAnchor("station-anchor-BL12", "station-BL12", -7, 3, "#58B2DC")),
-            List.of(zone("zone-downtown-west", "commercial", -10, -3, 8, 6, "#EFB1C5")),
-            List.of("openfreemap:z14/x13624/y6194", "tdx:mrt-static")),
-        new DioramaChunk(
-            "chunk-taipei-core-east",
-            "Taipei core east",
+            "chunk-zhongshan-station",
+            "Zhongshan Station / Nanjing West Road",
             new LocalPoint(0, 0, 0),
-            95,
+            24,
             new LocalTransform(new LocalPoint(0, 0, 0), 1, 0),
-            new LocalBounds(0, -12, 14, 12),
-            terrain("east", "#F4D7E2"),
+            new LocalBounds(-9, -7, 9, 7),
+            zhongshanTerrain(),
             List.of(
-                stationAnchor("station-anchor-R11", "station-R11", 2, -1, "#E16B8C"),
-                stationAnchor("station-anchor-BL13", "station-BL13", 5, 3, "#58B2DC")),
-            List.of(zone("zone-downtown-east", "residential", 1, -4, 9, 7, "#F7C7D5")),
-            List.of("openfreemap:z14/x13625/y6194", "tdx:mrt-static")));
+                stationAnchor("station-anchor-R11-G14", "station-R11-G14", 0, 0, "#E16B8C"),
+                building("building-shin-kong-nanxi", "landmark-shin-kong-nanxi", "department-store", -2.8, -2.2, 5, 1.6, 1.3, "#F596AA", "#FFB11B", true),
+                building("building-eslite-nanxi", "landmark-eslite-nanxi", "bookstore-mall", 2.4, -2.0, 4, 1.45, 1.1, "#FFD2DC", "#81C7D4", true),
+                building("building-linsen-lane", null, "lane-shop", 4.2, 2.6, 3, 1.1, 1.2, "#F8DDE7", "#B5CAA0", false),
+                building("building-chifeng-maker", null, "lane-shop", -4.4, 2.8, 2, 1.0, 1.0, "#F3E5DA", "#E16B8C", false)),
+            List.of(
+                zone("zone-nanxi-shopping", "shopping-corridor", -5, -3.5, 10, 3.2, "#F596AA"),
+                zone("zone-chifeng-lanes", "creative-lanes", -6, 1.2, 6, 4.2, "#FFB11B"),
+                zone("zone-linsen-bus", "bus-corridor", 1.2, 0.8, 6.5, 2.6, "#5DAC81")),
+            List.of("openfreemap:zhongshan-station-focus", "tdx:mrt-static", "tdx:bus-mock", "tdx:bike-mock")));
   }
 
-  private List<TerrainCell> terrain(String prefix, String color) {
+  private List<TerrainCell> zhongshanTerrain() {
     List<TerrainCell> cells = new ArrayList<>();
-    for (int x = 0; x < 4; x++) {
-      for (int z = 0; z < 3; z++) {
-        cells.add(new TerrainCell(prefix + "-cell-" + x + "-" + z, x, z, (x + z) % 3, "urban", color));
+    for (int x = -8; x <= 8; x++) {
+      for (int z = -6; z <= 6; z++) {
+        String kind = "shopping";
+        int height = 1;
+        String color = "#FFD2DC";
+        if (z == 0 || x == 0) {
+          kind = "street";
+          height = 1;
+          color = "#E7D6C6";
+        } else if (x < -3 && z > 1) {
+          kind = "alley";
+          height = 1;
+          color = "#F3E5DA";
+        } else if (x > 3 && z > 1) {
+          kind = "plaza";
+          height = 1;
+          color = "#FFF7FA";
+        } else if (Math.abs(x) < 3 && z < -2) {
+          kind = "landmark";
+          height = 2;
+          color = "#F596AA";
+        }
+        cells.add(new TerrainCell("zhongshan-cell-" + x + "-" + z, x, z, height, kind, color));
       }
     }
     return cells;
@@ -160,6 +175,34 @@ public class WorldViewService {
         "station-anchor",
         point(x, 0.35, z),
         Map.of("color", color, "opacity", 0.68, "size", "small"));
+  }
+
+  private StaticFeatureProjection building(
+      String id,
+      String objectId,
+      String kind,
+      double x,
+      double z,
+      int floors,
+      double width,
+      double depth,
+      String color,
+      String signColor,
+      boolean sign) {
+    return new StaticFeatureProjection(
+        id,
+        "geo-" + id,
+        objectId,
+        kind,
+        point(x, 0, z),
+        Map.of(
+            "floors", floors,
+            "width", width,
+            "depth", depth,
+            "color", color,
+            "accentColor", color,
+            "signColor", signColor,
+            "sign", sign));
   }
 
   private SemanticZone zone(String id, String kind, double x, double z, double width, double depth, String color) {
@@ -176,31 +219,43 @@ public class WorldViewService {
             "geo-route-red",
             "tdx:mrt-static",
             "mrt-route",
-            lineString(List.of(List.of(121.516, 25.074), List.of(121.520, 25.061), List.of(121.525, 25.052))),
+            lineString(List.of(List.of(121.5201, 25.0560), List.of(121.5206, 25.0527), List.of(121.5210, 25.0494))),
             Map.of("lineId", "red", "name", "Tamsui-Xinyi")),
         new GeoFeature(
-            "geo-station-R10",
+            "geo-station-R11-G14",
             "tdx:mrt-static",
             "mrt-station",
-            pointGeo(121.520, 25.061),
-            Map.of("stationId", "R10", "name", "Zhongshan")),
+            pointGeo(121.5206, 25.0527),
+            Map.of("stationId", "R11/G14", "name", "Zhongshan")),
         new GeoFeature(
-            "geo-station-BL12",
-            "tdx:mrt-static",
-            "mrt-station",
-            pointGeo(121.516, 25.046),
-            Map.of("stationId", "BL12", "name", "Taipei Main")),
+            "geo-bus-stop-nanxi",
+            "tdx:bus-stop-mock",
+            "bus-stop",
+            pointGeo(121.5190, 25.0528),
+            Map.of("stopName", "MRT Zhongshan Station", "route", "304", "etaMinutes", 3)),
+        new GeoFeature(
+            "geo-ubike-zhongshan",
+            "tdx:bike-station-mock",
+            "bike-station",
+            pointGeo(121.5212, 25.0524),
+            Map.of("stationName", "YouBike MRT Zhongshan Station", "availableBikes", 11, "availableDocks", 9)),
+        new GeoFeature(
+            "geo-landmark-shin-kong-nanxi",
+            "osm:mock",
+            "landmark",
+            pointGeo(121.5200, 25.0520),
+            Map.of("name", "Shin Kong Mitsukoshi Nanxi", "kind", "department-store")),
         new GeoFeature(
             "geo-rain-R042",
             "cwa:rainfall-mock",
             "rainfall-cell",
-            polygon(List.of(List.of(121.500, 25.074), List.of(121.538, 25.077), List.of(121.548, 25.050), List.of(121.507, 25.045), List.of(121.500, 25.074))),
+            polygon(List.of(List.of(121.5168, 25.0555), List.of(121.5245, 25.0554), List.of(121.5242, 25.0500), List.of(121.5174, 25.0497), List.of(121.5168, 25.0555))),
             Map.of("intensityMmHr", 38, "confidence", 0.82)),
         new GeoFeature(
             "geo-incident-I237",
             "ops:incident-mock",
             "incident",
-            pointGeo(121.531, 25.044),
+            pointGeo(121.5229, 25.0536),
             Map.of("severity", "medium", "kind", "road-work")));
   }
 
@@ -220,27 +275,16 @@ public class WorldViewService {
             List.of(),
             featureById.get("geo-route-red")),
         object(
-            "station-R10",
+            "station-R11-G14",
             "Station",
             "Zhongshan",
             "tdx",
             "normal",
-            "台北捷運中山站，作為 diorama station anchor.",
+            "台北捷運中山站 R11/G14，作為南西商圈 diorama anchor.",
             "mrt",
-            Map.of("stationId", "R10", "lineId", "red"),
+            Map.of("stationId", "R11/G14", "lineId", "red-green", "area", "Nanjing West Road"),
             List.of(new Relationship("belongs_to", "route-R", "Route", "Tamsui-Xinyi")),
-            featureById.get("geo-station-R10")),
-        object(
-            "station-BL12",
-            "Station",
-            "Taipei Main",
-            "tdx",
-            "normal",
-            "台北車站，板南線核心站點。",
-            "mrt",
-            Map.of("stationId", "BL12", "lineId", "blue"),
-            List.of(new Relationship("near", "station-R10", "Station", "Zhongshan")),
-            featureById.get("geo-station-BL12")),
+            featureById.get("geo-station-R11-G14")),
         object(
             "train-R22",
             "Train",
@@ -252,9 +296,44 @@ public class WorldViewService {
             Map.of("route", "Tamsui-Xinyi", "nextStop", "Zhongshan", "etaMinutes", 2, "load", 0.67),
             List.of(
                 new Relationship("belongs_to", "route-R", "Route", "Tamsui-Xinyi"),
-                new Relationship("next_stop", "station-R10", "Station", "Zhongshan"),
+                new Relationship("next_stop", "station-R11-G14", "Station", "Zhongshan"),
                 new Relationship("near", "rain-R042", "RainfallCell", "Rain Cell R-042")),
             null),
+        object(
+            "bus-stop-nanxi",
+            "BusStop",
+            "MRT Zhongshan Station Bus Stop",
+            "tdx",
+            "live",
+            "南京西路與中山北路周邊公車站牌，顯示候車與到站預估。",
+            "bus",
+            Map.of("stopName", "捷運中山站", "route", "304", "etaMinutes", 3, "waiting", 4),
+            List.of(
+                new Relationship("near", "station-R11-G14", "Station", "Zhongshan"),
+                new Relationship("served_by", "bus-arrival-304", "BusArrival", "304 · 3 min")),
+            featureById.get("geo-bus-stop-nanxi")),
+        object(
+            "ubike-zhongshan",
+            "BikeStation",
+            "YouBike MRT Zhongshan Station",
+            "tdx",
+            "live",
+            "捷運中山站周邊 YouBike 站點，用 dock 與可借車數呈現。",
+            "ubike",
+            Map.of("stationName", "捷運中山站", "availableBikes", 11, "availableDocks", 9, "capacity", 20),
+            List.of(new Relationship("near", "station-R11-G14", "Station", "Zhongshan")),
+            featureById.get("geo-ubike-zhongshan")),
+        object(
+            "landmark-shin-kong-nanxi",
+            "Landmark",
+            "Shin Kong Mitsukoshi Nanxi",
+            "osm",
+            "reference",
+            "中山南西商圈百貨地標，作為 voxel chunk 的方向錨點。",
+            "mrt",
+            Map.of("kind", "department-store", "district", "Nanxi shopping corridor"),
+            List.of(new Relationship("near", "station-R11-G14", "Station", "Zhongshan")),
+            featureById.get("geo-landmark-shin-kong-nanxi")),
         object(
             "rain-R042",
             "RainfallCell",
@@ -266,8 +345,8 @@ public class WorldViewService {
             Map.of("intensityMmHr", 38, "confidence", 0.82, "trend", "rising"),
             List.of(
                 new Relationship("affects", "train-R22", "Train", "Train R22"),
-                new Relationship("covers", "chunk-taipei-core-west", "DioramaChunk", "Taipei core west"),
-                new Relationship("covers", "chunk-taipei-core-east", "DioramaChunk", "Taipei core east")),
+                new Relationship("affects", "bus-stop-nanxi", "BusStop", "MRT Zhongshan Station Bus Stop"),
+                new Relationship("covers", "chunk-zhongshan-station", "DioramaChunk", "Zhongshan Station / Nanjing West Road")),
             featureById.get("geo-rain-R042")),
         object(
             "aq-A07",
@@ -278,7 +357,7 @@ public class WorldViewService {
             "PM2.5 觀測點，用金色 haze module 呈現。",
             "pm25",
             Map.of("pm25", 31, "trend", "flat"),
-            List.of(new Relationship("near", "station-BL12", "Station", "Taipei Main")),
+            List.of(new Relationship("near", "station-R11-G14", "Station", "Zhongshan")),
             null),
         object(
             "incident-I237",
@@ -290,7 +369,8 @@ public class WorldViewService {
             "incident",
             Map.of("severity", "medium", "kind", "road-work", "radiusMeters", 600),
             List.of(
-                new Relationship("near", "station-BL12", "Station", "Taipei Main"),
+                new Relationship("near", "station-R11-G14", "Station", "Zhongshan"),
+                new Relationship("affects", "bus-stop-nanxi", "BusStop", "MRT Zhongshan Station Bus Stop"),
                 new Relationship("coincident_with", "rain-R042", "RainfallCell", "Rain Cell R-042")),
             featureById.get("geo-incident-I237")));
   }
@@ -319,76 +399,90 @@ public class WorldViewService {
           projection(
               "proj-train-R22-west",
               "train-R22",
-              "chunk-taipei-core-west",
+              "chunk-zhongshan-station",
               "mrt",
               "voxel.mrt.train",
-              line(List.of(List.of(-6.5, 0.7, -1.8), List.of(-4.5, 0.7, -1.2))),
+              line(List.of(List.of(-1.1, 1.1, -2.8), List.of(-0.2, 1.1, -0.4))),
               Map.of("lineColor", "#E16B8C", "direction", "southbound", "cars", 3),
               "Train R22 · ETA 2m"));
       projections.add(
           projection(
-              "proj-route-R-west",
+              "proj-route-R-zhongshan",
               "route-R",
-              "chunk-taipei-core-west",
+              "chunk-zhongshan-station",
               "mrt",
               "voxel.mrt.route",
-              line(List.of(List.of(-10.0, 0.25, -5.0), List.of(-6.0, 0.25, -2.0), List.of(-3.0, 0.25, 1.0))),
+              line(List.of(List.of(-1.4, 0.45, -6.0), List.of(-0.6, 0.45, -2.5), List.of(0.0, 0.45, 0.0), List.of(0.6, 0.45, 5.6))),
               Map.of("lineColor", "#E16B8C", "thickness", 0.12),
               "Tamsui-Xinyi"));
       projections.add(
           projection(
-              "proj-route-R-east",
+              "proj-route-G-zhongshan",
               "route-R",
-              "chunk-taipei-core-east",
+              "chunk-zhongshan-station",
               "mrt",
               "voxel.mrt.route",
-              line(List.of(List.of(0.0, 0.25, 1.0), List.of(4.0, 0.25, 1.8), List.of(9.0, 0.25, -2.0))),
-              Map.of("lineColor", "#E16B8C", "thickness", 0.12),
-              "Tamsui-Xinyi"));
+              line(List.of(List.of(-7.0, 0.42, 0.4), List.of(-2.2, 0.42, 0.1), List.of(0.0, 0.42, 0.0), List.of(6.6, 0.42, -0.3))),
+              Map.of("lineColor", "#5DAC81", "thickness", 0.1),
+              "Songshan-Xindian through Zhongshan"));
+    }
+    if (overlays.contains("bus")) {
+      projections.add(
+          projection(
+              "proj-bus-stop-nanxi",
+              "bus-stop-nanxi",
+              "chunk-zhongshan-station",
+              "bus",
+              "voxel.bus.stop",
+              point(3.2, 0.45, 1.3),
+              Map.of("color", "#5DAC81", "waiting", 4, "etaMinutes", 3),
+              "Bus 304 · 3 min · 4 waiting"));
+    }
+    if (overlays.contains("ubike")) {
+      projections.add(
+          projection(
+              "proj-ubike-zhongshan",
+              "ubike-zhongshan",
+              "chunk-zhongshan-station",
+              "ubike",
+              "voxel.ubike.dock",
+              point(2.4, 0.45, -1.8),
+              Map.of("color", "#FFB11B", "docks", 10, "availableBikes", 6),
+              "YouBike · 11 bikes / 9 docks"));
     }
     if (overlays.contains("rain")) {
       projections.add(
           projection(
-              "proj-rain-R042-west",
+              "proj-rain-R042-zhongshan",
               "rain-R042",
-              "chunk-taipei-core-west",
+              "chunk-zhongshan-station",
               "rain",
               "voxel.weather.rainCell",
-              volume(-8, -5, 8, 9),
-              Map.of("color", "#81C7D4", "opacity", 0.28, "intensityMmHr", 38),
+              volume(-4.5, -4.2, 8.5, 6.2),
+              Map.of("color", "#81C7D4", "opacity", 0.10, "intensityMmHr", 18),
               "Rain Cell R-042 · 38 mm/h"));
-      projections.add(
-          projection(
-              "proj-rain-R042-east",
-              "rain-R042",
-              "chunk-taipei-core-east",
-              "rain",
-              "voxel.weather.rainCell",
-              volume(0, -6, 10, 8),
-              Map.of("color", "#81C7D4", "opacity", 0.22, "intensityMmHr", 38),
-              "Rain Cell R-042 · east edge"));
     }
     if (overlays.contains("pm25")) {
       projections.add(
           projection(
-              "proj-aq-A07-east",
+              "proj-aq-A07-zhongshan",
               "aq-A07",
-              "chunk-taipei-core-east",
+              "chunk-zhongshan-station",
               "pm25",
               "voxel.air.haze",
-              point(5, 1.2, 5),
+              point(-5.5, 1.2, 3.8),
               Map.of("color", "#FFB11B", "opacity", 0.34, "pm25", 31),
               "AQMS A-07 · PM2.5 31"));
     }
     if (overlays.contains("incident")) {
       projections.add(
           projection(
-              "proj-incident-I237-east",
+              "proj-incident-I237-zhongshan",
               "incident-I237",
-              "chunk-taipei-core-east",
+              "chunk-zhongshan-station",
               "incident",
               "voxel.ops.incidentPulse",
-              point(4, 0.9, -2),
+              point(5.2, 0.9, 2.6),
               Map.of("color", "#B481BB", "severity", "medium", "pulse", true),
               "Incident I-237 · road work"));
     }
@@ -419,6 +513,8 @@ public class WorldViewService {
     return List.of(
         new RenderModuleDescriptor("voxel.mrt.train", "entity", List.of("select", "hover", "animate"), Map.of("scale", 1.0)),
         new RenderModuleDescriptor("voxel.mrt.route", "line", List.of("hover"), Map.of("radius", 0.12)),
+        new RenderModuleDescriptor("voxel.bus.stop", "entity", List.of("select", "hover"), Map.of("waiting", true)),
+        new RenderModuleDescriptor("voxel.ubike.dock", "entity", List.of("select", "hover"), Map.of("dockCount", true)),
         new RenderModuleDescriptor("voxel.weather.rainCell", "volume", List.of("select", "hover", "pulse"), Map.of("opacity", 0.25)),
         new RenderModuleDescriptor("voxel.air.haze", "volume", List.of("hover", "pulse"), Map.of("opacity", 0.3)),
         new RenderModuleDescriptor("voxel.ops.incidentPulse", "marker", List.of("select", "hover", "pulse"), Map.of("pulse", true)));

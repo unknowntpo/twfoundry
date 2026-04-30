@@ -4,7 +4,7 @@ import { mrtRouteGeoJson, mrtStationGeoJson } from './mrtMapData.js';
 import { ontologyObjects } from './mockData.js';
 import { mrtRouteFeatureToProjection, mrtStationFeatureToProjection, projectLineToGrid, projectPointToGrid } from './ontologyProjection.js';
 import { createMrtTrain } from './voxelTrain.js';
-import { createWorldViewLayer } from './worldViewRenderModules.js';
+import { createWorldViewBaseLayer, createWorldViewLayer } from './worldViewRenderModules.js';
 
 const GRID = 30;
 const CELL = 1.85;
@@ -136,6 +136,8 @@ export class VoxelWorld {
     this.layerVisibility = {
       tiles: true,
       mrt: true,
+      bus: true,
+      ubike: true,
       rain: true,
       pm25: true,
       incident: true,
@@ -343,7 +345,7 @@ export class VoxelWorld {
       freshness: 'static',
       summary: '城市量體的視覺錨點，用於維持臺北微縮模型的方位感。',
       properties: ['height: 14 voxel', 'material: sakura crystal', 'role: visual anchor'],
-      relationships: ['near Train R22', 'inside Taipei core chunk'],
+      relationships: ['near Train R22', 'inside Zhongshan Station chunk'],
     };
     this.clickables.push(tower);
     this.registerAnchor('taipei-101', tower);
@@ -367,7 +369,7 @@ export class VoxelWorld {
 
   buildMrtLayer() {
     const group = new THREE.Group();
-    const stationObject = ontologyObjects.find((item) => item.id === 'station-BL12') ?? ontologyObjects[1];
+    const stationObject = ontologyObjects.find((item) => item.id === 'station-R11-G14') ?? ontologyObjects[1];
     const trainObject = ontologyObjects.find((item) => item.id === 'train-R22') ?? ontologyObjects[0];
     const stationsByRoute = new Map();
     mrtStationGeoJson.features.forEach((feature) => {
@@ -403,7 +405,7 @@ export class VoxelWorld {
           emissiveIntensity: 0.18,
         });
         station.position.set(wx, this.heightAt(gx, gz) + 1.45, wz);
-        station.userData.twObject = stationFeature.properties.id === 'BL12'
+        station.userData.twObject = stationFeature.properties.id === 'R11'
           ? stationObject
           : {
             ...stationObject,
@@ -420,7 +422,7 @@ export class VoxelWorld {
             relationships: [...stationProjection.relationships, 'anchored_to MapLibre base'],
           };
         this.clickables.push(station);
-        if (stationFeature.properties.id === 'BL12') this.registerAnchor(stationObject.id, station);
+        if (stationFeature.properties.id === 'R11') this.registerAnchor(stationObject.id, station);
         group.add(station);
       });
 
@@ -738,14 +740,19 @@ export class VoxelWorld {
   }
 
   setWorldViewPayload(payload, objects = this.payloadObjects) {
+    const baseLayer = createWorldViewBaseLayer(payload, objects);
     const nextLayer = createWorldViewLayer(payload, objects);
     this.clearPayloadOverlayAnimationState();
-    const overlayGroups = {
-      mrt: new THREE.Group(),
-      rain: new THREE.Group(),
-      pm25: new THREE.Group(),
-      incident: new THREE.Group(),
-    };
+    const overlayKeys = Object.keys(this.layerVisibility).filter((key) => key !== 'tiles');
+    const overlayGroups = Object.fromEntries(overlayKeys.map((key) => [key, new THREE.Group()]));
+
+    this.replaceLayer('map', baseLayer);
+    baseLayer.traverse((object3d) => {
+      if (object3d.userData?.twObject) {
+        this.registerAnchor(object3d.userData.twObject.id, object3d);
+        this.clickables.push(object3d);
+      }
+    });
 
     nextLayer.children.slice().forEach((child) => {
       const overlay = child.userData?.overlay;
@@ -837,7 +844,7 @@ export class VoxelWorld {
     if (this.layers.map) this.layers.map.visible = showVoxelWorld;
     if (this.layers.pipeline) this.layers.pipeline.visible = showVoxelWorld;
     if (this.layers.avatar) this.layers.avatar.visible = showVoxelWorld;
-    ['mrt', 'rain', 'pm25', 'incident'].forEach((key) => {
+    ['mrt', 'bus', 'ubike', 'rain', 'pm25', 'incident'].forEach((key) => {
       if (this.layers[key]) this.layers[key].visible = showVoxelWorld && (this.layerVisibility[key] ?? true);
     });
   }

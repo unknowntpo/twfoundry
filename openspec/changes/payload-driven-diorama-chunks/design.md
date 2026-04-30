@@ -35,6 +35,7 @@ frontend
 - Keep overlay toggles scoped to operational domains, not implementation-only chunk debug layers.
 - Allow future focus changes to replace the world by replacing the payload.
 - Use real map tiles as a zoomed-out reference LOD, then switch to voxel chunk rendering when the user zooms in.
+- Start with a concrete `Zhongshan Station / Nanjing West Road` focus chunk that includes MRT, bus, YouBike, rainfall, PM2.5, and incident objects.
 
 **Non-Goals:**
 
@@ -50,6 +51,8 @@ frontend
 - Treat `terrain` as base surface voxels.
 - Treat `staticFeatures` as stable physical anchors such as station markers, bridges, route support pillars, or landmark blocks.
 - Treat `semanticZones` as low-opacity contextual volumes or tinted terrain regions.
+- Treat bus stops and YouBike docks as domain overlays backed by ontology objects, not decorative props.
+- Build Zhongshan landmarks with procedural voxel modules: floor slices, facade bands, retail signs, canopies, and entrance markers. Payload features choose the landmark kind and parameters; frontend builders own the visual recipe.
 - Register `staticFeatures.ontologyObjectId` as selectable only when it points to a canonical object in `payload.objects`.
 - Keep diagnostic tile/chunk visuals available only in Design System or debug mode.
 

@@ -1,10 +1,12 @@
 ## 1. Chunk Base Renderer
 
-- [ ] 1.1 Add reusable renderer for `DioramaChunk.terrain`.
-- [ ] 1.2 Add reusable renderer for `DioramaChunk.staticFeatures`.
-- [ ] 1.3 Add reusable renderer for `DioramaChunk.semanticZones`.
-- [ ] 1.4 Compose chunk base layer before projection overlays.
+- [x] 1.1 Add reusable renderer for `DioramaChunk.terrain`.
+- [x] 1.2 Add reusable renderer for `DioramaChunk.staticFeatures`.
+- [x] 1.3 Add reusable renderer for `DioramaChunk.semanticZones`.
+- [x] 1.4 Compose chunk base layer before projection overlays.
 - [x] 1.5 Add temporary camera-distance LOD switch between map reference and voxel diorama.
+- [x] 1.6 Add Zhongshan Station focus chunk with MRT, bus, YouBike, rainfall, PM2.5, and incident projections.
+- [x] 1.7 Extract Zhongshan landmark voxel builders into reusable procedural modules.
 
 ## 2. Interaction And Identity
 

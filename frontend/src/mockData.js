@@ -10,8 +10,8 @@ export const pipelineSteps = [
     key: 'chunks',
     label: 'visible chunks',
     short: 'chunks',
-    detail: 'Taipei core bounds',
-    countLabel: '9 visible',
+    detail: 'Zhongshan Station bounds',
+    countLabel: '1 focus',
   },
   {
     key: 'observations',
@@ -39,6 +39,8 @@ export const pipelineSteps = [
 export const layers = [
   { key: 'tiles', label: 'Tile chunks', color: '#58B2DC', short: 'TILE' },
   { key: 'mrt', label: 'Taipei Metro', color: '#E16B8C', short: 'TDX' },
+  { key: 'bus', label: 'Taipei Bus', color: '#5DAC81', short: 'TDX' },
+  { key: 'ubike', label: 'YouBike docks', color: '#FFB11B', short: 'TDX' },
   { key: 'rain', label: 'Rainfall cells', color: '#81C7D4', short: 'CWA' },
   { key: 'pm25', label: 'PM2.5 haze', color: '#FFB11B', short: 'EPA' },
   { key: 'incident', label: 'Incidents', color: '#B481BB', short: 'OPS' },
@@ -57,15 +59,15 @@ export const ontologyObjects = [
     relationships: ['belongs_to Route R', 'near Rain Cell R-042', 'affected_by Incident I-237'],
   },
   {
-    id: 'station-BL12',
-    name: 'Station BL12',
+    id: 'station-R11-G14',
+    name: 'Zhongshan Station',
     type: 'Station',
     layer: 'TDX MRT',
     status: 'normal',
     freshness: '34s ago',
-    summary: '板南線核心站點，作為 chunk 內的 ontology anchor。',
-    properties: ['line: Bannan', 'platform_load: medium', 'exits: 5', 'transfers: 1'],
-    relationships: ['observed_by TDX station feed', 'serves Train BL08', 'inside Chunk 14/13625/6194'],
+    summary: '淡水信義線 / 松山新店線交會的中山站，作為南西商圈 chunk anchor。',
+    properties: ['stationId: R11/G14', 'platform_load: medium', 'area: Nanxi', 'transfers: 1'],
+    relationships: ['observed_by TDX station feed', 'serves Train R22', 'inside Zhongshan Station chunk'],
   },
   {
     id: 'rain-R042',
@@ -98,7 +100,7 @@ export const ontologyObjects = [
     freshness: '2m ago',
     summary: '路口施工回堵，對鄰近車站與路線產生低強度風險。',
     properties: ['severity: medium', 'kind: road work', 'radius: 600m', 'action: watch route impact'],
-    relationships: ['near Station BL12', 'affects Route R', 'coincident_with Rain Cell R-042'],
+    relationships: ['near Zhongshan Station', 'affects Route R', 'coincident_with Rain Cell R-042'],
   },
 ];
 

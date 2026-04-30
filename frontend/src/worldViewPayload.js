@@ -3,23 +3,54 @@ import { layers } from './mockData.js';
 export const fallbackWorldViewPayload = {
   schemaVersion: 'world-view.v1',
   request: {
-    focusId: 'taipei-core',
+    focusId: 'zhongshan-station',
     lod: 'city',
     time: 'live',
-    overlays: ['mrt', 'rain', 'pm25', 'incident'],
+    overlays: ['mrt', 'bus', 'ubike', 'rain', 'pm25', 'incident'],
     debugGeo: false,
   },
   focus: {
-    id: 'taipei-core',
-    label: 'Taipei core diorama',
-    geoBounds: { west: 121.492, south: 25.018, east: 121.57, north: 25.086 },
-    chunkSetId: 'taipei-core-v1',
+    id: 'zhongshan-station',
+    label: 'Zhongshan Station / Nanjing West Road',
+    geoBounds: { west: 121.5165, south: 25.0492, east: 121.5248, north: 25.0558 },
+    chunkSetId: 'zhongshan-station-v1',
   },
   chunks: [
-    { id: 'chunk-taipei-core-west', label: 'Taipei core west' },
-    { id: 'chunk-taipei-core-east', label: 'Taipei core east' },
+    {
+      id: 'chunk-zhongshan-station',
+      label: 'Zhongshan Station / Nanjing West Road',
+      sceneOrigin: { x: 0, y: 0, z: 0 },
+      localToScene: { translate: { x: 0, y: 0, z: 0 }, scale: 1, rotationDegrees: 0 },
+      localBounds: { minX: -9, minZ: -7, maxX: 9, maxZ: 7 },
+      terrain: [
+        { id: 'z-a', x: -2, z: -2, height: 2, kind: 'landmark', color: '#F596AA' },
+        { id: 'z-b', x: 0, z: 0, height: 1, kind: 'street', color: '#E7D6C6' },
+        { id: 'z-c', x: 2, z: -1, height: 1, kind: 'shopping', color: '#FFD2DC' },
+        { id: 'z-d', x: -4, z: 3, height: 1, kind: 'alley', color: '#F3E5DA' },
+      ],
+      staticFeatures: [
+        { id: 'station-anchor-R11-G14', ontologyObjectId: 'station-R11-G14', kind: 'station-anchor', geometry: { type: 'Point', coordinates: [0, 0.35, 0] }, visualState: { color: '#E16B8C' } },
+        { id: 'building-shin-kong-nanxi', ontologyObjectId: 'landmark-shin-kong-nanxi', kind: 'department-store', geometry: { type: 'Point', coordinates: [-2.8, 0, -2.2] }, visualState: { floors: 5, width: 1.6, depth: 1.3, color: '#F596AA', accentColor: '#F596AA', signColor: '#FFB11B', sign: true } },
+        { id: 'building-eslite-nanxi', ontologyObjectId: 'landmark-eslite-nanxi', kind: 'bookstore-mall', geometry: { type: 'Point', coordinates: [2.4, 0, -2.0] }, visualState: { floors: 4, width: 1.45, depth: 1.1, color: '#FFD2DC', accentColor: '#FFD2DC', signColor: '#81C7D4', sign: true } },
+        { id: 'building-linsen-lane', kind: 'lane-shop', geometry: { type: 'Point', coordinates: [4.2, 0, 2.6] }, visualState: { floors: 3, width: 1.1, depth: 1.2, color: '#F8DDE7', accentColor: '#FFD2DC', signColor: '#B5CAA0', sign: false } },
+        { id: 'building-chifeng-maker', kind: 'lane-shop', geometry: { type: 'Point', coordinates: [-4.4, 0, 2.8] }, visualState: { floors: 2, width: 1.0, depth: 1.0, color: '#F3E5DA', accentColor: '#FFD2DC', signColor: '#E16B8C', sign: false } },
+      ],
+      semanticZones: [
+        { id: 'zone-nanxi-shopping', kind: 'shopping-corridor', geometry: { type: 'Polygon', coordinates: [[[-5, -3.5], [5, -3.5], [5, -0.3], [-5, -0.3], [-5, -3.5]]] }, state: { color: '#F596AA', opacity: 0.18 } },
+      ],
+    },
   ],
   objects: [
+    {
+      id: 'station-R11-G14',
+      type: 'Station',
+      name: 'Zhongshan',
+      source: 'tdx',
+      status: 'normal',
+      summary: '台北捷運中山站 R11/G14，南西商圈 diorama anchor。',
+      properties: { overlay: 'mrt', stationId: 'R11/G14', lineId: 'red-green' },
+      relationships: [{ type: 'belongs_to', targetObjectId: 'route-R', targetType: 'Route', label: 'Tamsui-Xinyi' }],
+    },
     {
       id: 'train-R22',
       type: 'Train',
@@ -34,16 +65,56 @@ export const fallbackWorldViewPayload = {
       ],
     },
     {
+      id: 'bus-stop-nanxi',
+      type: 'BusStop',
+      name: 'MRT Zhongshan Station Bus Stop',
+      source: 'tdx',
+      status: 'live',
+      summary: '南京西路與中山北路周邊公車站牌，顯示候車與到站預估。',
+      properties: { overlay: 'bus', route: '304', etaMinutes: 3, waiting: 4 },
+      relationships: [{ type: 'near', targetObjectId: 'station-R11-G14', targetType: 'Station', label: 'Zhongshan' }],
+    },
+    {
+      id: 'landmark-shin-kong-nanxi',
+      type: 'Landmark',
+      name: 'Shin Kong Mitsukoshi Nanxi',
+      source: 'osm',
+      status: 'reference',
+      summary: '中山南西商圈百貨地標，作為 voxel chunk 的方向錨點。',
+      properties: { overlay: 'mrt', kind: 'department-store', district: 'Nanxi shopping corridor' },
+      relationships: [{ type: 'near', targetObjectId: 'station-R11-G14', targetType: 'Station', label: 'Zhongshan' }],
+    },
+    {
+      id: 'landmark-eslite-nanxi',
+      type: 'Landmark',
+      name: 'Eslite Nanxi',
+      source: 'osm',
+      status: 'reference',
+      summary: '南西商圈書店型商場地標，使用較低、水平的 bookstore-mall voxel 模組。',
+      properties: { overlay: 'mrt', kind: 'bookstore-mall', district: 'Nanxi shopping corridor' },
+      relationships: [{ type: 'near', targetObjectId: 'station-R11-G14', targetType: 'Station', label: 'Zhongshan' }],
+    },
+    {
+      id: 'ubike-zhongshan',
+      type: 'BikeStation',
+      name: 'YouBike MRT Zhongshan Station',
+      source: 'tdx',
+      status: 'live',
+      summary: '捷運中山站周邊 YouBike 站點，用 dock 與可借車數呈現。',
+      properties: { overlay: 'ubike', availableBikes: 11, availableDocks: 9, capacity: 20 },
+      relationships: [{ type: 'near', targetObjectId: 'station-R11-G14', targetType: 'Station', label: 'Zhongshan' }],
+    },
+    {
       id: 'rain-R042',
       type: 'RainfallCell',
       name: 'Rain Cell R-042',
       source: 'cwa',
       status: 'intense',
-      summary: '跨越兩個 diorama chunk 的短時強降雨。',
+      summary: '中山站南西商圈短時強降雨，會影響步行、候車與 YouBike 轉乘。',
       properties: { overlay: 'rain', intensityMmHr: 38, confidence: 0.82, trend: 'rising' },
       relationships: [
-        { type: 'covers', targetObjectId: 'chunk-taipei-core-west', targetType: 'DioramaChunk', label: 'Taipei core west' },
-        { type: 'covers', targetObjectId: 'chunk-taipei-core-east', targetType: 'DioramaChunk', label: 'Taipei core east' },
+        { type: 'covers', targetObjectId: 'chunk-zhongshan-station', targetType: 'DioramaChunk', label: 'Zhongshan Station / Nanjing West Road' },
+        { type: 'affects', targetObjectId: 'bus-stop-nanxi', targetType: 'BusStop', label: 'MRT Zhongshan Station Bus Stop' },
       ],
     },
     {
@@ -60,13 +131,16 @@ export const fallbackWorldViewPayload = {
     },
   ],
   projections: [
-    { id: 'proj-train-R22-west', objectId: 'train-R22', chunkId: 'chunk-taipei-core-west', overlay: 'mrt' },
-    { id: 'proj-rain-R042-west', objectId: 'rain-R042', chunkId: 'chunk-taipei-core-west', overlay: 'rain' },
-    { id: 'proj-rain-R042-east', objectId: 'rain-R042', chunkId: 'chunk-taipei-core-east', overlay: 'rain' },
-    { id: 'proj-incident-I237-east', objectId: 'incident-I237', chunkId: 'chunk-taipei-core-east', overlay: 'incident' },
+    { id: 'proj-train-R22-zhongshan', objectId: 'train-R22', chunkId: 'chunk-zhongshan-station', overlay: 'mrt', renderModule: 'voxel.mrt.train', geometry: { type: 'LineString', coordinates: [[-1.1, 1.1, -2.8], [-0.2, 1.1, -0.4]] }, visualState: { lineColor: '#E16B8C', cars: 3 } },
+    { id: 'proj-bus-stop-nanxi', objectId: 'bus-stop-nanxi', chunkId: 'chunk-zhongshan-station', overlay: 'bus', renderModule: 'voxel.bus.stop', geometry: { type: 'Point', coordinates: [3.2, 0.45, 1.3] }, visualState: { color: '#5DAC81', waiting: 4, etaMinutes: 3 } },
+    { id: 'proj-ubike-zhongshan', objectId: 'ubike-zhongshan', chunkId: 'chunk-zhongshan-station', overlay: 'ubike', renderModule: 'voxel.ubike.dock', geometry: { type: 'Point', coordinates: [2.4, 0.45, -1.8] }, visualState: { color: '#FFB11B', docks: 10, availableBikes: 6 } },
+    { id: 'proj-rain-R042-zhongshan', objectId: 'rain-R042', chunkId: 'chunk-zhongshan-station', overlay: 'rain', renderModule: 'voxel.weather.rainCell', geometry: { type: 'Polygon', coordinates: [[[-4.5, -4.2], [4, -4.2], [4, 2], [-4.5, 2], [-4.5, -4.2]]] }, visualState: { color: '#81C7D4', opacity: 0.1, intensityMmHr: 18 } },
+    { id: 'proj-incident-I237-zhongshan', objectId: 'incident-I237', chunkId: 'chunk-zhongshan-station', overlay: 'incident', renderModule: 'voxel.ops.incidentPulse', geometry: { type: 'Point', coordinates: [5.2, 0.9, 2.6] }, visualState: { color: '#B481BB', severity: 'medium' } },
   ],
   renderModules: [
     { id: 'voxel.mrt.train', kind: 'entity' },
+    { id: 'voxel.bus.stop', kind: 'entity' },
+    { id: 'voxel.ubike.dock', kind: 'entity' },
     { id: 'voxel.weather.rainCell', kind: 'volume' },
     { id: 'voxel.ops.incidentPulse', kind: 'marker' },
   ],
@@ -86,7 +160,7 @@ export async function loadWorldViewPayload(fetcher = globalThis.fetch) {
     return { payload: fallbackWorldViewPayload, source: 'fallback' };
   }
 
-  const urls = ['/api/world/view?focusId=taipei-core&lod=city&time=live'];
+  const urls = ['/api/world/view?focusId=zhongshan-station&lod=city&time=live'];
   return loadWorldViewPayloadFromUrls(fetcher, urls);
 }
 

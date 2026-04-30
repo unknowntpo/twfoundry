@@ -13,7 +13,8 @@ export const TAIPEI_MAP_VIEW = {
 
 export const TAIPEI_DIORAMA_SURFACE_VIEW = {
   ...TAIPEI_MAP_VIEW,
-  zoom: 11.05,
+  center: [121.5206, 25.0527],
+  zoom: 14.25,
   pitch: 0,
   bearing: 0,
 };

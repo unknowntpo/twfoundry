@@ -10,18 +10,22 @@ import {
 validateWorldViewPayload(fallbackWorldViewPayload);
 
 const summary = summarizeWorldView(fallbackWorldViewPayload);
-assert.equal(summary.visibleChunks, 2);
-assert.equal(summary.ontologyObjects, 3);
+assert.equal(summary.visibleChunks, 1);
+assert.ok(summary.ontologyObjects >= 6);
 assert.ok(summary.voxelEntities >= fallbackWorldViewPayload.projections.length);
 assert.equal(fallbackWorldViewPayload.freshness.mode, 'fallback');
 assert.equal(typeof fallbackWorldViewPayload.freshness.maxSourceLagSeconds, 'number');
 assert.ok(fallbackWorldViewPayload.freshness.sources.length > 0);
 
 const uiObjects = toUiOntologyObjects(fallbackWorldViewPayload);
-assert.equal(uiObjects[0].id, 'train-R22');
-assert.equal(uiObjects[0].layer, 'Taipei Metro');
-assert.ok(uiObjects[0].properties.some((item) => item.includes('next_stop')));
-assert.ok(uiObjects[1].relationships.some((item) => item.includes('Taipei core west')));
+const train = uiObjects.find((object) => object.id === 'train-R22');
+const busStop = uiObjects.find((object) => object.id === 'bus-stop-nanxi');
+const ubike = uiObjects.find((object) => object.id === 'ubike-zhongshan');
+assert.equal(train.layer, 'Taipei Metro');
+assert.equal(busStop.layer, 'Taipei Bus');
+assert.equal(ubike.layer, 'YouBike docks');
+assert.ok(train.properties.some((item) => item.includes('next_stop')));
+assert.ok(busStop.relationships.some((item) => item.includes('Zhongshan')));
 
 const apiPayload = {
   ...fallbackWorldViewPayload,
@@ -36,8 +40,8 @@ const apiResult = await loadWorldViewPayload(async (url) => {
   };
 });
 assert.equal(apiResult.source, 'api');
-assert.equal(apiResult.payload.chunks.length, 3);
-assert.deepEqual(requestedUrls, ['/api/world/view?focusId=taipei-core&lod=city&time=live']);
+assert.equal(apiResult.payload.chunks.length, 2);
+assert.deepEqual(requestedUrls, ['/api/world/view?focusId=zhongshan-station&lod=city&time=live']);
 
 const fallbackResult = await loadWorldViewPayload(async () => ({
   ok: false,

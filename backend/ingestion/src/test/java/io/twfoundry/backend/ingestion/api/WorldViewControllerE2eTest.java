@@ -27,44 +27,45 @@ class WorldViewControllerE2eTest {
     JsonNode body = response.getBody();
     assertNotNull(body);
     assertEquals("world-view.v1", body.path("schemaVersion").asText());
-    assertEquals("taipei-core", body.path("request").path("focusId").asText());
+    assertEquals("zhongshan-station", body.path("request").path("focusId").asText());
     assertEquals("complete", body.path("completeness").path("status").asText());
-    assertTrue(body.path("chunks").size() >= 2);
-    assertTrue(body.path("objects").size() >= 5);
-    assertTrue(body.path("projections").size() >= 4);
-    assertTrue(body.path("renderModules").size() >= 4);
+    assertTrue(body.path("chunks").size() >= 1);
+    assertTrue(body.path("objects").size() >= 8);
+    assertTrue(body.path("projections").size() >= 7);
+    assertTrue(body.path("renderModules").size() >= 6);
     assertEquals("live", body.path("freshness").path("mode").asText());
     assertTrue(body.path("freshness").path("maxSourceLagSeconds").asInt() > 0);
     assertTrue(body.path("freshness").path("sources").size() >= 3);
   }
 
   @Test
-  void returnsOneCanonicalObjectWithMultipleChunkProjections() {
+  void returnsZhongshanMobilityObjectsInOneFocusChunk() {
     ResponseEntity<JsonNode> response =
-        restTemplate.getForEntity("/api/world/view?overlays=rain", JsonNode.class);
+        restTemplate.getForEntity("/api/world/view?overlays=bus,ubike", JsonNode.class);
 
     JsonNode body = response.getBody();
     assertNotNull(body);
 
-    int rainObjectCount = 0;
+    int busObjectCount = 0;
+    int bikeObjectCount = 0;
     for (JsonNode object : body.path("objects")) {
-      if ("rain-R042".equals(object.path("id").asText())) {
-        rainObjectCount++;
-      }
+      if ("bus-stop-nanxi".equals(object.path("id").asText())) busObjectCount++;
+      if ("ubike-zhongshan".equals(object.path("id").asText())) bikeObjectCount++;
     }
 
-    int rainProjectionCount = 0;
+    int mobilityProjectionCount = 0;
     Set<String> chunkIds = new HashSet<>();
     for (JsonNode projection : body.path("projections")) {
-      if ("rain-R042".equals(projection.path("objectId").asText())) {
-        rainProjectionCount++;
+      if ("bus".equals(projection.path("overlay").asText()) || "ubike".equals(projection.path("overlay").asText())) {
+        mobilityProjectionCount++;
         chunkIds.add(projection.path("chunkId").asText());
       }
     }
 
-    assertEquals(1, rainObjectCount);
-    assertEquals(2, rainProjectionCount);
-    assertEquals(2, chunkIds.size());
+    assertEquals(1, busObjectCount);
+    assertEquals(1, bikeObjectCount);
+    assertEquals(2, mobilityProjectionCount);
+    assertEquals(Set.of("chunk-zhongshan-station"), chunkIds);
   }
 
   @Test

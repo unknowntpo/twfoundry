@@ -1,14 +1,21 @@
 import * as THREE from 'three';
 import { createMrtTrain } from './voxelTrain.js';
+import { createZhongshanStaticFeature } from './voxelZhongshanLandmarks.js';
 
 const COLORS = {
   paper: '#FFF7FA',
+  base: '#F7D8E4',
   sakura: '#F596AA',
+  sakuraLight: '#FFD2DC',
   rose: '#E16B8C',
   sky: '#78C8F8',
   water: '#81C7D4',
   gold: '#FFB11B',
   fuji: '#B481BB',
+  leaf: '#B5CAA0',
+  leafDeep: '#5DAC81',
+  street: '#E7D6C6',
+  stone: '#D2C3C3',
   ink: '#2B2330',
 };
 
@@ -78,6 +85,95 @@ function attachObject(group, object, projection) {
   group.userData.twObject = object;
   group.userData.worldViewProjection = projection;
   return group;
+}
+
+function attachStaticObject(group, object, feature) {
+  if (object) group.userData.twObject = object;
+  group.userData.worldViewStaticFeature = feature;
+  return group;
+}
+
+function createBusStopProjection(projection, transform) {
+  const point = pointFromLocal(projection.geometry?.coordinates, transform);
+  const group = new THREE.Group();
+  const color = projection.visualState?.color ?? COLORS.leafDeep;
+  const pole = box(0.16, 1.6, 0.16, color, { emissive: color, emissiveIntensity: 0.12 });
+  pole.position.set(point.x, point.y + 0.8, point.z);
+  group.add(pole);
+  const sign = box(0.72, 0.42, 0.12, COLORS.paper, { emissive: color, emissiveIntensity: 0.08 });
+  sign.position.set(point.x, point.y + 1.58, point.z);
+  group.add(sign);
+  const roof = box(1.9, 0.16, 0.72, COLORS.leaf, { glass: true, opacity: 0.5, emissive: COLORS.leaf });
+  roof.position.set(point.x + 0.65, point.y + 1.25, point.z);
+  group.add(roof);
+  const waiting = projection.visualState?.waiting ?? 3;
+  for (let i = 0; i < waiting; i += 1) {
+    const body = box(0.22, 0.38, 0.22, i % 2 ? COLORS.sakura : COLORS.gold, { emissiveIntensity: 0.04 });
+    body.position.set(point.x + 0.2 + i * 0.32, point.y + 0.25, point.z + 0.55);
+    group.add(body);
+  }
+  return group;
+}
+
+function createUbikeProjection(projection, transform) {
+  const point = pointFromLocal(projection.geometry?.coordinates, transform);
+  const group = new THREE.Group();
+  const color = projection.visualState?.color ?? COLORS.gold;
+  const docks = projection.visualState?.docks ?? 8;
+  for (let i = 0; i < docks; i += 1) {
+    const dock = box(0.18, 0.34, 0.42, COLORS.paper, { emissive: color, emissiveIntensity: 0.06 });
+    dock.position.set(point.x + (i - docks / 2) * 0.32, point.y + 0.18, point.z);
+    group.add(dock);
+    if (i < (projection.visualState?.availableBikes ?? 4)) {
+      const bike = box(0.18, 0.18, 0.62, color, { emissive: color, emissiveIntensity: 0.12 });
+      bike.position.set(dock.position.x, point.y + 0.52, point.z);
+      group.add(bike);
+    }
+  }
+  const kiosk = box(0.5, 1.05, 0.42, COLORS.gold, { emissive: COLORS.gold, emissiveIntensity: 0.14 });
+  kiosk.position.set(point.x - docks * 0.19 - 0.42, point.y + 0.52, point.z);
+  group.add(kiosk);
+  return group;
+}
+
+function createTerrainCell(cell, transform) {
+  const point = pointFromLocal([cell.x, 0, cell.z], transform);
+  const kindColor = {
+    street: COLORS.street,
+    plaza: COLORS.paper,
+    shopping: COLORS.sakuraLight,
+    park: COLORS.leaf,
+    landmark: COLORS.sakura,
+    alley: '#F3E5DA',
+  };
+  const color = cell.color ?? kindColor[cell.kind] ?? COLORS.base;
+  const height = Math.max(0.16, (cell.height ?? 1) * 0.28);
+  const mesh = box(0.92, height, 0.92, color, {
+    emissive: color,
+    emissiveIntensity: cell.kind === 'street' ? 0.015 : 0.035,
+  });
+  mesh.position.set(point.x, point.y + height / 2, point.z);
+  return mesh;
+}
+
+function createSemanticZone(zone, transform) {
+  const { center, size } = polygonBounds(zone.geometry, transform);
+  const color = zone.state?.color ?? COLORS.sakura;
+  const mesh = box(Math.max(size.x, 1), 0.08, Math.max(size.z, 1), color, {
+    glass: true,
+    opacity: zone.state?.opacity ?? 0.18,
+    emissive: color,
+    emissiveIntensity: 0.04,
+  });
+  mesh.position.set(center.x, 0.68, center.z);
+  mesh.name = `semantic zone ${zone.kind}`;
+  return mesh;
+}
+
+function createStaticFeature(feature, chunk, object) {
+  const transform = chunkTransform(chunk);
+  const mesh = createZhongshanStaticFeature(feature, transform);
+  return attachStaticObject(mesh, object, feature);
 }
 
 function createRouteProjection(projection, transform) {
@@ -187,6 +283,10 @@ export function createProjectionObject(projection, chunk, object) {
     group = createRouteProjection(projection, transform);
   } else if (projection.renderModule === 'voxel.mrt.train') {
     group = createTrainProjection(projection, transform);
+  } else if (projection.renderModule === 'voxel.bus.stop') {
+    group = createBusStopProjection(projection, transform);
+  } else if (projection.renderModule === 'voxel.ubike.dock') {
+    group = createUbikeProjection(projection, transform);
   } else if (projection.renderModule === 'voxel.weather.rainCell') {
     group = createRainProjection(projection, transform);
   } else if (projection.renderModule === 'voxel.air.haze') {
@@ -198,6 +298,49 @@ export function createProjectionObject(projection, chunk, object) {
   }
   group.name = projection.renderModule;
   return attachObject(group, object, projection);
+}
+
+export function createWorldViewBaseLayer(payload, uiObjects = []) {
+  const root = new THREE.Group();
+  root.name = 'payload diorama chunk base layer';
+  const objects = new Map(uiObjects.map((object) => [object.id, object]));
+  const backendObjects = new Map((payload.objects ?? []).map((object) => [object.id, object]));
+
+  (payload.chunks ?? []).forEach((chunk) => {
+    const chunkGroup = new THREE.Group();
+    chunkGroup.name = `chunk ${chunk.label ?? chunk.id}`;
+    const transform = chunkTransform(chunk);
+
+    const bounds = chunk.localBounds;
+    if (bounds) {
+      const width = Math.max(1, bounds.maxX - bounds.minX + 2);
+      const depth = Math.max(1, bounds.maxZ - bounds.minZ + 2);
+      const center = pointFromLocal([(bounds.minX + bounds.maxX) / 2, -0.28, (bounds.minZ + bounds.maxZ) / 2], transform);
+      const plate = box(width, 0.32, depth, COLORS.base, {
+        emissive: COLORS.sakura,
+        emissiveIntensity: 0.02,
+      });
+      plate.position.copy(center);
+      chunkGroup.add(plate);
+    }
+
+    (chunk.terrain ?? []).forEach((cell) => {
+      chunkGroup.add(createTerrainCell(cell, transform));
+    });
+
+    (chunk.semanticZones ?? []).forEach((zone) => {
+      chunkGroup.add(createSemanticZone(zone, transform));
+    });
+
+    (chunk.staticFeatures ?? []).forEach((feature) => {
+      const object = objects.get(feature.ontologyObjectId) ?? backendObjects.get(feature.ontologyObjectId);
+      chunkGroup.add(createStaticFeature(feature, chunk, object));
+    });
+
+    root.add(chunkGroup);
+  });
+
+  return root;
 }
 
 export function createWorldViewLayer(payload, uiObjects = []) {
