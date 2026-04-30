@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { ontologyObjects } from './mockData.js';
+import { createMrtTrain } from './voxelTrain.js';
 
 const GRID = 30;
 const CELL = 1.85;
@@ -395,21 +396,7 @@ export class VoxelWorld {
   }
 
   makeTrain(color) {
-    const group = new THREE.Group();
-    for (let i = 0; i < 3; i++) {
-      const car = box(0.78, 0.56, 1.18, color, {
-        emissive: color,
-        emissiveIntensity: 0.1,
-      });
-      car.position.z = (i - 1) * 1.26;
-      const roof = box(0.8, 0.08, 1.12, '#FFFFFF', {
-        emissive: '#FFF7FA',
-        emissiveIntensity: 0.04,
-      });
-      roof.position.set(0, 0.34, car.position.z);
-      group.add(car, roof);
-    }
-    return group;
+    return createMrtTrain({ lineColor: color, carCount: 3, scale: 1, name: 'live MRT train' });
   }
 
   buildRainLayer() {
