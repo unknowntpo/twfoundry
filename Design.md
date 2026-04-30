@@ -217,188 +217,28 @@ Voxel Avatar
 
 ## Geospatial Backbone
 
-TWFoundry 未來可以延伸到整個臺灣，甚至世界尺度，但不能把它做成一個無限大的 Three.js mesh。
+TWFoundry 未來可以延伸到整個臺灣，甚至世界尺度，但使用者體驗上仍應維持「掌中世界」的感覺，而不是變成一般 GIS 系統。
 
-正確模型是：
+實際地圖的角色是提供方向感與真實位置；voxel world 的角色是讓 operational objects 變得可理解、可互動、可探索。
 
-```text
-MapLibre / geospatial viewport
-  -> visible tiles / chunks
-  -> vector features / terrain / live observations
-  -> ontology object state
-  -> voxel world projection
-```
-
-MapLibre 的角色不是取代 TWFoundry 的 voxel world，而是負責真實世界地理座標：
-
-- map projection
-- camera viewport
-- zoom level
-- vector tile loading
-- raster / DEM tile loading
-- feature query
-- geospatial bounds
-
-Three.js 的角色是把目前 viewport 內的資料轉成可探索的 voxel diorama：
-
-- building footprint -> voxel buildings
-- road / rail geometry -> voxel routes
-- station point -> voxel station node
-- train realtime position -> moving voxel train
-- rainfall grid -> translucent volume / particle field
-- PM2.5 station -> local haze / sensor tower
-- incident point -> warning voxel marker
-- region polygon -> soft risk zone
-
-### MapLibre Integration Direction
-
-未來導入 MapLibre 時，TWFoundry 應採用 chunk / tile / LOD 架構。
-
-```text
-MapLibre visible tile
-  -> decode vector features
-  -> normalize to world coordinates
-  -> bind to ontology objects when applicable
-  -> generate or update Three.js voxel chunk
-```
-
-不可採用：
-
-- 一次載入整個臺灣的建物 mesh
-- 一次產生全世界 voxel blocks
-- 把 MapLibre 當背景圖，再在上面隨意疊 3D 物件
-- 讓 rendering layer 直接理解 TDX / weather 原始資料格式
-
-必須採用：
-
-- viewport-driven loading
-- chunk cache
-- level-of-detail
-- progressive refinement
-- semantic layer toggles
-- observation-to-object projection
-- object-to-voxel rendering
-
-### Actual MapLibre + Voxel Overlay Plan
-
-目標不是把目前 voxel diorama 丟掉，而是讓它有真實地理底座：
+### Actual Map Overlay
 
 ```text
 MapLibre actual map
-  -> pastel / voxel-friendly map style
-  -> GeoJSON MRT route / station overlay
-  -> Three.js voxel custom layer
-  -> ontology object selection
+  + MRT route / station overlay
+  + Sakura style
+  + voxel train / station / sensor / weather entities
 ```
 
-MapLibre 負責真實世界位置、縮放、平移、bearing、pitch 與 tile loading；Three.js 負責把 ontology objects 渲染成可愛 voxel entities。
+Actual map 應被視為一個地理底板 overlay，而不是新的資料來源，也不是新的 domain layer。它可以開關、淡出、降低細節，但不應污染 TDX、Weather、PM2.5、Incident 等 domain source。
 
-#### Rendering Stack
-
-建議分兩階段做。
-
-Phase A：Map-backed 2.5D cockpit
-
-- 安裝 `maplibre-gl`。
-- 新增 `MapLibreWorld.vue` 或 `MapBackedVoxelWorld`。
-- 使用 MapLibre 建立真實臺北地圖底圖。
-- 用自訂 style 將 map 轉成 Sakura / voxel-friendly 外觀：
-  - low saturation base map
-  - bright spring sky / water
-  - soft pink land / building tint
-  - subdued labels
-  - high-contrast MRT lines
-- MRT route / station 先用 GeoJSON source + style layers 疊在地圖上。
-- Voxel trains / station anchors 先用同步座標的 Three.js overlay 或 DOM overlay 顯示。
-
-Phase A 的目的：快速驗證「真實地圖 + MRT 疊合 + TWFoundry HUD」。
-
-Phase B：MapLibre custom Three.js voxel layer
-
-- 將 voxel layer 實作為 MapLibre custom style layer。
-- 使用 MapLibre 的 WebGL context 與 camera matrix 渲染 Three.js。
-- 每個 ontology object 經由 `lngLat -> MercatorCoordinate -> local scene transform` 對齊地圖。
-- MRT train、station、rain cell、PM2.5、incident 都改成地理座標驅動。
-- Overlay toggle 控制 MapLibre style layers 與 Three voxel entities 的 visibility。
-
-Phase B 的目的：讓 voxel 世界真正跟隨 map pan / zoom / pitch / bearing，而不是只是假底圖。
-
-#### Layer Ordering
-
-```text
-MapLibre base style
-  water / land / roads / labels
-MapLibre operational line layers
-  MRT route lines
-  station hit targets
-Three.js custom voxel layer
-  trains
-  stations
-  rain volume
-  PM2.5 haze
-  incident markers
-HUD
-  pipeline / overlays / ontology / timeline
-```
-
-MRT route 本身可以先用 MapLibre line layer 顯示，因為路線需要精準貼在實際地圖上；train 與 station highlight 再用 voxel layer 變成 TWFoundry 的遊戲風格。
-
-#### Coordinate Contract
-
-所有 render module 都不應直接吃 raw API row。它們需要吃 ontology projection：
-
-```js
-{
-  id: "station-BL18",
-  type: "Station",
-  geometry: {
-    type: "Point",
-    coordinates: [121.565, 25.041]
-  },
-  state: {
-    lineId: "blue",
-    status: "normal",
-    freshness: "live"
-  }
-}
-```
-
-Train 如果後端尚未提供精準座標，可以先用 route geometry + `arrivalMinutes` / station pair 推估位置；等 TDX source 有 train position 或更細緻資料後再替換 projection logic。
-
-#### Voxel-Friendly Actual Map Style
-
-實際地圖可以保留，但視覺上要服務掌中世界：
+視覺上：
 
 - map 是柔和底板，不是主角。
-- labels 保留少量地名與站名，避免壓過 voxel entities。
-- roads / rivers / parks 使用 Sakura token families。
-- buildings 可在高 zoom 用 muted extrusion 或 voxelized blocks 呈現。
-- 當使用者切到 tabletop mode，map style 可以降低 detail，讓 Three voxel layer 更突出。
-
-#### Technical Choices
-
-短期推薦：
-
-- MapLibre base map + GeoJSON MRT layers + independent Three overlay synced by `map.project()`
-- 優點：快、debug 容易、保留目前 Three builder
-- 缺點：pitch / depth / terrain 對齊有限
-
-中期推薦：
-
-- MapLibre custom style layer + Three.js scene in MapLibre WebGL context
-- 優點：正確共享 camera、depth、layer ordering
-- 缺點：GL state、resource lifecycle、picking、performance 需要更嚴格管理
-
-#### Acceptance Criteria
-
-- 地圖顯示真實臺北位置，不再只是 mock diorama grid。
-- MRT route line 能疊在真實地圖位置上。
-- station component 能對齊 station coordinate。
-- train component 能沿 route 或 station segment 移動。
-- overlay toggle 關閉 `Taipei Metro` 時，MRT line、station、train 都消失。
-- timeline 改變時，train position 與 ontology inspector 同步更新。
-- Design System 保留每個 render module 的獨立 preview。
-- 沒有 MapLibre tile 載入時，頁面有 fallback，不會白畫面。
+- map style 應接近櫻花季 voxel 世界：明亮、柔和、低噪音。
+- MRT route / station 應清楚疊在真實地圖上。
+- train、station highlight、sensor、rain、incident 仍然維持可愛 voxel component。
+- 使用者應感覺自己在真實臺北位置上觀看一個 mini operational world。
 
 ### Scale Modes
 

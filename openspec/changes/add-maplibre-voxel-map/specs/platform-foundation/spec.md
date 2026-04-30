@@ -6,11 +6,25 @@
 
 TWFoundry SHALL use MapLibre as the frontend geospatial backbone for real map position, viewport, zoom, bearing, pitch, source loading, and feature querying.
 
+TWFoundry SHALL treat the actual map as a geospatial base overlay/configuration, not as a domain data source such as TDX, PM2.5, Weather, or Incident.
+
 #### Scenario: Actual Taipei map is displayed
 
 - **GIVEN** the frontend map-backed cockpit is opened
 - **WHEN** the map initializes successfully
 - **THEN** the user sees a real Taipei map styled with TWFoundry's Sakura voxel-friendly visual direction
+
+#### Scenario: Open free tile source is used for prototype
+
+- **GIVEN** the first MapLibre-backed frontend implementation is configured
+- **WHEN** the map style is loaded
+- **THEN** the default tile/style source uses OpenFreeMap unless explicitly overridden by configuration
+
+#### Scenario: Map base does not pollute domain sources
+
+- **GIVEN** the map base overlay is enabled
+- **WHEN** TDX, PM2.5, Weather, or Incident overlays are toggled
+- **THEN** those domain sources remain independently controlled and are not coupled to the map tile provider
 
 #### Scenario: MRT overlay aligns with map
 

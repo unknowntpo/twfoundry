@@ -1,7 +1,9 @@
 # Tasks
 
 - [ ] Add `maplibre-gl` and a small MapLibre wrapper component.
-- [ ] Define a Sakura voxel-friendly MapLibre style.
+- [ ] Use OpenFreeMap style URL as the initial open/free tile source.
+- [ ] Keep the map base as a dedicated overlay/config, not as a domain data source.
+- [ ] Define a Sakura voxel-friendly MapLibre style override.
 - [ ] Add sample Taipei MRT route/station GeoJSON fixtures.
 - [ ] Render MRT route and station layers above the base map.
 - [ ] Define `OntologyProjection` data shape with geometry + state.

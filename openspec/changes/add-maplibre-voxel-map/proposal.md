@@ -16,13 +16,16 @@ Phase A:
 
 - Add MapLibre GL JS to the frontend.
 - Create a map-backed cockpit page/component.
+- Use OpenFreeMap as the initial open/free tile and style provider.
+- Treat the actual map as a geospatial base overlay, not as a domain data source.
 - Use a Sakura / voxel-friendly map style.
 - Render MRT routes and stations as GeoJSON layers.
 - Keep voxel entities as a Three overlay synced with the map viewport.
+- Keep TDX, PM2.5, Weather, and Incident source handling isolated from the map base overlay.
 
 Phase B:
 
-- Move voxel entities into a MapLibre custom style layer.
+- Move voxel entities into a MapLibre custom style layer after Phase A proves the UX and coordinate model.
 - Use the MapLibre WebGL context and camera matrix for alignment.
 - Convert ontology object geometry to Mercator/local Three coordinates.
 - Keep overlay visibility, timeline, and object selection as the source of truth.
@@ -31,8 +34,21 @@ Phase B:
 
 - Do not load the whole Taiwan/world map as one Three.js mesh.
 - Do not make MapLibre tile/chunk debug a normal user-facing overlay.
+- Do not treat the map base overlay as a backend data source.
 - Do not let render modules consume raw backend rows directly.
 - Do not replace the Sakura voxel design system.
+
+## Tile Source Direction
+
+Use OpenFreeMap for the first implementation because it is open-source-friendly, has a public MapLibre style endpoint, and does not require an API key for prototyping.
+
+Initial style target:
+
+```text
+https://tiles.openfreemap.org/styles/bright
+```
+
+The application must keep this configurable so the provider can later be replaced by self-hosted PMTiles / OpenMapTiles without changing ontology or overlay code.
 
 ## Risks
 
