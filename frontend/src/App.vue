@@ -192,99 +192,90 @@ onBeforeUnmount(() => {
         ‹
       </button>
 
-      <div class="sidebar-brand-row">
-        <div class="sidebar-brand-mark">TW</div>
-        <div class="sidebar-brand-copy">
-          <strong>TWFoundry</strong>
-          <span>Sakura Voxel Taipei</span>
-        </div>
-        <button class="sidebar-ghost-button" type="button" aria-label="Switch workspace">
-          ⌄
+      <div class="brand-block">
+        <div class="brand-title">TWFoundry</div>
+        <div class="brand-subtitle">SAKURA VOXEL TAIPEI · MAPLIBRE READY</div>
+      </div>
+
+      <div class="pipeline-strip">
+        <button
+          v-for="step in pipelineSteps"
+          :key="step.key"
+          class="pipeline-node"
+          :class="{ active: selectedPipeline === step.key }"
+          type="button"
+          @click="selectPipeline(step.key)"
+        >
+          <span class="node-dot"></span>
+          <span class="node-copy">
+            <strong>{{ step.label }}</strong>
+            <b>{{ step.short }}</b>
+            <small>{{ step.countLabel }}</small>
+          </span>
         </button>
       </div>
 
-      <div class="sidebar-section">
-        <div class="sidebar-section-label">Platform</div>
-        <div class="sidebar-nav">
-          <button
-            v-for="step in pipelineSteps"
-            :key="step.key"
-            class="sidebar-nav-item"
-            :class="{ active: selectedPipeline === step.key }"
-            type="button"
-            @click="selectPipeline(step.key)"
-          >
-            <span class="sidebar-item-icon">{{ step.short.slice(0, 1).toUpperCase() }}</span>
-            <span class="sidebar-item-copy">
-              <strong>{{ step.label }}</strong>
-              <small>{{ step.detail }}</small>
-            </span>
-            <span class="sidebar-item-count">{{ step.countLabel }}</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="sidebar-focus-card">
+      <div class="hud-section compact-readout">
         <div>
           <span>Focus</span>
-          <strong>{{ activePipeline.detail }}</strong>
+          <strong>{{ activePipeline.detail }} · {{ payloadStatusLabel }}</strong>
         </div>
         <div>
-          <span>Source</span>
-          <strong>{{ payloadStatusLabel }}</strong>
-        </div>
-        <div>
-          <span>Chunks</span>
+          <span>Visible chunks</span>
           <strong>{{ stats.visibleChunks }}</strong>
         </div>
         <div>
-          <span>Voxels</span>
+          <span>Voxel entities</span>
           <strong>{{ stats.voxelEntities }}</strong>
         </div>
       </div>
 
-      <div class="sidebar-section">
-        <div class="sidebar-section-label">Map Reference</div>
-        <button
-          class="sidebar-nav-item sidebar-map-row"
-          :class="{ active: mapBaseVisible }"
-          type="button"
-          @click="toggleMapBase"
-        >
-          <span class="sidebar-item-icon sidebar-map-swatch"></span>
-          <span class="sidebar-item-copy">
-            <strong>Actual Taipei map</strong>
-            <small>OpenFreeMap · {{ mapBaseVisible ? mapStatusLabel : 'OFF' }}</small>
-          </span>
-          <span class="sidebar-state">{{ mapBaseVisible ? 'ON' : 'OFF' }}</span>
-        </button>
-        <p v-if="mapStatus === 'error'" class="map-error-note">
-          Map source unavailable. Showing fallback voxel diorama.
-        </p>
+      <div class="panel-domain map-domain">
+        <div class="domain-heading">
+          <span>MAP BASE</span>
+          <small>OpenFreeMap · {{ mapStatusLabel }}</small>
+        </div>
       </div>
 
-      <div class="sidebar-section">
-        <div class="sidebar-section-heading">
-          <span class="sidebar-section-label">Domain Overlays</span>
-          <small>{{ activeOverlayCount }} / {{ overlayLayers.length }} active</small>
+      <button
+        class="layer-pill map-base-pill"
+        :class="{ active: mapBaseVisible }"
+        type="button"
+        @click="toggleMapBase"
+      >
+        <span class="layer-swatch map-swatch"></span>
+        <span class="layer-main">
+          <strong>Actual Taipei map</strong>
+          <small>REFERENCE LOD · {{ mapBaseVisible ? mapStatusLabel : 'OFF' }}</small>
+        </span>
+      </button>
+
+      <p v-if="mapStatus === 'error'" class="map-error-note">
+        Map source unavailable. Showing fallback voxel diorama.
+      </p>
+
+      <div class="panel-domain overlay-domain">
+        <div class="domain-heading">
+          <span>OVERLAYS</span>
+          <small>{{ activeOverlayCount }} active</small>
         </div>
-        <div class="sidebar-nav overlay-nav">
-          <button
-            v-for="layer in overlayLayers"
-            :key="layer.key"
-            class="sidebar-nav-item overlay-row"
-            :class="{ active: layerState[layer.key] }"
-            type="button"
-            @click="toggleLayer(layer.key)"
-          >
-            <span class="sidebar-item-icon overlay-swatch" :style="{ background: layer.color }"></span>
-            <span class="sidebar-item-copy">
-              <strong>{{ layer.label }}</strong>
-              <small>{{ layer.short }} · ontology render module</small>
-            </span>
-            <span class="sidebar-state">{{ layerState[layer.key] ? 'ON' : 'OFF' }}</span>
-          </button>
-        </div>
+      </div>
+
+      <div class="layer-stack overlay-stack">
+        <button
+          v-for="layer in overlayLayers"
+          :key="layer.key"
+          class="layer-pill"
+          :class="{ active: layerState[layer.key] }"
+          type="button"
+          @click="toggleLayer(layer.key)"
+        >
+          <span class="layer-swatch" :style="{ background: layer.color }"></span>
+          <span class="layer-main">
+            <strong>{{ layer.label }}</strong>
+            <small>{{ layer.short }} · {{ layerState[layer.key] ? 'ON' : 'OFF' }}</small>
+          </span>
+        </button>
       </div>
     </section>
 
