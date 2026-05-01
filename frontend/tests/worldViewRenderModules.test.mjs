@@ -10,15 +10,21 @@ assert.equal(baseLayer.name, 'payload diorama chunk base layer');
 assert.ok(baseLayer.children.length >= 1);
 assert.ok(baseLayer.children[0].children.length >= 3);
 const staticFeatureKinds = [];
+const staticFeatureBlueprints = [];
 baseLayer.traverse((child) => {
   if (child.userData?.worldViewStaticFeature?.kind) {
     staticFeatureKinds.push(child.userData.worldViewStaticFeature.kind);
+    staticFeatureBlueprints.push(child.userData.voxelBlueprint);
   }
 });
 assert.ok(staticFeatureKinds.includes('station-anchor'));
 assert.ok(staticFeatureKinds.includes('department-store'));
 assert.ok(staticFeatureKinds.includes('bookstore-mall'));
 assert.ok(staticFeatureKinds.includes('lane-shop'));
+const detailedLandmarks = staticFeatureBlueprints.filter((blueprint) => blueprint?.landmarkKind !== 'station-anchor');
+assert.ok(detailedLandmarks.every((blueprint) => blueprint.voxelCount >= 20), 'landmark modules should be composed from detailed voxel parts');
+assert.ok(detailedLandmarks.some((blueprint) => blueprint.modules.includes('facade-window-band')));
+assert.ok(detailedLandmarks.some((blueprint) => blueprint.modules.includes('roof-equipment')));
 assert.equal(layer.name, 'payload world view layer');
 assert.equal(layer.children.length, fallbackWorldViewPayload.projections.length);
 

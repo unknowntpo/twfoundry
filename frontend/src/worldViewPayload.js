@@ -23,6 +23,11 @@ export const fallbackWorldViewPayload = {
       localToScene: { translate: { x: 0, y: 0, z: 0 }, scale: 1, rotationDegrees: 0 },
       localBounds: { minX: -9, minZ: -7, maxX: 9, maxZ: 7 },
       terrain: [
+        ...Array.from({ length: 15 }, (_, index) => ({ id: `street-nanxi-${index}`, x: index - 7, z: -1, height: 1, kind: 'street', color: '#E7D6C6' })),
+        ...Array.from({ length: 11 }, (_, index) => ({ id: `street-zhongshan-${index}`, x: 0, z: index - 5, height: 1, kind: 'street', color: '#E7D6C6' })),
+        ...Array.from({ length: 6 }, (_, index) => ({ id: `park-linear-${index}`, x: index - 3, z: 2, height: 1, kind: 'park', color: '#B5CAA0' })),
+        ...Array.from({ length: 7 }, (_, index) => ({ id: `shopping-row-${index}`, x: index - 5, z: -3, height: 1 + (index % 2), kind: 'shopping', color: index % 2 ? '#FFD2DC' : '#F8DDE7' })),
+        ...Array.from({ length: 4 }, (_, index) => ({ id: `chifeng-lane-${index}`, x: -5 + index, z: 3, height: 1, kind: 'alley', color: '#F3E5DA' })),
         { id: 'z-a', x: -2, z: -2, height: 2, kind: 'landmark', color: '#F596AA' },
         { id: 'z-b', x: 0, z: 0, height: 1, kind: 'street', color: '#E7D6C6' },
         { id: 'z-c', x: 2, z: -1, height: 1, kind: 'shopping', color: '#FFD2DC' },
