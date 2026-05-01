@@ -129,6 +129,7 @@ export class VoxelWorld {
     this.payloadObjects = [];
     this.payloadLayer = null;
     this.selected = null;
+    this.hovered = null;
     this.worldMinutes = 610;
     this.pipelineFocus = 'tiles';
     this.mapBaseVisible = true;
@@ -633,13 +634,15 @@ export class VoxelWorld {
     this.onResize = () => this.resize();
     this.onPointerDown = (event) => this.handlePointerDown(event);
     this.onPointerUp = (event) => this.handlePointerUp(event);
-    this.onPointerMove = (event) => this.updatePointer(event);
+    this.onPointerMove = (event) => this.handlePointerMove(event);
+    this.onPointerLeave = () => this.clearHover();
     this.onClick = (event) => this.handleClick(event);
     this.onContextMenu = (event) => event.preventDefault();
     window.addEventListener('resize', this.onResize);
     this.renderer.domElement.addEventListener('pointerdown', this.onPointerDown);
     this.renderer.domElement.addEventListener('pointerup', this.onPointerUp);
     this.renderer.domElement.addEventListener('pointermove', this.onPointerMove);
+    this.renderer.domElement.addEventListener('pointerleave', this.onPointerLeave);
     this.renderer.domElement.addEventListener('click', this.onClick);
     this.renderer.domElement.addEventListener('contextmenu', this.onContextMenu);
   }
@@ -653,6 +656,28 @@ export class VoxelWorld {
     const rect = this.renderer.domElement.getBoundingClientRect();
     this.pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     this.pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+  }
+
+  pickSelectable() {
+    this.raycaster.setFromCamera(this.pointer, this.camera);
+    const hits = this.raycaster.intersectObjects(this.clickables, true);
+    return hits.map((item) => this.findSelectableAncestor(item.object)).find(Boolean);
+  }
+
+  handlePointerMove(event) {
+    this.updatePointer(event);
+    if (this.pointerDown) return;
+    const obj = this.pickSelectable();
+    const hoverObject = obj?.userData?.twObject ?? null;
+    if (obj !== this.hovered) {
+      this.hovered = obj ?? null;
+    }
+    this.callbacks.onHover?.(hoverObject, hoverObject ? { x: event.clientX, y: event.clientY } : null);
+  }
+
+  clearHover() {
+    this.hovered = null;
+    this.callbacks.onHover?.(null, null);
   }
 
   handlePointerDown(event) {
@@ -679,9 +704,7 @@ export class VoxelWorld {
       return;
     }
     this.updatePointer(event);
-    this.raycaster.setFromCamera(this.pointer, this.camera);
-    const hits = this.raycaster.intersectObjects(this.clickables, true);
-    const obj = hits.map((item) => this.findSelectableAncestor(item.object)).find(Boolean);
+    const obj = this.pickSelectable();
     if (!obj) return;
 
     const selected = obj.userData.twObject;
@@ -825,6 +848,7 @@ export class VoxelWorld {
   }
 
   setMapBaseVisible(visible) {
+    const changed = this.mapBaseVisible !== visible;
     this.mapBaseVisible = visible;
     this.applySceneLodVisibility();
     if (visible) {
@@ -835,7 +859,14 @@ export class VoxelWorld {
       this.scene.fog.color.set('#FFF7FA');
       this.scene.fog.density = 0.0018;
       this.renderer.setClearColor('#FFF7FA', 1);
+      if (changed) this.frameVoxelDiorama();
     }
+  }
+
+  frameVoxelDiorama() {
+    this.controls.target.set(0, 1.35, -0.45);
+    this.camera.position.set(12.5, 10.5, 15.5);
+    this.controls.update();
   }
 
   applySceneLodVisibility() {
@@ -966,6 +997,7 @@ export class VoxelWorld {
     this.renderer.domElement.removeEventListener('pointerdown', this.onPointerDown);
     this.renderer.domElement.removeEventListener('pointerup', this.onPointerUp);
     this.renderer.domElement.removeEventListener('pointermove', this.onPointerMove);
+    this.renderer.domElement.removeEventListener('pointerleave', this.onPointerLeave);
     this.renderer.domElement.removeEventListener('click', this.onClick);
     this.renderer.domElement.removeEventListener('contextmenu', this.onContextMenu);
     this.renderer.dispose();

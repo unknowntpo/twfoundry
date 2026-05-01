@@ -10,9 +10,21 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  variant: {
+    type: String,
+    default: 'diorama',
+  },
+  interactive: {
+    type: Boolean,
+    default: false,
+  },
   mrtVisible: {
     type: Boolean,
     default: true,
+  },
+  debugReference: {
+    type: Object,
+    default: null,
   },
 });
 
@@ -29,6 +41,13 @@ const mrtLayerIds = [
   'twf-mrt-station-halo',
   'twf-mrt-station-dot',
   'twf-mrt-station-label',
+];
+const debugLayerIds = [
+  'twf-debug-bounds-fill',
+  'twf-debug-bounds-line',
+  'twf-debug-anchor-halo',
+  'twf-debug-anchor-dot',
+  'twf-debug-anchor-label',
 ];
 
 function applySakuraStyleOverride() {
@@ -173,6 +192,117 @@ function addMrtOverlay() {
   setMrtVisibility(props.mrtVisible);
 }
 
+function emptyDebugReference() {
+  return { type: 'FeatureCollection', features: [] };
+}
+
+function upsertDebugReference() {
+  if (!map || !loaded || props.variant !== 'debug') return;
+  const data = props.debugReference ?? emptyDebugReference();
+  if (!map.getSource('twf-debug-reference')) {
+    map.addSource('twf-debug-reference', {
+      type: 'geojson',
+      data,
+    });
+
+    map.addLayer({
+      id: 'twf-debug-bounds-fill',
+      type: 'fill',
+      source: 'twf-debug-reference',
+      filter: ['==', '$type', 'Polygon'],
+      paint: {
+        'fill-color': ['get', 'color'],
+        'fill-opacity': [
+          'match',
+          ['get', 'kind'],
+          'focus-bounds',
+          0.08,
+          'chunk-bounds',
+          0.12,
+          0.08,
+        ],
+      },
+    });
+
+    map.addLayer({
+      id: 'twf-debug-bounds-line',
+      type: 'line',
+      source: 'twf-debug-reference',
+      filter: ['==', '$type', 'Polygon'],
+      paint: {
+        'line-color': ['get', 'color'],
+        'line-width': [
+          'match',
+          ['get', 'kind'],
+          'focus-bounds',
+          3,
+          'chunk-bounds',
+          2,
+          2,
+        ],
+        'line-opacity': 0.86,
+        'line-dasharray': [2, 1],
+      },
+    });
+
+    map.addLayer({
+      id: 'twf-debug-anchor-halo',
+      type: 'circle',
+      source: 'twf-debug-reference',
+      filter: ['==', '$type', 'Point'],
+      paint: {
+        'circle-radius': ['case', ['==', ['get', 'selected'], true], 12, 8],
+        'circle-color': '#FFF9FB',
+        'circle-opacity': 0.78,
+        'circle-stroke-color': ['get', 'color'],
+        'circle-stroke-width': ['case', ['==', ['get', 'selected'], true], 4, 2],
+      },
+    });
+
+    map.addLayer({
+      id: 'twf-debug-anchor-dot',
+      type: 'circle',
+      source: 'twf-debug-reference',
+      filter: ['==', '$type', 'Point'],
+      paint: {
+        'circle-radius': ['case', ['==', ['get', 'selected'], true], 5.8, 4.2],
+        'circle-color': ['get', 'color'],
+        'circle-opacity': 0.95,
+      },
+    });
+
+    map.addLayer({
+      id: 'twf-debug-anchor-label',
+      type: 'symbol',
+      source: 'twf-debug-reference',
+      filter: ['==', '$type', 'Point'],
+      layout: {
+        'text-field': ['get', 'name'],
+        'text-size': 10,
+        'text-offset': [0, 1.25],
+        'text-anchor': 'top',
+        'text-allow-overlap': true,
+      },
+      paint: {
+        'text-color': '#7F3550',
+        'text-halo-color': '#FFF9FB',
+        'text-halo-width': 1.5,
+      },
+    });
+    return;
+  }
+  map.getSource('twf-debug-reference')?.setData(data);
+}
+
+function onStyleReady() {
+  if (loaded) return;
+  loaded = true;
+  applySakuraStyleOverride();
+  addMrtOverlay();
+  upsertDebugReference();
+  emit('status', 'ready');
+}
+
 onMounted(() => {
   emit('status', 'loading');
   map = new maplibregl.Map({
@@ -183,17 +313,13 @@ onMounted(() => {
     pitch: TAIPEI_DIORAMA_SURFACE_VIEW.pitch,
     bearing: TAIPEI_DIORAMA_SURFACE_VIEW.bearing,
     attributionControl: false,
-    interactive: false,
+    interactive: props.interactive,
   });
 
   map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
 
-  map.on('load', () => {
-    loaded = true;
-    applySakuraStyleOverride();
-    addMrtOverlay();
-    emit('status', 'ready');
-  });
+  map.on('load', onStyleReady);
+  map.on('style.load', onStyleReady);
 
   map.on('error', () => {
     emit('status', 'error');
@@ -205,6 +331,7 @@ watch(() => props.visible, (visible) => {
 });
 
 watch(() => props.mrtVisible, setMrtVisibility);
+watch(() => props.debugReference, upsertDebugReference, { deep: true });
 
 onBeforeUnmount(() => {
   map?.remove();
@@ -213,8 +340,12 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="maplibre-overlay" :class="{ hidden: !visible }" aria-hidden="true">
+  <div
+    class="maplibre-overlay"
+    :class="[{ hidden: !visible }, `maplibre-overlay-${variant}`]"
+    :aria-hidden="!visible"
+  >
     <div ref="mapEl" class="maplibre-canvas"></div>
-    <div class="maplibre-tint"></div>
+    <div v-if="variant !== 'debug'" class="maplibre-tint"></div>
   </div>
 </template>

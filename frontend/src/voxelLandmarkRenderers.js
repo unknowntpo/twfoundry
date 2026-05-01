@@ -11,10 +11,19 @@ const COLORS = {
   leaf: '#B5CAA0',
   leafDeep: '#5DAC81',
   alley: '#F3E5DA',
+  stone: '#D2C3C3',
   ink: '#2B2330',
 };
 
 const geometryCache = new Map();
+const labelTextureCache = new Map();
+const DEFAULT_LABEL_BY_KIND = {
+  'station-anchor': 'MRT',
+  'mrt-exit': 'MRT',
+  'department-store': 'DEPT',
+  'bookstore-mall': 'BOOK',
+  'lane-shop': 'LANE',
+};
 
 function material(color, opts = {}) {
   return new THREE.MeshLambertMaterial({
@@ -40,6 +49,62 @@ function box(width, height, depth, color, opts = {}) {
   mesh.castShadow = true;
   mesh.receiveShadow = true;
   return mesh;
+}
+
+function getLabelTexture(text, color) {
+  const key = `${text}-${color}`;
+  if (labelTextureCache.has(key)) return labelTextureCache.get(key);
+  if (typeof document === 'undefined') return null;
+  const canvas = document.createElement('canvas');
+  canvas.width = 256;
+  canvas.height = 96;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = 'rgba(255, 249, 251, 0.96)';
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 8;
+  roundRect(ctx, 8, 8, 240, 80, 22);
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = color;
+  ctx.font = '900 42px Inter, system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(String(text).slice(0, 8), 128, 50);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  labelTextureCache.set(key, texture);
+  return texture;
+}
+
+function roundRect(ctx, x, y, width, height, radius) {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  ctx.lineTo(x + radius, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+}
+
+function addBillboardLabel(group, { text, color, y }) {
+  const texture = getLabelTexture(text, color);
+  if (!texture) return;
+  const label = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: texture,
+    transparent: true,
+    depthTest: false,
+    depthWrite: false,
+  }));
+  label.name = 'category billboard label';
+  label.scale.set(1.7, 0.64, 1);
+  label.position.set(0, y, -0.42);
+  label.renderOrder = 6;
+  group.add(label);
 }
 
 function pointFromLocal(coordinates, transform) {
@@ -225,6 +290,100 @@ function addRoofDetails(group, state, y) {
   group.add(antenna);
 }
 
+function addTypeBeacon(group, { color, y, shape = 'pin' }) {
+  const mast = box(0.1, 0.88, 0.1, COLORS.paper, {
+    emissive: color,
+    emissiveIntensity: 0.06,
+    name: 'type beacon mast',
+  });
+  mast.position.set(0, y + 0.44, 0);
+  group.add(mast);
+
+  if (shape === 'station') {
+    const board = box(1, 0.62, 0.1, COLORS.paper, {
+      emissive: color,
+      emissiveIntensity: 0.14,
+      name: 'metro station board',
+    });
+    board.position.set(0, y + 1.02, -0.04);
+    group.add(board);
+    [-0.16, 0.16].forEach((offset) => {
+      const stripe = box(0.14, 0.42, 0.11, color, {
+        emissive: color,
+        emissiveIntensity: 0.18,
+        name: 'metro board stripe',
+      });
+      stripe.position.set(offset, y + 1.02, -0.1);
+      group.add(stripe);
+    });
+    return;
+  }
+
+  const flag = box(0.78, 0.44, 0.14, color, {
+    emissive: color,
+    emissiveIntensity: 0.16,
+    name: `${shape} type beacon`,
+  });
+  flag.position.set(0.26, y + 1.08, 0);
+  group.add(flag);
+
+  if (shape === 'retail') {
+    const handle = box(0.52, 0.1, 0.12, COLORS.paper, {
+      emissive: COLORS.paper,
+      emissiveIntensity: 0.05,
+      name: 'shopping bag handle',
+    });
+    handle.position.set(0.26, y + 1.34, 0);
+    group.add(handle);
+  }
+}
+
+function addCategoryPlate(group, { width, depth, color, name, label }) {
+  const plate = box(width, 0.055, depth, color, {
+    opacity: 0.66,
+    emissive: color,
+    emissiveIntensity: 0.06,
+    name,
+  });
+  plate.position.set(0, 0.045, 0);
+  group.add(plate);
+  if (label) addBillboardLabel(group, { text: label, color, y: 1.78 });
+}
+
+function addRetailIdentity(group, state, y) {
+  const color = state.signColor ?? COLORS.gold;
+  const bag = box(0.5, 0.42, 0.18, color, {
+    emissive: color,
+    emissiveIntensity: 0.16,
+    name: 'department store shopping bag mark',
+  });
+  bag.position.set(-0.34, y + 0.42, -0.22);
+  group.add(bag);
+  const handle = box(0.34, 0.08, 0.2, COLORS.paper, {
+    emissive: COLORS.paper,
+    emissiveIntensity: 0.08,
+    name: 'department store shopping bag handle',
+  });
+  handle.position.set(-0.34, y + 0.68, -0.22);
+  group.add(handle);
+  addTypeBeacon(group, { color, y: y + 0.18, shape: 'retail' });
+}
+
+function addBookIdentity(group, state, y) {
+  const width = state.width ?? 1.4;
+  const colors = [COLORS.water, COLORS.paper, state.signColor ?? COLORS.water];
+  colors.forEach((color, index) => {
+    const spine = box(width * 0.56, 0.09, 0.2, color, {
+      emissive: color,
+      emissiveIntensity: 0.09,
+      name: 'bookstore stacked book spine',
+    });
+    spine.position.set(0, y + 0.23 + index * 0.12, -0.34);
+    group.add(spine);
+  });
+  addTypeBeacon(group, { color: state.signColor ?? COLORS.water, y, shape: 'book' });
+}
+
 function addLaneBalconies(group, state) {
   const width = state.width ?? 1;
   const depth = state.depth ?? 1;
@@ -258,6 +417,12 @@ function addLaneBalconies(group, state) {
 
 function createDepartmentStore(state) {
   const group = new THREE.Group();
+  addCategoryPlate(group, {
+    width: (state.width ?? 1.6) * 1.48,
+    depth: (state.depth ?? 1.3) * 1.42,
+    color: state.signColor ?? COLORS.gold,
+    name: 'department store category plate',
+  });
   const podium = box((state.width ?? 1.6) * 1.18, 0.48, (state.depth ?? 1.3) * 1.14, COLORS.paper, {
     emissive: state.signColor ?? COLORS.gold,
     emissiveIntensity: 0.055,
@@ -278,6 +443,8 @@ function createDepartmentStore(state) {
   addRetailSign(tower, state, topY);
   addCanopy(tower, state, 0.18);
   addRoofDetails(tower, state, topY);
+  addRetailIdentity(tower, state, topY);
+  addBillboardLabel(tower, { text: state.categoryLabel ?? 'DEPT', color: state.signColor ?? COLORS.gold, y: topY + 1.04 });
   group.add(tower);
   return group;
 }
@@ -287,6 +454,12 @@ function createBookstoreMall(state) {
   const floors = state.floors ?? 4;
   const width = state.width ?? 1.4;
   const depth = state.depth ?? 1.1;
+  addCategoryPlate(group, {
+    width: width * 1.5,
+    depth: depth * 1.48,
+    color: state.signColor ?? COLORS.water,
+    name: 'bookstore category plate',
+  });
   for (let floor = 0; floor < floors; floor += 1) {
     const setback = floor > 1 ? 0.12 : 0;
     const slab = box(width - setback, 0.5, depth - setback, floor % 2 ? COLORS.sakuraLight : COLORS.paper, {
@@ -303,6 +476,8 @@ function createBookstoreMall(state) {
   addEntranceDetails(group, { ...state, width, depth }, 0.34);
   addRetailSign(group, { ...state, width, depth }, floors * 0.5);
   addRoofDetails(group, { ...state, width, depth }, floors * 0.5);
+  addBookIdentity(group, { ...state, width, depth }, floors * 0.5);
+  addBillboardLabel(group, { text: state.categoryLabel ?? 'BOOK', color: state.signColor ?? COLORS.water, y: floors * 0.5 + 1.1 });
   return group;
 }
 
@@ -311,6 +486,12 @@ function createLaneShop(state) {
   const width = state.width ?? 1;
   const depth = state.depth ?? 1;
   const floors = state.floors ?? 2;
+  addCategoryPlate(group, {
+    width: width * 1.32,
+    depth: depth * 1.32,
+    color: state.signColor ?? COLORS.rose,
+    name: 'lane shop category plate',
+  });
   const topY = addFloorStack(group, {
     ...state,
     floors,
@@ -331,12 +512,19 @@ function createLaneShop(state) {
   addEntranceDetails(group, { ...state, width, depth }, 0.32);
   addRoofDetails(group, { ...state, width, depth }, topY);
   if (state.sign) addRetailSign(group, state, topY);
+  addBillboardLabel(group, { text: state.categoryLabel ?? 'LANE', color: state.signColor ?? COLORS.rose, y: topY + 1.0 });
   return group;
 }
 
 function createMrtExit(state) {
   const group = new THREE.Group();
   const color = state.color ?? COLORS.rose;
+  addCategoryPlate(group, {
+    width: 1.78,
+    depth: 1.46,
+    color,
+    name: 'station category plate',
+  });
   const base = box(1.35, 0.22, 1.1, COLORS.paper, { emissive: color, emissiveIntensity: 0.08, name: 'mrt exit base' });
   base.position.y = 0.11;
   group.add(base);
@@ -349,12 +537,26 @@ function createMrtExit(state) {
   const roof = box(1.15, 0.18, 0.7, COLORS.paper, { emissive: color, emissiveIntensity: 0.1, name: 'mrt exit roof' });
   roof.position.y = 1.38;
   group.add(roof);
+  for (let i = 0; i < 4; i += 1) {
+    const step = box(0.72 - i * 0.08, 0.07, 0.18, COLORS.stone, {
+      emissive: color,
+      emissiveIntensity: 0.04,
+      name: 'mrt exit stair step',
+    });
+    step.position.set(0.28, 0.28 + i * 0.08, -0.56 - i * 0.13);
+    group.add(step);
+  }
+  addTypeBeacon(group, { color, y: 1.35, shape: 'station' });
+  addBillboardLabel(group, { text: state.categoryLabel ?? 'MRT', color, y: 2.75 });
   return group;
 }
 
-export function createZhongshanStaticFeature(feature, transform) {
+export function createStaticFeatureVoxel(feature, transform) {
   const point = pointFromLocal(feature.geometry?.coordinates, transform);
-  const state = feature.visualState ?? {};
+  const state = {
+    ...(feature.visualState ?? {}),
+    categoryLabel: feature.visualState?.categoryLabel ?? DEFAULT_LABEL_BY_KIND[feature.kind],
+  };
   let group;
   if (feature.kind === 'department-store') {
     group = createDepartmentStore(state);
@@ -371,7 +573,7 @@ export function createZhongshanStaticFeature(feature, transform) {
   group.name = `static ${feature.kind}`;
   group.userData.voxelBlueprint = {
     mainAxis: feature.kind === 'station-anchor' ? 'vertical entrance marker' : 'Y floor stack',
-    modules: ['podium', 'floor-slice', 'facade-window-band', 'corner-columns', 'signage', 'roof-equipment', 'street-context'],
+    modules: ['podium', 'floor-slice', 'facade-window-band', 'corner-columns', 'type-beacon', 'category-label', 'signage', 'roof-equipment', 'street-context'],
     localCoordinate: 'feature geometry point as building origin',
     repeatPatterns: ['floor slices', 'window bands', 'side facade panels', 'retail signs'],
     landmarkKind: feature.kind,

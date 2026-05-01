@@ -5,6 +5,7 @@ import { defaultObject, layers, ontologyObjects, pipelineSteps } from './mockDat
 import { VoxelWorld } from './voxelWorld.js';
 import { loadWorldViewPayload, summarizeWorldView, toUiOntologyObjects } from './worldViewPayload.js';
 
+const pageParams = new URLSearchParams(window.location.search);
 const worldEl = ref(null);
 const world = ref(null);
 const worldPayloadSource = ref('local');
@@ -15,9 +16,13 @@ const isPlaying = ref(true);
 const isLive = ref(true);
 const leftCollapsed = ref(false);
 const rightCollapsed = ref(false);
-const mapBaseVisible = ref(true);
+const mapBaseVisible = ref(pageParams.get('mapBase') !== 'off');
+const debugMapVisible = ref(pageParams.get('debugMap') === '1');
 const mapStatus = ref('loading');
+const debugMapStatus = ref('loading');
 const worldLod = ref('map-reference');
+const hoverObject = ref(null);
+const hoverPosition = reactive({ x: 0, y: 0 });
 const speed = ref(15);
 const worldMinutes = ref(610);
 const stats = reactive({
@@ -35,6 +40,7 @@ const uiOntologyObjects = computed(() => {
   const objects = toUiOntologyObjects(worldPayload.value);
   return objects.length > 0 ? objects : ontologyObjects;
 });
+const debugReference = computed(() => buildDebugReference(worldPayload.value, selectedObject.value?.id));
 
 const timeLabel = computed(() => {
   const total = worldMinutes.value % 1440;
@@ -61,6 +67,16 @@ const mapStatusLabel = computed(() => {
 });
 const effectiveMapVisible = computed(() => mapBaseVisible.value && mapStatus.value !== 'error' && worldLod.value === 'map-reference');
 const payloadStatusLabel = computed(() => worldPayloadSource.value === 'api' ? 'API' : 'FALLBACK');
+const hoverStyle = computed(() => ({
+  left: `${Math.min(hoverPosition.x + 16, window.innerWidth - 250)}px`,
+  top: `${Math.min(hoverPosition.y + 16, window.innerHeight - 150)}px`,
+}));
+const debugMapStatusLabel = computed(() => {
+  if (!debugMapVisible.value) return 'OFF';
+  if (debugMapStatus.value === 'ready') return 'ON';
+  if (debugMapStatus.value === 'error') return 'ERROR';
+  return 'LOADING';
+});
 
 function toggleLayer(key) {
   layerState[key] = !layerState[key];
@@ -102,6 +118,86 @@ function onTimelineInput(event) {
   isLive.value = false;
 }
 
+function localToFocusLngLat(coordinate, chunk, focus) {
+  const bounds = chunk?.localBounds;
+  const geo = focus?.geoBounds;
+  if (!bounds || !geo) return null;
+  const [x = 0, yOrZ = 0, maybeZ] = coordinate ?? [];
+  const z = maybeZ === undefined ? yOrZ : maybeZ;
+  const nx = (x - bounds.minX) / Math.max(0.0001, bounds.maxX - bounds.minX);
+  const nz = (z - bounds.minZ) / Math.max(0.0001, bounds.maxZ - bounds.minZ);
+  return [
+    geo.west + nx * (geo.east - geo.west),
+    geo.north - nz * (geo.north - geo.south),
+  ];
+}
+
+function boundsPolygon({ west, south, east, north }) {
+  return [[
+    [west, south],
+    [east, south],
+    [east, north],
+    [west, north],
+    [west, south],
+  ]];
+}
+
+function buildDebugReference(payload, selectedId) {
+  const focusGeo = payload?.focus?.geoBounds;
+  if (!payload || !focusGeo) return null;
+  const objects = new Map((payload.objects ?? []).map((object) => [object.id, object]));
+  const features = [
+    {
+      type: 'Feature',
+      properties: {
+        id: payload.focus.id,
+        name: payload.focus.label,
+        kind: 'focus-bounds',
+        color: '#E16B8C',
+        selected: false,
+      },
+      geometry: { type: 'Polygon', coordinates: boundsPolygon(focusGeo) },
+    },
+  ];
+
+  (payload.chunks ?? []).forEach((chunk) => {
+    if (chunk.localBounds) {
+      const corners = [
+        [chunk.localBounds.minX, 0, chunk.localBounds.minZ],
+        [chunk.localBounds.maxX, 0, chunk.localBounds.minZ],
+        [chunk.localBounds.maxX, 0, chunk.localBounds.maxZ],
+        [chunk.localBounds.minX, 0, chunk.localBounds.maxZ],
+        [chunk.localBounds.minX, 0, chunk.localBounds.minZ],
+      ].map((point) => localToFocusLngLat(point, chunk, payload.focus)).filter(Boolean);
+      features.push({
+        type: 'Feature',
+        properties: { id: chunk.id, name: chunk.label ?? chunk.id, kind: 'chunk-bounds', color: '#81C7D4', selected: false },
+        geometry: { type: 'Polygon', coordinates: [corners] },
+      });
+    }
+
+    (chunk.staticFeatures ?? []).forEach((feature) => {
+      const object = objects.get(feature.ontologyObjectId);
+      const lngLat = localToFocusLngLat(feature.geometry?.coordinates, chunk, payload.focus);
+      if (!lngLat) return;
+      features.push({
+        type: 'Feature',
+        properties: {
+          id: feature.id,
+          objectId: object?.id ?? feature.id,
+          name: object?.name ?? feature.kind,
+          kind: feature.kind,
+          color: feature.visualState?.signColor ?? feature.visualState?.color ?? '#F596AA',
+          selected: object?.id === selectedId,
+        },
+        geometry: { type: 'Point', coordinates: lngLat },
+      });
+    });
+  });
+
+  return { type: 'FeatureCollection', features };
+}
+
 watch(worldMinutes, (value) => {
   world.value?.setTime(value);
 });
@@ -120,6 +216,13 @@ onMounted(() => {
     },
     onLodChange: (lod) => {
       worldLod.value = lod;
+    },
+    onHover: (object, position) => {
+      hoverObject.value = object;
+      if (position) {
+        hoverPosition.x = position.x;
+        hoverPosition.y = position.y;
+      }
     },
   });
   world.value.setMapBaseVisible(effectiveMapVisible.value);
@@ -155,12 +258,33 @@ onBeforeUnmount(() => {
       :mrt-visible="layerState.mrt"
       @status="onMapStatus"
     />
+    <MapLibreOverlay
+      :visible="debugMapVisible"
+      variant="debug"
+      :interactive="true"
+      :mrt-visible="layerState.mrt"
+      :debug-reference="debugReference"
+      @status="debugMapStatus = $event"
+    />
+    <section v-if="debugMapVisible" class="debug-map-panel">
+      <div>
+        <span>DEBUG MAP REFERENCE</span>
+        <strong>OpenFreeMap · {{ debugMapStatusLabel }}</strong>
+      </div>
+      <button type="button" @click="debugMapVisible = false">Close</button>
+    </section>
     <div
       ref="worldEl"
       class="world-stage"
       :class="{ 'map-backed': effectiveMapVisible }"
       aria-label="Sakura voxel Taipei 3D scene"
     ></div>
+
+    <aside v-if="hoverObject" class="hover-card" :style="hoverStyle" aria-live="polite">
+      <span>{{ hoverObject.type }} · {{ hoverObject.layer }}</span>
+      <strong>{{ hoverObject.name }}</strong>
+      <p>{{ hoverObject.summary }}</p>
+    </aside>
 
     <button
       class="panel-toggle panel-toggle-left"
@@ -253,6 +377,19 @@ onBeforeUnmount(() => {
       <p v-if="mapStatus === 'error'" class="map-error-note">
         Map source unavailable. Showing fallback voxel diorama.
       </p>
+
+      <button
+        class="layer-pill map-base-pill debug-map-pill"
+        :class="{ active: debugMapVisible }"
+        type="button"
+        @click="debugMapVisible = !debugMapVisible"
+      >
+        <span class="layer-swatch debug-map-swatch"></span>
+        <span class="layer-main">
+          <strong>Debug map reference</strong>
+          <small>REAL MAP CHECK · {{ debugMapStatusLabel }}</small>
+        </span>
+      </button>
 
       <div class="panel-domain overlay-domain">
         <div class="domain-heading">

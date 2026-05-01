@@ -16,6 +16,9 @@ assert.ok(summary.voxelEntities >= fallbackWorldViewPayload.projections.length);
 assert.equal(fallbackWorldViewPayload.freshness.mode, 'fallback');
 assert.equal(typeof fallbackWorldViewPayload.freshness.maxSourceLagSeconds, 'number');
 assert.ok(fallbackWorldViewPayload.freshness.sources.length > 0);
+assert.ok(fallbackWorldViewPayload.objects.every((object) => object.source === 'frontend:fallback'));
+assert.ok(fallbackWorldViewPayload.objects.every((object) => object.properties?.intendedSource));
+assert.ok(fallbackWorldViewPayload.chunks.every((chunk) => chunk.staticFeatures.every((feature) => feature.ontologyObjectId)));
 
 const uiObjects = toUiOntologyObjects(fallbackWorldViewPayload);
 const train = uiObjects.find((object) => object.id === 'train-R22');

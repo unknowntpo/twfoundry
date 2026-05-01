@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { createMrtTrain } from './voxelTrain.js';
-import { createZhongshanStaticFeature } from './voxelZhongshanLandmarks.js';
+import { createStaticFeatureVoxel } from './voxelLandmarkRenderers.js';
 
 const COLORS = {
   paper: '#FFF7FA',
@@ -69,6 +69,16 @@ function chunkTransform(chunk) {
 
 function linePoints(geometry, transform) {
   return (geometry?.coordinates ?? []).map((coordinate) => pointFromLocal(coordinate, transform));
+}
+
+function withGrade(point, visualState = {}) {
+  if (visualState.grade !== 'underground') return point;
+  const depth = visualState.undergroundDepth ?? 0.72;
+  return new THREE.Vector3(point.x, -Math.abs(depth), point.z);
+}
+
+function projectionLinePoints(projection, transform) {
+  return linePoints(projection.geometry, transform).map((point) => withGrade(point, projection.visualState));
 }
 
 function polygonBounds(geometry, transform) {
@@ -172,16 +182,30 @@ function createSemanticZone(zone, transform) {
 
 function createStaticFeature(feature, chunk, object) {
   const transform = chunkTransform(chunk);
-  const mesh = createZhongshanStaticFeature(feature, transform);
+  const mesh = createStaticFeatureVoxel(feature, transform);
   return attachStaticObject(mesh, object, feature);
 }
 
 function createRouteProjection(projection, transform) {
-  const points = linePoints(projection.geometry, transform);
+  const points = projectionLinePoints(projection, transform);
   const group = new THREE.Group();
   if (points.length < 2) return group;
   const curve = new THREE.CatmullRomCurve3(points, false, 'catmullrom', 0.36);
   const color = projection.visualState?.lineColor ?? COLORS.rose;
+  if (projection.visualState?.grade === 'underground') {
+    const tunnel = new THREE.Mesh(
+      new THREE.TubeGeometry(curve, 80, projection.visualState?.tunnelRadius ?? 0.34, 8, false),
+      material(projection.visualState?.tunnelColor ?? COLORS.water, {
+        glass: true,
+        opacity: projection.visualState?.tunnelOpacity ?? 0.18,
+        transmission: 0.48,
+        emissive: projection.visualState?.tunnelColor ?? COLORS.water,
+        emissiveIntensity: 0.035,
+      }),
+    );
+    tunnel.name = 'payload underground MRT tunnel volume';
+    group.add(tunnel);
+  }
   const tube = new THREE.Mesh(
     new THREE.TubeGeometry(curve, 80, projection.visualState?.thickness ?? 0.14, 6, false),
     material(color, { emissive: color, emissiveIntensity: 0.18 }),
@@ -192,7 +216,7 @@ function createRouteProjection(projection, transform) {
 }
 
 function createTrainProjection(projection, transform) {
-  const points = linePoints(projection.geometry, transform);
+  const points = projectionLinePoints(projection, transform);
   const color = projection.visualState?.lineColor ?? COLORS.rose;
   const train = createMrtTrain({
     lineColor: color,
