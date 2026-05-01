@@ -27,6 +27,12 @@ discuss? → propose → apply ⇄ ingest → archive
 - Prefer direct technical conclusions over long explanations.
 - Capture project knowledge in a way that can later be organized into blog posts.
 
+## Project Implementation Judge
+
+- After every implementation that touches frontend data, ontology objects, overlays, map/geospatial projection, voxel render modules, backend payload contracts, or user-visible copy derived from data, apply `$twfoundry-extensibility-judge`.
+- Treat hardcoded domain truth as a design defect. UI/rendering code must render generic contracts; source-specific facts must enter through adapters, normalized payloads, or clearly marked fallback fixtures.
+- Final implementation reports should include the judge result: `PASS / WARN / FAIL`, score, findings, and required fixes.
+
 ## Parked Changes
 
 Changes can be parked（暫存）— temporarily moved out of `openspec/changes/`. Parked changes won't appear in `spectra list` but can be found with `spectra list --parked`. To restore: `spectra unpark <name>`. The `$spectra-apply` and `$spectra-ingest` skills handle parked changes automatically.
