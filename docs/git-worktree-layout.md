@@ -4,15 +4,19 @@ TWFoundry uses git worktrees for parallel agent and feature work.
 
 ## Layout
 
-Keep a plain container directory for the project, and put the anchor checkout in `main/`:
+Keep a plain container directory for the project. The plain directory contains every active branch worktree for this repo, including the default-branch anchor checkout in `main/`:
+
+```text
+/Users/unknowntpo/repo/unknowntpo/twfoundry/
+  main/
+  <slug>/
+  <another-slug>/
+```
+
+`main/` is the only anchor checkout. Create every new branch worktree as a sibling of `main/` inside the same plain container:
 
 ```text
 /Users/unknowntpo/repo/unknowntpo/twfoundry/main
-```
-
-Create new worktrees as siblings of `main/` inside the same plain container:
-
-```text
 /Users/unknowntpo/repo/unknowntpo/twfoundry/<slug>
 ```
 
@@ -23,7 +27,7 @@ define-backend-platform-contracts
 codex/define-backend-platform-contracts
 ```
 
-Do not use repo-internal `worktrees/` directories or sibling directories named `twfoundry-<slug>`. The parent directory itself is the project container.
+Do not use repo-internal `worktrees/` directories or sibling directories named `twfoundry-<slug>` outside this container. The parent directory itself is the project container and must not be a Git checkout, bare repo, or `.bare` shim.
 
 ## Aliases
 
@@ -93,3 +97,19 @@ git wtclean
 ## Target state
 
 All active TWFoundry worktrees should appear under the plain `twfoundry/` container when running `git worktree list`, with `main/` as the anchor checkout.
+
+Validate the layout from any worktree:
+
+```sh
+git wtroot
+git worktree list
+git -C /Users/unknowntpo/repo/unknowntpo/twfoundry rev-parse --show-toplevel
+git -C /Users/unknowntpo/repo/unknowntpo/twfoundry/main rev-parse --git-common-dir
+```
+
+Expected results:
+
+- `git wtroot` resolves to `/Users/unknowntpo/repo/unknowntpo/twfoundry/main`.
+- `git worktree list` shows only paths under `/Users/unknowntpo/repo/unknowntpo/twfoundry/`.
+- The plain container `rev-parse` command fails because `twfoundry/` is not a Git checkout.
+- The anchor `rev-parse --git-common-dir` returns `.git`.
