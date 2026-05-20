@@ -31,7 +31,11 @@ public class WorldViewController {
       @RequestParam(defaultValue = "live") String time,
       @RequestParam(required = false) String overlays,
       @RequestParam(defaultValue = "false") boolean debugGeo) {
-    return service.buildView(focusId, lod, time, parseOverlays(overlays), debugGeo);
+    try {
+      return service.buildView(focusId, lod, time, parseOverlays(overlays), debugGeo);
+    } catch (IllegalArgumentException error) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, error.getMessage(), error);
+    }
   }
 
   @GetMapping("/objects/{objectId}")

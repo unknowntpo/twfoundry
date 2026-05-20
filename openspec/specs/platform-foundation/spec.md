@@ -2926,123 +2926,361 @@ tests:
 
 TWFoundry SHALL handle MapLibre style or tile loading failure without a blank screen.
 
+The fallback state SHALL preserve the map-first ontology model: available ontology objects,
+overlay controls, freshness/completeness status, and selected-object detail remain inspectable.
+
+Voxel detail MAY remain available for selected objects, but fallback behavior SHALL NOT require a
+primary voxel diorama surface.
+
 #### Scenario: Map tile provider is unavailable
 
 - **GIVEN** the MapLibre style or tiles fail to load
-- **WHEN** the cockpit renders
-- **THEN** the user sees a fallback voxel diorama state and a visible map-source status message
+- **WHEN** the dashboard renders
+- **THEN** the user sees a recoverable map-source status message
+- **AND** available ontology objects and overlay controls remain usable
+- **AND** voxel rendering, if shown, is scoped to selected-object detail rather than replacing the
+  map as the primary product surface
+
 
 <!-- @trace
-source: add-maplibre-voxel-map
-updated: 2026-04-30
+source: cleanup-map-first-contract-boundaries
+updated: 2026-05-14
 code:
-  - frontend/src/App.vue
-  - screenshots/maplibre-voxel/home.png
-  - frontend/src/MapLibreOverlay.vue
-  - frontend/src/ontologyProjection.js
+  - frontend/src/voxelLandmarkRenderers.js
+  - screenshots/phase1-debug-underlay-v3.png
+  - frontend/vite.config.js
+  - screenshots/phase1-data-derived-city-no-context-buildings.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-framed.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-reviewed.png
+  - screenshots/phase1-dense-voxel-city-context.png
+  - screenshots/phase1-polygon-footprint-buildings.png
+  - screenshots/phase1-webmercator-local.png
+  - backend/ingestion/src/main/resources/world/zhongshan-osm-fixture.json
+  - screenshots/debug-map-reference-in-scene-wait.png
+  - screenshots/debug-map-road-clear-intersection-filter.png
   - frontend/src/voxelWorld.js
-  - screenshots/maplibre-voxel/design-system.png
+  - screenshots/debug-map-reference-in-scene.png
+  - screenshots/debug-map-road-width-canvas-fix.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v3.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v4.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/WorldViewService.java
+  - frontend/index.html
+  - frontend/package.json
+  - screenshots/phase1-debug-underlay-v2.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/ZhongshanFixtureOsmCatalog.java
+  - screenshots/phase1-ground-road-surfaces-contract-fixed.png
+  - screenshots/phase1-ground-road-surfaces.png
+  - screenshots/phase1-maplibre-scale-corrected-focused.png
+  - screenshots/phase1-static-feature-catalog.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/CuratedZhongshanStaticFeatureProvider.java
+  - screenshots/phase1-zhongshan-live-voxel.png
+  - screenshots/real-map-alignment-debug-on-v3-long-wait.png
+  - screenshots/phase1-debug-underlay.png
+  - frontend/src/mockData.js
+  - screenshots/real-map-alignment-debug-on.png
+  - screenshots/debug-map-texture-publish-road-width-fix.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v2.png
+  - screenshots/phase1-maplibre-scale-corrected-focus-near.png
+  - frontend/src/worldViewRenderModules.js
+  - README.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/OsmStaticFeatureAdapter.java
+  - screenshots/debug-map-reference-in-scene-after-lifecycle-fix.png
+  - screenshots/phase1-urban-role-city-fabric.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureProvider.java
+  - screenshots/phase1-zhongshan-live-default.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-clean-labels.png
+  - screenshots/phase1-data-derived-city-final.png
+  - screenshots/road-geo-source-alignment-debug-on.png
+  - frontend/src/MapLibreOverlay.vue
+  - screenshots/voxel-style-base-debug-off.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureStyleResolver.java
+  - screenshots/debug-map-road-clear-filter.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-refocused.png
+  - screenshots/phase1-maplibre-no-road-buildings.png
+  - screenshots/phase1-maplibre-scale-final.png
+  - frontend/src/mapAlignmentDiagnostics.js
+  - frontend/src/mapOverlayRenderers.js
+  - screenshots/phase1-maplibre-texture-plane.png
+  - SPEC.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/WorldViewController.java
+  - frontend/src/worldViewPayload.js
+  - Design.md
+  - docs/decision-history/2026-05-map-first-pivot.md
+  - frontend/src/OntologyPreview.vue
+  - screenshots/phase1-ground-road-surfaces-readable.png
+  - screenshots/source-geometry-contract-debug-on.png
+  - backend/ingestion/src/main/resources/world/taipei-main-station-osm-fixture.json
+  - frontend/src/App.vue
+  - screenshots/phase1-data-derived-osm-fixture-buildings.png
+  - frontend/src/mapDerivedWorldPayload.js
+  - frontend/src/overlayRegistry.js
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/WorldView.java
+  - screenshots/phase1-static-feature-provider.png
+  - screenshots/phase1-maplibre-scale-corrected.png
+  - frontend/bun.lock
+  - screenshots/voxel-style-base-debug-off-v2.png
+  - screenshots/real-map-alignment-debug-on-v2.png
+  - screenshots/phase1-urban-role-style-resolver.png
+  - screenshots/phase1-debug-underlay-v4.png
+  - screenshots/phase1-zhongshan-live-station.png
   - frontend/src/styles.css
+  - screenshots/phase1-geo-anchored-underlay.png
 tests:
-  - frontend/tests/mapOverlayData.test.mjs
+  - frontend/tests/mapAlignmentDiagnostics.test.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/WorldViewControllerE2eTest.java
+  - frontend/tests/overlayRegistry.test.mjs
+  - frontend/tests/worldViewRenderModules.test.mjs
+  - frontend/tests/run.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/CuratedZhongshanStaticFeatureProviderTest.java
+  - frontend/tests/worldViewPayload.test.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/OsmStaticFeatureAdapterTest.java
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureStyleResolverTest.java
 -->
 
 ---
 ### Requirement: Backend-Computed World View Contract
 
-TWFoundry SHALL expose a backend-computed `WorldViewPayload` for diorama rendering.
+TWFoundry MAY continue exposing backend-computed `WorldViewPayload` during the map-first migration.
 
-The `WorldViewPayload` SHALL include `schemaVersion`, `request`, `focus`, `chunks`, `objects`, `projections`, `renderModules`, `freshness`, and `completeness`.
+`WorldViewPayload`, `chunks`, and `projections` are legacy-compatible implementation fields. New
+product decisions SHALL treat them as compatibility inputs that feed ontology objects, map overlay
+projections, selected-object details, freshness, and completeness.
 
-The frontend SHALL render the operational diorama from `WorldViewPayload` rather than computing the complete world from raw source rows.
+The frontend SHALL NOT treat `WorldViewPayload` as proof that the primary dashboard must be a
+voxel diorama.
 
-#### Scenario: Frontend requests current Taipei world view
+#### Scenario: Frontend requests current world view
 
-- **GIVEN** the frontend opens the operations cockpit
-- **WHEN** it requests `GET /api/world/view?focusId=taipei-core&lod=city&time=live`
-- **THEN** the backend returns a `WorldViewPayload`
-- **AND** the payload contains at least one `DioramaChunk`
-- **AND** the payload contains `OntologyObject` records separately from chunk-local projections
-- **AND** the frontend can render the world without parsing map vector tiles
-
-#### Scenario: Payload version is explicit
-
-- **GIVEN** the backend returns a world view response
-- **WHEN** the frontend reads the response
-- **THEN** `schemaVersion` is present
-- **AND** the initial version is `world-view.v1`
+- **GIVEN** the frontend opens the operations dashboard
+- **WHEN** it requests `GET /api/world/view?focusId=zhongshan-station&lod=city&time=live`
+- **THEN** the backend may return `schemaVersion`, `request`, `focus`, `chunks`, `objects`,
+  `projections`, `renderModules`, `freshness`, and `completeness`
+- **AND** the frontend maps those fields into ontology objects, map overlays, and selected-object
+  detail
+- **AND** the user-facing product model remains map-first
 
 #### Scenario: Partial payload identifies missing overlays
 
 - **GIVEN** a non-critical source is stale or unavailable
-- **WHEN** the backend can still generate part of the world view
-- **THEN** it returns `WorldViewPayload.completeness.status` as `partial`
-- **AND** `missingOverlays` identifies unavailable overlays
-- **AND** `warnings` explains source or projection gaps
+- **WHEN** the backend can still generate part of the view
+- **THEN** it returns completeness metadata such as `status`, `missingOverlays`, and `warnings`
+- **AND** the frontend keeps available ontology objects inspectable
 
 
 <!-- @trace
-source: add-backend-computed-diorama-world-view
-updated: 2026-04-30
+source: cleanup-map-first-contract-boundaries
+updated: 2026-05-14
 code:
+  - frontend/src/voxelLandmarkRenderers.js
+  - screenshots/phase1-debug-underlay-v3.png
   - frontend/vite.config.js
-  - frontend/src/DesignSystemPage.vue
-  - frontend/src/App.vue
-  - frontend/src/styles.css
+  - screenshots/phase1-data-derived-city-no-context-buildings.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-framed.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-reviewed.png
+  - screenshots/phase1-dense-voxel-city-context.png
+  - screenshots/phase1-polygon-footprint-buildings.png
+  - screenshots/phase1-webmercator-local.png
+  - backend/ingestion/src/main/resources/world/zhongshan-osm-fixture.json
+  - screenshots/debug-map-reference-in-scene-wait.png
+  - screenshots/debug-map-road-clear-intersection-filter.png
   - frontend/src/voxelWorld.js
-  - frontend/src/worldViewPayload.js
+  - screenshots/debug-map-reference-in-scene.png
+  - screenshots/debug-map-road-width-canvas-fix.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v3.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v4.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/WorldViewService.java
+  - frontend/index.html
+  - frontend/package.json
+  - screenshots/phase1-debug-underlay-v2.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/ZhongshanFixtureOsmCatalog.java
+  - screenshots/phase1-ground-road-surfaces-contract-fixed.png
+  - screenshots/phase1-ground-road-surfaces.png
+  - screenshots/phase1-maplibre-scale-corrected-focused.png
+  - screenshots/phase1-static-feature-catalog.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/CuratedZhongshanStaticFeatureProvider.java
+  - screenshots/phase1-zhongshan-live-voxel.png
+  - screenshots/real-map-alignment-debug-on-v3-long-wait.png
+  - screenshots/phase1-debug-underlay.png
+  - frontend/src/mockData.js
+  - screenshots/real-map-alignment-debug-on.png
+  - screenshots/debug-map-texture-publish-road-width-fix.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v2.png
+  - screenshots/phase1-maplibre-scale-corrected-focus-near.png
   - frontend/src/worldViewRenderModules.js
-  - frontend/src/RenderModulePreview.vue
+  - README.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/OsmStaticFeatureAdapter.java
+  - screenshots/debug-map-reference-in-scene-after-lifecycle-fix.png
+  - screenshots/phase1-urban-role-city-fabric.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureProvider.java
+  - screenshots/phase1-zhongshan-live-default.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-clean-labels.png
+  - screenshots/phase1-data-derived-city-final.png
+  - screenshots/road-geo-source-alignment-debug-on.png
+  - frontend/src/MapLibreOverlay.vue
+  - screenshots/voxel-style-base-debug-off.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureStyleResolver.java
+  - screenshots/debug-map-road-clear-filter.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-refocused.png
+  - screenshots/phase1-maplibre-no-road-buildings.png
+  - screenshots/phase1-maplibre-scale-final.png
+  - frontend/src/mapAlignmentDiagnostics.js
+  - frontend/src/mapOverlayRenderers.js
+  - screenshots/phase1-maplibre-texture-plane.png
+  - SPEC.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/WorldViewController.java
+  - frontend/src/worldViewPayload.js
+  - Design.md
+  - docs/decision-history/2026-05-map-first-pivot.md
+  - frontend/src/OntologyPreview.vue
+  - screenshots/phase1-ground-road-surfaces-readable.png
+  - screenshots/source-geometry-contract-debug-on.png
+  - backend/ingestion/src/main/resources/world/taipei-main-station-osm-fixture.json
+  - frontend/src/App.vue
+  - screenshots/phase1-data-derived-osm-fixture-buildings.png
+  - frontend/src/mapDerivedWorldPayload.js
+  - frontend/src/overlayRegistry.js
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/WorldView.java
+  - screenshots/phase1-static-feature-provider.png
+  - screenshots/phase1-maplibre-scale-corrected.png
+  - frontend/bun.lock
+  - screenshots/voxel-style-base-debug-off-v2.png
+  - screenshots/real-map-alignment-debug-on-v2.png
+  - screenshots/phase1-urban-role-style-resolver.png
+  - screenshots/phase1-debug-underlay-v4.png
+  - screenshots/phase1-zhongshan-live-station.png
+  - frontend/src/styles.css
+  - screenshots/phase1-geo-anchored-underlay.png
 tests:
-  - frontend/tests/run.mjs
+  - frontend/tests/mapAlignmentDiagnostics.test.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/WorldViewControllerE2eTest.java
+  - frontend/tests/overlayRegistry.test.mjs
   - frontend/tests/worldViewRenderModules.test.mjs
+  - frontend/tests/run.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/CuratedZhongshanStaticFeatureProviderTest.java
+  - frontend/tests/worldViewPayload.test.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/OsmStaticFeatureAdapterTest.java
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureStyleResolverTest.java
 -->
 
 ---
 ### Requirement: Diorama Chunk Is Product-Owned
 
-TWFoundry SHALL model `DioramaChunk` as a product-owned render artifact, not as a direct map tile.
+TWFoundry SHALL treat `DioramaChunk` as a legacy-compatible internal render artifact during the
+map-first migration.
 
-A `DioramaChunk` SHALL include chunk identity, focus identity, LOD, geographic bounds, local bounds, terrain cells, static feature projections, semantic zones, and source references.
+`DioramaChunk` MAY continue carrying focus-local geometry, source references, ground features,
+static features, or semantic zones for compatibility paths. It SHALL NOT be presented as the main
+product unit in new user-facing UI or future product decisions.
 
-A `DioramaChunk` SHALL include `sceneOrigin` and `localToScene` so the frontend can assemble multiple chunks into one Three.js scene.
+#### Scenario: Compatibility chunk contains local render data
 
-#### Scenario: Chunk contains local render data
+- **GIVEN** a compatibility payload contains `DioramaChunk` data
+- **WHEN** a legacy renderer or object-detail path consumes it
+- **THEN** source references and local geometry remain traceable
+- **AND** the primary dashboard still presents map overlays and ontology object detail rather than
+  chunk-first navigation
 
-- **GIVEN** a `DioramaChunk` is returned in `WorldViewPayload`
-- **WHEN** the frontend renders that chunk
-- **THEN** terrain and static features are already represented in chunk-local diorama coordinates
-- **AND** the frontend does not need to decode map tile coordinates
+#### Scenario: Source-derived geometry remains traceable
 
-#### Scenario: Multiple chunks assemble into one scene
-
-- **GIVEN** a world view response contains multiple chunks
-- **WHEN** the frontend renders the shared diorama scene
-- **THEN** each chunk can be placed using `localToScene`
-- **AND** adjacent chunk features can visually continue across chunk boundaries
-
-#### Scenario: Chunk references source inputs
-
-- **GIVEN** a chunk is generated from map or static data
-- **WHEN** diagnostics are inspected
-- **THEN** the chunk contains `sourceRefs` that identify contributing source inputs such as TDX static geometry or vector tile references
+- **GIVEN** static map or OSM-like fixture data contributes geometry
+- **WHEN** the compatibility payload includes that geometry
+- **THEN** source refs and source geometry remain available for diagnostics and trust
+- **AND** renderer code does not invent source truth
 
 
 <!-- @trace
-source: add-backend-computed-diorama-world-view
-updated: 2026-04-30
+source: cleanup-map-first-contract-boundaries
+updated: 2026-05-14
 code:
+  - frontend/src/voxelLandmarkRenderers.js
+  - screenshots/phase1-debug-underlay-v3.png
   - frontend/vite.config.js
-  - frontend/src/DesignSystemPage.vue
-  - frontend/src/App.vue
-  - frontend/src/styles.css
+  - screenshots/phase1-data-derived-city-no-context-buildings.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-framed.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-reviewed.png
+  - screenshots/phase1-dense-voxel-city-context.png
+  - screenshots/phase1-polygon-footprint-buildings.png
+  - screenshots/phase1-webmercator-local.png
+  - backend/ingestion/src/main/resources/world/zhongshan-osm-fixture.json
+  - screenshots/debug-map-reference-in-scene-wait.png
+  - screenshots/debug-map-road-clear-intersection-filter.png
   - frontend/src/voxelWorld.js
-  - frontend/src/worldViewPayload.js
+  - screenshots/debug-map-reference-in-scene.png
+  - screenshots/debug-map-road-width-canvas-fix.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v3.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v4.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/WorldViewService.java
+  - frontend/index.html
+  - frontend/package.json
+  - screenshots/phase1-debug-underlay-v2.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/ZhongshanFixtureOsmCatalog.java
+  - screenshots/phase1-ground-road-surfaces-contract-fixed.png
+  - screenshots/phase1-ground-road-surfaces.png
+  - screenshots/phase1-maplibre-scale-corrected-focused.png
+  - screenshots/phase1-static-feature-catalog.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/CuratedZhongshanStaticFeatureProvider.java
+  - screenshots/phase1-zhongshan-live-voxel.png
+  - screenshots/real-map-alignment-debug-on-v3-long-wait.png
+  - screenshots/phase1-debug-underlay.png
+  - frontend/src/mockData.js
+  - screenshots/real-map-alignment-debug-on.png
+  - screenshots/debug-map-texture-publish-road-width-fix.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v2.png
+  - screenshots/phase1-maplibre-scale-corrected-focus-near.png
   - frontend/src/worldViewRenderModules.js
-  - frontend/src/RenderModulePreview.vue
+  - README.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/OsmStaticFeatureAdapter.java
+  - screenshots/debug-map-reference-in-scene-after-lifecycle-fix.png
+  - screenshots/phase1-urban-role-city-fabric.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureProvider.java
+  - screenshots/phase1-zhongshan-live-default.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-clean-labels.png
+  - screenshots/phase1-data-derived-city-final.png
+  - screenshots/road-geo-source-alignment-debug-on.png
+  - frontend/src/MapLibreOverlay.vue
+  - screenshots/voxel-style-base-debug-off.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureStyleResolver.java
+  - screenshots/debug-map-road-clear-filter.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-refocused.png
+  - screenshots/phase1-maplibre-no-road-buildings.png
+  - screenshots/phase1-maplibre-scale-final.png
+  - frontend/src/mapAlignmentDiagnostics.js
+  - frontend/src/mapOverlayRenderers.js
+  - screenshots/phase1-maplibre-texture-plane.png
+  - SPEC.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/WorldViewController.java
+  - frontend/src/worldViewPayload.js
+  - Design.md
+  - docs/decision-history/2026-05-map-first-pivot.md
+  - frontend/src/OntologyPreview.vue
+  - screenshots/phase1-ground-road-surfaces-readable.png
+  - screenshots/source-geometry-contract-debug-on.png
+  - backend/ingestion/src/main/resources/world/taipei-main-station-osm-fixture.json
+  - frontend/src/App.vue
+  - screenshots/phase1-data-derived-osm-fixture-buildings.png
+  - frontend/src/mapDerivedWorldPayload.js
+  - frontend/src/overlayRegistry.js
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/WorldView.java
+  - screenshots/phase1-static-feature-provider.png
+  - screenshots/phase1-maplibre-scale-corrected.png
+  - frontend/bun.lock
+  - screenshots/voxel-style-base-debug-off-v2.png
+  - screenshots/real-map-alignment-debug-on-v2.png
+  - screenshots/phase1-urban-role-style-resolver.png
+  - screenshots/phase1-debug-underlay-v4.png
+  - screenshots/phase1-zhongshan-live-station.png
+  - frontend/src/styles.css
+  - screenshots/phase1-geo-anchored-underlay.png
 tests:
-  - frontend/tests/run.mjs
+  - frontend/tests/mapAlignmentDiagnostics.test.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/WorldViewControllerE2eTest.java
+  - frontend/tests/overlayRegistry.test.mjs
   - frontend/tests/worldViewRenderModules.test.mjs
+  - frontend/tests/run.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/CuratedZhongshanStaticFeatureProviderTest.java
+  - frontend/tests/worldViewPayload.test.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/OsmStaticFeatureAdapterTest.java
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureStyleResolverTest.java
 -->
 
 ---
@@ -3050,202 +3288,605 @@ tests:
 
 TWFoundry SHALL keep canonical operational identity in `OntologyObject` records.
 
-Chunks SHALL NOT own event, train, station, sensor, or alert identity.
+Map overlays, object detail renderers, compatibility chunks, and compatibility projections SHALL
+NOT own event, train, station, sensor, or alert identity.
 
-#### Scenario: Cross-chunk rain cell has one object
+#### Scenario: Cross-area rain cell has one object
 
-- **GIVEN** one rain cell covers multiple diorama chunks
-- **WHEN** the backend computes the world view
-- **THEN** the `objects` array contains exactly one `OntologyObject` for that rain cell
-- **AND** the `projections` array may contain multiple `ChunkProjection` records that reference the same `objectId`
+- **GIVEN** one rain cell covers multiple map areas, overlays, or compatibility chunks
+- **WHEN** the backend computes the view
+- **THEN** the `objects` collection contains exactly one `OntologyObject` for that rain cell
+- **AND** any overlay features or compatibility projections reference the same object identity
 
 #### Scenario: Projection click resolves to canonical object
 
-- **GIVEN** the frontend user clicks a rendered chunk-local projection
-- **WHEN** the projection contains `objectId`
+- **GIVEN** the frontend user clicks a map overlay feature or compatibility projection
+- **WHEN** the projection contains an object reference
 - **THEN** the inspector resolves the selected object from the canonical `objects` collection
 - **AND** all projections for that object share the same object detail view
 
 #### Scenario: Static station feature maps to canonical station object
 
-- **GIVEN** a static station feature is rendered in a chunk
+- **GIVEN** a static station feature is visible through a map overlay, object detail, or
+  compatibility renderer
 - **WHEN** it corresponds to a canonical station ontology object
-- **THEN** the static feature projection includes `ontologyObjectId`
+- **THEN** the feature includes an ontology object reference
 - **AND** clicking the station resolves to the canonical station object rather than a raw geo feature
 
 
 <!-- @trace
-source: add-backend-computed-diorama-world-view
-updated: 2026-04-30
+source: cleanup-remaining-legacy-world-view-references
+updated: 2026-05-14
 code:
-  - frontend/vite.config.js
-  - frontend/src/DesignSystemPage.vue
-  - frontend/src/App.vue
-  - frontend/src/styles.css
+  - screenshots/debug-map-road-clear-intersection-filter.png
+  - frontend/src/mockData.js
+  - screenshots/debug-map-road-clear-filter.png
+  - screenshots/real-map-alignment-debug-on-v2.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/WorldView.java
   - frontend/src/voxelWorld.js
+  - frontend/vite.config.js
+  - SPEC.md
+  - screenshots/debug-map-reference-in-scene-wait.png
+  - screenshots/phase1-maplibre-no-road-buildings.png
+  - frontend/src/OntologyPreview.vue
+  - screenshots/phase1-webmercator-local.png
+  - backend/ingestion/src/main/resources/world/taipei-main-station-osm-fixture.json
+  - frontend/src/mapDerivedWorldPayload.js
+  - backend/ingestion/src/main/resources/world/zhongshan-osm-fixture.json
+  - screenshots/phase1-ground-road-surfaces-contract-fixed.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v3.png
+  - screenshots/phase1-maplibre-scale-corrected-focus-near.png
+  - screenshots/phase1-debug-underlay-v2.png
+  - screenshots/phase1-zhongshan-live-voxel.png
+  - docs/decision-history/2026-05-map-first-pivot.md
+  - screenshots/phase1-data-derived-city-final.png
+  - frontend/package.json
+  - frontend/src/MapLibreOverlay.vue
+  - screenshots/phase1-data-derived-osm-fixture-buildings-framed.png
+  - screenshots/phase1-static-feature-provider.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-reviewed.png
+  - frontend/src/styles.css
+  - screenshots/phase1-geo-anchored-underlay.png
+  - screenshots/debug-map-reference-in-scene.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/WorldViewController.java
+  - screenshots/phase1-zhongshan-live-default.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v4.png
   - frontend/src/worldViewPayload.js
+  - screenshots/phase1-static-feature-catalog.png
+  - screenshots/voxel-style-base-debug-off-v2.png
+  - frontend/src/mapOverlayRenderers.js
+  - frontend/src/voxelLandmarkRenderers.js
+  - screenshots/phase1-debug-underlay-v3.png
+  - Design.md
+  - screenshots/phase1-debug-underlay.png
+  - screenshots/real-map-alignment-debug-on.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureStyleResolver.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureProvider.java
   - frontend/src/worldViewRenderModules.js
-  - frontend/src/RenderModulePreview.vue
+  - screenshots/debug-map-reference-in-scene-after-lifecycle-fix.png
+  - screenshots/phase1-maplibre-scale-final.png
+  - screenshots/source-geometry-contract-debug-on.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-refocused.png
+  - screenshots/debug-map-road-width-canvas-fix.png
+  - screenshots/phase1-dense-voxel-city-context.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/ZhongshanFixtureOsmCatalog.java
+  - screenshots/phase1-maplibre-scale-corrected.png
+  - README.md
+  - screenshots/debug-map-texture-publish-road-width-fix.png
+  - screenshots/phase1-ground-road-surfaces-readable.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/CuratedZhongshanStaticFeatureProvider.java
+  - screenshots/phase1-polygon-footprint-buildings.png
+  - screenshots/real-map-alignment-debug-on-v3-long-wait.png
+  - frontend/bun.lock
+  - screenshots/phase1-data-derived-osm-fixture-buildings-clean-labels.png
+  - screenshots/phase1-zhongshan-live-station.png
+  - screenshots/phase1-urban-role-style-resolver.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings.png
+  - screenshots/phase1-maplibre-texture-plane.png
+  - screenshots/phase1-urban-role-city-fabric.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/OsmStaticFeatureAdapter.java
+  - screenshots/phase1-data-derived-city-no-context-buildings.png
+  - frontend/src/overlayRegistry.js
+  - screenshots/phase1-maplibre-scale-corrected-focused.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v2.png
+  - screenshots/road-geo-source-alignment-debug-on.png
+  - frontend/src/App.vue
+  - frontend/src/mapAlignmentDiagnostics.js
+  - screenshots/phase1-debug-underlay-v4.png
+  - frontend/index.html
+  - screenshots/phase1-ground-road-surfaces.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/WorldViewService.java
+  - screenshots/voxel-style-base-debug-off.png
 tests:
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureStyleResolverTest.java
   - frontend/tests/run.mjs
   - frontend/tests/worldViewRenderModules.test.mjs
+  - frontend/tests/mapAlignmentDiagnostics.test.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/WorldViewControllerE2eTest.java
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/OsmStaticFeatureAdapterTest.java
+  - frontend/tests/overlayRegistry.test.mjs
+  - frontend/tests/worldViewPayload.test.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/CuratedZhongshanStaticFeatureProviderTest.java
 -->
 
 ---
 ### Requirement: Chunk Projection Bridges Object To Local Render Module
 
-TWFoundry SHALL use `ChunkProjection` records to bind ontology objects to chunk-local render modules.
+TWFoundry MAY continue using `ChunkProjection` as a legacy-compatible bridge from ontology objects
+to render modules.
 
-Each `ChunkProjection` SHALL include `id`, `objectId`, `chunkId`, `overlay`, `renderModule`, `geometry`, and `visualState`.
+New map-first work SHOULD prefer generic overlay projection and object detail contracts. If
+`ChunkProjection` is consumed, it SHALL be treated as an input to compatibility rendering or
+selected-object detail, not as the product-level projection model.
 
-#### Scenario: Train projection renders through VoxelTrain
+#### Scenario: Compatibility projection resolves to ontology object
 
-- **GIVEN** a train ontology object is included in `WorldViewPayload`
-- **WHEN** the backend computes projections for the visible chunks
-- **THEN** at least one projection references the train object's `objectId`
-- **AND** the projection uses `renderModule: "VoxelTrain"`
-- **AND** the projection geometry is in chunk-local coordinates
+- **GIVEN** a compatibility projection references an ontology object
+- **WHEN** the frontend consumes the projection
+- **THEN** selection resolves to the canonical ontology object
+- **AND** overlay visibility hides the projection without deleting ontology state
 
-#### Scenario: Overlay off hides projections
+#### Scenario: New overlay work remains product-facing
 
-- **GIVEN** the frontend user disables a domain overlay such as `rain`
-- **WHEN** projections are rendered
-- **THEN** projections whose `overlay` is `rain` are hidden
-- **AND** their referenced ontology objects are not deleted from client state
+- **GIVEN** a new operational domain is exposed on the map
+- **WHEN** its renderer is implemented
+- **THEN** the product identity is registered through overlay metadata
+- **AND** renderer code does not define overlay identity by itself
 
 
 <!-- @trace
-source: add-backend-computed-diorama-world-view
-updated: 2026-04-30
+source: cleanup-map-first-contract-boundaries
+updated: 2026-05-14
 code:
+  - frontend/src/voxelLandmarkRenderers.js
+  - screenshots/phase1-debug-underlay-v3.png
   - frontend/vite.config.js
-  - frontend/src/DesignSystemPage.vue
-  - frontend/src/App.vue
-  - frontend/src/styles.css
+  - screenshots/phase1-data-derived-city-no-context-buildings.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-framed.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-reviewed.png
+  - screenshots/phase1-dense-voxel-city-context.png
+  - screenshots/phase1-polygon-footprint-buildings.png
+  - screenshots/phase1-webmercator-local.png
+  - backend/ingestion/src/main/resources/world/zhongshan-osm-fixture.json
+  - screenshots/debug-map-reference-in-scene-wait.png
+  - screenshots/debug-map-road-clear-intersection-filter.png
   - frontend/src/voxelWorld.js
-  - frontend/src/worldViewPayload.js
+  - screenshots/debug-map-reference-in-scene.png
+  - screenshots/debug-map-road-width-canvas-fix.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v3.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v4.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/WorldViewService.java
+  - frontend/index.html
+  - frontend/package.json
+  - screenshots/phase1-debug-underlay-v2.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/ZhongshanFixtureOsmCatalog.java
+  - screenshots/phase1-ground-road-surfaces-contract-fixed.png
+  - screenshots/phase1-ground-road-surfaces.png
+  - screenshots/phase1-maplibre-scale-corrected-focused.png
+  - screenshots/phase1-static-feature-catalog.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/CuratedZhongshanStaticFeatureProvider.java
+  - screenshots/phase1-zhongshan-live-voxel.png
+  - screenshots/real-map-alignment-debug-on-v3-long-wait.png
+  - screenshots/phase1-debug-underlay.png
+  - frontend/src/mockData.js
+  - screenshots/real-map-alignment-debug-on.png
+  - screenshots/debug-map-texture-publish-road-width-fix.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v2.png
+  - screenshots/phase1-maplibre-scale-corrected-focus-near.png
   - frontend/src/worldViewRenderModules.js
-  - frontend/src/RenderModulePreview.vue
+  - README.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/OsmStaticFeatureAdapter.java
+  - screenshots/debug-map-reference-in-scene-after-lifecycle-fix.png
+  - screenshots/phase1-urban-role-city-fabric.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureProvider.java
+  - screenshots/phase1-zhongshan-live-default.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-clean-labels.png
+  - screenshots/phase1-data-derived-city-final.png
+  - screenshots/road-geo-source-alignment-debug-on.png
+  - frontend/src/MapLibreOverlay.vue
+  - screenshots/voxel-style-base-debug-off.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureStyleResolver.java
+  - screenshots/debug-map-road-clear-filter.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-refocused.png
+  - screenshots/phase1-maplibre-no-road-buildings.png
+  - screenshots/phase1-maplibre-scale-final.png
+  - frontend/src/mapAlignmentDiagnostics.js
+  - frontend/src/mapOverlayRenderers.js
+  - screenshots/phase1-maplibre-texture-plane.png
+  - SPEC.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/WorldViewController.java
+  - frontend/src/worldViewPayload.js
+  - Design.md
+  - docs/decision-history/2026-05-map-first-pivot.md
+  - frontend/src/OntologyPreview.vue
+  - screenshots/phase1-ground-road-surfaces-readable.png
+  - screenshots/source-geometry-contract-debug-on.png
+  - backend/ingestion/src/main/resources/world/taipei-main-station-osm-fixture.json
+  - frontend/src/App.vue
+  - screenshots/phase1-data-derived-osm-fixture-buildings.png
+  - frontend/src/mapDerivedWorldPayload.js
+  - frontend/src/overlayRegistry.js
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/WorldView.java
+  - screenshots/phase1-static-feature-provider.png
+  - screenshots/phase1-maplibre-scale-corrected.png
+  - frontend/bun.lock
+  - screenshots/voxel-style-base-debug-off-v2.png
+  - screenshots/real-map-alignment-debug-on-v2.png
+  - screenshots/phase1-urban-role-style-resolver.png
+  - screenshots/phase1-debug-underlay-v4.png
+  - screenshots/phase1-zhongshan-live-station.png
+  - frontend/src/styles.css
+  - screenshots/phase1-geo-anchored-underlay.png
 tests:
-  - frontend/tests/run.mjs
+  - frontend/tests/mapAlignmentDiagnostics.test.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/WorldViewControllerE2eTest.java
+  - frontend/tests/overlayRegistry.test.mjs
   - frontend/tests/worldViewRenderModules.test.mjs
+  - frontend/tests/run.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/CuratedZhongshanStaticFeatureProviderTest.java
+  - frontend/tests/worldViewPayload.test.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/OsmStaticFeatureAdapterTest.java
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureStyleResolverTest.java
 -->
 
 ---
 ### Requirement: Backend Owns Heavy Spatial Computation
 
-TWFoundry SHALL perform heavy geospatial computation in the backend for production world views.
+TWFoundry SHALL perform heavy geospatial computation in the backend for production view contracts.
 
-Heavy computation includes vector tile decoding, feature normalization, spatial indexing, geometry simplification, cross-chunk clipping, chunk generation, and projection generation.
+Heavy computation includes source feature normalization, spatial indexing, geometry simplification,
+projection generation, map focus clipping, and compatibility local-geometry generation.
 
-#### Scenario: Frontend receives precomputed local geometry
+#### Scenario: Frontend receives precomputed projection geometry
 
-- **GIVEN** a production world view is returned
-- **WHEN** the frontend receives `DioramaChunk` and `ChunkProjection` geometry
-- **THEN** the geometry is already in local diorama coordinates
-- **AND** the frontend does not need to intersect object geometry with chunk bounds
+- **GIVEN** a production view is returned
+- **WHEN** the frontend receives map overlay or compatibility projection geometry
+- **THEN** geometry is already normalized for the relevant renderer contract
+- **AND** the frontend does not need to decode raw source tiles or perform authoritative source
+  geometry placement
 
 #### Scenario: Java is the initial compute runtime
 
-- **GIVEN** the first backend world-view implementation is built
-- **WHEN** world view computation is implemented
+- **GIVEN** the first backend view implementation is built
+- **WHEN** view computation is implemented
 - **THEN** it uses the existing Java backend stack
-- **AND** Go or Rust workers are not required until profiling identifies a specific compute bottleneck
+- **AND** Go or Rust workers are not required until profiling identifies a specific compute
+  bottleneck
 
 
 <!-- @trace
-source: add-backend-computed-diorama-world-view
-updated: 2026-04-30
+source: cleanup-remaining-legacy-world-view-references
+updated: 2026-05-14
 code:
-  - frontend/vite.config.js
-  - frontend/src/DesignSystemPage.vue
-  - frontend/src/App.vue
-  - frontend/src/styles.css
+  - screenshots/debug-map-road-clear-intersection-filter.png
+  - frontend/src/mockData.js
+  - screenshots/debug-map-road-clear-filter.png
+  - screenshots/real-map-alignment-debug-on-v2.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/WorldView.java
   - frontend/src/voxelWorld.js
+  - frontend/vite.config.js
+  - SPEC.md
+  - screenshots/debug-map-reference-in-scene-wait.png
+  - screenshots/phase1-maplibre-no-road-buildings.png
+  - frontend/src/OntologyPreview.vue
+  - screenshots/phase1-webmercator-local.png
+  - backend/ingestion/src/main/resources/world/taipei-main-station-osm-fixture.json
+  - frontend/src/mapDerivedWorldPayload.js
+  - backend/ingestion/src/main/resources/world/zhongshan-osm-fixture.json
+  - screenshots/phase1-ground-road-surfaces-contract-fixed.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v3.png
+  - screenshots/phase1-maplibre-scale-corrected-focus-near.png
+  - screenshots/phase1-debug-underlay-v2.png
+  - screenshots/phase1-zhongshan-live-voxel.png
+  - docs/decision-history/2026-05-map-first-pivot.md
+  - screenshots/phase1-data-derived-city-final.png
+  - frontend/package.json
+  - frontend/src/MapLibreOverlay.vue
+  - screenshots/phase1-data-derived-osm-fixture-buildings-framed.png
+  - screenshots/phase1-static-feature-provider.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-reviewed.png
+  - frontend/src/styles.css
+  - screenshots/phase1-geo-anchored-underlay.png
+  - screenshots/debug-map-reference-in-scene.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/WorldViewController.java
+  - screenshots/phase1-zhongshan-live-default.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v4.png
   - frontend/src/worldViewPayload.js
+  - screenshots/phase1-static-feature-catalog.png
+  - screenshots/voxel-style-base-debug-off-v2.png
+  - frontend/src/mapOverlayRenderers.js
+  - frontend/src/voxelLandmarkRenderers.js
+  - screenshots/phase1-debug-underlay-v3.png
+  - Design.md
+  - screenshots/phase1-debug-underlay.png
+  - screenshots/real-map-alignment-debug-on.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureStyleResolver.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureProvider.java
   - frontend/src/worldViewRenderModules.js
-  - frontend/src/RenderModulePreview.vue
+  - screenshots/debug-map-reference-in-scene-after-lifecycle-fix.png
+  - screenshots/phase1-maplibre-scale-final.png
+  - screenshots/source-geometry-contract-debug-on.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-refocused.png
+  - screenshots/debug-map-road-width-canvas-fix.png
+  - screenshots/phase1-dense-voxel-city-context.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/ZhongshanFixtureOsmCatalog.java
+  - screenshots/phase1-maplibre-scale-corrected.png
+  - README.md
+  - screenshots/debug-map-texture-publish-road-width-fix.png
+  - screenshots/phase1-ground-road-surfaces-readable.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/CuratedZhongshanStaticFeatureProvider.java
+  - screenshots/phase1-polygon-footprint-buildings.png
+  - screenshots/real-map-alignment-debug-on-v3-long-wait.png
+  - frontend/bun.lock
+  - screenshots/phase1-data-derived-osm-fixture-buildings-clean-labels.png
+  - screenshots/phase1-zhongshan-live-station.png
+  - screenshots/phase1-urban-role-style-resolver.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings.png
+  - screenshots/phase1-maplibre-texture-plane.png
+  - screenshots/phase1-urban-role-city-fabric.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/OsmStaticFeatureAdapter.java
+  - screenshots/phase1-data-derived-city-no-context-buildings.png
+  - frontend/src/overlayRegistry.js
+  - screenshots/phase1-maplibre-scale-corrected-focused.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v2.png
+  - screenshots/road-geo-source-alignment-debug-on.png
+  - frontend/src/App.vue
+  - frontend/src/mapAlignmentDiagnostics.js
+  - screenshots/phase1-debug-underlay-v4.png
+  - frontend/index.html
+  - screenshots/phase1-ground-road-surfaces.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/WorldViewService.java
+  - screenshots/voxel-style-base-debug-off.png
 tests:
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureStyleResolverTest.java
   - frontend/tests/run.mjs
   - frontend/tests/worldViewRenderModules.test.mjs
+  - frontend/tests/mapAlignmentDiagnostics.test.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/WorldViewControllerE2eTest.java
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/OsmStaticFeatureAdapterTest.java
+  - frontend/tests/overlayRegistry.test.mjs
+  - frontend/tests/worldViewPayload.test.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/CuratedZhongshanStaticFeatureProviderTest.java
 -->
 
 ---
 ### Requirement: Geo Source Providers Are Replaceable
 
-TWFoundry SHALL keep geospatial source providers replaceable behind a backend `GeoReferenceProvider` abstraction.
+TWFoundry SHALL keep geospatial source providers replaceable behind backend source adapter or
+geospatial provider abstractions.
 
-The diorama world contract SHALL NOT depend directly on OpenFreeMap, PMTiles, OpenMapTiles, MapLibre style JSON, or any single tile provider.
+The map-first product contract SHALL NOT depend directly on OpenFreeMap, PMTiles, OpenMapTiles,
+MapLibre style JSON, or any single tile provider.
 
 #### Scenario: Mock provider backs first vertical slice
 
-- **GIVEN** the first backend-computed world view is implemented
+- **GIVEN** the first backend-computed view is implemented
 - **WHEN** real vector tile ingestion is not ready
-- **THEN** a mock or static `GeoReferenceProvider` can supply normalized `GeoFeature` records
-- **AND** the API contract remains the same
+- **THEN** a mock, static, or fixture provider can supply normalized source features
+- **AND** the frontend consumes the same map overlay, ontology, freshness, and object detail
+  contracts
 
 #### Scenario: Provider can change without frontend contract change
 
-- **GIVEN** the backend replaces a mock provider with PMTiles or OpenMapTiles
-- **WHEN** the frontend requests `WorldViewPayload`
-- **THEN** the payload shape remains stable
+- **GIVEN** the backend replaces a mock provider with PMTiles, OpenMapTiles, OSM-derived fixtures, or
+  another source
+- **WHEN** the frontend requests the view
+- **THEN** the product contract remains stable
 - **AND** frontend render modules do not need provider-specific logic
 
 
 <!-- @trace
-source: add-backend-computed-diorama-world-view
-updated: 2026-04-30
+source: cleanup-remaining-legacy-world-view-references
+updated: 2026-05-14
 code:
-  - frontend/vite.config.js
-  - frontend/src/DesignSystemPage.vue
-  - frontend/src/App.vue
-  - frontend/src/styles.css
+  - screenshots/debug-map-road-clear-intersection-filter.png
+  - frontend/src/mockData.js
+  - screenshots/debug-map-road-clear-filter.png
+  - screenshots/real-map-alignment-debug-on-v2.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/WorldView.java
   - frontend/src/voxelWorld.js
+  - frontend/vite.config.js
+  - SPEC.md
+  - screenshots/debug-map-reference-in-scene-wait.png
+  - screenshots/phase1-maplibre-no-road-buildings.png
+  - frontend/src/OntologyPreview.vue
+  - screenshots/phase1-webmercator-local.png
+  - backend/ingestion/src/main/resources/world/taipei-main-station-osm-fixture.json
+  - frontend/src/mapDerivedWorldPayload.js
+  - backend/ingestion/src/main/resources/world/zhongshan-osm-fixture.json
+  - screenshots/phase1-ground-road-surfaces-contract-fixed.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v3.png
+  - screenshots/phase1-maplibre-scale-corrected-focus-near.png
+  - screenshots/phase1-debug-underlay-v2.png
+  - screenshots/phase1-zhongshan-live-voxel.png
+  - docs/decision-history/2026-05-map-first-pivot.md
+  - screenshots/phase1-data-derived-city-final.png
+  - frontend/package.json
+  - frontend/src/MapLibreOverlay.vue
+  - screenshots/phase1-data-derived-osm-fixture-buildings-framed.png
+  - screenshots/phase1-static-feature-provider.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-reviewed.png
+  - frontend/src/styles.css
+  - screenshots/phase1-geo-anchored-underlay.png
+  - screenshots/debug-map-reference-in-scene.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/WorldViewController.java
+  - screenshots/phase1-zhongshan-live-default.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v4.png
   - frontend/src/worldViewPayload.js
+  - screenshots/phase1-static-feature-catalog.png
+  - screenshots/voxel-style-base-debug-off-v2.png
+  - frontend/src/mapOverlayRenderers.js
+  - frontend/src/voxelLandmarkRenderers.js
+  - screenshots/phase1-debug-underlay-v3.png
+  - Design.md
+  - screenshots/phase1-debug-underlay.png
+  - screenshots/real-map-alignment-debug-on.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureStyleResolver.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureProvider.java
   - frontend/src/worldViewRenderModules.js
-  - frontend/src/RenderModulePreview.vue
+  - screenshots/debug-map-reference-in-scene-after-lifecycle-fix.png
+  - screenshots/phase1-maplibre-scale-final.png
+  - screenshots/source-geometry-contract-debug-on.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-refocused.png
+  - screenshots/debug-map-road-width-canvas-fix.png
+  - screenshots/phase1-dense-voxel-city-context.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/ZhongshanFixtureOsmCatalog.java
+  - screenshots/phase1-maplibre-scale-corrected.png
+  - README.md
+  - screenshots/debug-map-texture-publish-road-width-fix.png
+  - screenshots/phase1-ground-road-surfaces-readable.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/CuratedZhongshanStaticFeatureProvider.java
+  - screenshots/phase1-polygon-footprint-buildings.png
+  - screenshots/real-map-alignment-debug-on-v3-long-wait.png
+  - frontend/bun.lock
+  - screenshots/phase1-data-derived-osm-fixture-buildings-clean-labels.png
+  - screenshots/phase1-zhongshan-live-station.png
+  - screenshots/phase1-urban-role-style-resolver.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings.png
+  - screenshots/phase1-maplibre-texture-plane.png
+  - screenshots/phase1-urban-role-city-fabric.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/OsmStaticFeatureAdapter.java
+  - screenshots/phase1-data-derived-city-no-context-buildings.png
+  - frontend/src/overlayRegistry.js
+  - screenshots/phase1-maplibre-scale-corrected-focused.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v2.png
+  - screenshots/road-geo-source-alignment-debug-on.png
+  - frontend/src/App.vue
+  - frontend/src/mapAlignmentDiagnostics.js
+  - screenshots/phase1-debug-underlay-v4.png
+  - frontend/index.html
+  - screenshots/phase1-ground-road-surfaces.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/WorldViewService.java
+  - screenshots/voxel-style-base-debug-off.png
 tests:
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureStyleResolverTest.java
   - frontend/tests/run.mjs
   - frontend/tests/worldViewRenderModules.test.mjs
+  - frontend/tests/mapAlignmentDiagnostics.test.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/WorldViewControllerE2eTest.java
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/OsmStaticFeatureAdapterTest.java
+  - frontend/tests/overlayRegistry.test.mjs
+  - frontend/tests/worldViewPayload.test.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/CuratedZhongshanStaticFeatureProviderTest.java
 -->
 
 ---
 ### Requirement: World View Freshness And Replay Are Explicit
 
-TWFoundry SHALL include freshness metadata in every `WorldViewPayload`.
+TWFoundry SHALL include freshness and replay metadata in every production view contract.
 
-Freshness metadata SHALL identify live/replay mode, generated time, source lag, and per-source status.
+Freshness metadata SHALL identify live/replay mode, generated time, source lag, and per-source
+status. This metadata MAY be carried by legacy `WorldViewPayload` during migration.
 
-#### Scenario: Live payload reports source lag
+#### Scenario: Live view reports source lag
 
 - **GIVEN** the frontend requests `time=live`
-- **WHEN** the backend returns `WorldViewPayload`
-- **THEN** `freshness.mode` is `live`
-- **AND** `freshness.maxSourceLagSeconds` is present
-- **AND** `freshness.sources` reports source-level freshness
+- **WHEN** the backend returns a production or compatibility view payload
+- **THEN** freshness metadata reports live mode
+- **AND** maximum source lag is present
+- **AND** source-level freshness is present
 
 #### Scenario: Replay payload is deterministic
 
 - **GIVEN** the frontend requests a specific replay timestamp
 - **WHEN** the same request is repeated
-- **THEN** the backend returns deterministic object and projection state for that timestamp unless source data has been explicitly reprocessed
+- **THEN** the backend returns deterministic object and projection state for that timestamp unless
+  source data has been explicitly reprocessed
 
 
 <!-- @trace
-source: add-backend-computed-diorama-world-view
-updated: 2026-04-30
+source: cleanup-remaining-legacy-world-view-references
+updated: 2026-05-14
 code:
-  - frontend/vite.config.js
-  - frontend/src/DesignSystemPage.vue
-  - frontend/src/App.vue
-  - frontend/src/styles.css
+  - screenshots/debug-map-road-clear-intersection-filter.png
+  - frontend/src/mockData.js
+  - screenshots/debug-map-road-clear-filter.png
+  - screenshots/real-map-alignment-debug-on-v2.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/WorldView.java
   - frontend/src/voxelWorld.js
+  - frontend/vite.config.js
+  - SPEC.md
+  - screenshots/debug-map-reference-in-scene-wait.png
+  - screenshots/phase1-maplibre-no-road-buildings.png
+  - frontend/src/OntologyPreview.vue
+  - screenshots/phase1-webmercator-local.png
+  - backend/ingestion/src/main/resources/world/taipei-main-station-osm-fixture.json
+  - frontend/src/mapDerivedWorldPayload.js
+  - backend/ingestion/src/main/resources/world/zhongshan-osm-fixture.json
+  - screenshots/phase1-ground-road-surfaces-contract-fixed.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v3.png
+  - screenshots/phase1-maplibre-scale-corrected-focus-near.png
+  - screenshots/phase1-debug-underlay-v2.png
+  - screenshots/phase1-zhongshan-live-voxel.png
+  - docs/decision-history/2026-05-map-first-pivot.md
+  - screenshots/phase1-data-derived-city-final.png
+  - frontend/package.json
+  - frontend/src/MapLibreOverlay.vue
+  - screenshots/phase1-data-derived-osm-fixture-buildings-framed.png
+  - screenshots/phase1-static-feature-provider.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-reviewed.png
+  - frontend/src/styles.css
+  - screenshots/phase1-geo-anchored-underlay.png
+  - screenshots/debug-map-reference-in-scene.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/WorldViewController.java
+  - screenshots/phase1-zhongshan-live-default.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v4.png
   - frontend/src/worldViewPayload.js
+  - screenshots/phase1-static-feature-catalog.png
+  - screenshots/voxel-style-base-debug-off-v2.png
+  - frontend/src/mapOverlayRenderers.js
+  - frontend/src/voxelLandmarkRenderers.js
+  - screenshots/phase1-debug-underlay-v3.png
+  - Design.md
+  - screenshots/phase1-debug-underlay.png
+  - screenshots/real-map-alignment-debug-on.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureStyleResolver.java
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureProvider.java
   - frontend/src/worldViewRenderModules.js
-  - frontend/src/RenderModulePreview.vue
+  - screenshots/debug-map-reference-in-scene-after-lifecycle-fix.png
+  - screenshots/phase1-maplibre-scale-final.png
+  - screenshots/source-geometry-contract-debug-on.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-refocused.png
+  - screenshots/debug-map-road-width-canvas-fix.png
+  - screenshots/phase1-dense-voxel-city-context.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/ZhongshanFixtureOsmCatalog.java
+  - screenshots/phase1-maplibre-scale-corrected.png
+  - README.md
+  - screenshots/debug-map-texture-publish-road-width-fix.png
+  - screenshots/phase1-ground-road-surfaces-readable.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/CuratedZhongshanStaticFeatureProvider.java
+  - screenshots/phase1-polygon-footprint-buildings.png
+  - screenshots/real-map-alignment-debug-on-v3-long-wait.png
+  - frontend/bun.lock
+  - screenshots/phase1-data-derived-osm-fixture-buildings-clean-labels.png
+  - screenshots/phase1-zhongshan-live-station.png
+  - screenshots/phase1-urban-role-style-resolver.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings.png
+  - screenshots/phase1-maplibre-texture-plane.png
+  - screenshots/phase1-urban-role-city-fabric.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/OsmStaticFeatureAdapter.java
+  - screenshots/phase1-data-derived-city-no-context-buildings.png
+  - frontend/src/overlayRegistry.js
+  - screenshots/phase1-maplibre-scale-corrected-focused.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v2.png
+  - screenshots/road-geo-source-alignment-debug-on.png
+  - frontend/src/App.vue
+  - frontend/src/mapAlignmentDiagnostics.js
+  - screenshots/phase1-debug-underlay-v4.png
+  - frontend/index.html
+  - screenshots/phase1-ground-road-surfaces.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/WorldViewService.java
+  - screenshots/voxel-style-base-debug-off.png
 tests:
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureStyleResolverTest.java
   - frontend/tests/run.mjs
   - frontend/tests/worldViewRenderModules.test.mjs
+  - frontend/tests/mapAlignmentDiagnostics.test.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/WorldViewControllerE2eTest.java
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/OsmStaticFeatureAdapterTest.java
+  - frontend/tests/overlayRegistry.test.mjs
+  - frontend/tests/worldViewPayload.test.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/CuratedZhongshanStaticFeatureProviderTest.java
 -->
 
 ---
@@ -3290,30 +3931,583 @@ tests:
 ---
 ### Requirement: Debug Geo Data Is Explicitly Diagnostic
 
-TWFoundry SHALL keep raw or normalized debug geo data separate from the production render path.
+TWFoundry SHALL keep raw or normalized debug geo data separate from the production product surface.
 
-When `debugGeo=true`, `WorldViewPayload.diagnostics` MAY include normalized `GeoFeature` records, source references, chunk intersection diagnostics, and provider timings.
+Debug payloads MAY include normalized `GeoFeature` records, source references, projection checks,
+geometry alignment diagnostics, and provider timings. These diagnostics SHALL be available only
+through debug, design-system, test, or operator surfaces unless explicitly promoted by a future
+product requirement.
 
 #### Scenario: Debug geo features are requested
 
-- **GIVEN** the frontend or design-system requests `debugGeo=true`
-- **WHEN** the backend returns `WorldViewPayload`
-- **THEN** debug-only `GeoFeature` records may appear under `diagnostics.geoFeatures`
-- **AND** production rendering still uses `DioramaChunk` and `ChunkProjection`
+- **GIVEN** a debug or design-system surface requests diagnostic geo data
+- **WHEN** the backend or frontend returns diagnostic metadata
+- **THEN** raw or normalized debug features may appear in diagnostics
+- **AND** the primary dashboard remains governed by map overlays and ontology object detail
+- **AND** map alignment diagnostics do not appear as normal user-facing product controls
+
 
 <!-- @trace
-source: add-backend-computed-diorama-world-view
-updated: 2026-04-30
+source: cleanup-map-first-contract-boundaries
+updated: 2026-05-14
 code:
+  - frontend/src/voxelLandmarkRenderers.js
+  - screenshots/phase1-debug-underlay-v3.png
   - frontend/vite.config.js
-  - frontend/src/DesignSystemPage.vue
-  - frontend/src/App.vue
-  - frontend/src/styles.css
+  - screenshots/phase1-data-derived-city-no-context-buildings.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-framed.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-reviewed.png
+  - screenshots/phase1-dense-voxel-city-context.png
+  - screenshots/phase1-polygon-footprint-buildings.png
+  - screenshots/phase1-webmercator-local.png
+  - backend/ingestion/src/main/resources/world/zhongshan-osm-fixture.json
+  - screenshots/debug-map-reference-in-scene-wait.png
+  - screenshots/debug-map-road-clear-intersection-filter.png
   - frontend/src/voxelWorld.js
-  - frontend/src/worldViewPayload.js
+  - screenshots/debug-map-reference-in-scene.png
+  - screenshots/debug-map-road-width-canvas-fix.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v3.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v4.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/WorldViewService.java
+  - frontend/index.html
+  - frontend/package.json
+  - screenshots/phase1-debug-underlay-v2.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/ZhongshanFixtureOsmCatalog.java
+  - screenshots/phase1-ground-road-surfaces-contract-fixed.png
+  - screenshots/phase1-ground-road-surfaces.png
+  - screenshots/phase1-maplibre-scale-corrected-focused.png
+  - screenshots/phase1-static-feature-catalog.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/CuratedZhongshanStaticFeatureProvider.java
+  - screenshots/phase1-zhongshan-live-voxel.png
+  - screenshots/real-map-alignment-debug-on-v3-long-wait.png
+  - screenshots/phase1-debug-underlay.png
+  - frontend/src/mockData.js
+  - screenshots/real-map-alignment-debug-on.png
+  - screenshots/debug-map-texture-publish-road-width-fix.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v2.png
+  - screenshots/phase1-maplibre-scale-corrected-focus-near.png
   - frontend/src/worldViewRenderModules.js
-  - frontend/src/RenderModulePreview.vue
+  - README.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/OsmStaticFeatureAdapter.java
+  - screenshots/debug-map-reference-in-scene-after-lifecycle-fix.png
+  - screenshots/phase1-urban-role-city-fabric.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureProvider.java
+  - screenshots/phase1-zhongshan-live-default.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-clean-labels.png
+  - screenshots/phase1-data-derived-city-final.png
+  - screenshots/road-geo-source-alignment-debug-on.png
+  - frontend/src/MapLibreOverlay.vue
+  - screenshots/voxel-style-base-debug-off.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureStyleResolver.java
+  - screenshots/debug-map-road-clear-filter.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-refocused.png
+  - screenshots/phase1-maplibre-no-road-buildings.png
+  - screenshots/phase1-maplibre-scale-final.png
+  - frontend/src/mapAlignmentDiagnostics.js
+  - frontend/src/mapOverlayRenderers.js
+  - screenshots/phase1-maplibre-texture-plane.png
+  - SPEC.md
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/WorldViewController.java
+  - frontend/src/worldViewPayload.js
+  - Design.md
+  - docs/decision-history/2026-05-map-first-pivot.md
+  - frontend/src/OntologyPreview.vue
+  - screenshots/phase1-ground-road-surfaces-readable.png
+  - screenshots/source-geometry-contract-debug-on.png
+  - backend/ingestion/src/main/resources/world/taipei-main-station-osm-fixture.json
+  - frontend/src/App.vue
+  - screenshots/phase1-data-derived-osm-fixture-buildings.png
+  - frontend/src/mapDerivedWorldPayload.js
+  - frontend/src/overlayRegistry.js
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/WorldView.java
+  - screenshots/phase1-static-feature-provider.png
+  - screenshots/phase1-maplibre-scale-corrected.png
+  - frontend/bun.lock
+  - screenshots/voxel-style-base-debug-off-v2.png
+  - screenshots/real-map-alignment-debug-on-v2.png
+  - screenshots/phase1-urban-role-style-resolver.png
+  - screenshots/phase1-debug-underlay-v4.png
+  - screenshots/phase1-zhongshan-live-station.png
+  - frontend/src/styles.css
+  - screenshots/phase1-geo-anchored-underlay.png
 tests:
-  - frontend/tests/run.mjs
+  - frontend/tests/mapAlignmentDiagnostics.test.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/WorldViewControllerE2eTest.java
+  - frontend/tests/overlayRegistry.test.mjs
   - frontend/tests/worldViewRenderModules.test.mjs
+  - frontend/tests/run.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/CuratedZhongshanStaticFeatureProviderTest.java
+  - frontend/tests/worldViewPayload.test.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/OsmStaticFeatureAdapterTest.java
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureStyleResolverTest.java
+-->
+
+---
+### Requirement: Map-First Ontology Dashboard
+
+TWFoundry SHALL use an interactive map as the primary dashboard surface.
+
+The map surface SHALL render operational information through product overlays rather than through primary voxel terrain, chunk, or diorama concepts.
+
+#### Scenario: Operator opens the dashboard
+
+- **GIVEN** the frontend shell is loaded
+- **WHEN** the default dashboard renders
+- **THEN** the primary stage is an interactive MapLibre map
+- **AND** domain information is controlled through overlay visibility
+- **AND** voxel art is not required to understand the map state
+
+#### Scenario: Operator selects an ontology object
+
+- **GIVEN** an ontology object is selected from a map marker, line, area, or object list
+- **WHEN** the object inspector renders
+- **THEN** the inspector shows stable object properties and relationships
+- **AND** any voxel rendering is scoped to selected-object detail
+- **AND** the voxel renderer is selected by generic object type, kind, capability, or render module rather than by a specific place name
+
+#### Scenario: Overlay model remains extensible
+
+- **GIVEN** a new operational domain is added
+- **WHEN** the domain is exposed on the map
+- **THEN** it is registered as a product overlay with visibility, data dependency, timeline awareness, and renderer metadata
+- **AND** the user can disable the overlay without editing unrelated renderer code
+
+<!-- @trace
+source: map-first-ontology-overlays
+updated: 2026-05-11
+code:
+  - screenshots/phase1-geo-anchored-underlay.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureStyleResolver.java
+  - screenshots/phase1-data-derived-osm-fixture-buildings-reviewed.png
+  - screenshots/phase1-zhongshan-live-station.png
+  - frontend/src/worldViewRenderModules.js
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/WorldViewController.java
+  - screenshots/debug-map-reference-in-scene-after-lifecycle-fix.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v3.png
+  - frontend/src/mapDerivedWorldPayload.js
+  - frontend/src/worldViewPayload.js
+  - screenshots/phase1-webmercator-local.png
+  - screenshots/phase1-data-derived-city-no-context-buildings-v2.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/WorldViewService.java
+  - frontend/src/MapLibreOverlay.vue
+  - frontend/src/voxelWorld.js
+  - screenshots/phase1-data-derived-osm-fixture-buildings-clean-labels.png
+  - backend/ingestion/src/main/resources/world/zhongshan-osm-fixture.json
+  - screenshots/phase1-data-derived-osm-fixture-buildings.png
+  - screenshots/phase1-debug-underlay-v2.png
+  - screenshots/phase1-maplibre-no-road-buildings.png
+  - screenshots/phase1-urban-role-city-fabric.png
+  - screenshots/real-map-alignment-debug-on-v2.png
+  - screenshots/phase1-debug-underlay-v4.png
+  - Design.md
+  - screenshots/debug-map-road-width-canvas-fix.png
+  - screenshots/debug-map-texture-publish-road-width-fix.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureProvider.java
+  - screenshots/source-geometry-contract-debug-on.png
+  - frontend/index.html
+  - frontend/src/mapAlignmentDiagnostics.js
+  - screenshots/phase1-zhongshan-live-default.png
+  - screenshots/phase1-zhongshan-live-voxel.png
+  - frontend/src/App.vue
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/CuratedZhongshanStaticFeatureProvider.java
+  - screenshots/phase1-static-feature-catalog.png
+  - screenshots/real-map-alignment-debug-on.png
+  - frontend/src/styles.css
+  - screenshots/phase1-maplibre-scale-corrected.png
+  - screenshots/phase1-dense-voxel-city-context.png
+  - screenshots/debug-map-reference-in-scene-wait.png
+  - screenshots/phase1-debug-underlay-v3.png
+  - screenshots/phase1-maplibre-texture-plane.png
+  - frontend/src/mockData.js
+  - screenshots/debug-map-road-clear-intersection-filter.png
+  - screenshots/phase1-data-derived-city-final.png
+  - screenshots/phase1-ground-road-surfaces-contract-fixed.png
+  - screenshots/phase1-static-feature-provider.png
+  - frontend/src/OntologyPreview.vue
+  - frontend/vite.config.js
+  - frontend/src/mapOverlayRenderers.js
+  - frontend/src/voxelLandmarkRenderers.js
+  - screenshots/road-geo-source-alignment-debug-on.png
+  - screenshots/debug-map-reference-in-scene.png
+  - frontend/src/overlayRegistry.js
+  - screenshots/debug-map-road-clear-filter.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-framed.png
+  - frontend/package.json
+  - screenshots/phase1-data-derived-city-no-context-buildings-v4.png
+  - screenshots/phase1-debug-underlay.png
+  - screenshots/voxel-style-base-debug-off.png
+  - backend/ingestion/src/main/resources/world/taipei-main-station-osm-fixture.json
+  - screenshots/phase1-maplibre-scale-corrected-focus-near.png
+  - screenshots/phase1-maplibre-scale-final.png
+  - screenshots/real-map-alignment-debug-on-v3-long-wait.png
+  - screenshots/phase1-data-derived-city-no-context-buildings.png
+  - screenshots/phase1-ground-road-surfaces.png
+  - screenshots/phase1-ground-road-surfaces-readable.png
+  - screenshots/voxel-style-base-debug-off-v2.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/ZhongshanFixtureOsmCatalog.java
+  - screenshots/phase1-data-derived-osm-fixture-buildings-refocused.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/WorldView.java
+  - screenshots/phase1-maplibre-scale-corrected-focused.png
+  - screenshots/phase1-urban-role-style-resolver.png
+  - screenshots/phase1-polygon-footprint-buildings.png
+  - frontend/bun.lock
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/OsmStaticFeatureAdapter.java
+tests:
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/CuratedZhongshanStaticFeatureProviderTest.java
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/OsmStaticFeatureAdapterTest.java
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/WorldViewControllerE2eTest.java
+  - frontend/tests/worldViewRenderModules.test.mjs
+  - frontend/tests/worldViewPayload.test.mjs
+  - frontend/tests/overlayRegistry.test.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureStyleResolverTest.java
+  - frontend/tests/mapAlignmentDiagnostics.test.mjs
+  - frontend/tests/run.mjs
+-->
+
+---
+### Requirement: Root Map-First Specification
+
+TWFoundry SHALL maintain a language-agnostic root `SPEC.md` that defines the map-first ontology
+product and system contract.
+
+The root specification SHALL be the highest-level contract for source integration, ontology
+objects, map projections, selected-object detail rendering, and observability boundaries.
+
+#### Scenario: Future change touches product architecture
+
+- **GIVEN** a future change affects source adapters, ontology objects, overlays, map rendering,
+  object detail rendering, fallback policy, or diagnostics
+- **WHEN** the change is proposed
+- **THEN** the change is evaluated against root `SPEC.md`
+- **AND** any intentional divergence is documented in the change design
+
+
+<!-- @trace
+source: define-twfoundry-map-first-spec
+updated: 2026-05-13
+code:
+  - screenshots/phase1-maplibre-texture-plane.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-reviewed.png
+  - frontend/src/worldViewRenderModules.js
+  - frontend/src/mapOverlayRenderers.js
+  - screenshots/phase1-data-derived-city-no-context-buildings-v4.png
+  - screenshots/phase1-static-feature-catalog.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/WorldViewService.java
+  - screenshots/phase1-data-derived-city-no-context-buildings-v3.png
+  - frontend/src/worldViewPayload.js
+  - screenshots/phase1-data-derived-osm-fixture-buildings-refocused.png
+  - screenshots/phase1-debug-underlay.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-framed.png
+  - frontend/src/styles.css
+  - screenshots/phase1-ground-road-surfaces-readable.png
+  - frontend/src/voxelLandmarkRenderers.js
+  - frontend/src/App.vue
+  - screenshots/phase1-maplibre-scale-corrected.png
+  - screenshots/phase1-zhongshan-live-default.png
+  - screenshots/debug-map-reference-in-scene-after-lifecycle-fix.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/CuratedZhongshanStaticFeatureProvider.java
+  - frontend/index.html
+  - screenshots/phase1-data-derived-city-final.png
+  - backend/ingestion/src/main/resources/world/zhongshan-osm-fixture.json
+  - screenshots/debug-map-reference-in-scene-wait.png
+  - screenshots/debug-map-road-clear-filter.png
+  - screenshots/debug-map-road-clear-intersection-filter.png
+  - screenshots/phase1-maplibre-scale-final.png
+  - frontend/src/mockData.js
+  - Design.md
+  - frontend/src/OntologyPreview.vue
+  - screenshots/phase1-geo-anchored-underlay.png
+  - screenshots/phase1-static-feature-provider.png
+  - screenshots/phase1-urban-role-city-fabric.png
+  - screenshots/voxel-style-base-debug-off.png
+  - screenshots/phase1-maplibre-no-road-buildings.png
+  - frontend/vite.config.js
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/ZhongshanFixtureOsmCatalog.java
+  - frontend/src/voxelWorld.js
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureProvider.java
+  - backend/ingestion/src/main/resources/world/taipei-main-station-osm-fixture.json
+  - screenshots/phase1-debug-underlay-v2.png
+  - screenshots/phase1-debug-underlay-v4.png
+  - screenshots/phase1-ground-road-surfaces-contract-fixed.png
+  - screenshots/debug-map-road-width-canvas-fix.png
+  - screenshots/phase1-ground-road-surfaces.png
+  - screenshots/phase1-polygon-footprint-buildings.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/OsmStaticFeatureAdapter.java
+  - screenshots/debug-map-reference-in-scene.png
+  - screenshots/phase1-debug-underlay-v3.png
+  - screenshots/phase1-maplibre-scale-corrected-focus-near.png
+  - screenshots/phase1-webmercator-local.png
+  - screenshots/real-map-alignment-debug-on-v3-long-wait.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/WorldViewController.java
+  - frontend/package.json
+  - screenshots/phase1-data-derived-city-no-context-buildings.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/WorldView.java
+  - screenshots/phase1-data-derived-osm-fixture-buildings.png
+  - screenshots/phase1-zhongshan-live-station.png
+  - screenshots/phase1-zhongshan-live-voxel.png
+  - screenshots/real-map-alignment-debug-on-v2.png
+  - screenshots/real-map-alignment-debug-on.png
+  - frontend/src/MapLibreOverlay.vue
+  - screenshots/voxel-style-base-debug-off-v2.png
+  - screenshots/source-geometry-contract-debug-on.png
+  - screenshots/phase1-maplibre-scale-corrected-focused.png
+  - frontend/src/overlayRegistry.js
+  - screenshots/debug-map-texture-publish-road-width-fix.png
+  - SPEC.md
+  - frontend/src/mapAlignmentDiagnostics.js
+  - screenshots/phase1-data-derived-city-no-context-buildings-v2.png
+  - screenshots/phase1-urban-role-style-resolver.png
+  - screenshots/road-geo-source-alignment-debug-on.png
+  - frontend/bun.lock
+  - frontend/src/mapDerivedWorldPayload.js
+  - screenshots/phase1-data-derived-osm-fixture-buildings-clean-labels.png
+  - README.md
+  - screenshots/phase1-dense-voxel-city-context.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureStyleResolver.java
+tests:
+  - frontend/tests/worldViewPayload.test.mjs
+  - frontend/tests/worldViewRenderModules.test.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/OsmStaticFeatureAdapterTest.java
+  - frontend/tests/mapAlignmentDiagnostics.test.mjs
+  - frontend/tests/overlayRegistry.test.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/WorldViewControllerE2eTest.java
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureStyleResolverTest.java
+  - frontend/tests/run.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/CuratedZhongshanStaticFeatureProviderTest.java
+-->
+
+---
+### Requirement: Map-First Layer Boundaries
+
+TWFoundry SHALL keep product policy, configuration, source integration, ontology, projection,
+rendering, and observability as separate architectural boundaries.
+
+Source-specific facts SHALL enter through source adapters, fallback fixtures, or normalized payloads
+before reaching renderers.
+
+Renderers SHALL consume generic map overlay or object detail contracts rather than source-specific
+truth.
+
+#### Scenario: New source is added
+
+- **GIVEN** a new public-data source is introduced
+- **WHEN** the source becomes visible in the dashboard
+- **THEN** it is represented through source descriptor, normalization, ontology mapping, projection
+  mapping, and freshness/completeness metadata
+- **AND** frontend renderers do not branch directly on raw source payload shape
+
+#### Scenario: New visual overlay is added
+
+- **GIVEN** a new operational domain becomes visible on the map
+- **WHEN** the overlay is implemented
+- **THEN** its product identity is registered outside renderer-only code
+- **AND** disabling the overlay hides projections without deleting ontology objects
+
+
+<!-- @trace
+source: define-twfoundry-map-first-spec
+updated: 2026-05-13
+code:
+  - screenshots/phase1-maplibre-texture-plane.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-reviewed.png
+  - frontend/src/worldViewRenderModules.js
+  - frontend/src/mapOverlayRenderers.js
+  - screenshots/phase1-data-derived-city-no-context-buildings-v4.png
+  - screenshots/phase1-static-feature-catalog.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/WorldViewService.java
+  - screenshots/phase1-data-derived-city-no-context-buildings-v3.png
+  - frontend/src/worldViewPayload.js
+  - screenshots/phase1-data-derived-osm-fixture-buildings-refocused.png
+  - screenshots/phase1-debug-underlay.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-framed.png
+  - frontend/src/styles.css
+  - screenshots/phase1-ground-road-surfaces-readable.png
+  - frontend/src/voxelLandmarkRenderers.js
+  - frontend/src/App.vue
+  - screenshots/phase1-maplibre-scale-corrected.png
+  - screenshots/phase1-zhongshan-live-default.png
+  - screenshots/debug-map-reference-in-scene-after-lifecycle-fix.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/CuratedZhongshanStaticFeatureProvider.java
+  - frontend/index.html
+  - screenshots/phase1-data-derived-city-final.png
+  - backend/ingestion/src/main/resources/world/zhongshan-osm-fixture.json
+  - screenshots/debug-map-reference-in-scene-wait.png
+  - screenshots/debug-map-road-clear-filter.png
+  - screenshots/debug-map-road-clear-intersection-filter.png
+  - screenshots/phase1-maplibre-scale-final.png
+  - frontend/src/mockData.js
+  - Design.md
+  - frontend/src/OntologyPreview.vue
+  - screenshots/phase1-geo-anchored-underlay.png
+  - screenshots/phase1-static-feature-provider.png
+  - screenshots/phase1-urban-role-city-fabric.png
+  - screenshots/voxel-style-base-debug-off.png
+  - screenshots/phase1-maplibre-no-road-buildings.png
+  - frontend/vite.config.js
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/ZhongshanFixtureOsmCatalog.java
+  - frontend/src/voxelWorld.js
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureProvider.java
+  - backend/ingestion/src/main/resources/world/taipei-main-station-osm-fixture.json
+  - screenshots/phase1-debug-underlay-v2.png
+  - screenshots/phase1-debug-underlay-v4.png
+  - screenshots/phase1-ground-road-surfaces-contract-fixed.png
+  - screenshots/debug-map-road-width-canvas-fix.png
+  - screenshots/phase1-ground-road-surfaces.png
+  - screenshots/phase1-polygon-footprint-buildings.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/OsmStaticFeatureAdapter.java
+  - screenshots/debug-map-reference-in-scene.png
+  - screenshots/phase1-debug-underlay-v3.png
+  - screenshots/phase1-maplibre-scale-corrected-focus-near.png
+  - screenshots/phase1-webmercator-local.png
+  - screenshots/real-map-alignment-debug-on-v3-long-wait.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/WorldViewController.java
+  - frontend/package.json
+  - screenshots/phase1-data-derived-city-no-context-buildings.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/WorldView.java
+  - screenshots/phase1-data-derived-osm-fixture-buildings.png
+  - screenshots/phase1-zhongshan-live-station.png
+  - screenshots/phase1-zhongshan-live-voxel.png
+  - screenshots/real-map-alignment-debug-on-v2.png
+  - screenshots/real-map-alignment-debug-on.png
+  - frontend/src/MapLibreOverlay.vue
+  - screenshots/voxel-style-base-debug-off-v2.png
+  - screenshots/source-geometry-contract-debug-on.png
+  - screenshots/phase1-maplibre-scale-corrected-focused.png
+  - frontend/src/overlayRegistry.js
+  - screenshots/debug-map-texture-publish-road-width-fix.png
+  - SPEC.md
+  - frontend/src/mapAlignmentDiagnostics.js
+  - screenshots/phase1-data-derived-city-no-context-buildings-v2.png
+  - screenshots/phase1-urban-role-style-resolver.png
+  - screenshots/road-geo-source-alignment-debug-on.png
+  - frontend/bun.lock
+  - frontend/src/mapDerivedWorldPayload.js
+  - screenshots/phase1-data-derived-osm-fixture-buildings-clean-labels.png
+  - README.md
+  - screenshots/phase1-dense-voxel-city-context.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureStyleResolver.java
+tests:
+  - frontend/tests/worldViewPayload.test.mjs
+  - frontend/tests/worldViewRenderModules.test.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/OsmStaticFeatureAdapterTest.java
+  - frontend/tests/mapAlignmentDiagnostics.test.mjs
+  - frontend/tests/overlayRegistry.test.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/WorldViewControllerE2eTest.java
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureStyleResolverTest.java
+  - frontend/tests/run.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/CuratedZhongshanStaticFeatureProviderTest.java
+-->
+
+---
+### Requirement: Legacy Diorama Term Compatibility
+
+TWFoundry SHALL treat `WorldViewPayload`, `DioramaChunk`, and `ChunkProjection` as legacy-compatible
+implementation terms during the map-first migration.
+
+New product UI SHALL NOT present voxel chunks, diorama alignment, or voxel terrain as the primary
+dashboard model.
+
+Voxel rendering SHALL remain scoped to selected-object detail unless a future root specification
+revision explicitly changes that policy.
+
+#### Scenario: Existing payload fields remain during migration
+
+- **GIVEN** existing backend or frontend code still uses `WorldViewPayload`, `DioramaChunk`, or
+  `ChunkProjection`
+- **WHEN** a map-first feature consumes that data
+- **THEN** the feature treats those fields as compatibility inputs
+- **AND** the user-facing model remains map overlays plus selected ontology object detail
+
+<!-- @trace
+source: define-twfoundry-map-first-spec
+updated: 2026-05-13
+code:
+  - screenshots/phase1-maplibre-texture-plane.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-reviewed.png
+  - frontend/src/worldViewRenderModules.js
+  - frontend/src/mapOverlayRenderers.js
+  - screenshots/phase1-data-derived-city-no-context-buildings-v4.png
+  - screenshots/phase1-static-feature-catalog.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/WorldViewService.java
+  - screenshots/phase1-data-derived-city-no-context-buildings-v3.png
+  - frontend/src/worldViewPayload.js
+  - screenshots/phase1-data-derived-osm-fixture-buildings-refocused.png
+  - screenshots/phase1-debug-underlay.png
+  - screenshots/phase1-data-derived-osm-fixture-buildings-framed.png
+  - frontend/src/styles.css
+  - screenshots/phase1-ground-road-surfaces-readable.png
+  - frontend/src/voxelLandmarkRenderers.js
+  - frontend/src/App.vue
+  - screenshots/phase1-maplibre-scale-corrected.png
+  - screenshots/phase1-zhongshan-live-default.png
+  - screenshots/debug-map-reference-in-scene-after-lifecycle-fix.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/CuratedZhongshanStaticFeatureProvider.java
+  - frontend/index.html
+  - screenshots/phase1-data-derived-city-final.png
+  - backend/ingestion/src/main/resources/world/zhongshan-osm-fixture.json
+  - screenshots/debug-map-reference-in-scene-wait.png
+  - screenshots/debug-map-road-clear-filter.png
+  - screenshots/debug-map-road-clear-intersection-filter.png
+  - screenshots/phase1-maplibre-scale-final.png
+  - frontend/src/mockData.js
+  - Design.md
+  - frontend/src/OntologyPreview.vue
+  - screenshots/phase1-geo-anchored-underlay.png
+  - screenshots/phase1-static-feature-provider.png
+  - screenshots/phase1-urban-role-city-fabric.png
+  - screenshots/voxel-style-base-debug-off.png
+  - screenshots/phase1-maplibre-no-road-buildings.png
+  - frontend/vite.config.js
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/ZhongshanFixtureOsmCatalog.java
+  - frontend/src/voxelWorld.js
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureProvider.java
+  - backend/ingestion/src/main/resources/world/taipei-main-station-osm-fixture.json
+  - screenshots/phase1-debug-underlay-v2.png
+  - screenshots/phase1-debug-underlay-v4.png
+  - screenshots/phase1-ground-road-surfaces-contract-fixed.png
+  - screenshots/debug-map-road-width-canvas-fix.png
+  - screenshots/phase1-ground-road-surfaces.png
+  - screenshots/phase1-polygon-footprint-buildings.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/OsmStaticFeatureAdapter.java
+  - screenshots/debug-map-reference-in-scene.png
+  - screenshots/phase1-debug-underlay-v3.png
+  - screenshots/phase1-maplibre-scale-corrected-focus-near.png
+  - screenshots/phase1-webmercator-local.png
+  - screenshots/real-map-alignment-debug-on-v3-long-wait.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/api/WorldViewController.java
+  - frontend/package.json
+  - screenshots/phase1-data-derived-city-no-context-buildings.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/WorldView.java
+  - screenshots/phase1-data-derived-osm-fixture-buildings.png
+  - screenshots/phase1-zhongshan-live-station.png
+  - screenshots/phase1-zhongshan-live-voxel.png
+  - screenshots/real-map-alignment-debug-on-v2.png
+  - screenshots/real-map-alignment-debug-on.png
+  - frontend/src/MapLibreOverlay.vue
+  - screenshots/voxel-style-base-debug-off-v2.png
+  - screenshots/source-geometry-contract-debug-on.png
+  - screenshots/phase1-maplibre-scale-corrected-focused.png
+  - frontend/src/overlayRegistry.js
+  - screenshots/debug-map-texture-publish-road-width-fix.png
+  - SPEC.md
+  - frontend/src/mapAlignmentDiagnostics.js
+  - screenshots/phase1-data-derived-city-no-context-buildings-v2.png
+  - screenshots/phase1-urban-role-style-resolver.png
+  - screenshots/road-geo-source-alignment-debug-on.png
+  - frontend/bun.lock
+  - frontend/src/mapDerivedWorldPayload.js
+  - screenshots/phase1-data-derived-osm-fixture-buildings-clean-labels.png
+  - README.md
+  - screenshots/phase1-dense-voxel-city-context.png
+  - backend/ingestion/src/main/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureStyleResolver.java
+tests:
+  - frontend/tests/worldViewPayload.test.mjs
+  - frontend/tests/worldViewRenderModules.test.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/OsmStaticFeatureAdapterTest.java
+  - frontend/tests/mapAlignmentDiagnostics.test.mjs
+  - frontend/tests/overlayRegistry.test.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/api/WorldViewControllerE2eTest.java
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/StaticFeatureStyleResolverTest.java
+  - frontend/tests/run.mjs
+  - backend/ingestion/src/test/java/io/twfoundry/backend/ingestion/application/world/CuratedZhongshanStaticFeatureProviderTest.java
 -->

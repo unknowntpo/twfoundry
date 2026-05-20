@@ -1,10 +1,25 @@
 # TWFoundry Design
 
+`SPEC.md` is the highest-level product/system contract. This document describes product experience,
+visual language, and historical design context. When old voxel/diorama sections conflict with
+`SPEC.md`, the map-first ontology contract in `SPEC.md` takes precedence.
+
+See `docs/decision-history/2026-05-map-first-pivot.md` for why the project pivoted away from a
+voxel-first main surface.
+
+## 2026-05-11 方向更新：Map-First Ontology
+
+TWFoundry 的主介面改為互動地圖情報層，而不是 Three.js voxel diorama。地圖負責 Google Maps / Mapbox 類型的空間瀏覽、圖層開關、即時狀態、時間回放與 ontology selection。
+
+Voxel Art 保留，但定位改為 selected ontology object 的 detail renderer。例如使用者點擊捷運站 ontology 時，可以在物件面板中看到 voxel station body / 月台 / 出入口資訊；它不再是主地圖底座、城市地表或全域世界模型。
+
+本節 supersede 下方早期「掌中方塊世界 RPG」定位。舊內容已降級為 Legacy Appendix，只能作為 voxel detail renderer 的設計語彙參考，不能治理新的產品決策。
+
 ## 產品定位
 
-TWFoundry 是一個以臺灣公開資料為核心的掌中方塊世界 RPG。
+TWFoundry 是一個以臺灣公開資料為核心的 map-first ontology operations dashboard。
 
-它仿效 Palantir Foundry 的幾個核心概念：資料流進入平台後，不只被做成圖表，而是被整理成可理解、可查詢、可互動、可操作的 ontology objects。使用者不是在看靜態 dashboard，而是在一個像掌中立體模型的微縮臺灣世界裡理解狀態、探索關係、回看時間、接收即時資料，並在未來對物件執行 action。
+它仿效 Palantir Foundry 的幾個核心概念：資料流進入平台後，不只被做成圖表，而是被整理成可理解、可查詢、可互動、可操作的 ontology objects。使用者不是在看靜態 dashboard，而是在互動地圖上理解狀態、探索關係、回看時間、接收即時資料，並在未來對物件執行 action。
 
 第一階段聚焦臺北：
 
@@ -14,31 +29,32 @@ TWFoundry 是一個以臺灣公開資料為核心的掌中方塊世界 RPG。
 - PM2.5 / 空氣品質資料
 - 事故與路況事件
 
-這些資料會被投影到 Three.js 3D voxel Taipei。世界應像可放在桌上的 diorama：有明確邊界、厚實底座、可愛方塊地形、柔和霧氣與可探索的 RPG 場景感。使用者可以在微縮城市中觀看捷運、天氣、感測器、事件與風險狀態。
+這些資料會被投影到互動地圖與 ontology object inspector。地圖承擔主要空間瀏覽、圖層控制與即時狀態理解；Voxel Art 僅在選取物件後作為 detail renderer。
 
 ## 設計邊界
 
-本文件是 TWFoundry 新版體驗的 source of truth。後續 demo、Figma 設計與實作都應以這份文件定義的掌中方塊世界、ontology interaction、timeline/live mode 與 `taipei_voxel_v3.html` 的明亮櫻花季視覺語言為準。
+本文件描述 TWFoundry 的產品體驗與視覺語言，但系統 contract 以 `SPEC.md` 為準。後續 demo、Figma 設計與實作應優先符合 map-first ontology interaction、timeline/live mode、overlay registry 與 selected-object detail renderer。
 
 工程原則：
 
 - Vue frontend
-- Three.js 3D scene
+- MapLibre map surface
 - semantic design tokens
 - feature-scoped demo entry
-- frontend-only prototype first
+- source/ontology/projection/rendering boundary first
 
 ## Foundry 啟發
 
 Palantir Foundry 的公開資料顯示，它的重點是把資料、ontology、application、action、permission 與 governance 放在同一個 operational model 裡。
 
-TWFoundry 採用這個方向，但縮小到臺灣公共資料與 3D voxel world：
+TWFoundry 採用這個方向，但縮小到臺灣公共資料與互動地圖情報層：
 
 ```text
 public data streams
   -> observations
   -> ontology objects
-  -> voxel world projection
+  -> map overlays
+  -> selected-object voxel detail
   -> user exploration
   -> future governed actions
 ```
@@ -125,12 +141,15 @@ Train T1005
 TDX / weather / sensor / incident source
   -> observation
   -> object state
-  -> voxel world entity
+  -> map overlay / selected-object detail
 ```
 
-## 3D Voxel World
+## Legacy Appendix: 3D Voxel World
 
-TWFoundry 的主介面是一個 Three.js 掌中方塊世界。
+Status: historical reference. This section is retained only as visual inspiration for selected-object
+Voxel Detail modules. It is not the current product contract.
+
+TWFoundry 的早期主介面曾被設計為 Three.js 掌中方塊世界。
 
 設計目標：
 

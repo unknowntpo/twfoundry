@@ -1,32 +1,13 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { mrtRouteGeoJson, mrtStationGeoJson } from './mrtMapData.js';
-import { ontologyObjects } from './mockData.js';
-import { mrtRouteFeatureToProjection, mrtStationFeatureToProjection, projectLineToGrid, projectPointToGrid } from './ontologyProjection.js';
-import { createMrtTrain } from './voxelTrain.js';
 import { createWorldViewBaseLayer, createWorldViewLayer } from './worldViewRenderModules.js';
 
-const GRID = 30;
-const CELL = 1.85;
-const OFF = -GRID * CELL / 2;
 const MAP_REFERENCE_DISTANCE = 92;
 
 const COLORS = {
   sky: '#D8EEF8',
-  skyDeep: '#78C8F8',
-  sakuraMist: '#FEDFE1',
-  sakuraLight: '#FFD2DC',
-  sakuraMid: '#FCB4C3',
-  sakuraHot: '#F596AA',
+  sakuraMist: '#EAF8FF',
   rose: '#E16B8C',
-  fuji: '#B481BB',
-  water: '#81C7D4',
-  leaf: '#B5CAA0',
-  leafDeep: '#5DAC81',
-  gold: '#FFB11B',
-  hill: '#D2C3C3',
-  base: '#F7D8E4',
-  ink: '#2B2330',
 };
 
 function makeRng(seed) {
@@ -35,46 +16,6 @@ function makeRng(seed) {
     state = (state * 9301 + 49297) % 233280;
     return state / 233280;
   };
-}
-
-function gridToWorld(gx, gz) {
-  return [gx * CELL + OFF + CELL / 2, gz * CELL + OFF + CELL / 2];
-}
-
-function makeMat(color, opts = {}) {
-  if (opts.glass) {
-    return new THREE.MeshPhysicalMaterial({
-      color,
-      transparent: true,
-      opacity: opts.opacity ?? 0.72,
-      metalness: 0,
-      roughness: opts.roughness ?? 0.24,
-      transmission: opts.transmission ?? 0.36,
-      thickness: opts.thickness ?? 1.4,
-      ior: opts.ior ?? 1.34,
-      clearcoat: opts.clearcoat ?? 0.7,
-      clearcoatRoughness: opts.clearcoatRoughness ?? 0.2,
-      specularIntensity: opts.specularIntensity ?? 0.75,
-      emissive: opts.emissive ?? 0x000000,
-      emissiveIntensity: opts.emissiveIntensity ?? 0,
-      depthWrite: opts.depthWrite ?? false,
-    });
-  }
-
-  return new THREE.MeshLambertMaterial({
-    color,
-    transparent: opts.opacity !== undefined,
-    opacity: opts.opacity ?? 1,
-    emissive: opts.emissive ?? 0x000000,
-    emissiveIntensity: opts.emissiveIntensity ?? 0,
-  });
-}
-
-function box(w, h, d, color, opts = {}) {
-  const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), makeMat(color, opts));
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
-  return mesh;
 }
 
 export class VoxelWorld {
@@ -107,7 +48,7 @@ export class VoxelWorld {
     this.controls.rotateSpeed = 0.72;
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.07;
-    this.controls.minDistance = 14;
+    this.controls.minDistance = 6;
     this.controls.maxDistance = 205;
     this.controls.maxPolarAngle = Math.PI / 2.04;
     this.controls.minPolarAngle = Math.PI / 7.5;
@@ -128,7 +69,11 @@ export class VoxelWorld {
     this.objectAnchors = new Map();
     this.payloadObjects = [];
     this.payloadLayer = null;
+    this.worldViewPayload = null;
+    this.mapReference = null;
+    this.mapReferencePlane = null;
     this.selected = null;
+    this.selectedObjectId = null;
     this.hovered = null;
     this.worldMinutes = 610;
     this.pipelineFocus = 'tiles';
@@ -174,16 +119,16 @@ export class VoxelWorld {
     this.roseFill.position.set(-38, 18, -20);
     this.scene.add(this.roseFill);
 
-    this.terrain = this.makeTerrain();
-    this.layers.tiles = this.buildTileLayer();
-    this.layers.map = this.buildVoxelCity();
-    this.layers.mrt = this.buildMrtLayer();
-    this.layers.rain = this.buildRainLayer();
-    this.layers.pm25 = this.buildPm25Layer();
-    this.layers.incident = this.buildIncidentLayer();
-    this.layers.pipeline = this.buildPipelineMiniature();
+    this.terrain = [];
+    this.layers.tiles = this.emptyLayer('legacy tile layer disabled in payload mode');
+    this.layers.map = this.emptyLayer('payload map layer pending');
+    this.layers.mrt = this.emptyLayer('payload mrt layer pending');
+    this.layers.rain = this.emptyLayer('payload rain layer pending');
+    this.layers.pm25 = this.emptyLayer('payload pm25 layer pending');
+    this.layers.incident = this.emptyLayer('payload incident layer pending');
+    this.layers.pipeline = this.emptyLayer('legacy pipeline miniature disabled in payload mode');
     this.layers.petals = this.buildPetals();
-    this.layers.avatar = this.buildAvatar();
+    this.layers.avatar = this.emptyLayer('legacy avatar disabled in payload mode');
 
     this.scene.add(this.layers.tiles);
     this.scene.add(this.layers.map);
@@ -195,411 +140,18 @@ export class VoxelWorld {
     this.scene.add(this.layers.petals);
     this.scene.add(this.layers.avatar);
 
-    this.applyPipelineFocus('tiles');
     this.setMapBaseVisible(true);
     this.callbacks.onReady?.({
       visibleChunks: 9,
       observations: 128,
-      ontologyObjects: ontologyObjects.length,
-      voxelEntities: 812,
+      ontologyObjects: 0,
+      voxelEntities: 0,
     });
   }
 
-  makeTerrain() {
-    const rng = makeRng(73);
-    return Array.from({ length: GRID }, (_, z) => Array.from({ length: GRID }, (_, x) => {
-      if (x <= 2 || (z < 3 && x > 6 && x < 22)) return { type: 'river', h: 0 };
-      if (z < 7 && x < 12) return { type: 'hill', h: Math.round((8 - z) * 0.75 + rng() * 2) };
-      if (x > 24 && z < 14) return { type: 'hill', h: Math.round(rng() * 3) + 2 };
-      if ((x > 12 && x < 17 && z > 20 && z < 24) || (x > 6 && x < 10 && z > 14 && z < 18)) {
-        return { type: 'park', h: 1 };
-      }
-      if (x > 18 && x < 25 && z > 14 && z < 21) return { type: 'tall', h: Math.round(rng() * 7) + 4 };
-      if (x > 9 && x < 21 && z > 9 && z < 19) return { type: 'dense', h: Math.round(rng() * 4) + 2 };
-      return { type: 'urban', h: Math.round(rng() * 2) + 1 };
-    }));
-  }
-
-  heightAt(gx, gz) {
-    const x = Math.max(0, Math.min(GRID - 1, Math.round(gx)));
-    const z = Math.max(0, Math.min(GRID - 1, Math.round(gz)));
-    return Math.max(this.terrain[z][x].h, 1);
-  }
-
-  buildTileLayer() {
+  emptyLayer(name) {
     const group = new THREE.Group();
-    const plate = box(GRID * CELL + 7, 0.7, GRID * CELL + 7, COLORS.base, {
-      emissive: '#FFD2DC',
-      emissiveIntensity: 0.025,
-    });
-    plate.position.y = -0.45;
-    group.add(plate);
-
-    const rim = box(GRID * CELL + 8.2, 1.1, GRID * CELL + 8.2, '#EFB9CC', {
-      emissive: '#F596AA',
-      emissiveIntensity: 0.02,
-    });
-    rim.position.y = -1.15;
-    group.add(rim);
-
-    const lineMat = new THREE.LineBasicMaterial({ color: COLORS.skyDeep, transparent: true, opacity: 0.42 });
-    const tileSize = GRID * CELL / 4;
-    for (let z = 0; z < 4; z++) {
-      for (let x = 0; x < 4; x++) {
-        const tile = box(tileSize - 0.18, 0.08, tileSize - 0.18, '#F9F6FF', {
-          glass: true,
-          opacity: 0.18,
-          transmission: 0.42,
-          roughness: 0.18,
-        });
-        tile.position.set(OFF + tileSize * x + tileSize / 2, 0.03, OFF + tileSize * z + tileSize / 2);
-        tile.userData = {
-          twObject: {
-            id: `chunk-14-${13623 + x}-${6193 + z}`,
-            name: `Chunk ${x + 1}.${z + 1}`,
-            type: 'MapLibre visible tile',
-            layer: 'Mock geospatial backbone',
-            status: x > 0 && x < 3 && z > 0 && z < 3 ? 'visible' : 'cached',
-            freshness: 'viewport frame',
-            summary: '模擬 MapLibre viewport-driven tile/chunk。未來會由 camera bounds 與 zoom level 決定載入。',
-            properties: [`z: 14`, `x: ${13623 + x}`, `y: ${6193 + z}`, `lod: voxel-preview`],
-            relationships: ['decodes vector features', 'emits observations', 'binds ontology anchors'],
-          },
-        };
-        this.clickables.push(tile);
-        this.registerAnchor(tile.userData.twObject.id, tile);
-        group.add(tile);
-
-        const active = x > 0 && x < 3 && z > 0 && z < 3;
-        const edges = new THREE.EdgesGeometry(new THREE.BoxGeometry(tileSize - 0.18, 0.12, tileSize - 0.18));
-        const edge = new THREE.LineSegments(edges, active
-          ? new THREE.LineBasicMaterial({ color: COLORS.rose, transparent: true, opacity: 0.76 })
-          : lineMat);
-        edge.position.copy(tile.position);
-        group.add(edge);
-      }
-    }
-    return group;
-  }
-
-  buildVoxelCity() {
-    const group = new THREE.Group();
-    const typeColor = {
-      river: COLORS.water,
-      park: COLORS.leaf,
-      urban: COLORS.sakuraLight,
-      dense: COLORS.sakuraMid,
-      tall: COLORS.sakuraHot,
-      hill: COLORS.hill,
-    };
-    const geom = new THREE.BoxGeometry(CELL * 0.86, 1, CELL * 0.86);
-    const buckets = {};
-    this.terrain.forEach((row, z) => row.forEach((cell, x) => {
-      const h = Math.max(cell.h, cell.type === 'river' ? 0 : 1);
-      const levels = cell.type === 'river' ? 1 : h;
-      if (!buckets[cell.type]) buckets[cell.type] = [];
-      for (let y = 0; y < levels; y++) {
-        buckets[cell.type].push({ x, y, z, h });
-      }
-    }));
-
-    const dummy = new THREE.Object3D();
-    Object.entries(buckets).forEach(([type, cells]) => {
-      const mesh = new THREE.InstancedMesh(geom, makeMat(typeColor[type], {
-        emissive: type === 'river' ? COLORS.water : typeColor[type],
-        emissiveIntensity: {
-          river: 0.06,
-          park: 0.015,
-          urban: 0.025,
-          dense: 0.035,
-          tall: 0.065,
-          hill: 0.012,
-        }[type],
-      }), cells.length);
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
-      cells.forEach((cell, i) => {
-        const [wx, wz] = gridToWorld(cell.x, cell.z);
-        dummy.position.set(wx, type === 'river' ? -0.08 : cell.y + 0.5, wz);
-        dummy.updateMatrix();
-        mesh.setMatrixAt(i, dummy.matrix);
-        const shade = 0.94 + Math.min(0.2, cell.y / Math.max(cell.h, 1) * 0.16);
-        mesh.setColorAt(i, new THREE.Color(typeColor[type]).multiplyScalar(shade));
-      });
-      mesh.instanceMatrix.needsUpdate = true;
-      mesh.instanceColor.needsUpdate = true;
-      group.add(mesh);
-    });
-
-    const tower = box(CELL * 0.9, 14, CELL * 0.9, '#F58CA5', {
-      emissive: '#F596AA',
-      emissiveIntensity: 0.08,
-    });
-    const [twx, twz] = gridToWorld(21, 17);
-    tower.position.set(twx, 7.2, twz);
-    tower.userData.twObject = {
-      id: 'taipei-101',
-      name: 'Taipei 101 Voxel Tower',
-      type: 'Landmark',
-      layer: 'Voxel city',
-      status: 'reference',
-      freshness: 'static',
-      summary: '城市量體的視覺錨點，用於維持臺北微縮模型的方位感。',
-      properties: ['height: 14 voxel', 'material: sakura crystal', 'role: visual anchor'],
-      relationships: ['near Train R22', 'inside Zhongshan Station chunk'],
-    };
-    this.clickables.push(tower);
-    this.registerAnchor('taipei-101', tower);
-    group.add(tower);
-    return group;
-  }
-
-  makeCurve(points) {
-    return new THREE.CatmullRomCurve3(points.map(([gx, gz]) => {
-      const [wx, wz] = gridToWorld(gx, gz);
-      return new THREE.Vector3(wx, this.heightAt(gx, gz) + 1.05, wz);
-    }), false, 'catmullrom', 0.42);
-  }
-
-  makeGridCurve(points) {
-    return new THREE.CatmullRomCurve3(points.map(([gx, gz]) => {
-      const [wx, wz] = gridToWorld(gx, gz);
-      return new THREE.Vector3(wx, this.heightAt(gx, gz) + 1.05, wz);
-    }), false, 'catmullrom', 0.28);
-  }
-
-  buildMrtLayer() {
-    const group = new THREE.Group();
-    const stationObject = ontologyObjects.find((item) => item.id === 'station-R11-G14') ?? ontologyObjects[1];
-    const trainObject = ontologyObjects.find((item) => item.id === 'train-R22') ?? ontologyObjects[0];
-    const stationsByRoute = new Map();
-    mrtStationGeoJson.features.forEach((feature) => {
-      const routeId = feature.properties.routeId;
-      if (!stationsByRoute.has(routeId)) stationsByRoute.set(routeId, []);
-      stationsByRoute.get(routeId).push(feature);
-    });
-
-    mrtRouteGeoJson.features.forEach((feature, lineIndex) => {
-      const routeProjection = mrtRouteFeatureToProjection(feature);
-      const line = {
-        id: feature.properties.id,
-        name: routeProjection.state.name,
-        color: routeProjection.state.color,
-      };
-      const curve = this.makeGridCurve(projectLineToGrid(routeProjection, GRID));
-      const tube = new THREE.Mesh(
-        new THREE.TubeGeometry(curve, 84, 0.13, 6, false),
-        makeMat(line.color, {
-          emissive: line.color,
-          emissiveIntensity: 0.18,
-        }),
-      );
-      group.add(tube);
-
-      const routeStations = stationsByRoute.get(line.id) ?? [];
-      routeStations.forEach((stationFeature) => {
-        const stationProjection = mrtStationFeatureToProjection(stationFeature);
-        const [gx, gz] = projectPointToGrid(stationProjection, GRID);
-        const [wx, wz] = gridToWorld(gx, gz);
-        const station = box(0.9, 0.76, 0.9, '#FFFFFF', {
-          emissive: line.color,
-          emissiveIntensity: 0.18,
-        });
-        station.position.set(wx, this.heightAt(gx, gz) + 1.45, wz);
-        station.userData.twObject = stationFeature.properties.id === 'R11'
-          ? stationObject
-          : {
-            ...stationObject,
-            id: `station-${stationFeature.properties.id}`,
-            name: stationFeature.properties.name,
-            status: 'normal',
-            summary: `${stationFeature.properties.name} station projected from MRT GeoJSON into the voxel world.`,
-            properties: [
-              `stationId: ${stationProjection.state.stationId}`,
-              `route: ${line.name}`,
-              `source: ${stationProjection.source}`,
-              `projection: Taipei bounds`,
-            ],
-            relationships: [...stationProjection.relationships, 'anchored_to MapLibre base'],
-          };
-        this.clickables.push(station);
-        if (stationFeature.properties.id === 'R11') this.registerAnchor(stationObject.id, station);
-        group.add(station);
-      });
-
-      for (let i = 0; i < 2; i++) {
-        const train = this.makeTrain(line.color);
-        train.userData.twObject = trainObject;
-        this.clickables.push(train);
-        if (i === 0 && line.id === 'tamsui-xinyi') this.registerAnchor('train-R22', train);
-        this.trains.push({ mesh: train, curve, progress: (i / 2 + lineIndex * 0.17) % 1, speed: 0.035 + lineIndex * 0.006 });
-        group.add(train);
-      }
-    });
-    return group;
-  }
-
-  makeTrain(color) {
-    return createMrtTrain({ lineColor: color, carCount: 3, scale: 1, name: 'live MRT train' });
-  }
-
-  buildRainLayer() {
-    const group = new THREE.Group();
-    const rng = makeRng(142);
-    for (let z = 0; z < 6; z++) {
-      for (let x = 0; x < 6; x++) {
-        const gx = x * 4.2 + 3;
-        const gz = z * 4.2 + 3;
-        const [wx, wz] = gridToWorld(gx, gz);
-        const base = this.heightAt(gx, gz) + 1.2;
-        const h = 1.2 + rng() * 6 * (1.35 - z / 7);
-        const bar = box(5.4, 1, 5.4, COLORS.water, {
-          glass: true,
-          opacity: 0.12,
-          transmission: 0.76,
-          roughness: 0.08,
-          emissive: '#81C7D4',
-          emissiveIntensity: 0.055,
-        });
-        bar.position.set(wx, base + h / 2, wz);
-        bar.scale.y = h;
-        bar.userData = { base, baseHeight: h, phase: rng() * Math.PI * 2, twObject: ontologyObjects[2] };
-        this.rainBars.push(bar);
-        this.clickables.push(bar);
-        if (x === 2 && z === 2) this.registerAnchor('rain-R042', bar);
-        group.add(bar);
-      }
-    }
-    return group;
-  }
-
-  buildPm25Layer() {
-    const group = new THREE.Group();
-    const rng = makeRng(888);
-    for (let i = 0; i < 54; i++) {
-      const gx = 7 + rng() * 20;
-      const gz = 8 + rng() * 17;
-      const [wx, wz] = gridToWorld(gx, gz);
-      const puff = box(0.55 + rng() * 0.5, 0.55 + rng() * 0.5, 0.55 + rng() * 0.5, rng() > 0.55 ? COLORS.gold : '#F7D94C', {
-        glass: true,
-        opacity: 0.34,
-        transmission: 0.36,
-        roughness: 0.24,
-        emissive: '#FFD966',
-        emissiveIntensity: 0.075,
-      });
-      puff.position.set(wx, this.heightAt(gx, gz) + 2.2 + rng() * 5, wz);
-      puff.userData = { phase: rng() * Math.PI * 2, drift: 0.2 + rng() * 0.5, twObject: ontologyObjects[3] };
-      this.pmPuffs.push(puff);
-      this.clickables.push(puff);
-      group.add(puff);
-    }
-
-    [[9, 18], [18, 12], [24, 19]].forEach(([gx, gz]) => {
-      const [wx, wz] = gridToWorld(gx, gz);
-      const sensor = box(0.78, 4.2, 0.78, COLORS.gold, {
-        emissive: COLORS.gold,
-        emissiveIntensity: 0.12,
-      });
-      sensor.position.set(wx, this.heightAt(gx, gz) + 2.1, wz);
-      sensor.userData.twObject = ontologyObjects[3];
-      this.clickables.push(sensor);
-      if (!this.objectAnchors.has('aq-A07')) this.registerAnchor('aq-A07', sensor);
-      group.add(sensor);
-    });
-    return group;
-  }
-
-  buildIncidentLayer() {
-    const group = new THREE.Group();
-    [[15, 14], [21, 16], [10, 17]].forEach(([gx, gz], index) => {
-      const [wx, wz] = gridToWorld(gx, gz);
-      const marker = new THREE.Group();
-      for (let y = 0; y < 3; y++) {
-        const m = box(0.92 - y * 0.08, 0.52, 0.92 - y * 0.08, y === 1 ? COLORS.fuji : COLORS.rose, {
-          emissive: y === 1 ? COLORS.fuji : COLORS.rose,
-          emissiveIntensity: 0.14,
-        });
-        m.position.y = y * 0.58;
-        marker.add(m);
-      }
-      marker.position.set(wx, this.heightAt(gx, gz) + 1.4, wz);
-      marker.userData = { phase: index * 1.3, twObject: ontologyObjects[4] };
-      this.incidentMarkers.push(marker);
-      this.clickables.push(marker);
-      if (index === 0) this.registerAnchor('incident-I237', marker);
-      group.add(marker);
-    });
-    return group;
-  }
-
-  buildPipelineMiniature() {
-    const group = new THREE.Group();
-    const keys = ['tiles', 'chunks', 'observations', 'ontology', 'voxels'];
-    const colors = [COLORS.skyDeep, COLORS.water, COLORS.gold, COLORS.fuji, COLORS.rose];
-    keys.forEach((key, index) => {
-      const node = box(2.1, 0.75 + index * 0.14, 2.1, colors[index], {
-        emissive: colors[index],
-        emissiveIntensity: 0.06,
-      });
-      node.position.set(-22 + index * 5.3, 1.1 + index * 0.08, 31.5);
-      node.userData = {
-        pipelineKey: key,
-        twObject: {
-          id: `pipeline-${key}`,
-          name: key,
-          type: 'Pipeline stage',
-          layer: 'MapLibre-ready architecture',
-          status: key === this.pipelineFocus ? 'focused' : 'ready',
-          freshness: 'prototype state',
-          summary: '從 geospatial viewport 到 voxel entity 的概念節點，可對應 README 的設計 reasoning。',
-          properties: ['mock only', 'no MapLibre API call', 'frontend projection'],
-          relationships: ['feeds next stage', 'keeps ontology before rendering'],
-        },
-      };
-      this.pipelineNodes[key] = node;
-      this.clickables.push(node);
-      this.registerAnchor(`pipeline-${key}`, node);
-      group.add(node);
-
-      if (index > 0) {
-        const prev = this.pipelineNodes[keys[index - 1]].position;
-        const points = [new THREE.Vector3(prev.x + 1.2, prev.y, prev.z), new THREE.Vector3(node.position.x - 1.2, node.position.y, node.position.z)];
-        const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({ color: COLORS.rose, transparent: true, opacity: 0.5 }));
-        group.add(line);
-      }
-    });
-    return group;
-  }
-
-  buildAvatar() {
-    const group = new THREE.Group();
-    const [wx, wz] = gridToWorld(16, 19);
-    const body = box(0.85, 0.95, 0.85, '#FFF9FB', {
-      emissive: COLORS.sakuraMid,
-      emissiveIntensity: 0.12,
-    });
-    const head = box(0.64, 0.64, 0.64, COLORS.sakuraHot, {
-      emissive: COLORS.sakuraHot,
-      emissiveIntensity: 0.08,
-    });
-    body.position.y = 0.48;
-    head.position.y = 1.28;
-    group.add(body, head);
-    group.position.set(wx, this.heightAt(16, 19) + 1.05, wz);
-    group.userData.twObject = {
-      id: 'avatar-local-context',
-      name: 'Voxel Avatar',
-      type: 'Avatar Context',
-      layer: 'Local context',
-      status: 'watching',
-      freshness: 'cursor state',
-      summary: '玩家位置用來查附近站點、列車、雨量、PM2.5、incident 與路線風險。',
-      properties: ['nearby stations: 2', 'rain: light', 'pm2.5: watch', 'incidents: 1'],
-      relationships: ['near AQMS A-07', 'near Incident I-237', 'inside visible chunk'],
-    };
-    this.clickables.push(group);
-    this.registerAnchor('avatar-local-context', group);
+    group.name = name;
     return group;
   }
 
@@ -615,7 +167,7 @@ export class VoxelWorld {
         opacity: 0.46 + rng() * 0.34,
         side: THREE.DoubleSide,
       }));
-      const spread = GRID * CELL * 0.72;
+      const spread = 40;
       petal.position.set((rng() - 0.5) * spread * 2, rng() * 23 + 4, (rng() - 0.5) * spread * 2);
       petal.rotation.set(rng() * Math.PI, rng() * Math.PI, rng() * Math.PI);
       petal.userData = {
@@ -726,23 +278,26 @@ export class VoxelWorld {
     return selectable;
   }
 
-  setSelected(mesh, object) {
+  setSelected(mesh, object, options = {}) {
     if (this.selected?.material?.emissiveIntensity !== undefined) {
       this.selected.material.emissiveIntensity = this.selected.userData.previousEmissive ?? this.selected.material.emissiveIntensity;
     }
     this.selected = mesh;
+    this.selectedObjectId = object?.id ?? mesh.userData?.twObject?.id ?? this.selectedObjectId;
     if (mesh.material?.emissiveIntensity !== undefined) {
       mesh.userData.previousEmissive = mesh.material.emissiveIntensity;
       mesh.material.emissive = new THREE.Color(COLORS.gold);
       mesh.material.emissiveIntensity = 0.55;
     }
-    this.focusMesh(mesh, 0.35);
+    if (options.focus !== false) {
+      this.focusMesh(mesh, options.mix ?? 0.35);
+    }
   }
 
   focusObject(id) {
     const anchor = this.objectAnchors.get(id);
     if (!anchor) return;
-    this.setSelected(anchor, anchor.userData?.twObject);
+    this.setSelected(anchor, anchor.userData?.twObject, { focus: false });
     this.focusMesh(anchor, 1);
   }
 
@@ -763,8 +318,12 @@ export class VoxelWorld {
   }
 
   setWorldViewPayload(payload, objects = this.payloadObjects) {
-    const baseLayer = createWorldViewBaseLayer(payload, objects);
-    const nextLayer = createWorldViewLayer(payload, objects);
+    this.worldViewPayload = payload;
+    const baseLayer = createWorldViewBaseLayer(payload, objects, {
+      mapReference: this.mapBaseVisible ? this.mapReference : null,
+    });
+    const mapAligned = this.mapBaseVisible && Boolean(this.mapReference);
+    const nextLayer = createWorldViewLayer(payload, objects, { mapAligned });
     this.clearPayloadOverlayAnimationState();
     const overlayKeys = Object.keys(this.layerVisibility).filter((key) => key !== 'tiles');
     const overlayGroups = Object.fromEntries(overlayKeys.map((key) => [key, new THREE.Group()]));
@@ -796,7 +355,24 @@ export class VoxelWorld {
       group.visible = this.layerVisibility[key] ?? true;
     });
 
+    if (this.selectedObjectId && this.objectAnchors.has(this.selectedObjectId)) {
+      const anchor = this.objectAnchors.get(this.selectedObjectId);
+      this.setSelected(anchor, anchor.userData?.twObject, { focus: false });
+    }
+
     this.payloadLayer = nextLayer;
+    this.applySceneLodVisibility();
+  }
+
+  setMapReference(mapReference) {
+    if (this.updateMapReferencePlaneTexture(mapReference)) {
+      this.mapReference = mapReference;
+      return;
+    }
+    this.mapReference = mapReference;
+    if (this.worldViewPayload) {
+      this.setWorldViewPayload(this.worldViewPayload, this.payloadObjects);
+    }
   }
 
   clearPayloadOverlayAnimationState() {
@@ -811,9 +387,103 @@ export class VoxelWorld {
     if (previous) {
       this.scene.remove(previous);
       this.removeClickablesForRoot(previous);
+      this.disposeObjectTree(previous);
     }
     this.layers[key] = group;
     this.scene.add(group);
+    if (key === 'map') {
+      this.mapReferencePlane = this.findMapReferencePlane(group);
+    }
+  }
+
+  findMapReferencePlane(root) {
+    let plane = null;
+    root?.traverse((object3d) => {
+      if (!plane && object3d.userData?.mapReferencePlane) plane = object3d;
+    });
+    return plane;
+  }
+
+  updateMapReferencePlaneTexture(mapReference) {
+    if (!this.mapReferencePlane || !mapReference?.canvas || !this.sameMapReferenceFrame(this.mapReference?.frame, mapReference.frame)) {
+      return false;
+    }
+    const material = this.mapReferencePlane.material;
+    const texture = material?.map;
+    if (!texture) return false;
+    if (texture.image === mapReference.canvas) {
+      texture.needsUpdate = true;
+      return true;
+    }
+    if (texture.userData?.layerOwned) texture.dispose();
+    const nextTexture = new THREE.CanvasTexture(mapReference.canvas);
+    nextTexture.colorSpace = THREE.SRGBColorSpace;
+    nextTexture.minFilter = THREE.LinearFilter;
+    nextTexture.magFilter = THREE.LinearFilter;
+    nextTexture.userData.layerOwned = true;
+    nextTexture.needsUpdate = true;
+    material.map = nextTexture;
+    material.needsUpdate = true;
+    this.mapReferencePlane.userData.mapReferenceFrame = {
+      ...(this.mapReferencePlane.userData.mapReferenceFrame ?? {}),
+      bounds: mapReference.frame?.bounds ?? null,
+      corners: mapReference.frame?.corners ?? null,
+      pixelSize: mapReference.frame?.pixelSize ?? null,
+      projection: mapReference.frame?.projection ?? null,
+    };
+    return true;
+  }
+
+  sameMapReferenceFrame(left, right) {
+    if (!left || !right) return false;
+    if (!this.sameBounds(left.bounds, right.bounds)) return false;
+    return this.sameCornerSet(left.corners, right.corners)
+      && this.samePixelSize(left.pixelSize, right.pixelSize)
+      && (left.projection ?? null) === (right.projection ?? null);
+  }
+
+  sameCornerSet(left, right) {
+    if (!left || !right) return false;
+    return ['northwest', 'northeast', 'southeast', 'southwest'].every((key) => this.sameLngLat(left[key], right[key]));
+  }
+
+  sameLngLat(left, right) {
+    if (!Array.isArray(left) || !Array.isArray(right)) return false;
+    const epsilon = 0.0000001;
+    return Math.abs(left[0] - right[0]) < epsilon && Math.abs(left[1] - right[1]) < epsilon;
+  }
+
+  samePixelSize(left, right) {
+    if (!left || !right) return false;
+    return left.width === right.width
+      && left.height === right.height
+      && left.cssWidth === right.cssWidth
+      && left.cssHeight === right.cssHeight;
+  }
+
+  sameBounds(left, right) {
+    if (!left || !right) return false;
+    const epsilon = 0.0000001;
+    return Math.abs(left.west - right.west) < epsilon
+      && Math.abs(left.south - right.south) < epsilon
+      && Math.abs(left.east - right.east) < epsilon
+      && Math.abs(left.north - right.north) < epsilon;
+  }
+
+  disposeObjectTree(root) {
+    root.traverse((object3d) => {
+      object3d.geometry?.dispose?.();
+      const materials = Array.isArray(object3d.material)
+        ? object3d.material
+        : [object3d.material].filter(Boolean);
+      materials.forEach((material) => {
+        ['map', 'alphaMap', 'emissiveMap', 'normalMap', 'roughnessMap', 'metalnessMap'].forEach((key) => {
+          const texture = material[key];
+          if (texture?.userData?.layerOwned) texture.dispose();
+        });
+        material.dispose?.();
+      });
+    });
   }
 
   removeClickablesForRoot(root) {
@@ -834,7 +504,9 @@ export class VoxelWorld {
     target.y = Math.max(1.4, position.y * 0.45);
     this.controls.target.lerp(target, mix);
 
-    const offset = new THREE.Vector3(28, 26, 34);
+    const offset = this.mapBaseVisible && this.mapReference
+      ? new THREE.Vector3(9.8, 9.4, 12.2)
+      : new THREE.Vector3(28, 26, 34);
     const desired = target.clone().add(offset);
     this.camera.position.lerp(desired, Math.min(1, mix * 0.85));
     this.controls.update();
@@ -842,25 +514,27 @@ export class VoxelWorld {
 
   setLayer(key, visible) {
     this.layerVisibility[key] = visible;
-    if (!this.mapBaseVisible && this.layers[key]) {
+    if (this.layers[key]) {
       this.layers[key].visible = visible;
     }
   }
 
   setMapBaseVisible(visible) {
-    const changed = this.mapBaseVisible !== visible;
     this.mapBaseVisible = visible;
+    if (this.worldViewPayload) {
+      this.setWorldViewPayload(this.worldViewPayload, this.payloadObjects);
+    }
     this.applySceneLodVisibility();
     if (visible) {
-      this.scene.background = null;
-      this.renderer.setClearColor(0x000000, 0);
-    } else {
-      this.scene.background = new THREE.Color('#FFF7FA');
-      this.scene.fog.color.set('#FFF7FA');
-      this.scene.fog.density = 0.0018;
-      this.renderer.setClearColor('#FFF7FA', 1);
-      if (changed) this.frameVoxelDiorama();
+      this.scene.background = new THREE.Color(COLORS.sky);
+      this.renderer.setClearColor(COLORS.sky, 1);
+      return;
     }
+    this.scene.background = new THREE.Color('#FFF7FA');
+    this.scene.fog.color.set('#FFF7FA');
+    this.scene.fog.density = 0.0018;
+    this.renderer.setClearColor('#FFF7FA', 1);
+    this.frameVoxelDiorama();
   }
 
   frameVoxelDiorama() {
@@ -870,11 +544,12 @@ export class VoxelWorld {
   }
 
   applySceneLodVisibility() {
-    const showVoxelWorld = !this.mapBaseVisible;
-    if (this.layers.tiles) this.layers.tiles.visible = showVoxelWorld && (this.layerVisibility.tiles ?? true);
+    const showVoxelWorld = true;
+    const hideLegacySceneProps = Boolean(this.worldViewPayload);
+    if (this.layers.tiles) this.layers.tiles.visible = false;
     if (this.layers.map) this.layers.map.visible = showVoxelWorld;
-    if (this.layers.pipeline) this.layers.pipeline.visible = showVoxelWorld;
-    if (this.layers.avatar) this.layers.avatar.visible = showVoxelWorld;
+    if (this.layers.pipeline) this.layers.pipeline.visible = showVoxelWorld && !hideLegacySceneProps;
+    if (this.layers.avatar) this.layers.avatar.visible = showVoxelWorld && !hideLegacySceneProps;
     ['mrt', 'bus', 'ubike', 'rain', 'pm25', 'incident'].forEach((key) => {
       if (this.layers[key]) this.layers[key].visible = showVoxelWorld && (this.layerVisibility[key] ?? true);
     });
@@ -974,14 +649,16 @@ export class VoxelWorld {
       this.scene.background = sky;
     }
 
-    const fog = new THREE.Color('#2C3260').lerp(new THREE.Color(COLORS.sakuraMist), daylight).lerp(new THREE.Color('#F8C5D6'), twilight * 0.35);
+    const fog = this.mapBaseVisible
+      ? new THREE.Color('#D8EEF8').lerp(new THREE.Color('#F7FBFE'), daylight * 0.72)
+      : new THREE.Color('#2C3260').lerp(new THREE.Color(COLORS.sakuraMist), daylight).lerp(new THREE.Color('#F8C5D6'), twilight * 0.35);
     this.scene.fog.color.copy(fog);
     if (!this.mapBaseVisible) this.scene.fog.density = 0.0025 + night * 0.006 + twilight * 0.0018;
 
-    this.ambient.color.set(new THREE.Color('#AFC8FF').lerp(new THREE.Color('#FFF7FA'), daylight).lerp(new THREE.Color('#FFD6E4'), twilight * 0.35));
+    this.ambient.color.set(new THREE.Color('#AFC8FF').lerp(new THREE.Color('#FFF7FA'), daylight).lerp(new THREE.Color('#FFD6E4'), this.mapBaseVisible ? twilight * 0.12 : twilight * 0.35));
     this.ambient.intensity = 0.54 + daylight * 0.78 + twilight * 0.2;
     this.hemi.color.set(new THREE.Color('#A7C4FF').lerp(new THREE.Color('#EAF8FF'), daylight));
-    this.hemi.groundColor.set(new THREE.Color('#382D5C').lerp(new THREE.Color('#FFD7E6'), daylight));
+    this.hemi.groundColor.set(new THREE.Color(this.mapBaseVisible ? '#CFE8F1' : '#382D5C').lerp(new THREE.Color(this.mapBaseVisible ? '#F7FBFE' : '#FFD7E6'), daylight));
     this.hemi.intensity = 0.34 + daylight * 0.48;
     this.sun.color.set(new THREE.Color('#F8A7C4').lerp(new THREE.Color('#FFFAF8'), daylight));
     this.sun.intensity = 0.18 + daylight * 1.58 + twilight * 0.42;

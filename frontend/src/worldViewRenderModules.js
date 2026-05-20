@@ -4,7 +4,8 @@ import { createStaticFeatureVoxel } from './voxelLandmarkRenderers.js';
 
 const COLORS = {
   paper: '#FFF7FA',
-  base: '#F7D8E4',
+  base: '#EAF8FF',
+  baseEdge: '#CDEBF5',
   sakura: '#F596AA',
   sakuraLight: '#FFD2DC',
   rose: '#E16B8C',
@@ -55,16 +56,139 @@ function pointFromLocal(coordinates, transform) {
   const z = maybeZ === undefined ? yOrZ : maybeZ;
   const scale = transform?.scale ?? 1;
   const translate = transform?.translate ?? { x: 0, y: 0, z: 0 };
+  const rotation = (transform?.rotationDegrees ?? 0) * Math.PI / 180;
+  const scaledX = x * scale;
+  const scaledZ = z * scale;
+  const rotatedX = scaledX * Math.cos(rotation) - scaledZ * Math.sin(rotation);
+  const rotatedZ = scaledX * Math.sin(rotation) + scaledZ * Math.cos(rotation);
   return new THREE.Vector3(
-    x * scale + (translate.x ?? 0),
+    rotatedX + (translate.x ?? 0),
     y * scale + (translate.y ?? 0),
-    z * scale + (translate.z ?? 0),
+    rotatedZ + (translate.z ?? 0),
+  );
+}
+
+function localFromLngLat(payload, lng, lat, y = 0) {
+  const coordinateSystem = payload?.coordinateSystem;
+  if (!coordinateSystem) return null;
+  const radiusMeters = 6378137;
+  const originX = radiusMeters * coordinateSystem.originLng * Math.PI / 180;
+  const originY = radiusMeters * Math.log(Math.tan(Math.PI / 4 + coordinateSystem.originLat * Math.PI / 360));
+  const mercatorX = radiusMeters * lng * Math.PI / 180;
+  const mercatorY = radiusMeters * Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360));
+  const scale = coordinateSystem.sceneUnitsPerMeter ?? 1;
+  return new THREE.Vector3(
+    (mercatorX - originX) * scale,
+    y,
+    -(mercatorY - originY) * scale,
   );
 }
 
 function chunkTransform(chunk) {
   if (chunk?.localToScene) return chunk.localToScene;
   return { translate: chunk?.sceneOrigin ?? { x: 0, y: 0, z: 0 }, scale: 1, rotationDegrees: 0 };
+}
+
+function mapReferenceBounds(mapReference) {
+  return mapReference?.frame?.bounds ?? null;
+}
+
+function mapReferenceCornerPoints(payload, frame) {
+  const corners = frame?.corners;
+  if (!corners?.northwest || !corners?.northeast || !corners?.southeast || !corners?.southwest) return null;
+  const northwest = localFromLngLat(payload, corners.northwest[0], corners.northwest[1], -0.08);
+  const northeast = localFromLngLat(payload, corners.northeast[0], corners.northeast[1], -0.08);
+  const southeast = localFromLngLat(payload, corners.southeast[0], corners.southeast[1], -0.08);
+  const southwest = localFromLngLat(payload, corners.southwest[0], corners.southwest[1], -0.08);
+  if (!northwest || !northeast || !southeast || !southwest) return null;
+  return { northwest, northeast, southeast, southwest };
+}
+
+function createMapReferenceGeometry(payload, mapReference, bounds) {
+  const cornerPoints = mapReferenceCornerPoints(payload, mapReference?.frame);
+  if (cornerPoints) {
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute([
+      cornerPoints.northwest.x, cornerPoints.northwest.y, cornerPoints.northwest.z,
+      cornerPoints.southwest.x, cornerPoints.southwest.y, cornerPoints.southwest.z,
+      cornerPoints.northeast.x, cornerPoints.northeast.y, cornerPoints.northeast.z,
+      cornerPoints.northeast.x, cornerPoints.northeast.y, cornerPoints.northeast.z,
+      cornerPoints.southwest.x, cornerPoints.southwest.y, cornerPoints.southwest.z,
+      cornerPoints.southeast.x, cornerPoints.southeast.y, cornerPoints.southeast.z,
+    ], 3));
+    geometry.setAttribute('uv', new THREE.Float32BufferAttribute([
+      0, 1,
+      0, 0,
+      1, 1,
+      1, 1,
+      0, 0,
+      1, 0,
+    ], 2));
+    geometry.computeVertexNormals();
+    return { geometry, center: null, usesExactCorners: true };
+  }
+
+  const northwest = localFromLngLat(payload, bounds.west, bounds.north, -0.08);
+  const southeast = localFromLngLat(payload, bounds.east, bounds.south, -0.08);
+  if (!northwest || !southeast) return null;
+
+  const width = Math.max(1, southeast.x - northwest.x);
+  const depth = Math.max(1, southeast.z - northwest.z);
+  return {
+    geometry: new THREE.PlaneGeometry(width, depth),
+    center: new THREE.Vector3(
+      (northwest.x + southeast.x) / 2,
+      -0.08,
+      (northwest.z + southeast.z) / 2,
+    ),
+    usesExactCorners: false,
+  };
+}
+
+function createMapReferencePlane(payload, mapReference) {
+  const bounds = mapReferenceBounds(mapReference);
+  const canvas = mapReference?.canvas;
+  const isCanvasLike = canvas
+    && typeof canvas.width === 'number'
+    && typeof canvas.height === 'number'
+    && typeof canvas.getContext === 'function';
+  if (!bounds || !isCanvasLike) return null;
+  const referenceGeometry = createMapReferenceGeometry(payload, mapReference, bounds);
+  if (!referenceGeometry) return null;
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.minFilter = THREE.LinearFilter;
+  texture.magFilter = THREE.LinearFilter;
+  texture.needsUpdate = true;
+  texture.userData.layerOwned = true;
+
+  const plane = new THREE.Mesh(
+    referenceGeometry.geometry,
+    new THREE.MeshBasicMaterial({
+      map: texture,
+      transparent: true,
+      opacity: 1,
+      side: THREE.DoubleSide,
+      toneMapped: false,
+    }),
+  );
+  plane.name = 'maplibre web mercator reference plane';
+  plane.userData.mapReferencePlane = true;
+  plane.userData.mapReferenceFrame = {
+    bounds,
+    corners: mapReference?.frame?.corners ?? null,
+    pixelSize: mapReference?.frame?.pixelSize ?? null,
+    projection: mapReference?.frame?.projection ?? payload.coordinateSystem?.projection ?? null,
+    usesExactCorners: referenceGeometry.usesExactCorners,
+  };
+  if (referenceGeometry.center) {
+    plane.rotation.x = -Math.PI / 2;
+    plane.position.copy(referenceGeometry.center);
+  }
+  plane.renderOrder = -20;
+  plane.receiveShadow = false;
+  return plane;
 }
 
 function linePoints(geometry, transform) {
@@ -89,6 +213,193 @@ function polygonBounds(geometry, transform) {
     center: box3.getCenter(new THREE.Vector3()),
     size: box3.getSize(new THREE.Vector3()),
   };
+}
+
+const groundLabelTextureCache = new Map();
+
+function getGroundLabelTexture(text) {
+  const label = String(text ?? '').trim();
+  if (!label) return null;
+  if (groundLabelTextureCache.has(label)) return groundLabelTextureCache.get(label);
+  if (typeof document === 'undefined') return null;
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 128;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.72)';
+  ctx.fillRect(0, 34, canvas.width, 60);
+  ctx.fillStyle = '#4B5563';
+  ctx.font = '900 42px Inter, "Noto Sans TC", system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(label.slice(0, 12), canvas.width / 2, 64);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.needsUpdate = true;
+  groundLabelTextureCache.set(label, texture);
+  return texture;
+}
+
+function addGroundLabel(group, label, center, angle, scale = 1, options = {}) {
+  if (options.mapAligned && !options.showLabels) return;
+  const texture = getGroundLabelTexture(label);
+  if (!texture) return;
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(2.25 * scale, 0.56 * scale),
+    new THREE.MeshBasicMaterial({
+      map: texture,
+      transparent: true,
+      depthWrite: false,
+      toneMapped: false,
+    }),
+  );
+  mesh.name = 'ground feature label';
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.rotation.z = -angle;
+  mesh.position.set(center.x, 0.13, center.z);
+  mesh.renderOrder = 4;
+  group.add(mesh);
+}
+
+function createLineGroundFeature(feature, transform, options = {}) {
+  const group = new THREE.Group();
+  const points = linePoints(feature.geometry, transform);
+  const width = Math.max(0.18, feature.visualState?.displayWidth ?? feature.visualState?.width ?? 0.32);
+  const color = feature.visualState?.color ?? '#DDE3EA';
+  const edgeColor = feature.visualState?.edgeColor ?? '#F8FBFF';
+  const centerLineColor = feature.visualState?.centerLineColor;
+  const baseOpacity = options.mapAligned ? 0.32 : (feature.visualState?.opacity ?? 0.98);
+  const edgeOpacity = options.mapAligned ? 0.28 : 0.92;
+  const centerLineOpacity = options.mapAligned ? 0.62 : 0.78;
+
+  points.slice(0, -1).forEach((start, index) => {
+    const end = points[index + 1];
+    const dx = end.x - start.x;
+    const dz = end.z - start.z;
+    const length = Math.hypot(dx, dz);
+    if (length <= 0.001) return;
+    const angle = Math.atan2(dz, dx);
+    const center = new THREE.Vector3((start.x + end.x) / 2, 0.02, (start.z + end.z) / 2);
+    const road = box(length, 0.045, width, color, {
+      opacity: baseOpacity,
+      emissive: color,
+      emissiveIntensity: 0.035,
+    });
+    road.name = 'ground road corridor';
+    road.position.copy(center);
+    road.position.y = 0.11;
+    road.rotation.y = -angle;
+    road.receiveShadow = false;
+    road.renderOrder = 2;
+    group.add(road);
+
+    const edge = box(length, 0.052, Math.min(width * 0.16, 0.08), edgeColor, {
+      opacity: edgeOpacity,
+      emissive: edgeColor,
+      emissiveIntensity: 0.02,
+    });
+    edge.name = 'ground road edge stripe';
+    edge.position.set(center.x, 0.145, center.z);
+    edge.rotation.y = -angle;
+    edge.translateZ(width * 0.43);
+    edge.renderOrder = 3;
+    group.add(edge);
+
+    const edge2 = edge.clone();
+    edge2.position.set(center.x, 0.148, center.z);
+    edge2.rotation.y = -angle;
+    edge2.translateZ(-width * 0.43);
+    edge2.renderOrder = 3;
+    group.add(edge2);
+
+    if (centerLineColor) {
+      const centerLine = box(length, 0.058, Math.min(width * 0.1, 0.055), centerLineColor, {
+        opacity: centerLineOpacity,
+        emissive: centerLineColor,
+        emissiveIntensity: 0.04,
+      });
+      centerLine.name = 'ground road center line';
+      centerLine.position.set(center.x, 0.155, center.z);
+      centerLine.rotation.y = -angle;
+      centerLine.renderOrder = 4;
+      group.add(centerLine);
+    }
+
+    if (index === Math.floor((points.length - 2) / 2)) {
+      addGroundLabel(
+        group,
+        feature.visualState?.label,
+        center,
+        angle,
+        Math.max(0.85, Math.min(1.4, width * 2.8)),
+        { mapAligned: options.mapAligned, showLabels: false },
+      );
+    }
+  });
+
+  return group;
+}
+
+function createPolygonGroundFeature(feature, transform, options = {}) {
+  const ring = (feature.geometry?.coordinates?.[0] ?? []).map((coordinate) => pointFromLocal(coordinate, transform));
+  const openRing = ring.length > 1 && ring[0].distanceTo(ring[ring.length - 1]) < 0.0001
+    ? ring.slice(0, -1)
+    : ring;
+  const { center, size } = polygonBounds(feature.geometry, transform);
+  const color = feature.visualState?.color ?? COLORS.leaf;
+  let mesh;
+  if (openRing.length >= 3) {
+    const vertices = [];
+    const faces = THREE.ShapeUtils.triangulateShape(
+      openRing.map((point) => new THREE.Vector2(point.x, point.z)),
+      [],
+    );
+    faces.forEach((face) => {
+      face.forEach((index) => {
+        const point = openRing[index];
+        vertices.push(point.x, 0.095, point.z);
+      });
+    });
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.computeVertexNormals();
+    mesh = new THREE.Mesh(geometry, material(color, {
+      opacity: options.mapAligned ? 0.22 : (feature.visualState?.opacity ?? 0.82),
+      emissive: color,
+      emissiveIntensity: 0.03,
+    }));
+    mesh.material.side = THREE.DoubleSide;
+  } else {
+    mesh = box(Math.max(size.x, 1), 0.045, Math.max(size.z, 1), color, {
+      opacity: options.mapAligned ? 0.22 : (feature.visualState?.opacity ?? 0.82),
+      emissive: color,
+      emissiveIntensity: 0.03,
+    });
+    mesh.position.set(center.x, 0.095, center.z);
+  }
+  mesh.name = 'ground polygon surface';
+  mesh.renderOrder = 1;
+  const group = new THREE.Group();
+  group.add(mesh);
+  addGroundLabel(
+    group,
+    feature.visualState?.label,
+    new THREE.Vector3(center.x, 0, center.z),
+    0,
+    0.9,
+    { mapAligned: options.mapAligned, showLabels: false },
+  );
+  return group;
+}
+
+function createGroundFeature(feature, transform, options = {}) {
+  const group = feature.geometry?.type === 'LineString'
+    ? createLineGroundFeature(feature, transform, options)
+    : createPolygonGroundFeature(feature, transform, options);
+  group.name = `ground feature ${feature.kind}`;
+  group.userData.worldViewGroundFeature = feature;
+  return group;
 }
 
 function attachObject(group, object, projection) {
@@ -162,7 +473,9 @@ function createTerrainCell(cell, transform) {
     emissive: color,
     emissiveIntensity: cell.kind === 'street' ? 0.015 : 0.035,
   });
+  mesh.name = `terrain cell ${cell.kind}`;
   mesh.position.set(point.x, point.y + height / 2, point.z);
+  mesh.renderOrder = -2;
   return mesh;
 }
 
@@ -324,11 +637,14 @@ export function createProjectionObject(projection, chunk, object) {
   return attachObject(group, object, projection);
 }
 
-export function createWorldViewBaseLayer(payload, uiObjects = []) {
+export function createWorldViewBaseLayer(payload, uiObjects = [], options = {}) {
   const root = new THREE.Group();
   root.name = 'payload diorama chunk base layer';
   const objects = new Map(uiObjects.map((object) => [object.id, object]));
   const backendObjects = new Map((payload.objects ?? []).map((object) => [object.id, object]));
+  const mapReferencePlane = createMapReferencePlane(payload, options.mapReference);
+  const mapAligned = Boolean(mapReferencePlane);
+  if (mapReferencePlane) root.add(mapReferencePlane);
 
   (payload.chunks ?? []).forEach((chunk) => {
     const chunkGroup = new THREE.Group();
@@ -336,25 +652,32 @@ export function createWorldViewBaseLayer(payload, uiObjects = []) {
     const transform = chunkTransform(chunk);
 
     const bounds = chunk.localBounds;
-    if (bounds) {
+    if (bounds && !mapAligned) {
       const width = Math.max(1, bounds.maxX - bounds.minX + 2);
       const depth = Math.max(1, bounds.maxZ - bounds.minZ + 2);
       const center = pointFromLocal([(bounds.minX + bounds.maxX) / 2, -0.28, (bounds.minZ + bounds.maxZ) / 2], transform);
       const plate = box(width, 0.32, depth, COLORS.base, {
-        emissive: COLORS.sakura,
-        emissiveIntensity: 0.02,
+        emissive: COLORS.baseEdge,
+        emissiveIntensity: 0.015,
+        opacity: 0.94,
       });
       plate.position.copy(center);
       chunkGroup.add(plate);
     }
 
-    (chunk.terrain ?? []).forEach((cell) => {
-      chunkGroup.add(createTerrainCell(cell, transform));
+    (chunk.groundFeatures ?? []).forEach((feature) => {
+      chunkGroup.add(createGroundFeature(feature, transform, { mapAligned }));
     });
 
-    (chunk.semanticZones ?? []).forEach((zone) => {
-      chunkGroup.add(createSemanticZone(zone, transform));
-    });
+    if (!mapAligned) {
+      (chunk.terrain ?? []).forEach((cell) => {
+        chunkGroup.add(createTerrainCell(cell, transform));
+      });
+
+      (chunk.semanticZones ?? []).forEach((zone) => {
+        chunkGroup.add(createSemanticZone(zone, transform));
+      });
+    }
 
     (chunk.staticFeatures ?? []).forEach((feature) => {
       const object = objects.get(feature.ontologyObjectId) ?? backendObjects.get(feature.ontologyObjectId);
@@ -367,7 +690,7 @@ export function createWorldViewBaseLayer(payload, uiObjects = []) {
   return root;
 }
 
-export function createWorldViewLayer(payload, uiObjects = []) {
+export function createWorldViewLayer(payload, uiObjects = [], options = {}) {
   const root = new THREE.Group();
   root.name = 'payload world view layer';
   const chunks = new Map((payload.chunks ?? []).map((chunk) => [chunk.id, chunk]));

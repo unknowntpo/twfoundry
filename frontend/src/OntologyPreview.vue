@@ -41,6 +41,7 @@ function buildEntity() {
 function resize() {
   if (!renderer || !previewEl.value) return;
   const rect = previewEl.value.getBoundingClientRect();
+  if (rect.width < 1 || rect.height < 1) return;
   renderer.setSize(rect.width, rect.height, false);
   camera.aspect = rect.width / Math.max(rect.height, 1);
   camera.updateProjectionMatrix();
@@ -48,6 +49,8 @@ function resize() {
 
 function animate() {
   frame = requestAnimationFrame(animate);
+  const rect = previewEl.value?.getBoundingClientRect();
+  if (!rect || rect.width < 1 || rect.height < 1) return;
   if (entity) entity.rotation.y += 0.005;
   controls?.update();
   renderer?.render(scene, camera);

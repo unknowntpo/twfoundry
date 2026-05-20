@@ -2,12 +2,14 @@ package io.twfoundry.backend.ingestion.application.world;
 
 import io.twfoundry.backend.ingestion.application.world.WorldView.ChunkProjection;
 import io.twfoundry.backend.ingestion.application.world.WorldView.Completeness;
+import io.twfoundry.backend.ingestion.application.world.WorldView.CoordinateSystem;
 import io.twfoundry.backend.ingestion.application.world.WorldView.Diagnostics;
 import io.twfoundry.backend.ingestion.application.world.WorldView.DioramaChunk;
 import io.twfoundry.backend.ingestion.application.world.WorldView.Freshness;
 import io.twfoundry.backend.ingestion.application.world.WorldView.GeoBounds;
 import io.twfoundry.backend.ingestion.application.world.WorldView.GeoFeature;
 import io.twfoundry.backend.ingestion.application.world.WorldView.GeoJSONGeometry;
+import io.twfoundry.backend.ingestion.application.world.WorldView.GroundFeature;
 import io.twfoundry.backend.ingestion.application.world.WorldView.Interaction;
 import io.twfoundry.backend.ingestion.application.world.WorldView.LocalBounds;
 import io.twfoundry.backend.ingestion.application.world.WorldView.LocalGeometry;
@@ -21,7 +23,6 @@ import io.twfoundry.backend.ingestion.application.world.WorldView.Request;
 import io.twfoundry.backend.ingestion.application.world.WorldView.SemanticZone;
 import io.twfoundry.backend.ingestion.application.world.WorldView.SourceFreshness;
 import io.twfoundry.backend.ingestion.application.world.WorldView.StaticFeatureProjection;
-import io.twfoundry.backend.ingestion.application.world.WorldView.TerrainCell;
 import io.twfoundry.backend.ingestion.application.world.WorldView.WorldFocus;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -37,9 +38,28 @@ public class WorldViewService {
   private static final String SCHEMA_VERSION = "world-view.v1";
   private static final List<String> DEFAULT_OVERLAYS = List.of("mrt", "bus", "ubike", "rain", "pm25", "incident");
   private static final Set<String> SUPPORTED_OVERLAYS = new LinkedHashSet<>(DEFAULT_OVERLAYS);
+  private static final GeoBounds ZHONGSHAN_GEO_BOUNDS = new GeoBounds(121.5165, 25.0492, 121.5248, 25.0558);
+  private static final double MERCATOR_RADIUS_METERS = 6378137.0;
+  private static final double ORIGIN_LNG = 121.5206;
+  private static final double ORIGIN_LAT = 25.0527;
+  private static final double SCENE_UNITS_PER_METER = 0.02;
+  private static final MercatorPoint MERCATOR_ORIGIN = mercatorMeters(ORIGIN_LNG, ORIGIN_LAT);
+  private static final LocalBounds ZHONGSHAN_LOCAL_BOUNDS = localBoundsFromGeoBounds(ZHONGSHAN_GEO_BOUNDS);
+  private final StaticFeatureStyleResolver staticFeatureStyleResolver = new StaticFeatureStyleResolver();
+  private final StaticFeatureProvider staticFeatureProvider;
+  private final ZhongshanFixtureOsmCatalog osmCatalog;
+
+  public WorldViewService(StaticFeatureProvider staticFeatureProvider, ZhongshanFixtureOsmCatalog osmCatalog) {
+    this.staticFeatureProvider = staticFeatureProvider;
+    this.osmCatalog = osmCatalog;
+  }
 
   public Payload buildView(
       String focusId, String lod, String time, List<String> requestedOverlays, boolean debugGeo) {
+    String effectiveFocusId = blankToDefault(focusId, "zhongshan-station");
+    if (!"zhongshan-station".equals(effectiveFocusId)) {
+      throw new IllegalArgumentException("Unsupported world view focus: " + effectiveFocusId);
+    }
     List<String> normalizedOverlays =
         requestedOverlays == null || requestedOverlays.isEmpty()
             ? DEFAULT_OVERLAYS
@@ -51,7 +71,7 @@ public class WorldViewService {
 
     Request request =
         new Request(
-            blankToDefault(focusId, "zhongshan-station"),
+            effectiveFocusId,
             blankToDefault(lod, "city"),
             blankToDefault(time, "live"),
             activeOverlays,
@@ -75,15 +95,27 @@ public class WorldViewService {
         new WorldFocus(
             request.focusId(),
             "Zhongshan Station / Nanjing West Road",
-            new GeoBounds(121.5165, 25.0492, 121.5248, 25.0558),
+            ZHONGSHAN_GEO_BOUNDS,
             "zhongshan-station-v1"),
         chunks,
-        filterObjects(objects, activeOverlays),
+        filterObjects(objects, activeOverlays, chunks, projections),
         projections,
         renderModules(),
         freshness(request, now),
         completeness,
+        coordinateSystem(),
         debugGeo ? new Diagnostics(true, geoFeatures, List.of("tdx:mrt-liveboard", "cwa:rainfall-mock", "epa:aqms-mock")) : null);
+  }
+
+  private CoordinateSystem coordinateSystem() {
+    return new CoordinateSystem(
+        "zhongshan-web-mercator-local-v1",
+        "EPSG:3857 Web Mercator",
+        ORIGIN_LNG,
+        ORIGIN_LAT,
+        SCENE_UNITS_PER_METER,
+        "east",
+        "south");
   }
 
   private Freshness freshness(Request request, Instant now) {
@@ -105,12 +137,27 @@ public class WorldViewService {
         .orElseThrow(() -> new IllegalArgumentException("Unknown ontology object: " + objectId));
   }
 
-  private List<OntologyObject> filterObjects(List<OntologyObject> objects, List<String> activeOverlays) {
-    if (activeOverlays.isEmpty()) {
-      return List.of();
-    }
+  private List<OntologyObject> filterObjects(
+      List<OntologyObject> objects,
+      List<String> activeOverlays,
+      List<DioramaChunk> chunks,
+      List<ChunkProjection> projections) {
+    Set<String> referencedObjectIds = new LinkedHashSet<>();
+    chunks.stream()
+        .flatMap(chunk -> chunk.staticFeatures().stream())
+        .map(StaticFeatureProjection::ontologyObjectId)
+        .filter(id -> id != null && !id.isBlank())
+        .forEach(referencedObjectIds::add);
+    projections.stream()
+        .map(ChunkProjection::objectId)
+        .filter(id -> id != null && !id.isBlank())
+        .forEach(referencedObjectIds::add);
+
     return objects.stream()
-        .filter(object -> activeOverlays.contains(String.valueOf(object.properties().get("overlay"))))
+        .filter(
+            object ->
+                referencedObjectIds.contains(object.id())
+                    || activeOverlays.contains(String.valueOf(object.properties().get("overlay"))))
         .toList();
   }
 
@@ -122,87 +169,237 @@ public class WorldViewService {
             new LocalPoint(0, 0, 0),
             24,
             new LocalTransform(new LocalPoint(0, 0, 0), 1, 0),
-            new LocalBounds(-9, -7, 9, 7),
-            zhongshanTerrain(),
-            List.of(
-                stationAnchor("station-anchor-R11-G14", "station-R11-G14", 0, 0, "#E16B8C"),
-                building("building-shin-kong-nanxi", "landmark-shin-kong-nanxi", "department-store", -2.8, -2.2, 5, 1.6, 1.3, "#F596AA", "#FFB11B", true),
-                building("building-eslite-nanxi", "landmark-eslite-nanxi", "bookstore-mall", 2.4, -2.0, 4, 1.45, 1.1, "#FFD2DC", "#81C7D4", true),
-                building("building-linsen-lane", null, "lane-shop", 4.2, 2.6, 3, 1.1, 1.2, "#F8DDE7", "#B5CAA0", false),
-                building("building-chifeng-maker", null, "lane-shop", -4.4, 2.8, 2, 1.0, 1.0, "#F3E5DA", "#E16B8C", false)),
+            ZHONGSHAN_LOCAL_BOUNDS,
+            groundFeatures(),
+            List.of(),
+            staticFeatures(),
             List.of(
                 zone("zone-nanxi-shopping", "shopping-corridor", -5, -3.5, 10, 3.2, "#F596AA"),
                 zone("zone-chifeng-lanes", "creative-lanes", -6, 1.2, 6, 4.2, "#FFB11B"),
                 zone("zone-linsen-bus", "bus-corridor", 1.2, 0.8, 6.5, 2.6, "#5DAC81")),
-            List.of("openfreemap:zhongshan-station-focus", "tdx:mrt-static", "tdx:bus-mock", "tdx:bike-mock")));
+            chunkSourceRefs()));
   }
 
-  private List<TerrainCell> zhongshanTerrain() {
-    List<TerrainCell> cells = new ArrayList<>();
-    for (int x = -8; x <= 8; x++) {
-      for (int z = -6; z <= 6; z++) {
-        String kind = "shopping";
-        int height = 1;
-        String color = "#FFD2DC";
-        if (z == 0 || x == 0) {
-          kind = "street";
-          height = 1;
-          color = "#E7D6C6";
-        } else if (x < -3 && z > 1) {
-          kind = "alley";
-          height = 1;
-          color = "#F3E5DA";
-        } else if (x > 3 && z > 1) {
-          kind = "plaza";
-          height = 1;
-          color = "#FFF7FA";
-        } else if (Math.abs(x) < 3 && z < -2) {
-          kind = "landmark";
-          height = 2;
-          color = "#F596AA";
-        }
-        cells.add(new TerrainCell("zhongshan-cell-" + x + "-" + z, x, z, height, kind, color));
-      }
+  private List<String> chunkSourceRefs() {
+    Set<String> sourceRefs = new LinkedHashSet<>();
+    sourceRefs.add("openfreemap:zhongshan-station-focus");
+    sourceRefs.add("tdx:mrt-static");
+    sourceRefs.add("tdx:bus-mock");
+    sourceRefs.add("tdx:bike-mock");
+    sourceRefs.add("openstreetmap:road-corridor-contract");
+    sourceRefs.addAll(osmCatalog.sourceRefs());
+    sourceRefs.addAll(staticFeatureProvider.sourceRefs());
+    return List.copyOf(sourceRefs);
+  }
+
+  private List<GroundFeature> groundFeatures() {
+    List<GroundFeature> features = new ArrayList<>();
+    osmCatalog.roads().stream()
+        .map(this::roadGroundFeature)
+        .forEach(features::add);
+    osmCatalog.areas().stream()
+        .map(this::areaGroundFeature)
+        .forEach(features::add);
+    return List.copyOf(features);
+  }
+
+  private GroundFeature roadGroundFeature(ZhongshanFixtureOsmCatalog.OsmRoad source) {
+    List<List<Double>> localPath = source.pathLngLat().stream()
+        .map(point -> {
+          LocalPoint localPoint = localPointFromLngLat(point.get(0), point.get(1), 0);
+          return List.of(localPoint.x(), localPoint.y(), localPoint.z());
+        })
+        .toList();
+    String name = source.tags().getOrDefault("name:zh", source.tags().get("name"));
+    Map<String, Object> visualState = new LinkedHashMap<>();
+    if (name != null && !name.isBlank()) {
+      visualState.put("label", name);
     }
-    return cells;
+    visualState.put("widthMeters", source.widthMeters());
+    visualState.put("width", source.widthMeters() * SCENE_UNITS_PER_METER);
+    visualState.put("displayWidth", Math.max(0.24, source.widthMeters() * SCENE_UNITS_PER_METER * 1.15));
+    visualState.put("color", "#DDE3EA");
+    visualState.put("edgeColor", "#F8FBFF");
+    visualState.put("centerLineColor", "#F596AA");
+    return new GroundFeature(
+        source.id(),
+        "road-corridor",
+        source.sourceRef(),
+        new LocalGeometry("LineString", localPath),
+        new GeoJSONGeometry("LineString", source.pathLngLat()),
+        visualState);
   }
 
-  private StaticFeatureProjection stationAnchor(String id, String objectId, double x, double z, String color) {
+  private GroundFeature areaGroundFeature(ZhongshanFixtureOsmCatalog.OsmArea source) {
+    List<List<Double>> localRing = source.footprintLngLat().stream()
+        .map(point -> {
+          LocalPoint localPoint = localPointFromLngLat(point.get(0), point.get(1), 0);
+          return List.of(localPoint.x(), localPoint.y(), localPoint.z());
+        })
+        .toList();
+    String name = source.tags().getOrDefault("name:zh", source.tags().get("name"));
+    Map<String, Object> visualState = new LinkedHashMap<>();
+    if (name != null && !name.isBlank()) {
+      visualState.put("label", name);
+    }
+    visualState.put("color", "#DDECCF");
+    visualState.put("edgeColor", "#B5CAA0");
+    return new GroundFeature(
+        source.id(),
+        "green-space",
+        source.sourceRef(),
+        new LocalGeometry("Polygon", List.of(localRing)),
+        new GeoJSONGeometry("Polygon", List.of(source.footprintLngLat())),
+        visualState);
+  }
+
+  private List<StaticFeatureProjection> staticFeatures() {
+    List<StaticFeatureProjection> features = new ArrayList<>();
+    staticFeatureProvider.stationAnchors().stream()
+        .map(this::stationAnchor)
+        .forEach(features::add);
+    staticFeatureProvider.buildingFootprints().stream()
+        .map(this::building)
+        .forEach(features::add);
+    staticFeatureProvider.areaAnchors().stream()
+        .map(this::areaAnchor)
+        .forEach(features::add);
+    return List.copyOf(features);
+  }
+
+  private StaticFeatureProjection stationAnchor(StaticFeatureProvider.StationAnchor source) {
+    double lng = source.lng();
+    double lat = source.lat();
+    LocalPoint localPoint = localPointFromLngLat(lng, lat, 0.35);
+    StaticFeatureStyleResolver.AnchorStyle style = staticFeatureStyleResolver.stationAnchorStyle(source);
+    Map<String, Object> visualState = new LinkedHashMap<>();
+    visualState.put("sourceRef", source.sourceRef());
+    visualState.put("color", style.color());
+    visualState.put("opacity", 0.68);
+    visualState.put("size", "small");
+    visualState.put("footprintScale", 0.48);
+    visualState.put("shortLabel", source.shortLabel());
+    visualState.put("label", source.label());
+    visualState.put("aliases", source.aliases());
     return new StaticFeatureProjection(
-        id,
-        "geo-" + objectId,
-        objectId,
-        "station-anchor",
-        point(x, 0.35, z),
-        Map.of("color", color, "opacity", 0.68, "size", "small"));
+        source.id(),
+        "geo-" + source.objectId(),
+        source.objectId(),
+        source.kind(),
+        null,
+        point(localPoint.x(), localPoint.y(), localPoint.z()),
+        new GeoJSONGeometry("Point", List.of(lng, lat)),
+        visualState);
   }
 
   private StaticFeatureProjection building(
-      String id,
-      String objectId,
-      String kind,
-      double x,
-      double z,
-      int floors,
-      double width,
-      double depth,
-      String color,
-      String signColor,
-      boolean sign) {
+      StaticFeatureProvider.BuildingFootprint source) {
+    List<List<Double>> footprintLngLat = source.footprintLngLat();
+    List<List<Double>> localFootprint = footprintLngLat.stream()
+        .map(point -> {
+          LocalPoint localPoint = localPointFromLngLat(point.get(0), point.get(1), 0);
+          return List.of(localPoint.x(), localPoint.y(), localPoint.z());
+        })
+        .toList();
+    StaticFeatureStyleResolver.BuildingStyle style = staticFeatureStyleResolver.buildingStyle(source);
+    Map<String, Object> visualState = new LinkedHashMap<>();
+    visualState.put("floors", source.floors());
+    visualState.put("footprintScale", style.footprintScale());
+    visualState.put("footprintSource", source.footprintSource());
+    visualState.put("urbanRole", source.urbanRole());
+    visualState.put("color", style.color());
+    visualState.put("accentColor", style.accentColor());
+    visualState.put("signColor", style.signColor());
+    if (source.shortLabel() != null && !source.shortLabel().isBlank()) {
+      visualState.put("shortLabel", source.shortLabel());
+    }
+    if (source.label() != null && !source.label().isBlank()) {
+      visualState.put("label", source.label());
+    }
+    visualState.put("sign", source.label() != null && !source.label().isBlank() && style.sign());
     return new StaticFeatureProjection(
-        id,
-        "geo-" + id,
-        objectId,
-        kind,
-        point(x, 0, z),
-        Map.of(
-            "floors", floors,
-            "width", width,
-            "depth", depth,
-            "color", color,
-            "accentColor", color,
-            "signColor", signColor,
-            "sign", sign));
+        source.id(),
+        "geo-" + source.id(),
+        source.objectId(),
+        source.kind(),
+        source.footprintSource(),
+        new LocalGeometry("Polygon", List.of(localFootprint)),
+        new GeoJSONGeometry("Polygon", List.of(footprintLngLat)),
+        visualState);
+  }
+
+  private StaticFeatureProjection areaAnchor(
+      StaticFeatureProvider.AreaAnchor source) {
+    double lng = source.lng();
+    double lat = source.lat();
+    StaticFeatureStyleResolver.AnchorStyle style = staticFeatureStyleResolver.anchorStyle(source);
+    LocalPoint localPoint = localPointFromLngLat(lng, lat, 0);
+    Map<String, Object> visualState = new LinkedHashMap<>();
+    visualState.put("areaAnchor", true);
+    visualState.put("sourceRef", source.sourceRef());
+    visualState.put("width", 0.42);
+    visualState.put("depth", 0.42);
+    visualState.put("footprintScale", 1.0);
+    visualState.put("urbanRole", source.urbanRole());
+    visualState.put("color", style.color());
+    visualState.put("accentColor", style.color());
+    visualState.put("signColor", style.signColor());
+    if (source.shortLabel() != null && !source.shortLabel().isBlank()) {
+      visualState.put("shortLabel", source.shortLabel());
+    }
+    if (source.label() != null && !source.label().isBlank()) {
+      visualState.put("label", source.label());
+    }
+    visualState.put("sign", false);
+    return new StaticFeatureProjection(
+        source.id(),
+        "geo-" + source.id(),
+        source.objectId(),
+        source.kind(),
+        null,
+        point(localPoint.x(), localPoint.y(), localPoint.z()),
+        new GeoJSONGeometry("Point", List.of(lng, lat)),
+        visualState);
+  }
+
+  private LocalPoint localPointFromLngLat(double lng, double lat, double y) {
+    MercatorPoint mercator = mercatorMeters(lng, lat);
+    double x = (mercator.x() - MERCATOR_ORIGIN.x()) * SCENE_UNITS_PER_METER;
+    double z = -(mercator.y() - MERCATOR_ORIGIN.y()) * SCENE_UNITS_PER_METER;
+    return new LocalPoint(round3(x), y, round3(z));
+  }
+
+  private static LocalBounds localBoundsFromGeoBounds(GeoBounds bounds) {
+    LocalPoint northwest = localPointFromLngLatStatic(bounds.west(), bounds.north(), 0);
+    LocalPoint southeast = localPointFromLngLatStatic(bounds.east(), bounds.south(), 0);
+    return new LocalBounds(
+        round3Static(northwest.x()),
+        round3Static(northwest.z()),
+        round3Static(southeast.x()),
+        round3Static(southeast.z()));
+  }
+
+  private static LocalPoint localPointFromLngLatStatic(double lng, double lat, double y) {
+    MercatorPoint mercator = mercatorMeters(lng, lat);
+    double x = (mercator.x() - MERCATOR_ORIGIN.x()) * SCENE_UNITS_PER_METER;
+    double z = -(mercator.y() - MERCATOR_ORIGIN.y()) * SCENE_UNITS_PER_METER;
+    return new LocalPoint(round3Static(x), y, round3Static(z));
+  }
+
+  private static MercatorPoint mercatorMeters(double lng, double lat) {
+    double x = MERCATOR_RADIUS_METERS * Math.toRadians(lng);
+    double y = MERCATOR_RADIUS_METERS * Math.log(Math.tan(Math.PI / 4.0 + Math.toRadians(lat) / 2.0));
+    return new MercatorPoint(x, y);
+  }
+
+  private record MercatorPoint(double x, double y) {}
+
+  private double round3(double value) {
+    return round3Static(value);
+  }
+
+  private static double round3Static(double value) {
+    return Math.round(value * 1000.0) / 1000.0;
   }
 
   private SemanticZone zone(String id, String kind, double x, double z, double width, double depth, String color) {
@@ -246,6 +443,24 @@ public class WorldViewService {
             pointGeo(121.5200, 25.0520),
             Map.of("name", "Shin Kong Mitsukoshi Nanxi", "kind", "department-store")),
         new GeoFeature(
+            "geo-landmark-eslite-nanxi",
+            "osm:mock",
+            "landmark",
+            pointGeo(121.5220, 25.0520),
+            Map.of("name", "Eslite Spectrum Nanxi", "kind", "bookstore-mall")),
+        new GeoFeature(
+            "geo-landmark-linsen-lane-shop",
+            "osm:mock",
+            "landmark",
+            pointGeo(121.5223, 25.0514),
+            Map.of("name", "Linsen Lane Shops", "kind", "lane-shop")),
+        new GeoFeature(
+            "geo-landmark-chifeng-maker-lane",
+            "osm:mock",
+            "landmark",
+            pointGeo(121.5183, 25.0516),
+            Map.of("name", "Chifeng Street", "kind", "lane-shop")),
+        new GeoFeature(
             "geo-rain-R042",
             "cwa:rainfall-mock",
             "rainfall-cell",
@@ -262,7 +477,7 @@ public class WorldViewService {
   private List<OntologyObject> objects(List<GeoFeature> geoFeatures) {
     Map<String, GeoFeature> featureById = new LinkedHashMap<>();
     geoFeatures.forEach(feature -> featureById.put(feature.id(), feature));
-    return List.of(
+    List<OntologyObject> objects = new ArrayList<>(List.of(
         object(
             "route-R",
             "Route",
@@ -280,9 +495,18 @@ public class WorldViewService {
             "Zhongshan",
             "tdx",
             "normal",
-            "台北捷運中山站 R11/G14，作為南西商圈 diorama anchor.",
+            "台北捷運中山站 R11/G14，作為南西商圈的地圖情報焦點。",
             "mrt",
-            Map.of("stationId", "R11/G14", "lineId", "red-green", "area", "Nanjing West Road"),
+            Map.of(
+                "stationId", "R11/G14",
+                "lineId", "red-green",
+                "area", "Nanjing West Road",
+                "liveSource", "TDX MRT LiveBoard",
+                "maxSourceLagSeconds", 12,
+                "liveBoardRows",
+                    List.of(
+                        Map.of("line", "淡水信義線", "direction", "往淡水", "destination", "淡水", "etaMinutes", 2, "status", "approaching"),
+                        Map.of("line", "松山新店線", "direction", "往新店", "destination", "新店", "etaMinutes", 4, "status", "boarding"))),
             List.of(new Relationship("belongs_to", "route-R", "Route", "Tamsui-Xinyi")),
             featureById.get("geo-station-R11-G14")),
         object(
@@ -329,18 +553,51 @@ public class WorldViewService {
             "Shin Kong Mitsukoshi Nanxi",
             "osm",
             "reference",
-            "中山南西商圈百貨地標，作為 voxel chunk 的方向錨點。",
+            "中山南西商圈百貨地標，作為地圖情報的方向錨點。",
             "mrt",
             Map.of("kind", "department-store", "district", "Nanxi shopping corridor"),
             List.of(new Relationship("near", "station-R11-G14", "Station", "Zhongshan")),
             featureById.get("geo-landmark-shin-kong-nanxi")),
+        object(
+            "landmark-eslite-nanxi",
+            "Landmark",
+            "Eslite Spectrum Nanxi",
+            "osm",
+            "reference",
+            "誠品生活南西，作為南西商圈書店與商場型地標。",
+            "mrt",
+            Map.of("kind", "bookstore-mall", "district", "Nanxi shopping corridor"),
+            List.of(new Relationship("near", "station-R11-G14", "Station", "Zhongshan")),
+            featureById.get("geo-landmark-eslite-nanxi")),
+        object(
+            "landmark-linsen-lane-shop",
+            "Landmark",
+            "Linsen Lane Shops",
+            "osm",
+            "reference",
+            "林森北路巷弄店家群，作為中山站東側地面生活圈錨點。",
+            "mrt",
+            Map.of("kind", "lane-shop", "district", "Zhongshan lane context"),
+            List.of(new Relationship("near", "station-R11-G14", "Station", "Zhongshan")),
+            featureById.get("geo-landmark-linsen-lane-shop")),
+        object(
+            "landmark-chifeng-maker-lane",
+            "Landmark",
+            "Chifeng Street",
+            "osm",
+            "reference",
+            "赤峰街商圈，作為中山站西側低樓層巷弄地標。",
+            "mrt",
+            Map.of("kind", "lane-shop", "district", "Chifeng Street context"),
+            List.of(new Relationship("near", "station-R11-G14", "Station", "Zhongshan")),
+            featureById.get("geo-landmark-chifeng-maker-lane")),
         object(
             "rain-R042",
             "RainfallCell",
             "Rain Cell R-042",
             "cwa",
             "intense",
-            "跨越兩個 diorama chunk 的短時強降雨。",
+            "覆蓋中山站周邊地圖焦點範圍的短時強降雨。",
             "rain",
             Map.of("intensityMmHr", 38, "confidence", 0.82, "trend", "rising"),
             List.of(
@@ -372,7 +629,66 @@ public class WorldViewService {
                 new Relationship("near", "station-R11-G14", "Station", "Zhongshan"),
                 new Relationship("affects", "bus-stop-nanxi", "BusStop", "MRT Zhongshan Station Bus Stop"),
                 new Relationship("coincident_with", "rain-R042", "RainfallCell", "Rain Cell R-042")),
-            featureById.get("geo-incident-I237")));
+            featureById.get("geo-incident-I237"))));
+    appendStaticFeatureObjects(objects);
+    return List.copyOf(objects);
+  }
+
+  private void appendStaticFeatureObjects(List<OntologyObject> objects) {
+    Set<String> seenIds = new LinkedHashSet<>();
+    objects.stream().map(OntologyObject::id).forEach(seenIds::add);
+    staticFeatureProvider.buildingFootprints().stream()
+        .map(this::staticBuildingObject)
+        .filter(object -> seenIds.add(object.id()))
+        .forEach(objects::add);
+    staticFeatureProvider.areaAnchors().stream()
+        .map(this::staticAreaObject)
+        .filter(object -> seenIds.add(object.id()))
+        .forEach(objects::add);
+  }
+
+  private OntologyObject staticBuildingObject(StaticFeatureProvider.BuildingFootprint source) {
+    String name = nonBlank(source.label(), source.shortLabel(), source.id());
+    return object(
+        source.objectId(),
+        "MapDerivedPlace",
+        name,
+        "osm",
+        "reference",
+        "Static map feature promoted from the normalized map fixture for map context.",
+        "tiles",
+        Map.of(
+            "kind", source.kind(),
+            "urbanRole", source.urbanRole(),
+            "sourceRef", source.footprintSource(),
+            "footprintSource", source.footprintSource()),
+        List.of(new Relationship("near", "station-R11-G14", "Station", "Zhongshan")),
+        null);
+  }
+
+  private OntologyObject staticAreaObject(StaticFeatureProvider.AreaAnchor source) {
+    String name = nonBlank(source.label(), source.shortLabel(), source.id());
+    return object(
+        source.objectId(),
+        "MapDerivedPlace",
+        name,
+        "osm",
+        "reference",
+        "Static point-of-interest feature promoted from the normalized map fixture for map context.",
+        "tiles",
+        Map.of(
+            "kind", source.kind(),
+            "urbanRole", source.urbanRole(),
+            "sourceRef", source.sourceRef()),
+        List.of(new Relationship("near", "station-R11-G14", "Station", "Zhongshan")),
+        null);
+  }
+
+  private String nonBlank(String... values) {
+    for (String value : values) {
+      if (value != null && !value.isBlank()) return value;
+    }
+    return "Map feature";
   }
 
   private OntologyObject object(

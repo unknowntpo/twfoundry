@@ -16,6 +16,7 @@ public final class WorldView {
       List<RenderModuleDescriptor> renderModules,
       Freshness freshness,
       Completeness completeness,
+      CoordinateSystem coordinateSystem,
       Diagnostics diagnostics) {}
 
   public record Request(
@@ -25,6 +26,15 @@ public final class WorldView {
 
   public record GeoBounds(double west, double south, double east, double north) {}
 
+  public record CoordinateSystem(
+      String id,
+      String projection,
+      double originLng,
+      double originLat,
+      double sceneUnitsPerMeter,
+      String xAxis,
+      String zAxis) {}
+
   public record DioramaChunk(
       String id,
       String label,
@@ -32,6 +42,7 @@ public final class WorldView {
       double cellSizeMeters,
       LocalTransform localToScene,
       LocalBounds localBounds,
+      List<GroundFeature> groundFeatures,
       List<TerrainCell> terrain,
       List<StaticFeatureProjection> staticFeatures,
       List<SemanticZone> semanticZones,
@@ -45,12 +56,22 @@ public final class WorldView {
 
   public record TerrainCell(String id, int x, int z, int height, String kind, String color) {}
 
+  public record GroundFeature(
+      String id,
+      String kind,
+      String sourceRef,
+      LocalGeometry geometry,
+      GeoJSONGeometry sourceGeometry,
+      Map<String, Object> visualState) {}
+
   public record StaticFeatureProjection(
       String id,
       String featureId,
       String ontologyObjectId,
       String kind,
+      String footprintSource,
       LocalGeometry geometry,
+      GeoJSONGeometry sourceGeometry,
       Map<String, Object> visualState) {}
 
   public record SemanticZone(String id, String kind, LocalGeometry geometry, Map<String, Object> state) {}

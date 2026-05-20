@@ -1,16 +1,16 @@
 export const pipelineSteps = [
   {
     key: 'tiles',
-    label: 'MapLibre tiles',
-    short: 'tiles',
-    detail: 'z14 / x13625 / y6194',
-    countLabel: '16 chunks',
+    label: 'MapLibre map',
+    short: 'map',
+    detail: 'Zhongshan Station focus',
+    countLabel: 'interactive',
   },
   {
-    key: 'chunks',
-    label: 'visible chunks',
-    short: 'chunks',
-    detail: 'Zhongshan Station bounds',
+    key: 'places',
+    label: 'map places',
+    short: 'places',
+    detail: 'map feature catalog',
     countLabel: '1 focus',
   },
   {
@@ -28,23 +28,15 @@ export const pipelineSteps = [
     countLabel: '22 objects',
   },
   {
-    key: 'voxels',
-    label: 'voxel entities',
-    short: 'voxels',
-    detail: 'world projection',
-    countLabel: '812 blocks',
+    key: 'detail',
+    label: 'detail modules',
+    short: 'detail',
+    detail: 'selected object renderer',
+    countLabel: 'object-driven',
   },
 ];
 
-export const layers = [
-  { key: 'tiles', label: 'Tile chunks', color: '#58B2DC', short: 'TILE' },
-  { key: 'mrt', label: 'Taipei Metro', color: '#E16B8C', short: 'TDX' },
-  { key: 'bus', label: 'Taipei Bus', color: '#5DAC81', short: 'TDX' },
-  { key: 'ubike', label: 'YouBike docks', color: '#FFB11B', short: 'TDX' },
-  { key: 'rain', label: 'Rainfall cells', color: '#81C7D4', short: 'CWA' },
-  { key: 'pm25', label: 'PM2.5 haze', color: '#FFB11B', short: 'EPA' },
-  { key: 'incident', label: 'Incidents', color: '#B481BB', short: 'OPS' },
-];
+export const layers = overlayLayerControls;
 
 export const ontologyObjects = [
   {
@@ -65,9 +57,9 @@ export const ontologyObjects = [
     layer: 'TDX MRT',
     status: 'normal',
     freshness: '34s ago',
-    summary: '淡水信義線 / 松山新店線交會的中山站，作為南西商圈 chunk anchor。',
+    summary: '淡水信義線 / 松山新店線交會的中山站，作為南西商圈地圖情報焦點。',
     properties: ['stationId: R11/G14', 'platform_load: medium', 'area: Nanxi', 'transfers: 1'],
-    relationships: ['observed_by TDX station feed', 'serves Train R22', 'inside Zhongshan Station chunk'],
+    relationships: ['observed_by TDX station feed', 'serves Train R22', 'inside Zhongshan Station focus'],
   },
   {
     id: 'rain-R042',
@@ -76,9 +68,9 @@ export const ontologyObjects = [
     layer: 'Weather',
     status: 'intense',
     freshness: '48s ago',
-    summary: '士林至中山北側短時雨量上升，投影成透明水藍 voxel volume。',
+    summary: '士林至中山北側短時雨量上升，投影成地圖上的降雨情報範圍。',
     properties: ['intensity: 38 mm/h', 'confidence: 0.82', 'source: CWA mock', 'trend: rising'],
-    relationships: ['covers Chunk 14/13624/6194', 'affects Train R22', 'near AQMS A-07'],
+    relationships: ['covers Zhongshan Station focus', 'affects Train R22', 'near AQMS A-07'],
   },
   {
     id: 'aq-A07',
@@ -88,8 +80,8 @@ export const ontologyObjects = [
     status: 'watch',
     freshness: '1m ago',
     summary: 'PM2.5 偏高，以金色/櫻色 haze 顯示局部暴露。',
-    properties: ['pm2.5: 31 ug/m3', 'trend: flat', 'height: 4 voxel', 'source: EPA mock'],
-    relationships: ['observes Risk Zone Z-02', 'near Avatar', 'inside Chunk 14/13626/6195'],
+    properties: ['pm2.5: 31 ug/m3', 'trend: flat', 'exposure: medium', 'source: EPA mock'],
+    relationships: ['observes Risk Zone Z-02', 'near Zhongshan Station', 'inside Zhongshan Station focus'],
   },
   {
     id: 'incident-I237',
@@ -104,4 +96,5 @@ export const ontologyObjects = [
   },
 ];
 
-export const defaultObject = ontologyObjects[0];
+export const defaultObject = ontologyObjects.find((object) => object.type === 'Station') ?? ontologyObjects[0];
+import { overlayLayerControls } from './overlayRegistry.js';

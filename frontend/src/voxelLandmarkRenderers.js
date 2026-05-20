@@ -17,13 +17,6 @@ const COLORS = {
 
 const geometryCache = new Map();
 const labelTextureCache = new Map();
-const DEFAULT_LABEL_BY_KIND = {
-  'station-anchor': 'MRT',
-  'mrt-exit': 'MRT',
-  'department-store': 'DEPT',
-  'bookstore-mall': 'BOOK',
-  'lane-shop': 'LANE',
-};
 
 function material(color, opts = {}) {
   return new THREE.MeshLambertMaterial({
@@ -52,25 +45,28 @@ function box(width, height, depth, color, opts = {}) {
 }
 
 function getLabelTexture(text, color) {
-  const key = `${text}-${color}`;
+  const label = String(text ?? '').trim();
+  const key = `${label}-${color}`;
   if (labelTextureCache.has(key)) return labelTextureCache.get(key);
   if (typeof document === 'undefined') return null;
   const canvas = document.createElement('canvas');
-  canvas.width = 256;
+  canvas.width = 384;
   canvas.height = 96;
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = 'rgba(255, 249, 251, 0.96)';
   ctx.strokeStyle = color;
   ctx.lineWidth = 8;
-  roundRect(ctx, 8, 8, 240, 80, 22);
+  roundRect(ctx, 8, 8, 368, 80, 22);
   ctx.fill();
   ctx.stroke();
   ctx.fillStyle = color;
-  ctx.font = '900 42px Inter, system-ui, sans-serif';
+  const displayText = label.length > 10 ? `${label.slice(0, 9)}…` : label;
+  const fontSize = displayText.length >= 6 ? 34 : 42;
+  ctx.font = `900 ${fontSize}px Inter, "Noto Sans TC", system-ui, sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(String(text).slice(0, 8), 128, 50);
+  ctx.fillText(displayText, 192, 50);
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
   labelTextureCache.set(key, texture);
@@ -101,7 +97,7 @@ function addBillboardLabel(group, { text, color, y }) {
     depthWrite: false,
   }));
   label.name = 'category billboard label';
-  label.scale.set(1.7, 0.64, 1);
+  label.scale.set(1.86, 0.52, 1);
   label.position.set(0, y, -0.42);
   label.renderOrder = 6;
   group.add(label);
@@ -118,6 +114,27 @@ function pointFromLocal(coordinates, transform) {
     y * scale + (translate.y ?? 0),
     z * scale + (translate.z ?? 0),
   );
+}
+
+function pointFromGeometry(geometry, transform) {
+  if (geometry?.type !== 'Polygon') {
+    return {
+      point: pointFromLocal(geometry?.coordinates, transform),
+      footprint: null,
+    };
+  }
+  const ring = geometry.coordinates?.[0] ?? [];
+  const points = ring.map((coordinate) => pointFromLocal(coordinate, transform));
+  const box3 = new THREE.Box3().setFromPoints(points);
+  const center = box3.getCenter(new THREE.Vector3());
+  const size = box3.getSize(new THREE.Vector3());
+  return {
+    point: center,
+    footprint: {
+      width: Math.max(0.24, size.x),
+      depth: Math.max(0.24, size.z),
+    },
+  };
 }
 
 function addWindowBand(group, { width, depth, y, zSide = -1, color = COLORS.sky, count, size = 0.16 }) {
@@ -338,6 +355,16 @@ function addTypeBeacon(group, { color, y, shape = 'pin' }) {
   }
 }
 
+function displayLabel(state) {
+  return state.shortLabel ?? state.label ?? '';
+}
+
+function addExplicitBillboardLabel(group, state, { color, y }) {
+  const label = displayLabel(state);
+  if (!label) return;
+  addBillboardLabel(group, { text: label, color, y });
+}
+
 function addCategoryPlate(group, { width, depth, color, name, label }) {
   const plate = box(width, 0.055, depth, color, {
     opacity: 0.66,
@@ -417,13 +444,15 @@ function addLaneBalconies(group, state) {
 
 function createDepartmentStore(state) {
   const group = new THREE.Group();
+  const width = (state.width ?? 1.6) * (state.footprintScale ?? 1);
+  const depth = (state.depth ?? 1.3) * (state.footprintScale ?? 1);
   addCategoryPlate(group, {
-    width: (state.width ?? 1.6) * 1.48,
-    depth: (state.depth ?? 1.3) * 1.42,
+    width: width * 1.48,
+    depth: depth * 1.42,
     color: state.signColor ?? COLORS.gold,
     name: 'department store category plate',
   });
-  const podium = box((state.width ?? 1.6) * 1.18, 0.48, (state.depth ?? 1.3) * 1.14, COLORS.paper, {
+  const podium = box(width * 1.18, 0.48, depth * 1.14, COLORS.paper, {
     emissive: state.signColor ?? COLORS.gold,
     emissiveIntensity: 0.055,
     name: 'department store podium',
@@ -433,18 +462,19 @@ function createDepartmentStore(state) {
   addEntranceDetails(group, state, 0.36);
   const tower = new THREE.Group();
   tower.position.y = 0.46;
-  const topY = addFloorStack(tower, { ...state, floorHeight: 0.52, setbackAfterFloor: 3 });
+  const scaledState = { ...state, width, depth };
+  const topY = addFloorStack(tower, { ...scaledState, floorHeight: 0.52, setbackAfterFloor: 3 });
   addCornerColumns(tower, {
-    width: state.width ?? 1.6,
-    depth: state.depth ?? 1.3,
+    width,
+    depth,
     height: topY,
     color: state.trimColor ?? COLORS.paper,
   });
-  addRetailSign(tower, state, topY);
-  addCanopy(tower, state, 0.18);
-  addRoofDetails(tower, state, topY);
-  addRetailIdentity(tower, state, topY);
-  addBillboardLabel(tower, { text: state.categoryLabel ?? 'DEPT', color: state.signColor ?? COLORS.gold, y: topY + 1.04 });
+  addRetailSign(tower, scaledState, topY);
+  addCanopy(tower, scaledState, 0.18);
+  addRoofDetails(tower, scaledState, topY);
+  addRetailIdentity(tower, scaledState, topY);
+  addExplicitBillboardLabel(tower, state, { color: state.signColor ?? COLORS.gold, y: topY + 1.04 });
   group.add(tower);
   return group;
 }
@@ -452,8 +482,8 @@ function createDepartmentStore(state) {
 function createBookstoreMall(state) {
   const group = new THREE.Group();
   const floors = state.floors ?? 4;
-  const width = state.width ?? 1.4;
-  const depth = state.depth ?? 1.1;
+  const width = (state.width ?? 1.4) * (state.footprintScale ?? 1);
+  const depth = (state.depth ?? 1.1) * (state.footprintScale ?? 1);
   addCategoryPlate(group, {
     width: width * 1.5,
     depth: depth * 1.48,
@@ -477,14 +507,15 @@ function createBookstoreMall(state) {
   addRetailSign(group, { ...state, width, depth }, floors * 0.5);
   addRoofDetails(group, { ...state, width, depth }, floors * 0.5);
   addBookIdentity(group, { ...state, width, depth }, floors * 0.5);
-  addBillboardLabel(group, { text: state.categoryLabel ?? 'BOOK', color: state.signColor ?? COLORS.water, y: floors * 0.5 + 1.1 });
+  addExplicitBillboardLabel(group, state, { color: state.signColor ?? COLORS.water, y: floors * 0.5 + 1.1 });
   return group;
 }
 
 function createLaneShop(state) {
+  if (state.areaAnchor) return createLaneAreaAnchor(state);
   const group = new THREE.Group();
-  const width = state.width ?? 1;
-  const depth = state.depth ?? 1;
+  const width = (state.width ?? 1) * (state.footprintScale ?? 1);
+  const depth = (state.depth ?? 1) * (state.footprintScale ?? 1);
   const floors = state.floors ?? 2;
   addCategoryPlate(group, {
     width: width * 1.32,
@@ -511,61 +542,116 @@ function createLaneShop(state) {
   addLaneBalconies(group, { ...state, width, depth, floorHeight: 0.46 });
   addEntranceDetails(group, { ...state, width, depth }, 0.32);
   addRoofDetails(group, { ...state, width, depth }, topY);
-  if (state.sign) addRetailSign(group, state, topY);
-  addBillboardLabel(group, { text: state.categoryLabel ?? 'LANE', color: state.signColor ?? COLORS.rose, y: topY + 1.0 });
+  if (state.sign) {
+    addRetailSign(group, state, topY);
+    addExplicitBillboardLabel(group, state, { color: state.signColor ?? COLORS.rose, y: topY + 1.0 });
+  }
   return group;
+}
+
+function createLaneAreaAnchor(state) {
+  const group = new THREE.Group();
+  const color = state.signColor ?? COLORS.rose;
+  addCategoryPlate(group, {
+    width: 0.42,
+    depth: 0.42,
+    color,
+    name: 'lane area anchor plate',
+  });
+  const marker = box(0.18, 0.32, 0.18, state.color ?? COLORS.alley, {
+    emissive: color,
+    emissiveIntensity: 0.08,
+    name: 'lane area anchor marker',
+  });
+  marker.position.y = 0.2;
+  group.add(marker);
+  const post = box(0.06, 0.9, 0.06, COLORS.sky, {
+    emissive: COLORS.sky,
+    emissiveIntensity: 0.08,
+    name: 'lane area anchor label post',
+  });
+  post.position.set(0, 0.58, -0.18);
+  group.add(post);
+  addExplicitBillboardLabel(group, state, { color, y: 1.36 });
+  return group;
+}
+
+function addStreetTree(group, x, z) {
+  const trunk = box(0.06, 0.26, 0.06, '#9C7A5C', { name: 'context tree trunk' });
+  trunk.position.set(x, 0.13, z);
+  group.add(trunk);
+  const canopy = box(0.22, 0.22, 0.22, COLORS.leaf, {
+    emissive: COLORS.leaf,
+    emissiveIntensity: 0.05,
+    name: 'context tree canopy',
+  });
+  canopy.position.set(x, 0.36, z);
+  group.add(canopy);
 }
 
 function createMrtExit(state) {
   const group = new THREE.Group();
   const color = state.color ?? COLORS.rose;
+  const footprint = state.footprintScale ?? 1;
+  const sx = (value) => value * footprint;
   addCategoryPlate(group, {
-    width: 1.78,
-    depth: 1.46,
+    width: sx(1.78),
+    depth: sx(1.46),
     color,
     name: 'station category plate',
   });
-  const base = box(1.35, 0.22, 1.1, COLORS.paper, { emissive: color, emissiveIntensity: 0.08, name: 'mrt exit base' });
+  const base = box(sx(1.35), 0.22, sx(1.1), COLORS.paper, { emissive: color, emissiveIntensity: 0.08, name: 'mrt exit base' });
   base.position.y = 0.11;
   group.add(base);
-  const stairWell = box(0.86, 0.6, 0.72, COLORS.sakuraLight, { emissive: color, emissiveIntensity: 0.05, name: 'mrt exit stair well' });
+  const stairWell = box(sx(0.86), 0.6, sx(0.72), COLORS.sakuraLight, { emissive: color, emissiveIntensity: 0.05, name: 'mrt exit stair well' });
   stairWell.position.y = 0.52;
   group.add(stairWell);
-  const pylon = box(0.34, 1.32, 0.34, color, { emissive: color, emissiveIntensity: 0.16, name: 'mrt pylon' });
-  pylon.position.set(-0.48, 1.0, -0.12);
+  const pylon = box(sx(0.34), 1.32, sx(0.34), color, { emissive: color, emissiveIntensity: 0.16, name: 'mrt pylon' });
+  pylon.position.set(sx(-0.48), 1.0, sx(-0.12));
   group.add(pylon);
-  const roof = box(1.15, 0.18, 0.7, COLORS.paper, { emissive: color, emissiveIntensity: 0.1, name: 'mrt exit roof' });
+  const roof = box(sx(1.15), 0.18, sx(0.7), COLORS.paper, { emissive: color, emissiveIntensity: 0.1, name: 'mrt exit roof' });
   roof.position.y = 1.38;
   group.add(roof);
   for (let i = 0; i < 4; i += 1) {
-    const step = box(0.72 - i * 0.08, 0.07, 0.18, COLORS.stone, {
+    const step = box(sx(0.72 - i * 0.08), 0.07, sx(0.18), COLORS.stone, {
       emissive: color,
       emissiveIntensity: 0.04,
       name: 'mrt exit stair step',
     });
-    step.position.set(0.28, 0.28 + i * 0.08, -0.56 - i * 0.13);
+    step.position.set(sx(0.28), 0.28 + i * 0.08, sx(-0.56 - i * 0.13));
     group.add(step);
   }
   addTypeBeacon(group, { color, y: 1.35, shape: 'station' });
-  addBillboardLabel(group, { text: state.categoryLabel ?? 'MRT', color, y: 2.75 });
+  addExplicitBillboardLabel(group, state, { color, y: 2.75 });
   return group;
 }
 
 export function createStaticFeatureVoxel(feature, transform) {
-  const point = pointFromLocal(feature.geometry?.coordinates, transform);
+  const { point, footprint } = pointFromGeometry(feature.geometry, transform);
+  const footprintSource = feature.footprintSource ?? feature.visualState?.footprintSource;
+  const isFootprintBuilding = feature.geometry?.type === 'Polygon' && Boolean(footprintSource);
   const state = {
     ...(feature.visualState ?? {}),
-    categoryLabel: feature.visualState?.categoryLabel ?? DEFAULT_LABEL_BY_KIND[feature.kind],
+    ...(footprint ? {
+      width: footprint.width,
+      depth: footprint.depth,
+      footprintScale: feature.visualState?.footprintScale ?? 1,
+      footprintDriven: true,
+    } : {}),
+    shortLabel: feature.visualState?.shortLabel ?? feature.visualState?.label,
+    categoryLabel: feature.visualState?.categoryLabel,
   };
   let group;
-  if (feature.kind === 'department-store') {
+  if (feature.kind === 'station-anchor' || feature.kind === 'mrt-exit') {
+    group = createMrtExit(state);
+  } else if (!isFootprintBuilding) {
+    group = createLaneAreaAnchor({ ...state, areaAnchor: true });
+  } else if (feature.kind === 'department-store') {
     group = createDepartmentStore(state);
   } else if (feature.kind === 'bookstore-mall') {
     group = createBookstoreMall(state);
   } else if (feature.kind === 'lane-shop') {
     group = createLaneShop(state);
-  } else if (feature.kind === 'station-anchor' || feature.kind === 'mrt-exit') {
-    group = createMrtExit(state);
   } else {
     group = createLaneShop(state);
   }
@@ -574,9 +660,10 @@ export function createStaticFeatureVoxel(feature, transform) {
   group.userData.voxelBlueprint = {
     mainAxis: feature.kind === 'station-anchor' ? 'vertical entrance marker' : 'Y floor stack',
     modules: ['podium', 'floor-slice', 'facade-window-band', 'corner-columns', 'type-beacon', 'category-label', 'signage', 'roof-equipment', 'street-context'],
-    localCoordinate: 'feature geometry point as building origin',
+    localCoordinate: feature.geometry?.type === 'Polygon' ? 'feature footprint polygon center as building origin' : 'feature geometry point as building origin',
     repeatPatterns: ['floor slices', 'window bands', 'side facade panels', 'retail signs'],
     landmarkKind: feature.kind,
+    footprintDriven: isFootprintBuilding,
     voxelCount: group.children.reduce((total, child) => {
       let count = child.type === 'Mesh' ? 1 : 0;
       child.traverse?.((descendant) => {
