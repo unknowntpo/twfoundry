@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TWFoundry Color Capture</title>
+    <style>
+      :root {
+        --blossom-mist: #fedfe1;
+        --blossom-pop: #f596aa;
+        --blossom-action: #e16b8c;
+        --fuji-soft: #b481bb;
+        --fuji-vivid: #8b81c3;
+        --sky-clear: #58b2dc;
+        --sky-pale: #a5dee4;
+        --water-soft: #81c7d4;
+        --leaf-spring: #5dac81;
+        --leaf-soft: #b5caa0;
+        --leaf-pale: #a8d8b9;
+        --sunny-gold: #ffb11b;
+        --sunny-flower: #f7d94c;
+        --ink-sprite: #2b2330;
+        --neutral-cloud: #fff9fb;
+        --neutral-line: #d8c8d6;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background:
+          radial-gradient(circle at 20% 10%, rgba(254, 223, 225, 0.58), transparent 30rem),
+          radial-gradient(circle at 82% 18%, rgba(88, 178, 220, 0.38), transparent 36rem),
+          radial-gradient(circle at 50% 78%, rgba(181, 202, 160, 0.52), transparent 38rem),
+          linear-gradient(135deg, #fff9fb 0%, #ecf9fb 42%, #f2f8ea 100%);
+        color: var(--ink-sprite);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          "Noto Sans TC", "PingFang TC", sans-serif;
+        min-height: 100vh;
+      }
+
+      main {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 48px 28px 64px;
+      }
+
+      header {
+        display: grid;
+        gap: 10px;
+        margin-bottom: 28px;
+      }
+
+      .eyebrow {
+        color: rgba(43, 35, 48, 0.58);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(36px, 5vw, 64px);
+        line-height: 1;
+        letter-spacing: 0;
+      }
+
+      .lead {
+        max-width: 760px;
+        margin: 0;
+        color: rgba(43, 35, 48, 0.68);
+        font-size: 17px;
+        line-height: 1.7;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 12px;
+        margin: 30px 0;
+      }
+
+      .swatch {
+        min-height: 158px;
+        border: 1px solid rgba(43, 35, 48, 0.14);
+        border-radius: 18px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        overflow: hidden;
+        box-shadow: 0 18px 42px rgba(180, 129, 187, 0.18);
+      }
+
+      .swatch-info {
+        background: rgba(255, 255, 255, 0.76);
+        border-top: 1px solid rgba(43, 35, 48, 0.1);
+        padding: 12px;
+        backdrop-filter: blur(12px);
+      }
+
+      .swatch strong,
+      .swatch span {
+        display: block;
+      }
+
+      .swatch strong {
+        font-size: 14px;
+      }
+
+      .swatch span {
+        color: rgba(43, 35, 48, 0.62);
+        font-family: "SFMono-Regular", Consolas, monospace;
+        font-size: 12px;
+        margin-top: 4px;
+      }
+
+      .section {
+        background: rgba(255, 249, 251, 0.76);
+        border: 1px solid rgba(43, 35, 48, 0.12);
+        border-radius: 22px;
+        margin-top: 18px;
+        padding: 22px;
+        box-shadow: 0 20px 56px rgba(180, 129, 187, 0.14);
+        backdrop-filter: blur(18px);
+      }
+
+      h2 {
+        margin: 0 0 14px;
+        font-size: 18px;
+      }
+
+      .roles {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .role {
+        border: 1px solid rgba(43, 35, 48, 0.1);
+        border-radius: 18px;
+        padding: 16px;
+        background: rgba(255, 255, 255, 0.52);
+      }
+
+      .role b {
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .role p {
+        margin: 0;
+        color: rgba(43, 35, 48, 0.66);
+        font-size: 14px;
+        line-height: 1.55;
+      }
+
+      .combo {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 16px;
+        align-items: stretch;
+      }
+
+      .mock-scene {
+        min-height: 300px;
+        border-radius: 22px;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(43, 35, 48, 0.12);
+        background:
+          linear-gradient(180deg, rgba(88, 178, 220, 0.28), transparent 48%),
+          radial-gradient(circle at 60% 20%, rgba(247, 217, 76, 0.35), transparent 12rem),
+          linear-gradient(135deg, rgba(254, 223, 225, 0.45), rgba(181, 202, 160, 0.42));
+      }
+
+      .voxel {
+        position: absolute;
+        width: 54px;
+        height: 54px;
+        transform: rotateX(58deg) rotateZ(45deg);
+        border-radius: 9px;
+        box-shadow: 14px 18px 0 rgba(43, 35, 48, 0.16);
+      }
+
+      .v1 {
+        left: 18%;
+        top: 48%;
+        background: var(--blossom-mist);
+      }
+
+      .v2 {
+        left: 34%;
+        top: 38%;
+        background: var(--leaf-soft);
+      }
+
+      .v3 {
+        left: 52%;
+        top: 52%;
+        background: var(--fuji-vivid);
+      }
+
+      .v4 {
+        left: 68%;
+        top: 34%;
+        background: var(--sky-clear);
+      }
+
+      .v5 {
+        left: 42%;
+        top: 62%;
+        background: var(--sunny-flower);
+      }
+
+      .panel {
+        border-radius: 22px;
+        border: 1px solid rgba(43, 35, 48, 0.12);
+        background: rgba(255, 249, 251, 0.78);
+        padding: 18px;
+      }
+
+      .metric {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(43, 35, 48, 0.1);
+      }
+
+      .metric:last-child {
+        border-bottom: 0;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 7px 10px;
+        color: white;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .note {
+        margin-top: 16px;
+        color: rgba(43, 35, 48, 0.58);
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      @media (max-width: 860px) {
+        .grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .roles,
+        .combo {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div class="eyebrow">TWFoundry · Design Pattern Capture</div>
+        <h1>Palm-Sized Sakura Voxel RPG Palette</h1>
+        <p class="lead">
+          這頁只用來肉眼檢查候選主色、副色與狀態色。方向是三月櫻花季的明亮、豔麗與平靜；
+          但主體是日本色圖鑑的大自然色：天空、水、嫩葉、陽光，再用櫻花作季節亮點。
+          最終世界要像掌中方塊 diorama RPG，而不是平面資料介面。
+        </p>
+      </header>
+
+      <section class="grid" aria-label="Color swatches">
+        <div class="swatch" style="background: var(--blossom-mist)">
+          <div class="swatch-info"><strong>blossom.mist</strong><span>#FEDFE1 · 桜</span></div>
+        </div>
+        <div class="swatch" style="background: var(--blossom-pop)">
+          <div class="swatch-info"><strong>blossom.pop</strong><span>#F596AA · 桃</span></div>
+        </div>
+        <div class="swatch" style="background: var(--blossom-action)">
+          <div class="swatch-info"><strong>blossom.action</strong><span>#E16B8C · 紅梅</span></div>
+        </div>
+        <div class="swatch" style="background: var(--fuji-vivid)">
+          <div class="swatch-info"><strong>fuji.vivid</strong><span>#8B81C3 · 藤</span></div>
+        </div>
+        <div class="swatch" style="background: var(--sky-clear)">
+          <div class="swatch-info"><strong>sky.clear</strong><span>#58B2DC · 空</span></div>
+        </div>
+        <div class="swatch" style="background: var(--sky-pale)">
+          <div class="swatch-info"><strong>sky.pale</strong><span>#A5DEE4 · 瓶覗</span></div>
+        </div>
+        <div class="swatch" style="background: var(--water-soft)">
+          <div class="swatch-info"><strong>water.soft</strong><span>#81C7D4 · 水</span></div>
+        </div>
+        <div class="swatch" style="background: var(--leaf-spring)">
+          <div class="swatch-info"><strong>leaf.spring</strong><span>#5DAC81 · 若竹</span></div>
+        </div>
+        <div class="swatch" style="background: var(--leaf-soft)">
+          <div class="swatch-info"><strong>leaf.soft</strong><span>#B5CAA0 · 裏柳</span></div>
+        </div>
+        <div class="swatch" style="background: var(--leaf-pale)">
+          <div class="swatch-info"><strong>leaf.pale</strong><span>#A8D8B9 · 白緑</span></div>
+        </div>
+        <div class="swatch" style="background: var(--sunny-gold)">
+          <div class="swatch-info"><strong>sunny.gold</strong><span>#FFB11B · 山吹</span></div>
+        </div>
+        <div class="swatch" style="background: var(--sunny-flower)">
+          <div class="swatch-info"><strong>sunny.flower</strong><span>#F7D94C · 菜の花</span></div>
+        </div>
+        <div class="swatch" style="background: var(--ink-sprite)">
+          <div class="swatch-info"><strong>ink.sprite</strong><span>#2B2330</span></div>
+        </div>
+        <div class="swatch" style="background: var(--neutral-cloud)">
+          <div class="swatch-info"><strong>neutral.cloud</strong><span>#FFF9FB</span></div>
+        </div>
+        <div class="swatch" style="background: var(--neutral-line)">
+          <div class="swatch-info"><strong>neutral.line</strong><span>#D8C8D6</span></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Suggested Roles</h2>
+        <div class="roles">
+          <div class="role">
+            <b>主氛圍色</b>
+            <p>sky.pale #A5DEE4、water.soft #81C7D4、leaf.soft #B5CAA0 先建立春天戶外世界。</p>
+          </div>
+          <div class="role">
+            <b>櫻花亮點</b>
+            <p>blossom.mist #FEDFE1、blossom.pop #F596AA、blossom.action #E16B8C 用於季節感與互動焦點。</p>
+          </div>
+          <div class="role">
+            <b>副色與深度</b>
+            <p>fuji.vivid #8B81C3：voxel side face、secondary controls、magic-like depth。</p>
+          </div>
+          <div class="role">
+            <b>即時資訊</b>
+            <p>sky.clear #58B2DC + water.soft #81C7D4：Live stream、rainfall、清爽天空感。</p>
+          </div>
+          <div class="role">
+            <b>自然與安全</b>
+            <p>leaf.spring #5DAC81、leaf.pale #A8D8B9：online、healthy sensor、地景與 safe context。</p>
+          </div>
+          <div class="role">
+            <b>可愛提示</b>
+            <p>sunny.gold #FFB11B、sunny.flower #F7D94C：quest hint、reward、light warning。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section combo">
+        <div class="mock-scene" aria-label="Voxel color preview">
+          <div class="voxel v1"></div>
+          <div class="voxel v2"></div>
+          <div class="voxel v3"></div>
+          <div class="voxel v4"></div>
+          <div class="voxel v5"></div>
+        </div>
+        <div class="panel">
+          <h2>RPG HUD Preview</h2>
+          <div class="metric"><span>Selected object</span><b>T1005</b></div>
+          <div class="metric"><span>Live stream</span><span class="badge" style="background: var(--sky-clear)">LIVE · 12s</span></div>
+          <div class="metric"><span>Safety</span><span class="badge" style="background: var(--leaf-spring)">CLEAR</span></div>
+          <div class="metric"><span>Selection</span><span class="badge" style="background: var(--blossom-action)">ACTIVE</span></div>
+          <div class="metric"><span>Hint</span><span class="badge" style="background: var(--sunny-flower); color: var(--ink-sprite)">QUEST</span></div>
+          <p class="note">
+            檢查重點：是否像春天戶外，而不是粉色 UI；自然色是否足夠支撐 voxel world；櫻花是否只是亮點。
+          </p>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

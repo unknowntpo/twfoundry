@@ -1,0 +1,105 @@
+export const pipelineSteps = [
+  {
+    key: 'tiles',
+    label: 'MapLibre tiles',
+    short: 'tiles',
+    detail: 'z14 / x13625 / y6194',
+    countLabel: '16 chunks',
+  },
+  {
+    key: 'chunks',
+    label: 'visible chunks',
+    short: 'chunks',
+    detail: 'Taipei core bounds',
+    countLabel: '9 visible',
+  },
+  {
+    key: 'observations',
+    label: 'observations',
+    short: 'obs',
+    detail: 'TDX + weather rows',
+    countLabel: '128 rows',
+  },
+  {
+    key: 'ontology',
+    label: 'ontology objects',
+    short: 'objects',
+    detail: 'stable object graph',
+    countLabel: '22 objects',
+  },
+  {
+    key: 'voxels',
+    label: 'voxel entities',
+    short: 'voxels',
+    detail: 'world projection',
+    countLabel: '812 blocks',
+  },
+];
+
+export const layers = [
+  { key: 'tiles', label: 'Tile chunks', color: '#58B2DC', short: 'TILE' },
+  { key: 'mrt', label: 'Taipei Metro', color: '#E16B8C', short: 'TDX' },
+  { key: 'rain', label: 'Rainfall cells', color: '#81C7D4', short: 'CWA' },
+  { key: 'pm25', label: 'PM2.5 haze', color: '#FFB11B', short: 'EPA' },
+  { key: 'incident', label: 'Incidents', color: '#B481BB', short: 'OPS' },
+];
+
+export const ontologyObjects = [
+  {
+    id: 'train-R22',
+    name: 'Train R22',
+    type: 'Train',
+    layer: 'TDX MRT',
+    status: 'live',
+    freshness: '12s ago',
+    summary: '淡水信義線南向列車，接近中山站。',
+    properties: ['route: Tamsui-Xinyi', 'next_stop: Zhongshan', 'load: 67%', 'eta: 2 min'],
+    relationships: ['belongs_to Route R', 'near Rain Cell R-042', 'affected_by Incident I-237'],
+  },
+  {
+    id: 'station-BL12',
+    name: 'Station BL12',
+    type: 'Station',
+    layer: 'TDX MRT',
+    status: 'normal',
+    freshness: '34s ago',
+    summary: '板南線核心站點，作為 chunk 內的 ontology anchor。',
+    properties: ['line: Bannan', 'platform_load: medium', 'exits: 5', 'transfers: 1'],
+    relationships: ['observed_by TDX station feed', 'serves Train BL08', 'inside Chunk 14/13625/6194'],
+  },
+  {
+    id: 'rain-R042',
+    name: 'Rain Cell R-042',
+    type: 'Rainfall Cell',
+    layer: 'Weather',
+    status: 'intense',
+    freshness: '48s ago',
+    summary: '士林至中山北側短時雨量上升，投影成透明水藍 voxel volume。',
+    properties: ['intensity: 38 mm/h', 'confidence: 0.82', 'source: CWA mock', 'trend: rising'],
+    relationships: ['covers Chunk 14/13624/6194', 'affects Train R22', 'near AQMS A-07'],
+  },
+  {
+    id: 'aq-A07',
+    name: 'AQMS A-07',
+    type: 'PM2.5 Sensor',
+    layer: 'Air Quality',
+    status: 'watch',
+    freshness: '1m ago',
+    summary: 'PM2.5 偏高，以金色/櫻色 haze 顯示局部暴露。',
+    properties: ['pm2.5: 31 ug/m3', 'trend: flat', 'height: 4 voxel', 'source: EPA mock'],
+    relationships: ['observes Risk Zone Z-02', 'near Avatar', 'inside Chunk 14/13626/6195'],
+  },
+  {
+    id: 'incident-I237',
+    name: 'Incident I-237',
+    type: 'Incident',
+    layer: 'Incident',
+    status: 'open',
+    freshness: '2m ago',
+    summary: '路口施工回堵，對鄰近車站與路線產生低強度風險。',
+    properties: ['severity: medium', 'kind: road work', 'radius: 600m', 'action: watch route impact'],
+    relationships: ['near Station BL12', 'affects Route R', 'coincident_with Rain Cell R-042'],
+  },
+];
+
+export const defaultObject = ontologyObjects[0];

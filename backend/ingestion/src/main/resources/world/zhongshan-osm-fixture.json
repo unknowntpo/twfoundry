@@ -1,0 +1,233 @@
+{
+  "sourceRefs": [
+    "curated:zhongshan-static-features",
+    "offline-osm-fixture:zhongshan-2026-05-02",
+    "openstreetmap:building-footprint-contract"
+  ],
+  "stationAnchors": [
+    {
+      "id": "station-anchor-R11-G14",
+      "objectId": "station-R11-G14",
+      "tags": {
+        "name:zh": "捷運中山站",
+        "short_name:zh": "中山站",
+        "stationId": "R11/G14"
+      },
+      "lng": 121.5206,
+      "lat": 25.0527,
+      "sourceRef": "tdx:mrt-station/R11-G14",
+      "aliases": ["中山"]
+    }
+  ],
+  "buildings": [
+    {
+      "id": "shin-kong-nanxi",
+      "tags": {
+        "name:zh": "新光三越南西店",
+        "short_name:zh": "新光三越",
+        "shop": "department_store",
+        "building:levels": "5"
+      },
+      "footprintLngLat": [[121.51985, 25.05182], [121.52034, 25.05182], [121.52034, 25.05222], [121.51985, 25.05222], [121.51985, 25.05182]],
+      "sourceRef": "fixture-osm:way/shin-kong-nanxi"
+    },
+    {
+      "id": "eslite-nanxi",
+      "tags": {
+        "name:zh": "誠品生活南西",
+        "short_name:zh": "誠品南西",
+        "shop": "books",
+        "building:levels": "4"
+      },
+      "footprintLngLat": [[121.52168, 25.05178], [121.52218, 25.05178], [121.52218, 25.05216], [121.52168, 25.05216], [121.52168, 25.05178]],
+      "sourceRef": "fixture-osm:way/eslite-nanxi"
+    },
+    {
+      "id": "nanxi-retail-01",
+      "tags": { "name:zh": "南西商舖一", "shop": "clothes", "building:levels": "3" },
+      "footprintLngLat": [[121.52044, 25.05182], [121.52068, 25.05182], [121.52068, 25.05212], [121.52044, 25.05212], [121.52044, 25.05182]],
+      "sourceRef": "fixture-osm:way/nanxi-retail-01"
+    },
+    {
+      "id": "nanxi-retail-02",
+      "tags": { "name:zh": "南西商舖二", "shop": "gift", "building:levels": "3" },
+      "footprintLngLat": [[121.52072, 25.05182], [121.52096, 25.05182], [121.52096, 25.05212], [121.52072, 25.05212], [121.52072, 25.05182]],
+      "sourceRef": "fixture-osm:way/nanxi-retail-02"
+    },
+    {
+      "id": "nanxi-retail-03",
+      "tags": { "name:zh": "南西商舖三", "shop": "fashion", "building:levels": "4" },
+      "footprintLngLat": [[121.521, 25.05182], [121.52126, 25.05182], [121.52126, 25.05213], [121.521, 25.05213], [121.521, 25.05182]],
+      "sourceRef": "fixture-osm:way/nanxi-retail-03"
+    },
+    {
+      "id": "nanxi-retail-04",
+      "tags": { "name:zh": "南西商舖四", "shop": "bakery", "building:levels": "2" },
+      "footprintLngLat": [[121.52131, 25.05183], [121.52155, 25.05183], [121.52155, 25.05212], [121.52131, 25.05212], [121.52131, 25.05183]],
+      "sourceRef": "fixture-osm:way/nanxi-retail-04"
+    },
+    {
+      "id": "chifeng-studio-01",
+      "tags": { "name:zh": "赤峰街工坊一", "shop": "craft", "building:levels": "3" },
+      "footprintLngLat": [[121.51745, 25.05122], [121.51772, 25.05122], [121.51772, 25.05154], [121.51745, 25.05154], [121.51745, 25.05122]],
+      "sourceRef": "fixture-osm:way/chifeng-studio-01"
+    },
+    {
+      "id": "chifeng-studio-02",
+      "tags": { "name:zh": "赤峰街工坊二", "shop": "craft", "building:levels": "2" },
+      "footprintLngLat": [[121.51778, 25.05122], [121.51804, 25.05122], [121.51804, 25.05153], [121.51778, 25.05153], [121.51778, 25.05122]],
+      "sourceRef": "fixture-osm:way/chifeng-studio-02"
+    },
+    {
+      "id": "chifeng-studio-03",
+      "tags": { "name:zh": "赤峰街工坊三", "shop": "art", "building:levels": "3" },
+      "footprintLngLat": [[121.5181, 25.05122], [121.51836, 25.05122], [121.51836, 25.05154], [121.5181, 25.05154], [121.5181, 25.05122]],
+      "sourceRef": "fixture-osm:way/chifeng-studio-03"
+    },
+    {
+      "id": "chifeng-studio-04",
+      "tags": { "name:zh": "赤峰街工坊四", "shop": "coffee", "amenity": "cafe", "building:levels": "3" },
+      "footprintLngLat": [[121.51842, 25.05122], [121.51868, 25.05122], [121.51868, 25.05154], [121.51842, 25.05154], [121.51842, 25.05122]],
+      "sourceRef": "fixture-osm:way/chifeng-studio-04"
+    },
+    {
+      "id": "chifeng-block-01",
+      "tags": { "building": "apartments", "building:levels": "4" },
+      "footprintLngLat": [[121.51742, 25.05262], [121.51774, 25.05262], [121.51774, 25.05298], [121.51742, 25.05298], [121.51742, 25.05262]],
+      "sourceRef": "fixture-osm:way/chifeng-block-01"
+    },
+    {
+      "id": "chifeng-block-02",
+      "tags": { "building": "apartments", "building:levels": "5" },
+      "footprintLngLat": [[121.51782, 25.05263], [121.51816, 25.05263], [121.51816, 25.05302], [121.51782, 25.05302], [121.51782, 25.05263]],
+      "sourceRef": "fixture-osm:way/chifeng-block-02"
+    },
+    {
+      "id": "chifeng-block-03",
+      "tags": { "building": "apartments", "building:levels": "4" },
+      "footprintLngLat": [[121.51825, 25.05265], [121.51858, 25.05265], [121.51858, 25.05301], [121.51825, 25.05301], [121.51825, 25.05265]],
+      "sourceRef": "fixture-osm:way/chifeng-block-03"
+    },
+    {
+      "id": "linsen-restaurant-01",
+      "tags": { "name:zh": "林森餐飲一", "amenity": "restaurant", "building:levels": "3" },
+      "footprintLngLat": [[121.52236, 25.05092], [121.52266, 25.05092], [121.52266, 25.05125], [121.52236, 25.05125], [121.52236, 25.05092]],
+      "sourceRef": "fixture-osm:way/linsen-restaurant-01"
+    },
+    {
+      "id": "linsen-restaurant-02",
+      "tags": { "name:zh": "林森餐飲二", "amenity": "restaurant", "building:levels": "4" },
+      "footprintLngLat": [[121.52275, 25.05092], [121.52306, 25.05092], [121.52306, 25.05124], [121.52275, 25.05124], [121.52275, 25.05092]],
+      "sourceRef": "fixture-osm:way/linsen-restaurant-02"
+    },
+    {
+      "id": "linsen-mixed-01",
+      "tags": { "building": "commercial", "building:levels": "5" },
+      "footprintLngLat": [[121.52238, 25.05242], [121.52272, 25.05242], [121.52272, 25.05284], [121.52238, 25.05284], [121.52238, 25.05242]],
+      "sourceRef": "fixture-osm:way/linsen-mixed-01"
+    },
+    {
+      "id": "linsen-mixed-02",
+      "tags": { "building": "commercial", "building:levels": "4" },
+      "footprintLngLat": [[121.52286, 25.05244], [121.52318, 25.05244], [121.52318, 25.05282], [121.52286, 25.05282], [121.52286, 25.05244]],
+      "sourceRef": "fixture-osm:way/linsen-mixed-02"
+    },
+    {
+      "id": "north-market-01",
+      "tags": { "name:zh": "寧夏夜市南口", "amenity": "marketplace", "shop": "food", "building:levels": "2" },
+      "footprintLngLat": [[121.52008, 25.05418], [121.52042, 25.05418], [121.52042, 25.05448], [121.52008, 25.05448], [121.52008, 25.05418]],
+      "sourceRef": "fixture-osm:way/north-market-01"
+    },
+    {
+      "id": "north-market-02",
+      "tags": { "name:zh": "寧夏夜市街屋", "amenity": "marketplace", "shop": "food", "building:levels": "3" },
+      "footprintLngLat": [[121.5205, 25.05418], [121.52083, 25.05418], [121.52083, 25.05448], [121.5205, 25.05448], [121.5205, 25.05418]],
+      "sourceRef": "fixture-osm:way/north-market-02"
+    },
+    {
+      "id": "north-residential-01",
+      "tags": { "building": "apartments", "building:levels": "5" },
+      "footprintLngLat": [[121.52122, 25.05425], [121.52158, 25.05425], [121.52158, 25.05468], [121.52122, 25.05468], [121.52122, 25.05425]],
+      "sourceRef": "fixture-osm:way/north-residential-01"
+    }
+  ],
+  "pois": [
+    {
+      "id": "linsen-lane",
+      "tags": {
+        "name:zh": "林森巷弄",
+        "highway": "residential",
+        "amenity": "restaurant",
+        "twfoundry:feature_id": "building-linsen-lane",
+        "twfoundry:object_id": "landmark-linsen-lane-shop"
+      },
+      "lng": 121.5223,
+      "lat": 25.0514,
+      "sourceRef": "fixture-osm:node/linsen-lane"
+    },
+    {
+      "id": "chifeng-street",
+      "tags": {
+        "name:zh": "赤峰街",
+        "highway": "pedestrian",
+        "shop": "craft",
+        "twfoundry:feature_id": "building-chifeng-maker",
+        "twfoundry:object_id": "landmark-chifeng-maker-lane"
+      },
+      "lng": 121.5183,
+      "lat": 25.0516,
+      "sourceRef": "fixture-osm:node/chifeng-street"
+    }
+  ],
+  "roads": [
+    {
+      "id": "road-nanjing-west",
+      "tags": { "name:zh": "南京西路", "highway": "primary" },
+      "widthMeters": 18,
+      "pathLngLat": [[121.51665, 25.0525], [121.5206, 25.05262], [121.52465, 25.05282]],
+      "sourceRef": "fixture-osm:way/road-nanjing-west"
+    },
+    {
+      "id": "road-chifeng",
+      "tags": { "name:zh": "赤峰街", "highway": "residential" },
+      "widthMeters": 8,
+      "pathLngLat": [[121.51882, 25.05486], [121.51915, 25.05318], [121.51942, 25.05182], [121.51978, 25.05016]],
+      "sourceRef": "fixture-osm:way/road-chifeng"
+    },
+    {
+      "id": "road-zhongshan-north",
+      "tags": { "name:zh": "中山北路一段", "highway": "primary" },
+      "widthMeters": 22,
+      "pathLngLat": [[121.52098, 25.04928], [121.52062, 25.0527], [121.52038, 25.05555]],
+      "sourceRef": "fixture-osm:way/road-zhongshan-north"
+    },
+    {
+      "id": "road-linsen-north",
+      "tags": { "name:zh": "林森北路", "highway": "secondary" },
+      "widthMeters": 14,
+      "pathLngLat": [[121.5221, 25.04945], [121.52245, 25.05205], [121.5227, 25.05525]],
+      "sourceRef": "fixture-osm:way/road-linsen-north"
+    },
+    {
+      "id": "road-changan-west",
+      "tags": { "name:zh": "長安西路", "highway": "secondary" },
+      "widthMeters": 16,
+      "pathLngLat": [[121.51675, 25.05018], [121.5202, 25.05022], [121.5241, 25.05042]],
+      "sourceRef": "fixture-osm:way/road-changan-west"
+    }
+  ],
+  "areas": [
+    {
+      "id": "park-jiancheng",
+      "tags": { "name:zh": "建成公園", "leisure": "park" },
+      "footprintLngLat": [[121.52255, 25.05225], [121.5241, 25.05235], [121.52405, 25.0511], [121.52248, 25.051], [121.52255, 25.05225]],
+      "sourceRef": "fixture-osm:way/park-jiancheng"
+    },
+    {
+      "id": "park-xinzhongshan-linear",
+      "tags": { "name:zh": "心中山線形公園", "leisure": "park" },
+      "footprintLngLat": [[121.5176, 25.05075], [121.52055, 25.05095], [121.52048, 25.05062], [121.51755, 25.05043], [121.5176, 25.05075]],
+      "sourceRef": "fixture-osm:way/park-xinzhongshan-linear"
+    }
+  ]
+}

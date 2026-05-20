@@ -1,0 +1,79 @@
+{
+  "ok": true,
+  "url": "http://localhost:5220/",
+  "finalUrl": "http://localhost:5220/",
+  "title": "TWFoundry Sakura Voxel Taipei",
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "timings": {
+    "gotoMs": 309.933125,
+    "screenshotMs": 1580.617166,
+    "totalMs": 9323.047541999998
+  },
+  "artifacts": {
+    "screenshot": "/Users/unknowntpo/repo/unknowntpo/twfoundry/claude-desktop-mockup/experiments/codex-maplibre-sakura-voxel-v1/screenshots/interaction-collapse-left/screenshot.png",
+    "html": "/Users/unknowntpo/repo/unknowntpo/twfoundry/claude-desktop-mockup/experiments/codex-maplibre-sakura-voxel-v1/screenshots/interaction-collapse-left/page.html",
+    "summary": "/Users/unknowntpo/repo/unknowntpo/twfoundry/claude-desktop-mockup/experiments/codex-maplibre-sakura-voxel-v1/screenshots/interaction-collapse-left/summary.json"
+  },
+  "consoleMessages": [
+    {
+      "type": "debug",
+      "text": "[vite] connecting...",
+      "location": {
+        "url": "http://localhost:5220/@vite/client",
+        "lineNumber": 788,
+        "columnNumber": 8
+      }
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected.",
+      "location": {
+        "url": "http://localhost:5220/@vite/client",
+        "lineNumber": 911,
+        "columnNumber": 14
+      }
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x13c001c1e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+      "location": {
+        "url": "http://localhost:5220/",
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x13c001c1e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+      "location": {
+        "url": "http://localhost:5220/",
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x13c001c1e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+      "location": {
+        "url": "http://localhost:5220/",
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x13c001c1e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+      "location": {
+        "url": "http://localhost:5220/",
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    }
+  ],
+  "pageErrors": [],
+  "failedRequests": [],
+  "visibleTextSample": "Layers\nObject\n‹\nTWFoundry\nSAKURA VOXEL TAIPEI · MAPLIBRE READY\nMapLibre tiles\n16 chunks\nvisible chunks\n9 visible\nobservations\n128 rows\nontology objects\n22 objects\nvoxel entities\n812 blocks\nFOCUS\nz14 / x13625 / y6194\nVISIBLE CHUNKS\n9\nVOXEL ENTITIES\n812\nTile chunks\nTILE · ON\nMRT routes\nTDX · ON\nRain cells\nRAIN · ON\nPM2.5 haze\nAIR · ON\nIncidents\nINC · ON\n›\nONTOLOGY OBJECT\nTrain R22\n\nTrain · TDX MRT\n\nLIVE\n\n淡水信義線南向列車，接近中山站。\n\nTrain\nStation\nRainfall Cell\nPM2.5 Sensor\nIncident\nPROPERTIES\n\nroute: Tamsui-Xinyi\n\nnext_stop: Zhongshan\n\nload: 67%\n\neta: 2 min\n\nRELATIONSHIPS\n\nbelongs_to Route R\n\nnear Rain Cell R-042\n\naffected_by Incident I-237\n\nVOXEL\nMINIATURE · WORLD\nII\nLIVE · 12S AGO\n10:37\nworldTime controls observations\n1x\n15x\n60x\n300x"
+}

@@ -1,0 +1,327 @@
+{
+  "sourceRefs": [
+    "curated:taipei-main-station-static-features",
+    "offline-osm-fixture:taipei-main-station-2026-05-04",
+    "openstreetmap:building-footprint-contract"
+  ],
+  "focus": {
+    "id": "taipei-main-station",
+    "label": "Taipei Main Station / Station Front District",
+    "chunkSetId": "taipei-main-station-v1",
+    "chunkId": "chunk-taipei-main-station",
+    "coordinateSystemId": "taipei-main-station-web-mercator-local-v1",
+    "origin": { "lng": 121.517, "lat": 25.0463 },
+    "geoBounds": { "west": 121.5128, "south": 25.043, "east": 121.5208, "north": 25.0492 }
+  },
+  "stationAnchors": [
+    {
+      "id": "station-anchor-R10-BL13",
+      "objectId": "station-R10-BL13",
+      "tags": {
+        "name:zh": "台北車站",
+        "short_name:zh": "台北車站",
+        "stationId": "R10/BL13"
+      },
+      "lng": 121.517,
+      "lat": 25.0463,
+      "sourceRef": "tdx:mrt-station/R10-BL13",
+      "aliases": ["台北車站", "北車"]
+    }
+  ],
+  "buildings": [
+    {
+      "id": "taipei-main-station-hall",
+      "tags": {
+        "name:zh": "台北車站站體",
+        "short_name:zh": "台北車站",
+        "amenity": "transportation",
+        "building:levels": "3"
+      },
+      "footprintLngLat": [[121.5161, 25.0467], [121.51815, 25.0467], [121.51815, 25.04778], [121.5161, 25.04778], [121.5161, 25.0467]],
+      "sourceRef": "fixture-osm:way/taipei-main-station-hall"
+    },
+    {
+      "id": "q-square",
+      "tags": {
+        "name:zh": "京站時尚廣場",
+        "short_name:zh": "京站",
+        "shop": "mall",
+        "building:levels": "7"
+      },
+      "footprintLngLat": [[121.51605, 25.04818], [121.51752, 25.04818], [121.51752, 25.04876], [121.51605, 25.04876], [121.51605, 25.04818]],
+      "sourceRef": "fixture-osm:way/q-square"
+    },
+    {
+      "id": "taipei-bus-station",
+      "tags": {
+        "name:zh": "台北轉運站",
+        "short_name:zh": "轉運站",
+        "amenity": "bus_station",
+        "building:levels": "5"
+      },
+      "footprintLngLat": [[121.51802, 25.04815], [121.51924, 25.04815], [121.51924, 25.04882], [121.51802, 25.04882], [121.51802, 25.04815]],
+      "sourceRef": "fixture-osm:way/taipei-bus-station"
+    },
+    {
+      "id": "shin-kong-station-front",
+      "tags": {
+        "name:zh": "新光三越站前店",
+        "short_name:zh": "新光站前",
+        "shop": "department_store",
+        "building:levels": "12"
+      },
+      "footprintLngLat": [[121.51858, 25.04462], [121.51932, 25.04462], [121.51932, 25.04536], [121.51858, 25.04536], [121.51858, 25.04462]],
+      "sourceRef": "fixture-osm:way/shin-kong-station-front"
+    },
+    {
+      "id": "taipei-city-mall",
+      "tags": {
+        "name:zh": "台北地下街",
+        "short_name:zh": "台北地下街",
+        "shop": "mall",
+        "building:levels": "1"
+      },
+      "footprintLngLat": [[121.51345, 25.04802], [121.51562, 25.04802], [121.51562, 25.04835], [121.51345, 25.04835], [121.51345, 25.04802]],
+      "sourceRef": "fixture-osm:way/taipei-city-mall"
+    },
+    {
+      "id": "station-front-retail-01",
+      "tags": { "name:zh": "站前商店一", "shop": "convenience", "building:levels": "4" },
+      "footprintLngLat": [[121.51615, 25.04455], [121.51652, 25.04455], [121.51652, 25.04495], [121.51615, 25.04495], [121.51615, 25.04455]],
+      "sourceRef": "fixture-osm:way/station-front-retail-01"
+    },
+    {
+      "id": "station-front-retail-02",
+      "tags": { "name:zh": "站前商店二", "shop": "food", "building:levels": "4" },
+      "footprintLngLat": [[121.51662, 25.04455], [121.51702, 25.04455], [121.51702, 25.04496], [121.51662, 25.04496], [121.51662, 25.04455]],
+      "sourceRef": "fixture-osm:way/station-front-retail-02"
+    },
+    {
+      "id": "station-front-office-01",
+      "tags": { "building": "commercial", "building:levels": "8" },
+      "footprintLngLat": [[121.51878, 25.0451], [121.51938, 25.0451], [121.51938, 25.0458], [121.51878, 25.0458], [121.51878, 25.0451]],
+      "sourceRef": "fixture-osm:way/station-front-office-01"
+    },
+    {
+      "id": "beimen-commercial-01",
+      "tags": { "building": "commercial", "building:levels": "6" },
+      "footprintLngLat": [[121.51378, 25.04725], [121.51442, 25.04725], [121.51442, 25.04786], [121.51378, 25.04786], [121.51378, 25.04725]],
+      "sourceRef": "fixture-osm:way/beimen-commercial-01"
+    }
+  ],
+  "pois": [
+    {
+      "id": "station-front-plaza",
+      "tags": {
+        "name:zh": "站前廣場",
+        "short_name:zh": "站前廣場",
+        "amenity": "public_space",
+        "twfoundry:feature_id": "building-station-front-plaza",
+        "twfoundry:object_id": "landmark-station-front-plaza"
+      },
+      "lng": 121.51715,
+      "lat": 25.04565,
+      "sourceRef": "fixture-osm:node/station-front-plaza"
+    },
+    {
+      "id": "taipei-underground-mall",
+      "tags": {
+        "name:zh": "台北地下街入口",
+        "short_name:zh": "地下街",
+        "shop": "mall",
+        "twfoundry:feature_id": "building-taipei-underground-entry",
+        "twfoundry:object_id": "landmark-taipei-underground-mall"
+      },
+      "lng": 121.51455,
+      "lat": 25.04822,
+      "sourceRef": "fixture-osm:node/taipei-underground-mall"
+    }
+  ],
+  "roads": [
+    {
+      "id": "road-zhongxiao-west",
+      "tags": { "name:zh": "忠孝西路一段", "highway": "primary" },
+      "widthMeters": 30,
+      "pathLngLat": [[121.5129, 25.04575], [121.5168, 25.04582], [121.5207, 25.04596]],
+      "sourceRef": "fixture-osm:way/road-zhongxiao-west"
+    },
+    {
+      "id": "road-chengde-section-1",
+      "tags": { "name:zh": "承德路一段", "highway": "primary" },
+      "widthMeters": 24,
+      "pathLngLat": [[121.51525, 25.0432], [121.5154, 25.0462], [121.51555, 25.04905]],
+      "sourceRef": "fixture-osm:way/road-chengde-section-1"
+    },
+    {
+      "id": "road-chongqing-north",
+      "tags": { "name:zh": "重慶北路一段", "highway": "secondary" },
+      "widthMeters": 18,
+      "pathLngLat": [[121.51412, 25.04335], [121.51425, 25.0465], [121.51438, 25.04905]],
+      "sourceRef": "fixture-osm:way/road-chongqing-north"
+    },
+    {
+      "id": "road-shimin-boulevard",
+      "tags": { "name:zh": "市民大道一段", "highway": "primary" },
+      "widthMeters": 28,
+      "pathLngLat": [[121.51305, 25.04916], [121.5167, 25.04914], [121.5207, 25.04912]],
+      "sourceRef": "fixture-osm:way/road-shimin-boulevard"
+    },
+    {
+      "id": "road-guanqian",
+      "tags": { "name:zh": "館前路", "highway": "secondary" },
+      "widthMeters": 16,
+      "pathLngLat": [[121.51495, 25.04325], [121.51505, 25.04525], [121.51518, 25.04708]],
+      "sourceRef": "fixture-osm:way/road-guanqian"
+    }
+  ],
+  "areas": [
+    {
+      "id": "area-station-front-plaza",
+      "tags": { "name:zh": "台北車站站前廣場", "leisure": "plaza" },
+      "footprintLngLat": [[121.5160, 25.04595], [121.51822, 25.04595], [121.51822, 25.04655], [121.5160, 25.04655], [121.5160, 25.04595]],
+      "sourceRef": "fixture-osm:way/area-station-front-plaza"
+    },
+    {
+      "id": "area-beimen-green",
+      "tags": { "name:zh": "北門周邊綠帶", "leisure": "park" },
+      "footprintLngLat": [[121.51295, 25.0472], [121.51342, 25.0472], [121.51342, 25.04905], [121.51295, 25.04905], [121.51295, 25.0472]],
+      "sourceRef": "fixture-osm:way/area-beimen-green"
+    }
+  ],
+  "semanticZones": [
+    {
+      "id": "zone-station-front-transfer",
+      "kind": "transfer-corridor",
+      "footprintLngLat": [[121.5156, 25.0454], [121.5187, 25.0454], [121.5187, 25.0481], [121.5156, 25.0481], [121.5156, 25.0454]],
+      "state": { "color": "#81C7D4", "opacity": 0.16 }
+    }
+  ],
+  "objects": [
+    {
+      "id": "station-R10-BL13",
+      "type": "Station",
+      "name": "台北車站",
+      "status": "normal",
+      "summary": "Fallback fixture：台北車站 R10/BL13，Phase 1 以 TDX MRT LiveBoard 表達轉乘站 live context。",
+      "properties": {
+        "overlay": "mrt",
+        "stationId": "R10/BL13",
+        "lineId": "red-blue",
+        "intendedSource": "tdx",
+        "liveSource": "TDX MRT LiveBoard",
+        "maxSourceLagSeconds": 12,
+        "liveBoardRows": [
+          { "line": "淡水信義線", "direction": "往淡水", "destination": "淡水", "etaMinutes": 1, "status": "approaching" },
+          { "line": "板南線", "direction": "往南港展覽館", "destination": "南港展覽館", "etaMinutes": 3, "status": "boarding" }
+        ]
+      },
+      "relationships": [
+        { "type": "belongs_to", "targetObjectId": "route-R", "targetType": "Route", "label": "Tamsui-Xinyi" },
+        { "type": "belongs_to", "targetObjectId": "route-BL", "targetType": "Route", "label": "Bannan" }
+      ]
+    },
+    {
+      "id": "train-R10",
+      "type": "Train",
+      "name": "Train R10",
+      "status": "live",
+      "summary": "Fallback fixture：台北車站地下捷運列車 projection、hover 與 ontology drill-down。",
+      "properties": { "overlay": "mrt", "route": "Tamsui-Xinyi", "nextStop": "Taipei Main Station", "etaMinutes": 1, "load": 0.74, "intendedSource": "tdx" },
+      "relationships": [{ "type": "near", "targetObjectId": "station-R10-BL13", "targetType": "Station", "label": "台北車站" }]
+    },
+    {
+      "id": "bus-stop-taipei-main",
+      "type": "BusStop",
+      "name": "Taipei Main Station Bus Stop",
+      "status": "live",
+      "summary": "Fallback fixture：測試台北車站公車轉乘站牌 render module。",
+      "properties": { "overlay": "bus", "route": "307", "etaMinutes": 2, "waiting": 12, "intendedSource": "tdx" },
+      "relationships": [{ "type": "near", "targetObjectId": "station-R10-BL13", "targetType": "Station", "label": "台北車站" }]
+    },
+    {
+      "id": "ubike-taipei-main",
+      "type": "BikeStation",
+      "name": "YouBike Taipei Main Station",
+      "status": "live",
+      "summary": "Fallback fixture：測試北車周邊 YouBike dock 與容量狀態。",
+      "properties": { "overlay": "ubike", "availableBikes": 18, "availableDocks": 6, "capacity": 24, "intendedSource": "tdx" },
+      "relationships": [{ "type": "near", "targetObjectId": "station-R10-BL13", "targetType": "Station", "label": "台北車站" }]
+    },
+    {
+      "id": "rain-TMS-001",
+      "type": "RainfallCell",
+      "name": "Rain Cell TMS-001",
+      "status": "normal",
+      "summary": "Fallback fixture：測試台北車站範圍雨量 cell 對候車與步行的跨 domain context。",
+      "properties": { "overlay": "rain", "intensityMmHr": 12, "confidence": 0.78, "trend": "steady", "intendedSource": "cwa" },
+      "relationships": [{ "type": "covers", "targetObjectId": "chunk-taipei-main-station", "targetType": "DioramaChunk", "label": "Taipei Main Station / Station Front District" }]
+    },
+    {
+      "id": "incident-TMS-001",
+      "type": "Incident",
+      "name": "Incident TMS-001",
+      "status": "open",
+      "summary": "Fallback fixture：測試站前道路事件與轉乘服務的跨 domain context。",
+      "properties": { "overlay": "incident", "severity": "low", "radiusMeters": 450, "intendedSource": "ops" },
+      "relationships": [{ "type": "near", "targetObjectId": "bus-stop-taipei-main", "targetType": "BusStop", "label": "Taipei Main Station Bus Stop" }]
+    }
+  ],
+  "projections": [
+    {
+      "id": "proj-route-R-taipei-main",
+      "objectId": "station-R10-BL13",
+      "overlay": "mrt",
+      "renderModule": "voxel.mrt.route",
+      "geometry": { "type": "LineString", "coordinates": [[121.5162, 25.044], [121.5168, 25.0463], [121.5171, 25.0487]] },
+      "visualState": { "lineColor": "#E16B8C", "thickness": 0.08, "grade": "underground", "undergroundDepth": 0.72, "tunnelColor": "#81C7D4", "tunnelOpacity": 0.16 }
+    },
+    {
+      "id": "proj-route-BL-taipei-main",
+      "objectId": "station-R10-BL13",
+      "overlay": "mrt",
+      "renderModule": "voxel.mrt.route",
+      "geometry": { "type": "LineString", "coordinates": [[121.5132, 25.046], [121.517, 25.0463], [121.5205, 25.0465]] },
+      "visualState": { "lineColor": "#2574A9", "thickness": 0.08, "grade": "underground", "undergroundDepth": 0.78, "tunnelColor": "#81C7D4", "tunnelOpacity": 0.14 }
+    },
+    {
+      "id": "proj-train-R10-taipei-main",
+      "objectId": "train-R10",
+      "overlay": "mrt",
+      "renderModule": "voxel.mrt.train",
+      "geometry": { "type": "LineString", "coordinates": [[121.5166, 25.0453], [121.5169, 25.0463]] },
+      "visualState": { "lineColor": "#E16B8C", "cars": 3, "grade": "underground", "undergroundDepth": 0.72 }
+    },
+    {
+      "id": "proj-bus-stop-taipei-main",
+      "objectId": "bus-stop-taipei-main",
+      "overlay": "bus",
+      "renderModule": "voxel.bus.stop",
+      "geometry": { "type": "Point", "coordinates": [121.5188, 25.0482, 0.45] },
+      "visualState": { "color": "#5DAC81", "waiting": 12, "etaMinutes": 2 }
+    },
+    {
+      "id": "proj-ubike-taipei-main",
+      "objectId": "ubike-taipei-main",
+      "overlay": "ubike",
+      "renderModule": "voxel.ubike.dock",
+      "geometry": { "type": "Point", "coordinates": [121.515, 25.0456, 0.45] },
+      "visualState": { "color": "#FFB11B", "docks": 12, "availableBikes": 8 }
+    },
+    {
+      "id": "proj-rain-TMS-001",
+      "objectId": "rain-TMS-001",
+      "overlay": "rain",
+      "renderModule": "voxel.weather.rainCell",
+      "geometry": { "type": "Polygon", "coordinates": [[[121.5135, 25.044], [121.5198, 25.044], [121.5198, 25.0488], [121.5135, 25.0488], [121.5135, 25.044]]] },
+      "visualState": { "color": "#81C7D4", "opacity": 0.08, "intensityMmHr": 12 }
+    },
+    {
+      "id": "proj-incident-TMS-001",
+      "objectId": "incident-TMS-001",
+      "overlay": "incident",
+      "renderModule": "voxel.ops.incidentPulse",
+      "geometry": { "type": "Point", "coordinates": [121.5148, 25.0458, 0.9] },
+      "visualState": { "color": "#B481BB", "severity": "low" }
+    }
+  ]
+}
