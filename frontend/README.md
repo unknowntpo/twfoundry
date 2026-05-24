@@ -2,14 +2,36 @@
 
 ## Product Direction
 
-TWFoundry frontend 採用 Sakura Voxel Taipei 作為正式設計方向：bright blue sky、柔粉 voxel city、櫻花粒子與粉色 RPG HUD，同時把未來 MapLibre 接入方式表達成可互動的 mock geospatial pipeline。
+TWFoundry frontend 已切到 map-first operations workbench pivot。現階段先用 OpenDesign 匯出的 Kepler-style 操作流程，把 archive snapshot → normalized observation → overlay projection → inspector/detail 的前端互動跑通；後端接上前不得把 fixture 標成真實 live data。
+
+Root route `/` 與 `/operations-explorer` 會開啟新的 pivot workflow；舊 voxel demo 保留在 `/legacy-voxel` 作為回歸參考。
 
 ## Builder Assumptions
 
-- 目前是 frontend-only implementation，不接真實 MapLibre、TDX、CWA、EPA API。
-- MapLibre 角色以 mock viewport tile/chunk grid 呈現：`MapLibre tiles -> visible chunks -> observations -> ontology objects -> voxel entities`。
-- Three.js scene 是主角，HUD 只作為 RPG-style control surface，不做 enterprise dashboard。
-- 互動優先展示產品概念：layer toggle、timeline/live、pipeline focus、ontology object selection。
+- 目前是 frontend-only implementation；TDX 由本機 script 抓取並寫成 credential-free archive，瀏覽器不直接打 TDX API。
+- `src/operationsWorkflowData.js` 是 archive/fixture adapter + normalized contract boundary；Vue component 不直接用 raw source fields 控制 UI。
+- MapLibre + deck.gl 是主要操作面；overlay controls、route filter、stale hiding、5 分鐘 timeline、inspector、health drawer 先用 captured snapshot 跑順。
+- Voxel detail 暫時不是主畫面；舊實驗保留在 `/legacy-voxel`。
+- 已可用 `frontend/.env` 內的 TDX client credentials 產生 credential-free archive snapshot；key/token 不會寫入輸出檔。
+
+## Bus Archive Workflow
+
+TDX `Bus/RealTimeByFrequency/City/Taipei` 是即時車輛快照。前端 timeline 先讀本地 archive；要累積歷史資料時，用 collector 每 5 分鐘抓一次並按時間分組：
+
+```bash
+cd frontend
+bun run fetch:tdx-bus       # 抓一次，寫入 public/data/tdx-bus/archive/YYYY-MM-DD/HH-mm.json
+bun run fetch:tdx-bus-history -- --date 2026-05-20  # 從 TDX historical endpoint 抓一天，分桶成 5 分鐘 timeline
+bun run collect:tdx-bus     # 持續每 5 分鐘抓一次，更新 manifest
+bun run collect:tdx-bus:half-day  # 每 5 分鐘抓一次，抓滿 12 小時後停止，約 144 slots
+bun run collect:tdx-bus:day       # 每 5 分鐘抓一次，抓滿 24 小時後停止，約 288 slots
+```
+
+前端讀取：
+
+- Manifest: `public/data/tdx-bus/archive/manifest.json`
+- Snapshot: `public/data/tdx-bus/archive/<date>/<HH-mm>.json`
+- Runtime URL: `/data/tdx-bus/archive/manifest.json`
 
 ## What Was Built
 
@@ -44,8 +66,9 @@ TWFoundry frontend 採用 Sakura Voxel Taipei 作為正式設計方向：bright 
 ## How To Run
 
 ```bash
-cd experiments/codex-maplibre-sakura-voxel-v1
+cd frontend
 bun install
+bun run fetch:tdx-bus
 bun run dev
 ```
 
@@ -55,58 +78,64 @@ bun run dev
 bun run dev -- --port 5220 --strictPort
 ```
 
+入口：
+
+- Pivot workflow: `http://localhost:5220/`
+- Same workflow explicit route: `http://localhost:5220/operations-explorer`
+- Legacy voxel demo: `http://localhost:5220/legacy-voxel`
+
 ## Changed Files
 
 - `README.md`
-- `package.json`
-- `vite.config.js`
-- `index.html`
 - `src/main.js`
-- `src/App.vue`
-- `src/styles.css`
-- `src/mockData.js`
-- `src/voxelWorld.js`
-- `bun.lock`
-- `screenshots/desktop/screenshot.png`
-- `screenshots/mobile/screenshot.png`
-- `screenshots/interaction-rain-toggle/screenshot.png`
-- `dist/`（`bun run build` 產物）
+- `src/OperationsExplorer.vue`
+- `src/operationsWorkflowData.js`
+- `public/data/tdx-bus/archive/manifest.json`
+- `public/data/tdx-bus/archive/YYYY-MM-DD/HH-mm.json`
+- `src/BusDeckMap.vue`
+- `scripts/fetch-tdx-taipei-bus-snapshot.mjs`
+- `tests/operationsWorkflowData.test.mjs`
+- `tests/run.mjs`
+- `screenshots/operations-explorer/desktop/screenshot.png`
+- `screenshots/operations-explorer/mobile/screenshot.png`
+- `screenshots/operations-explorer/data-health/screenshot.png`
 
 ## Design Reasoning
 
-- 視覺 north star 取自 `taipei_voxel_v3.html`：藍天、粉色 city blocks、透明粉 HUD、底部 timeline、櫻花 petal field。
-- MapLibre 不作為背景圖，而是作為 viewport/tile/chunk 的資料骨架。畫面中可點 chunk，HUD pipeline 也可切換 focus，避免變成純 3D 地圖 clone。
-- Ontology 先於 rendering：右側 object view 顯示 observation 聚合後的 object properties 與 relationships，例如 Train R22 affected_by Rain Cell、near Incident。
-- 資料層保留可愛 RPG readable form：路線是模型軌道、列車是 voxel capsule、雨量是透明水藍體積、PM2.5 是金色 haze、incident 是柔紫/櫻色堆疊 marker。
-- Timeline 使用唯一 `worldMinutes` 驅動 train/rain/petal/lighting，而不是每個 layer 自己假裝即時。
+- 視覺 north star 取自 OpenDesign 匯出的 dark geospatial workbench：dark map canvas、左側 layer controls、右側 inspector、底部 poll timeline。
+- Workflow 先定義資料邊界：raw TDX-shaped fixture → normalized `VehicleObservation` → overlay point renderer → inspector evidence。
+- TDX snapshot 標為 `tdx-captured`；fallback 假資料才標為 `fixture`，避免在未接後端前誤稱 live/connected。
+- 互動優先順 workflow：sample tick、route filter、hide stale、layer visibility、point size/opacity、zoom、health drawer。
+- 舊 voxel demo 仍可從 `/legacy-voxel` 開啟，暫作 selected-object detail 方向參考。
 
 ## Known Gaps
 
-- 未接 MapLibre GL JS、PMTiles、vector tile decoder；chunk grid 目前是 mock。
-- 未使用真實臺北座標、真實 TDX station geometry 或即時 train feed。
-- Raycast 可選 MRT station/train/rain/PM2.5/incident/chunk，但還沒有 hover tooltip 與 relationship path highlight。
-- Rainfall / PM2.5 / incident 數值是固定 mock，只有時間動畫，不是 observation window replay。
-- Mobile 版隱藏右側 inspector，仍需第二輪設計 compact object drawer。
-- 目前 crystal/glass 主要靠透明 physical material 與 emissive，尚未加入環境貼圖、real refraction 或 per-voxel bevel；水晶邊緣仍可再強化。
-- Playwright 截圖時 Chromium 會回報 WebGL `ReadPixels` GPU stall performance warning；頁面無 console error / page error / failed request。
+- Basemap 已改用 MapLibre raster map；正式版仍需決定 tile provider 與 attribution/policy。
+- Captured adapter 尚未有 runtime schema validation；接 backend 前應補上 contract parser。
+- Timeline 已讀本地 snapshot history；目前只有一個 captured slot，collector 跑久後會自然增加 slot。
+- Health drawer 是狀態語言與 UI contract，尚未接真實 source health。
+- Mobile inspector 目前用 stacked panel，下一輪應做成更明確的 drawer/sheet flow。
+- MapLibre/deck.gl vendor chunk 仍偏大；正式版可依 route code splitting 再拆。
 
 ## Screenshot Path
 
-- Desktop：`screenshots/desktop/screenshot.png`
-- Mobile：`screenshots/mobile/screenshot.png`
-- Interaction check：`screenshots/interaction-rain-toggle/screenshot.png`
-- Playwright summary：`screenshots/desktop/summary.json`、`screenshots/mobile/summary.json`
+- Desktop：`screenshots/operations-explorer/desktop/screenshot.png`
+- Mobile：`screenshots/operations-explorer/mobile/screenshot.png`
+- Data health interaction：`screenshots/operations-explorer/data-health/screenshot.png`
+- Playwright summary：`screenshots/operations-explorer/*/summary.json`
 - 截圖驗證與交付 dev server 使用 `http://localhost:5220/`。
 
 ## Verification
 
 ```bash
+bun run fetch:tdx-bus
+bun run test
 bun run build
-bun /Users/unknowntpo/.codex/skills/frontend-feedback-loop/scripts/observe-page.js --url http://localhost:5220/ --out experiments/codex-maplibre-sakura-voxel-v1/screenshots/desktop
-bun /Users/unknowntpo/.codex/skills/frontend-feedback-loop/scripts/observe-page.js --url http://localhost:5220/ --viewport 390x844 --out experiments/codex-maplibre-sakura-voxel-v1/screenshots/mobile
-bun /Users/unknowntpo/.codex/skills/frontend-feedback-loop/scripts/observe-page.js --url http://localhost:5220/ --click "text=Rain cells" --wait 500 --out experiments/codex-maplibre-sakura-voxel-v1/screenshots/interaction-rain-toggle
+bun /Users/unknowntpo/.codex/skills/frontend-feedback-loop/scripts/observe-page.js --url http://localhost:5220/ --out screenshots/operations-explorer/desktop
+bun /Users/unknowntpo/.codex/skills/frontend-feedback-loop/scripts/observe-page.js --url http://localhost:5220/ --viewport 390x844 --out screenshots/operations-explorer/mobile
+bun /Users/unknowntpo/.codex/skills/frontend-feedback-loop/scripts/observe-page.js --url http://localhost:5220/ --click "text=Data health" --wait 500 --out screenshots/operations-explorer/data-health
 ```
 
 ## Next Experiment Recommendation
 
-下一輪建議做「relationship highlight + object drill-down」：點選 Train R22 時，同步高亮 Route、next station、Rain Cell、Incident marker，並讓 timeline 顯示 observation history markers。正式分數留給 judge agent。
+下一輪建議做「workflow state machine + backend adapter seam」：把 empty/error/loading/success 狀態接成可切換 fixture scenario，並定義真正 TDX adapter 回來時要餵給 `VehicleObservation` 的最小 schema。

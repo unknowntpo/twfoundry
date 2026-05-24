@@ -9,6 +9,11 @@ export default defineConfig({
         manualChunks(id) {
           if (id.includes('/node_modules/three/')) return 'vendor-three';
           if (id.includes('/node_modules/maplibre-gl/')) return 'vendor-maplibre';
+          if (
+            id.includes('/node_modules/@deck.gl/')
+            || id.includes('/node_modules/@luma.gl/')
+            || id.includes('/node_modules/@loaders.gl/')
+          ) return 'vendor-deck';
           if (id.includes('/node_modules/@vue/') || id.includes('/node_modules/vue/')) return 'vendor-vue';
           return undefined;
         },

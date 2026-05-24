@@ -1,0 +1,4622 @@
+{
+  "schema": "twfoundry.tdx.citybus.archive-manifest.v1",
+  "source": {
+    "provider": "TDX",
+    "dataset": "Historical.Bus.RealTimeByFrequency.City",
+    "city": "Taipei",
+    "mode": "tdx-historical"
+  },
+  "intervalMinutes": 5,
+  "generatedAt": "2026-05-21T11:02:09.259Z",
+  "latestSlotKey": "2026-05-20T23:55+08:00",
+  "snapshots": [
+    {
+      "slotKey": "2026-05-20T00:00+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T16:00:00.000Z",
+      "timeLabel": "00:00",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/00-00.json",
+      "count": 24,
+      "routeCount": 10,
+      "bounds": {
+        "minLat": 25.012207,
+        "maxLat": 25.109462,
+        "minLon": 121.424338,
+        "maxLon": 121.623875
+      }
+    },
+    {
+      "slotKey": "2026-05-20T00:05+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T16:05:00.000Z",
+      "timeLabel": "00:05",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/00-05.json",
+      "count": 24,
+      "routeCount": 10,
+      "bounds": {
+        "minLat": 25.010647,
+        "maxLat": 25.109462,
+        "minLon": 121.428165,
+        "maxLon": 121.636233
+      }
+    },
+    {
+      "slotKey": "2026-05-20T00:10+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T16:10:00.000Z",
+      "timeLabel": "00:10",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/00-10.json",
+      "count": 24,
+      "routeCount": 10,
+      "bounds": {
+        "minLat": 25.012133,
+        "maxLat": 25.109462,
+        "minLon": 121.432925,
+        "maxLon": 121.628545
+      }
+    },
+    {
+      "slotKey": "2026-05-20T00:15+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T16:15:00.000Z",
+      "timeLabel": "00:15",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/00-15.json",
+      "count": 24,
+      "routeCount": 10,
+      "bounds": {
+        "minLat": 25.012135,
+        "maxLat": 25.109462,
+        "minLon": 121.434045,
+        "maxLon": 121.62356
+      }
+    },
+    {
+      "slotKey": "2026-05-20T00:20+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T16:20:00.000Z",
+      "timeLabel": "00:20",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/00-20.json",
+      "count": 24,
+      "routeCount": 10,
+      "bounds": {
+        "minLat": 25.012202,
+        "maxLat": 25.109462,
+        "minLon": 121.434045,
+        "maxLon": 121.62356
+      }
+    },
+    {
+      "slotKey": "2026-05-20T00:25+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T16:25:00.000Z",
+      "timeLabel": "00:25",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/00-25.json",
+      "count": 24,
+      "routeCount": 10,
+      "bounds": {
+        "minLat": 25.0122,
+        "maxLat": 25.109462,
+        "minLon": 121.434045,
+        "maxLon": 121.62356
+      }
+    },
+    {
+      "slotKey": "2026-05-20T00:30+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T16:30:00.000Z",
+      "timeLabel": "00:30",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/00-30.json",
+      "count": 24,
+      "routeCount": 10,
+      "bounds": {
+        "minLat": 25.012097,
+        "maxLat": 25.109462,
+        "minLon": 121.434045,
+        "maxLon": 121.62356
+      }
+    },
+    {
+      "slotKey": "2026-05-20T00:35+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T16:35:00.000Z",
+      "timeLabel": "00:35",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/00-35.json",
+      "count": 20,
+      "routeCount": 9,
+      "bounds": {
+        "minLat": 25.012197,
+        "maxLat": 25.10942,
+        "minLon": 121.434045,
+        "maxLon": 121.62356
+      }
+    },
+    {
+      "slotKey": "2026-05-20T00:40+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T16:40:00.000Z",
+      "timeLabel": "00:40",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/00-40.json",
+      "count": 19,
+      "routeCount": 9,
+      "bounds": {
+        "minLat": 25.012068,
+        "maxLat": 25.10942,
+        "minLon": 121.434045,
+        "maxLon": 121.62356
+      }
+    },
+    {
+      "slotKey": "2026-05-20T00:45+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T16:45:00.000Z",
+      "timeLabel": "00:45",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/00-45.json",
+      "count": 18,
+      "routeCount": 7,
+      "bounds": {
+        "minLat": 25.012205,
+        "maxLat": 25.10942,
+        "minLon": 121.434045,
+        "maxLon": 121.62356
+      }
+    },
+    {
+      "slotKey": "2026-05-20T00:50+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T16:50:00.000Z",
+      "timeLabel": "00:50",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/00-50.json",
+      "count": 15,
+      "routeCount": 5,
+      "bounds": {
+        "minLat": 25.012052,
+        "maxLat": 25.068007,
+        "minLon": 121.444665,
+        "maxLon": 121.60246
+      }
+    },
+    {
+      "slotKey": "2026-05-20T00:55+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T16:55:00.000Z",
+      "timeLabel": "00:55",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/00-55.json",
+      "count": 15,
+      "routeCount": 5,
+      "bounds": {
+        "minLat": 25.012053,
+        "maxLat": 25.069042,
+        "minLon": 121.444667,
+        "maxLon": 121.612235
+      }
+    },
+    {
+      "slotKey": "2026-05-20T01:00+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T17:00:00.000Z",
+      "timeLabel": "01:00",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/01-00.json",
+      "count": 15,
+      "routeCount": 5,
+      "bounds": {
+        "minLat": 25.012078,
+        "maxLat": 25.070537,
+        "minLon": 121.444652,
+        "maxLon": 121.625013
+      }
+    },
+    {
+      "slotKey": "2026-05-20T01:05+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T17:05:00.000Z",
+      "timeLabel": "01:05",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/01-05.json",
+      "count": 14,
+      "routeCount": 5,
+      "bounds": {
+        "minLat": 25.012078,
+        "maxLat": 25.069168,
+        "minLon": 121.444663,
+        "maxLon": 121.636322
+      }
+    },
+    {
+      "slotKey": "2026-05-20T01:10+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T17:10:00.000Z",
+      "timeLabel": "01:10",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/01-10.json",
+      "count": 14,
+      "routeCount": 5,
+      "bounds": {
+        "minLat": 25.012202,
+        "maxLat": 25.061907,
+        "minLon": 121.444628,
+        "maxLon": 121.626525
+      }
+    },
+    {
+      "slotKey": "2026-05-20T01:15+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T17:15:00.000Z",
+      "timeLabel": "01:15",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/01-15.json",
+      "count": 14,
+      "routeCount": 5,
+      "bounds": {
+        "minLat": 25.012098,
+        "maxLat": 25.063123,
+        "minLon": 121.444708,
+        "maxLon": 121.623555
+      }
+    },
+    {
+      "slotKey": "2026-05-20T01:20+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T17:20:00.000Z",
+      "timeLabel": "01:20",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/01-20.json",
+      "count": 14,
+      "routeCount": 5,
+      "bounds": {
+        "minLat": 25.01222,
+        "maxLat": 25.063123,
+        "minLon": 121.444638,
+        "maxLon": 121.623555
+      }
+    },
+    {
+      "slotKey": "2026-05-20T01:25+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T17:25:00.000Z",
+      "timeLabel": "01:25",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/01-25.json",
+      "count": 14,
+      "routeCount": 5,
+      "bounds": {
+        "minLat": 25.012153,
+        "maxLat": 25.063123,
+        "minLon": 121.444743,
+        "maxLon": 121.623555
+      }
+    },
+    {
+      "slotKey": "2026-05-20T01:30+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T17:30:00.000Z",
+      "timeLabel": "01:30",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/01-30.json",
+      "count": 14,
+      "routeCount": 5,
+      "bounds": {
+        "minLat": 25.012123,
+        "maxLat": 25.063123,
+        "minLon": 121.444753,
+        "maxLon": 121.623555
+      }
+    },
+    {
+      "slotKey": "2026-05-20T01:35+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T17:35:00.000Z",
+      "timeLabel": "01:35",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/01-35.json",
+      "count": 14,
+      "routeCount": 5,
+      "bounds": {
+        "minLat": 25.012145,
+        "maxLat": 25.063123,
+        "minLon": 121.444712,
+        "maxLon": 121.623555
+      }
+    },
+    {
+      "slotKey": "2026-05-20T01:40+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T17:40:00.000Z",
+      "timeLabel": "01:40",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/01-40.json",
+      "count": 14,
+      "routeCount": 5,
+      "bounds": {
+        "minLat": 25.012133,
+        "maxLat": 25.063123,
+        "minLon": 121.444698,
+        "maxLon": 121.623555
+      }
+    },
+    {
+      "slotKey": "2026-05-20T01:45+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T17:45:00.000Z",
+      "timeLabel": "01:45",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/01-45.json",
+      "count": 13,
+      "routeCount": 4,
+      "bounds": {
+        "minLat": 25.012197,
+        "maxLat": 25.063123,
+        "minLon": 121.44465,
+        "maxLon": 121.623555
+      }
+    },
+    {
+      "slotKey": "2026-05-20T01:50+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T17:50:00.000Z",
+      "timeLabel": "01:50",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/01-50.json",
+      "count": 11,
+      "routeCount": 3,
+      "bounds": {
+        "minLat": 25.012178,
+        "maxLat": 25.058175,
+        "minLon": 121.444665,
+        "maxLon": 121.597373
+      }
+    },
+    {
+      "slotKey": "2026-05-20T01:55+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T17:55:00.000Z",
+      "timeLabel": "01:55",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/01-55.json",
+      "count": 11,
+      "routeCount": 3,
+      "bounds": {
+        "minLat": 25.012145,
+        "maxLat": 25.058258,
+        "minLon": 121.444697,
+        "maxLon": 121.597377
+      }
+    },
+    {
+      "slotKey": "2026-05-20T02:00+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T18:00:00.000Z",
+      "timeLabel": "02:00",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/02-00.json",
+      "count": 11,
+      "routeCount": 3,
+      "bounds": {
+        "minLat": 25.012153,
+        "maxLat": 25.058258,
+        "minLon": 121.444695,
+        "maxLon": 121.597392
+      }
+    },
+    {
+      "slotKey": "2026-05-20T02:05+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T18:05:00.000Z",
+      "timeLabel": "02:05",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/02-05.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.012152,
+        "maxLat": 25.058337,
+        "minLon": 121.444682,
+        "maxLon": 121.597465
+      }
+    },
+    {
+      "slotKey": "2026-05-20T02:10+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T18:10:00.000Z",
+      "timeLabel": "02:10",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/02-10.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.012142,
+        "maxLat": 25.058347,
+        "minLon": 121.44469,
+        "maxLon": 121.597502
+      }
+    },
+    {
+      "slotKey": "2026-05-20T02:15+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T18:15:00.000Z",
+      "timeLabel": "02:15",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/02-15.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.012182,
+        "maxLat": 25.058348,
+        "minLon": 121.444665,
+        "maxLon": 121.5975
+      }
+    },
+    {
+      "slotKey": "2026-05-20T02:20+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T18:20:00.000Z",
+      "timeLabel": "02:20",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/02-20.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.012142,
+        "maxLat": 25.058347,
+        "minLon": 121.444693,
+        "maxLon": 121.597457
+      }
+    },
+    {
+      "slotKey": "2026-05-20T02:25+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T18:25:00.000Z",
+      "timeLabel": "02:25",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/02-25.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.01219,
+        "maxLat": 25.058233,
+        "minLon": 121.444635,
+        "maxLon": 121.597438
+      }
+    },
+    {
+      "slotKey": "2026-05-20T02:30+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T18:30:00.000Z",
+      "timeLabel": "02:30",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/02-30.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.012175,
+        "maxLat": 25.058235,
+        "minLon": 121.444652,
+        "maxLon": 121.597423
+      }
+    },
+    {
+      "slotKey": "2026-05-20T02:35+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T18:35:00.000Z",
+      "timeLabel": "02:35",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/02-35.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.012177,
+        "maxLat": 25.05824,
+        "minLon": 121.444705,
+        "maxLon": 121.597415
+      }
+    },
+    {
+      "slotKey": "2026-05-20T02:40+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T18:40:00.000Z",
+      "timeLabel": "02:40",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/02-40.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.012163,
+        "maxLat": 25.058213,
+        "minLon": 121.444687,
+        "maxLon": 121.597337
+      }
+    },
+    {
+      "slotKey": "2026-05-20T02:45+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T18:45:00.000Z",
+      "timeLabel": "02:45",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/02-45.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.012127,
+        "maxLat": 25.058245,
+        "minLon": 121.44467,
+        "maxLon": 121.597385
+      }
+    },
+    {
+      "slotKey": "2026-05-20T02:50+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T18:50:00.000Z",
+      "timeLabel": "02:50",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/02-50.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.012125,
+        "maxLat": 25.05823,
+        "minLon": 121.444673,
+        "maxLon": 121.597367
+      }
+    },
+    {
+      "slotKey": "2026-05-20T02:55+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T18:55:00.000Z",
+      "timeLabel": "02:55",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/02-55.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.012127,
+        "maxLat": 25.058225,
+        "minLon": 121.444673,
+        "maxLon": 121.597395
+      }
+    },
+    {
+      "slotKey": "2026-05-20T03:00+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T19:00:00.000Z",
+      "timeLabel": "03:00",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/03-00.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.012118,
+        "maxLat": 25.058213,
+        "minLon": 121.444652,
+        "maxLon": 121.597352
+      }
+    },
+    {
+      "slotKey": "2026-05-20T03:05+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T19:05:00.000Z",
+      "timeLabel": "03:05",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/03-05.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.012103,
+        "maxLat": 25.05822,
+        "minLon": 121.444707,
+        "maxLon": 121.597355
+      }
+    },
+    {
+      "slotKey": "2026-05-20T03:10+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T19:10:00.000Z",
+      "timeLabel": "03:10",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/03-10.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.012105,
+        "maxLat": 25.058188,
+        "minLon": 121.444708,
+        "maxLon": 121.597363
+      }
+    },
+    {
+      "slotKey": "2026-05-20T03:15+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T19:15:00.000Z",
+      "timeLabel": "03:15",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/03-15.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.012105,
+        "maxLat": 25.058187,
+        "minLon": 121.44471,
+        "maxLon": 121.597382
+      }
+    },
+    {
+      "slotKey": "2026-05-20T03:20+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T19:20:00.000Z",
+      "timeLabel": "03:20",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/03-20.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.012108,
+        "maxLat": 25.058198,
+        "minLon": 121.44471,
+        "maxLon": 121.59739
+      }
+    },
+    {
+      "slotKey": "2026-05-20T03:25+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T19:25:00.000Z",
+      "timeLabel": "03:25",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/03-25.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.012128,
+        "maxLat": 25.058172,
+        "minLon": 121.444698,
+        "maxLon": 121.597415
+      }
+    },
+    {
+      "slotKey": "2026-05-20T03:30+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T19:30:00.000Z",
+      "timeLabel": "03:30",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/03-30.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.012112,
+        "maxLat": 25.058183,
+        "minLon": 121.444672,
+        "maxLon": 121.59738
+      }
+    },
+    {
+      "slotKey": "2026-05-20T03:35+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T19:35:00.000Z",
+      "timeLabel": "03:35",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/03-35.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.01213,
+        "maxLat": 25.058217,
+        "minLon": 121.444657,
+        "maxLon": 121.597387
+      }
+    },
+    {
+      "slotKey": "2026-05-20T03:40+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T19:40:00.000Z",
+      "timeLabel": "03:40",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/03-40.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.012132,
+        "maxLat": 25.058217,
+        "minLon": 121.444663,
+        "maxLon": 121.597453
+      }
+    },
+    {
+      "slotKey": "2026-05-20T03:45+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T19:45:00.000Z",
+      "timeLabel": "03:45",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/03-45.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.01213,
+        "maxLat": 25.058223,
+        "minLon": 121.44467,
+        "maxLon": 121.597413
+      }
+    },
+    {
+      "slotKey": "2026-05-20T03:50+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T19:50:00.000Z",
+      "timeLabel": "03:50",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/03-50.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.012128,
+        "maxLat": 25.058202,
+        "minLon": 121.444688,
+        "maxLon": 121.5975
+      }
+    },
+    {
+      "slotKey": "2026-05-20T03:55+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T19:55:00.000Z",
+      "timeLabel": "03:55",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/03-55.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.012127,
+        "maxLat": 25.058223,
+        "minLon": 121.444693,
+        "maxLon": 121.597477
+      }
+    },
+    {
+      "slotKey": "2026-05-20T04:00+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T20:00:00.000Z",
+      "timeLabel": "04:00",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/04-00.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.012113,
+        "maxLat": 25.058223,
+        "minLon": 121.444662,
+        "maxLon": 121.59741
+      }
+    },
+    {
+      "slotKey": "2026-05-20T04:05+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T20:05:00.000Z",
+      "timeLabel": "04:05",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/04-05.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.012112,
+        "maxLat": 25.058215,
+        "minLon": 121.444675,
+        "maxLon": 121.597408
+      }
+    },
+    {
+      "slotKey": "2026-05-20T04:10+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T20:10:00.000Z",
+      "timeLabel": "04:10",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/04-10.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.012108,
+        "maxLat": 25.058217,
+        "minLon": 121.44468,
+        "maxLon": 121.5974
+      }
+    },
+    {
+      "slotKey": "2026-05-20T04:15+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T20:15:00.000Z",
+      "timeLabel": "04:15",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/04-15.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.012185,
+        "maxLat": 25.058252,
+        "minLon": 121.444645,
+        "maxLon": 121.597423
+      }
+    },
+    {
+      "slotKey": "2026-05-20T04:20+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T20:20:00.000Z",
+      "timeLabel": "04:20",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/04-20.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.012125,
+        "maxLat": 25.058243,
+        "minLon": 121.444723,
+        "maxLon": 121.597432
+      }
+    },
+    {
+      "slotKey": "2026-05-20T04:25+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T20:25:00.000Z",
+      "timeLabel": "04:25",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/04-25.json",
+      "count": 10,
+      "routeCount": 2,
+      "bounds": {
+        "minLat": 25.012123,
+        "maxLat": 25.058245,
+        "minLon": 121.444725,
+        "maxLon": 121.597432
+      }
+    },
+    {
+      "slotKey": "2026-05-20T04:30+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T20:30:00.000Z",
+      "timeLabel": "04:30",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/04-30.json",
+      "count": 11,
+      "routeCount": 3,
+      "bounds": {
+        "minLat": 25.012123,
+        "maxLat": 25.092285,
+        "minLon": 121.444728,
+        "maxLon": 121.597432
+      }
+    },
+    {
+      "slotKey": "2026-05-20T04:35+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T20:35:00.000Z",
+      "timeLabel": "04:35",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/04-35.json",
+      "count": 11,
+      "routeCount": 3,
+      "bounds": {
+        "minLat": 25.012123,
+        "maxLat": 25.084223,
+        "minLon": 121.444723,
+        "maxLon": 121.597432
+      }
+    },
+    {
+      "slotKey": "2026-05-20T04:40+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T20:40:00.000Z",
+      "timeLabel": "04:40",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/04-40.json",
+      "count": 11,
+      "routeCount": 3,
+      "bounds": {
+        "minLat": 25.012123,
+        "maxLat": 25.075378,
+        "minLon": 121.444723,
+        "maxLon": 121.59743
+      }
+    },
+    {
+      "slotKey": "2026-05-20T04:45+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T20:45:00.000Z",
+      "timeLabel": "04:45",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/04-45.json",
+      "count": 11,
+      "routeCount": 3,
+      "bounds": {
+        "minLat": 25.012182,
+        "maxLat": 25.071903,
+        "minLon": 121.444647,
+        "maxLon": 121.597428
+      }
+    },
+    {
+      "slotKey": "2026-05-20T04:50+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T20:50:00.000Z",
+      "timeLabel": "04:50",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/04-50.json",
+      "count": 11,
+      "routeCount": 3,
+      "bounds": {
+        "minLat": 25.012123,
+        "maxLat": 25.071872,
+        "minLon": 121.444695,
+        "maxLon": 121.6008
+      }
+    },
+    {
+      "slotKey": "2026-05-20T04:55+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T20:55:00.000Z",
+      "timeLabel": "04:55",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/04-55.json",
+      "count": 11,
+      "routeCount": 3,
+      "bounds": {
+        "minLat": 25.01212,
+        "maxLat": 25.071872,
+        "minLon": 121.444697,
+        "maxLon": 121.6008
+      }
+    },
+    {
+      "slotKey": "2026-05-20T05:00+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T21:00:00.000Z",
+      "timeLabel": "05:00",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/05-00.json",
+      "count": 11,
+      "routeCount": 3,
+      "bounds": {
+        "minLat": 25.012115,
+        "maxLat": 25.071872,
+        "minLon": 121.444717,
+        "maxLon": 121.6008
+      }
+    },
+    {
+      "slotKey": "2026-05-20T05:05+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T21:05:00.000Z",
+      "timeLabel": "05:05",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/05-05.json",
+      "count": 12,
+      "routeCount": 3,
+      "bounds": {
+        "minLat": 25.010163,
+        "maxLat": 25.071872,
+        "minLon": 121.449827,
+        "maxLon": 121.600902
+      }
+    },
+    {
+      "slotKey": "2026-05-20T05:10+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T21:10:00.000Z",
+      "timeLabel": "05:10",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/05-10.json",
+      "count": 17,
+      "routeCount": 6,
+      "bounds": {
+        "minLat": 24.960908,
+        "maxLat": 25.09514,
+        "minLon": 121.432562,
+        "maxLon": 121.62369
+      }
+    },
+    {
+      "slotKey": "2026-05-20T05:15+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T21:15:00.000Z",
+      "timeLabel": "05:15",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/05-15.json",
+      "count": 22,
+      "routeCount": 7,
+      "bounds": {
+        "minLat": 24.958057,
+        "maxLat": 25.100572,
+        "minLon": 121.426412,
+        "maxLon": 121.623612
+      }
+    },
+    {
+      "slotKey": "2026-05-20T05:20+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T21:20:00.000Z",
+      "timeLabel": "05:20",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/05-20.json",
+      "count": 23,
+      "routeCount": 7,
+      "bounds": {
+        "minLat": 24.960218,
+        "maxLat": 25.107423,
+        "minLon": 121.424,
+        "maxLon": 121.623723
+      }
+    },
+    {
+      "slotKey": "2026-05-20T05:25+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T21:25:00.000Z",
+      "timeLabel": "05:25",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/05-25.json",
+      "count": 26,
+      "routeCount": 9,
+      "bounds": {
+        "minLat": 24.955817,
+        "maxLat": 25.13002,
+        "minLon": 121.43263,
+        "maxLon": 121.623693
+      }
+    },
+    {
+      "slotKey": "2026-05-20T05:30+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T21:30:00.000Z",
+      "timeLabel": "05:30",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/05-30.json",
+      "count": 32,
+      "routeCount": 12,
+      "bounds": {
+        "minLat": 24.95717,
+        "maxLat": 25.148283,
+        "minLon": 121.426218,
+        "maxLon": 121.635275
+      }
+    },
+    {
+      "slotKey": "2026-05-20T05:35+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T21:35:00.000Z",
+      "timeLabel": "05:35",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/05-35.json",
+      "count": 39,
+      "routeCount": 13,
+      "bounds": {
+        "minLat": 24.960867,
+        "maxLat": 25.151628,
+        "minLon": 121.42597,
+        "maxLon": 121.633987
+      }
+    },
+    {
+      "slotKey": "2026-05-20T05:40+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T21:40:00.000Z",
+      "timeLabel": "05:40",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/05-40.json",
+      "count": 45,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.95474,
+        "maxLat": 25.142707,
+        "minLon": 121.42416,
+        "maxLon": 121.631573
+      }
+    },
+    {
+      "slotKey": "2026-05-20T05:45+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T21:45:00.000Z",
+      "timeLabel": "05:45",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/05-45.json",
+      "count": 51,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.95803,
+        "maxLat": 25.136215,
+        "minLon": 121.427345,
+        "maxLon": 121.638197
+      }
+    },
+    {
+      "slotKey": "2026-05-20T05:50+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T21:50:00.000Z",
+      "timeLabel": "05:50",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/05-50.json",
+      "count": 62,
+      "routeCount": 17,
+      "bounds": {
+        "minLat": 24.95417,
+        "maxLat": 25.14521,
+        "minLon": 121.427372,
+        "maxLon": 121.638022
+      }
+    },
+    {
+      "slotKey": "2026-05-20T05:55+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T21:55:00.000Z",
+      "timeLabel": "05:55",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/05-55.json",
+      "count": 72,
+      "routeCount": 18,
+      "bounds": {
+        "minLat": 24.959825,
+        "maxLat": 25.149703,
+        "minLon": 121.42598,
+        "maxLon": 121.638285
+      }
+    },
+    {
+      "slotKey": "2026-05-20T06:00+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T22:00:00.000Z",
+      "timeLabel": "06:00",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/06-00.json",
+      "count": 78,
+      "routeCount": 18,
+      "bounds": {
+        "minLat": 24.957218,
+        "maxLat": 25.142735,
+        "minLon": 121.424042,
+        "maxLon": 121.636253
+      }
+    },
+    {
+      "slotKey": "2026-05-20T06:05+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T22:05:00.000Z",
+      "timeLabel": "06:05",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/06-05.json",
+      "count": 84,
+      "routeCount": 18,
+      "bounds": {
+        "minLat": 24.957903,
+        "maxLat": 25.143702,
+        "minLon": 121.425728,
+        "maxLon": 121.634328
+      }
+    },
+    {
+      "slotKey": "2026-05-20T06:10+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T22:10:00.000Z",
+      "timeLabel": "06:10",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/06-10.json",
+      "count": 95,
+      "routeCount": 18,
+      "bounds": {
+        "minLat": 24.958545,
+        "maxLat": 25.13799,
+        "minLon": 121.42389,
+        "maxLon": 121.637138
+      }
+    },
+    {
+      "slotKey": "2026-05-20T06:15+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T22:15:00.000Z",
+      "timeLabel": "06:15",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/06-15.json",
+      "count": 97,
+      "routeCount": 18,
+      "bounds": {
+        "minLat": 24.95501,
+        "maxLat": 25.128878,
+        "minLon": 121.426043,
+        "maxLon": 121.636748
+      }
+    },
+    {
+      "slotKey": "2026-05-20T06:20+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T22:20:00.000Z",
+      "timeLabel": "06:20",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/06-20.json",
+      "count": 105,
+      "routeCount": 18,
+      "bounds": {
+        "minLat": 24.958313,
+        "maxLat": 25.141242,
+        "minLon": 121.424188,
+        "maxLon": 121.634778
+      }
+    },
+    {
+      "slotKey": "2026-05-20T06:25+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T22:25:00.000Z",
+      "timeLabel": "06:25",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/06-25.json",
+      "count": 117,
+      "routeCount": 19,
+      "bounds": {
+        "minLat": 24.954557,
+        "maxLat": 25.150298,
+        "minLon": 121.426628,
+        "maxLon": 121.632943
+      }
+    },
+    {
+      "slotKey": "2026-05-20T06:30+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T22:30:00.000Z",
+      "timeLabel": "06:30",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/06-30.json",
+      "count": 123,
+      "routeCount": 18,
+      "bounds": {
+        "minLat": 24.957477,
+        "maxLat": 25.151097,
+        "minLon": 121.418397,
+        "maxLon": 121.636127
+      }
+    },
+    {
+      "slotKey": "2026-05-20T06:35+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T22:35:00.000Z",
+      "timeLabel": "06:35",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/06-35.json",
+      "count": 132,
+      "routeCount": 19,
+      "bounds": {
+        "minLat": 24.957822,
+        "maxLat": 25.143025,
+        "minLon": 121.421843,
+        "maxLon": 121.63634
+      }
+    },
+    {
+      "slotKey": "2026-05-20T06:40+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T22:40:00.000Z",
+      "timeLabel": "06:40",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/06-40.json",
+      "count": 138,
+      "routeCount": 19,
+      "bounds": {
+        "minLat": 24.958113,
+        "maxLat": 25.130755,
+        "minLon": 121.425955,
+        "maxLon": 121.63735
+      }
+    },
+    {
+      "slotKey": "2026-05-20T06:45+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T22:45:00.000Z",
+      "timeLabel": "06:45",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/06-45.json",
+      "count": 141,
+      "routeCount": 19,
+      "bounds": {
+        "minLat": 24.954442,
+        "maxLat": 25.135158,
+        "minLon": 121.426375,
+        "maxLon": 121.636363
+      }
+    },
+    {
+      "slotKey": "2026-05-20T06:50+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T22:50:00.000Z",
+      "timeLabel": "06:50",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/06-50.json",
+      "count": 149,
+      "routeCount": 19,
+      "bounds": {
+        "minLat": 24.958932,
+        "maxLat": 25.143622,
+        "minLon": 121.424112,
+        "maxLon": 121.638007
+      }
+    },
+    {
+      "slotKey": "2026-05-20T06:55+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T22:55:00.000Z",
+      "timeLabel": "06:55",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/06-55.json",
+      "count": 151,
+      "routeCount": 19,
+      "bounds": {
+        "minLat": 24.95827,
+        "maxLat": 25.137992,
+        "minLon": 121.42408,
+        "maxLon": 121.63866
+      }
+    },
+    {
+      "slotKey": "2026-05-20T07:00+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T23:00:00.000Z",
+      "timeLabel": "07:00",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/07-00.json",
+      "count": 158,
+      "routeCount": 19,
+      "bounds": {
+        "minLat": 24.958363,
+        "maxLat": 25.12739,
+        "minLon": 121.424083,
+        "maxLon": 121.636225
+      }
+    },
+    {
+      "slotKey": "2026-05-20T07:05+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T23:05:00.000Z",
+      "timeLabel": "07:05",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/07-05.json",
+      "count": 166,
+      "routeCount": 19,
+      "bounds": {
+        "minLat": 24.958442,
+        "maxLat": 25.138707,
+        "minLon": 121.425453,
+        "maxLon": 121.638107
+      }
+    },
+    {
+      "slotKey": "2026-05-20T07:10+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T23:10:00.000Z",
+      "timeLabel": "07:10",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/07-10.json",
+      "count": 170,
+      "routeCount": 19,
+      "bounds": {
+        "minLat": 24.958442,
+        "maxLat": 25.1436,
+        "minLon": 121.425528,
+        "maxLon": 121.636013
+      }
+    },
+    {
+      "slotKey": "2026-05-20T07:15+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T23:15:00.000Z",
+      "timeLabel": "07:15",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/07-15.json",
+      "count": 176,
+      "routeCount": 19,
+      "bounds": {
+        "minLat": 24.954517,
+        "maxLat": 25.134633,
+        "minLon": 121.425967,
+        "maxLon": 121.638165
+      }
+    },
+    {
+      "slotKey": "2026-05-20T07:20+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T23:20:00.000Z",
+      "timeLabel": "07:20",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/07-20.json",
+      "count": 182,
+      "routeCount": 19,
+      "bounds": {
+        "minLat": 24.958442,
+        "maxLat": 25.13072,
+        "minLon": 121.423847,
+        "maxLon": 121.638587
+      }
+    },
+    {
+      "slotKey": "2026-05-20T07:25+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T23:25:00.000Z",
+      "timeLabel": "07:25",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/07-25.json",
+      "count": 184,
+      "routeCount": 19,
+      "bounds": {
+        "minLat": 24.959412,
+        "maxLat": 25.141757,
+        "minLon": 121.426018,
+        "maxLon": 121.638103
+      }
+    },
+    {
+      "slotKey": "2026-05-20T07:30+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T23:30:00.000Z",
+      "timeLabel": "07:30",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/07-30.json",
+      "count": 185,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.954555,
+        "maxLat": 25.141932,
+        "minLon": 121.424157,
+        "maxLon": 121.637187
+      }
+    },
+    {
+      "slotKey": "2026-05-20T07:35+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T23:35:00.000Z",
+      "timeLabel": "07:35",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/07-35.json",
+      "count": 188,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.958675,
+        "maxLat": 25.137295,
+        "minLon": 121.426243,
+        "maxLon": 121.638242
+      }
+    },
+    {
+      "slotKey": "2026-05-20T07:40+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T23:40:00.000Z",
+      "timeLabel": "07:40",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/07-40.json",
+      "count": 188,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.958608,
+        "maxLat": 25.14411,
+        "minLon": 121.424168,
+        "maxLon": 121.638942
+      }
+    },
+    {
+      "slotKey": "2026-05-20T07:45+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T23:45:00.000Z",
+      "timeLabel": "07:45",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/07-45.json",
+      "count": 190,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.961472,
+        "maxLat": 25.142188,
+        "minLon": 121.425945,
+        "maxLon": 121.636118
+      }
+    },
+    {
+      "slotKey": "2026-05-20T07:50+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T23:50:00.000Z",
+      "timeLabel": "07:50",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/07-50.json",
+      "count": 192,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.958383,
+        "maxLat": 25.139365,
+        "minLon": 121.426385,
+        "maxLon": 121.637842
+      }
+    },
+    {
+      "slotKey": "2026-05-20T07:55+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-19T23:55:00.000Z",
+      "timeLabel": "07:55",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/07-55.json",
+      "count": 192,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.958428,
+        "maxLat": 25.135497,
+        "minLon": 121.424567,
+        "maxLon": 121.637647
+      }
+    },
+    {
+      "slotKey": "2026-05-20T08:00+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T00:00:00.000Z",
+      "timeLabel": "08:00",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/08-00.json",
+      "count": 194,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.954623,
+        "maxLat": 25.146245,
+        "minLon": 121.426625,
+        "maxLon": 121.637345
+      }
+    },
+    {
+      "slotKey": "2026-05-20T08:05+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T00:05:00.000Z",
+      "timeLabel": "08:05",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/08-05.json",
+      "count": 197,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.958483,
+        "maxLat": 25.142325,
+        "minLon": 121.423907,
+        "maxLon": 121.638933
+      }
+    },
+    {
+      "slotKey": "2026-05-20T08:10+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T00:10:00.000Z",
+      "timeLabel": "08:10",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/08-10.json",
+      "count": 198,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.95847,
+        "maxLat": 25.140983,
+        "minLon": 121.425418,
+        "maxLon": 121.636613
+      }
+    },
+    {
+      "slotKey": "2026-05-20T08:15+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T00:15:00.000Z",
+      "timeLabel": "08:15",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/08-15.json",
+      "count": 200,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.958417,
+        "maxLat": 25.13071,
+        "minLon": 121.42586,
+        "maxLon": 121.637483
+      }
+    },
+    {
+      "slotKey": "2026-05-20T08:20+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T00:20:00.000Z",
+      "timeLabel": "08:20",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/08-20.json",
+      "count": 201,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.95841,
+        "maxLat": 25.123243,
+        "minLon": 121.42514,
+        "maxLon": 121.636257
+      }
+    },
+    {
+      "slotKey": "2026-05-20T08:25+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T00:25:00.000Z",
+      "timeLabel": "08:25",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/08-25.json",
+      "count": 203,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.958383,
+        "maxLat": 25.13375,
+        "minLon": 121.42646,
+        "maxLon": 121.63661
+      }
+    },
+    {
+      "slotKey": "2026-05-20T08:30+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T00:30:00.000Z",
+      "timeLabel": "08:30",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/08-30.json",
+      "count": 191,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.958273,
+        "maxLat": 25.145922,
+        "minLon": 121.426318,
+        "maxLon": 121.63764
+      }
+    },
+    {
+      "slotKey": "2026-05-20T08:35+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T00:35:00.000Z",
+      "timeLabel": "08:35",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/08-35.json",
+      "count": 186,
+      "routeCount": 19,
+      "bounds": {
+        "minLat": 24.958383,
+        "maxLat": 25.144407,
+        "minLon": 121.42511,
+        "maxLon": 121.637807
+      }
+    },
+    {
+      "slotKey": "2026-05-20T08:40+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T00:40:00.000Z",
+      "timeLabel": "08:40",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/08-40.json",
+      "count": 186,
+      "routeCount": 19,
+      "bounds": {
+        "minLat": 24.958203,
+        "maxLat": 25.137968,
+        "minLon": 121.426155,
+        "maxLon": 121.636418
+      }
+    },
+    {
+      "slotKey": "2026-05-20T08:45+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T00:45:00.000Z",
+      "timeLabel": "08:45",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/08-45.json",
+      "count": 185,
+      "routeCount": 19,
+      "bounds": {
+        "minLat": 24.958412,
+        "maxLat": 25.120473,
+        "minLon": 121.42401,
+        "maxLon": 121.638672
+      }
+    },
+    {
+      "slotKey": "2026-05-20T08:50+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T00:50:00.000Z",
+      "timeLabel": "08:50",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/08-50.json",
+      "count": 185,
+      "routeCount": 19,
+      "bounds": {
+        "minLat": 24.958395,
+        "maxLat": 25.136548,
+        "minLon": 121.423903,
+        "maxLon": 121.637328
+      }
+    },
+    {
+      "slotKey": "2026-05-20T08:55+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T00:55:00.000Z",
+      "timeLabel": "08:55",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/08-55.json",
+      "count": 185,
+      "routeCount": 19,
+      "bounds": {
+        "minLat": 24.958158,
+        "maxLat": 25.13731,
+        "minLon": 121.426073,
+        "maxLon": 121.633588
+      }
+    },
+    {
+      "slotKey": "2026-05-20T09:00+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T01:00:00.000Z",
+      "timeLabel": "09:00",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/09-00.json",
+      "count": 205,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.958167,
+        "maxLat": 25.139437,
+        "minLon": 121.426538,
+        "maxLon": 121.637372
+      }
+    },
+    {
+      "slotKey": "2026-05-20T09:05+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T01:05:00.000Z",
+      "timeLabel": "09:05",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/09-05.json",
+      "count": 206,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.958145,
+        "maxLat": 25.14245,
+        "minLon": 121.426933,
+        "maxLon": 121.638102
+      }
+    },
+    {
+      "slotKey": "2026-05-20T09:10+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T01:10:00.000Z",
+      "timeLabel": "09:10",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/09-10.json",
+      "count": 208,
+      "routeCount": 19,
+      "bounds": {
+        "minLat": 24.95847,
+        "maxLat": 25.131248,
+        "minLon": 121.420247,
+        "maxLon": 121.63891
+      }
+    },
+    {
+      "slotKey": "2026-05-20T09:15+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T01:15:00.000Z",
+      "timeLabel": "09:15",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/09-15.json",
+      "count": 207,
+      "routeCount": 18,
+      "bounds": {
+        "minLat": 24.95856,
+        "maxLat": 25.146073,
+        "minLon": 121.414963,
+        "maxLon": 121.637898
+      }
+    },
+    {
+      "slotKey": "2026-05-20T09:20+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T01:20:00.000Z",
+      "timeLabel": "09:20",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/09-20.json",
+      "count": 204,
+      "routeCount": 18,
+      "bounds": {
+        "minLat": 24.958178,
+        "maxLat": 25.139438,
+        "minLon": 121.425605,
+        "maxLon": 121.63433
+      }
+    },
+    {
+      "slotKey": "2026-05-20T09:25+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T01:25:00.000Z",
+      "timeLabel": "09:25",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/09-25.json",
+      "count": 204,
+      "routeCount": 18,
+      "bounds": {
+        "minLat": 24.954583,
+        "maxLat": 25.141948,
+        "minLon": 121.425958,
+        "maxLon": 121.6384
+      }
+    },
+    {
+      "slotKey": "2026-05-20T09:30+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T01:30:00.000Z",
+      "timeLabel": "09:30",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/09-30.json",
+      "count": 205,
+      "routeCount": 18,
+      "bounds": {
+        "minLat": 24.960195,
+        "maxLat": 25.142233,
+        "minLon": 121.423862,
+        "maxLon": 121.638823
+      }
+    },
+    {
+      "slotKey": "2026-05-20T09:35+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T01:35:00.000Z",
+      "timeLabel": "09:35",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/09-35.json",
+      "count": 205,
+      "routeCount": 18,
+      "bounds": {
+        "minLat": 24.958578,
+        "maxLat": 25.14359,
+        "minLon": 121.425973,
+        "maxLon": 121.637983
+      }
+    },
+    {
+      "slotKey": "2026-05-20T09:40+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T01:40:00.000Z",
+      "timeLabel": "09:40",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/09-40.json",
+      "count": 205,
+      "routeCount": 18,
+      "bounds": {
+        "minLat": 24.9581,
+        "maxLat": 25.136208,
+        "minLon": 121.425905,
+        "maxLon": 121.637978
+      }
+    },
+    {
+      "slotKey": "2026-05-20T09:45+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T01:45:00.000Z",
+      "timeLabel": "09:45",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/09-45.json",
+      "count": 205,
+      "routeCount": 18,
+      "bounds": {
+        "minLat": 24.955455,
+        "maxLat": 25.1314,
+        "minLon": 121.426232,
+        "maxLon": 121.63387
+      }
+    },
+    {
+      "slotKey": "2026-05-20T09:50+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T01:50:00.000Z",
+      "timeLabel": "09:50",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/09-50.json",
+      "count": 204,
+      "routeCount": 18,
+      "bounds": {
+        "minLat": 24.958212,
+        "maxLat": 25.13869,
+        "minLon": 121.424108,
+        "maxLon": 121.638522
+      }
+    },
+    {
+      "slotKey": "2026-05-20T09:55+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T01:55:00.000Z",
+      "timeLabel": "09:55",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/09-55.json",
+      "count": 205,
+      "routeCount": 18,
+      "bounds": {
+        "minLat": 24.958285,
+        "maxLat": 25.141147,
+        "minLon": 121.426925,
+        "maxLon": 121.638097
+      }
+    },
+    {
+      "slotKey": "2026-05-20T10:00+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T02:00:00.000Z",
+      "timeLabel": "10:00",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/10-00.json",
+      "count": 203,
+      "routeCount": 17,
+      "bounds": {
+        "minLat": 24.956408,
+        "maxLat": 25.144092,
+        "minLon": 121.425518,
+        "maxLon": 121.633653
+      }
+    },
+    {
+      "slotKey": "2026-05-20T10:05+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T02:05:00.000Z",
+      "timeLabel": "10:05",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/10-05.json",
+      "count": 203,
+      "routeCount": 17,
+      "bounds": {
+        "minLat": 24.958325,
+        "maxLat": 25.134857,
+        "minLon": 121.424428,
+        "maxLon": 121.637982
+      }
+    },
+    {
+      "slotKey": "2026-05-20T10:10+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T02:10:00.000Z",
+      "timeLabel": "10:10",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/10-10.json",
+      "count": 201,
+      "routeCount": 17,
+      "bounds": {
+        "minLat": 24.958367,
+        "maxLat": 25.130822,
+        "minLon": 121.424118,
+        "maxLon": 121.638773
+      }
+    },
+    {
+      "slotKey": "2026-05-20T10:15+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T02:15:00.000Z",
+      "timeLabel": "10:15",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/10-15.json",
+      "count": 195,
+      "routeCount": 17,
+      "bounds": {
+        "minLat": 24.958375,
+        "maxLat": 25.14133,
+        "minLon": 121.426092,
+        "maxLon": 121.634263
+      }
+    },
+    {
+      "slotKey": "2026-05-20T10:20+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T02:20:00.000Z",
+      "timeLabel": "10:20",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/10-20.json",
+      "count": 194,
+      "routeCount": 17,
+      "bounds": {
+        "minLat": 24.958382,
+        "maxLat": 25.13999,
+        "minLon": 121.423882,
+        "maxLon": 121.638633
+      }
+    },
+    {
+      "slotKey": "2026-05-20T10:25+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T02:25:00.000Z",
+      "timeLabel": "10:25",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/10-25.json",
+      "count": 193,
+      "routeCount": 17,
+      "bounds": {
+        "minLat": 24.958295,
+        "maxLat": 25.127347,
+        "minLon": 121.425958,
+        "maxLon": 121.633215
+      }
+    },
+    {
+      "slotKey": "2026-05-20T10:30+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T02:30:00.000Z",
+      "timeLabel": "10:30",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/10-30.json",
+      "count": 190,
+      "routeCount": 17,
+      "bounds": {
+        "minLat": 24.958295,
+        "maxLat": 25.128915,
+        "minLon": 121.425943,
+        "maxLon": 121.636567
+      }
+    },
+    {
+      "slotKey": "2026-05-20T10:35+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T02:35:00.000Z",
+      "timeLabel": "10:35",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/10-35.json",
+      "count": 189,
+      "routeCount": 17,
+      "bounds": {
+        "minLat": 24.958287,
+        "maxLat": 25.142233,
+        "minLon": 121.423655,
+        "maxLon": 121.637695
+      }
+    },
+    {
+      "slotKey": "2026-05-20T10:40+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T02:40:00.000Z",
+      "timeLabel": "10:40",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/10-40.json",
+      "count": 189,
+      "routeCount": 17,
+      "bounds": {
+        "minLat": 24.958295,
+        "maxLat": 25.142473,
+        "minLon": 121.425832,
+        "maxLon": 121.634323
+      }
+    },
+    {
+      "slotKey": "2026-05-20T10:45+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T02:45:00.000Z",
+      "timeLabel": "10:45",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/10-45.json",
+      "count": 189,
+      "routeCount": 17,
+      "bounds": {
+        "minLat": 24.958295,
+        "maxLat": 25.136867,
+        "minLon": 121.42603,
+        "maxLon": 121.637957
+      }
+    },
+    {
+      "slotKey": "2026-05-20T10:50+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T02:50:00.000Z",
+      "timeLabel": "10:50",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/10-50.json",
+      "count": 186,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.958432,
+        "maxLat": 25.131453,
+        "minLon": 121.424238,
+        "maxLon": 121.639
+      }
+    },
+    {
+      "slotKey": "2026-05-20T10:55+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T02:55:00.000Z",
+      "timeLabel": "10:55",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/10-55.json",
+      "count": 187,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.958273,
+        "maxLat": 25.137505,
+        "minLon": 121.423807,
+        "maxLon": 121.638905
+      }
+    },
+    {
+      "slotKey": "2026-05-20T11:00+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T03:00:00.000Z",
+      "timeLabel": "11:00",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/11-00.json",
+      "count": 189,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.957112,
+        "maxLat": 25.144435,
+        "minLon": 121.42599,
+        "maxLon": 121.633678
+      }
+    },
+    {
+      "slotKey": "2026-05-20T11:05+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T03:05:00.000Z",
+      "timeLabel": "11:05",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/11-05.json",
+      "count": 188,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.958432,
+        "maxLat": 25.138762,
+        "minLon": 121.426048,
+        "maxLon": 121.637938
+      }
+    },
+    {
+      "slotKey": "2026-05-20T11:10+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T03:10:00.000Z",
+      "timeLabel": "11:10",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/11-10.json",
+      "count": 186,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.958432,
+        "maxLat": 25.14157,
+        "minLon": 121.425993,
+        "maxLon": 121.637968
+      }
+    },
+    {
+      "slotKey": "2026-05-20T11:15+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T03:15:00.000Z",
+      "timeLabel": "11:15",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/11-15.json",
+      "count": 179,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.95859,
+        "maxLat": 25.131415,
+        "minLon": 121.426425,
+        "maxLon": 121.637795
+      }
+    },
+    {
+      "slotKey": "2026-05-20T11:20+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T03:20:00.000Z",
+      "timeLabel": "11:20",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/11-20.json",
+      "count": 180,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.958823,
+        "maxLat": 25.135213,
+        "minLon": 121.42398,
+        "maxLon": 121.636305
+      }
+    },
+    {
+      "slotKey": "2026-05-20T11:25+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T03:25:00.000Z",
+      "timeLabel": "11:25",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/11-25.json",
+      "count": 174,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.96158,
+        "maxLat": 25.14441,
+        "minLon": 121.421997,
+        "maxLon": 121.637987
+      }
+    },
+    {
+      "slotKey": "2026-05-20T11:30+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T03:30:00.000Z",
+      "timeLabel": "11:30",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/11-30.json",
+      "count": 173,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.959905,
+        "maxLat": 25.13801,
+        "minLon": 121.417543,
+        "maxLon": 121.63775
+      }
+    },
+    {
+      "slotKey": "2026-05-20T11:35+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T03:35:00.000Z",
+      "timeLabel": "11:35",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/11-35.json",
+      "count": 172,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.958142,
+        "maxLat": 25.11486,
+        "minLon": 121.416562,
+        "maxLon": 121.633068
+      }
+    },
+    {
+      "slotKey": "2026-05-20T11:40+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T03:40:00.000Z",
+      "timeLabel": "11:40",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/11-40.json",
+      "count": 169,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.958142,
+        "maxLat": 25.109497,
+        "minLon": 121.416523,
+        "maxLon": 121.637385
+      }
+    },
+    {
+      "slotKey": "2026-05-20T11:45+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T03:45:00.000Z",
+      "timeLabel": "11:45",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/11-45.json",
+      "count": 168,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.958292,
+        "maxLat": 25.118638,
+        "minLon": 121.41653,
+        "maxLon": 121.636462
+      }
+    },
+    {
+      "slotKey": "2026-05-20T11:50+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T03:50:00.000Z",
+      "timeLabel": "11:50",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/11-50.json",
+      "count": 169,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.958377,
+        "maxLat": 25.137413,
+        "minLon": 121.416533,
+        "maxLon": 121.635293
+      }
+    },
+    {
+      "slotKey": "2026-05-20T11:55+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T03:55:00.000Z",
+      "timeLabel": "11:55",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/11-55.json",
+      "count": 171,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.955157,
+        "maxLat": 25.144488,
+        "minLon": 121.4165,
+        "maxLon": 121.638708
+      }
+    },
+    {
+      "slotKey": "2026-05-20T12:00+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T04:00:00.000Z",
+      "timeLabel": "12:00",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/12-00.json",
+      "count": 171,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.958467,
+        "maxLat": 25.135348,
+        "minLon": 121.416545,
+        "maxLon": 121.634802
+      }
+    },
+    {
+      "slotKey": "2026-05-20T12:05+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T04:05:00.000Z",
+      "timeLabel": "12:05",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/12-05.json",
+      "count": 173,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.958678,
+        "maxLat": 25.122487,
+        "minLon": 121.41444,
+        "maxLon": 121.638995
+      }
+    },
+    {
+      "slotKey": "2026-05-20T12:10+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T04:10:00.000Z",
+      "timeLabel": "12:10",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/12-10.json",
+      "count": 173,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.957077,
+        "maxLat": 25.132638,
+        "minLon": 121.413973,
+        "maxLon": 121.637428
+      }
+    },
+    {
+      "slotKey": "2026-05-20T12:15+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T04:15:00.000Z",
+      "timeLabel": "12:15",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/12-15.json",
+      "count": 171,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.957275,
+        "maxLat": 25.144268,
+        "minLon": 121.41922,
+        "maxLon": 121.63652
+      }
+    },
+    {
+      "slotKey": "2026-05-20T12:20+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T04:20:00.000Z",
+      "timeLabel": "12:20",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/12-20.json",
+      "count": 174,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.958482,
+        "maxLat": 25.13805,
+        "minLon": 121.424065,
+        "maxLon": 121.633668
+      }
+    },
+    {
+      "slotKey": "2026-05-20T12:25+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T04:25:00.000Z",
+      "timeLabel": "12:25",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/12-25.json",
+      "count": 171,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.95491,
+        "maxLat": 25.119482,
+        "minLon": 121.426208,
+        "maxLon": 121.636353
+      }
+    },
+    {
+      "slotKey": "2026-05-20T12:30+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T04:30:00.000Z",
+      "timeLabel": "12:30",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/12-30.json",
+      "count": 165,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.955178,
+        "maxLat": 25.12775,
+        "minLon": 121.426313,
+        "maxLon": 121.638125
+      }
+    },
+    {
+      "slotKey": "2026-05-20T12:35+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T04:35:00.000Z",
+      "timeLabel": "12:35",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/12-35.json",
+      "count": 159,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.956193,
+        "maxLat": 25.14126,
+        "minLon": 121.424777,
+        "maxLon": 121.63112
+      }
+    },
+    {
+      "slotKey": "2026-05-20T12:40+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T04:40:00.000Z",
+      "timeLabel": "12:40",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/12-40.json",
+      "count": 154,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.9579,
+        "maxLat": 25.146465,
+        "minLon": 121.426362,
+        "maxLon": 121.638028
+      }
+    },
+    {
+      "slotKey": "2026-05-20T12:45+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T04:45:00.000Z",
+      "timeLabel": "12:45",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/12-45.json",
+      "count": 154,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.955942,
+        "maxLat": 25.143768,
+        "minLon": 121.424678,
+        "maxLon": 121.638277
+      }
+    },
+    {
+      "slotKey": "2026-05-20T12:50+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T04:50:00.000Z",
+      "timeLabel": "12:50",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/12-50.json",
+      "count": 155,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.958292,
+        "maxLat": 25.1314,
+        "minLon": 121.42611,
+        "maxLon": 121.63452
+      }
+    },
+    {
+      "slotKey": "2026-05-20T12:55+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T04:55:00.000Z",
+      "timeLabel": "12:55",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/12-55.json",
+      "count": 152,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.958078,
+        "maxLat": 25.139735,
+        "minLon": 121.426102,
+        "maxLon": 121.638172
+      }
+    },
+    {
+      "slotKey": "2026-05-20T13:00+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T05:00:00.000Z",
+      "timeLabel": "13:00",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/13-00.json",
+      "count": 167,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.95843,
+        "maxLat": 25.142705,
+        "minLon": 121.426503,
+        "maxLon": 121.634457
+      }
+    },
+    {
+      "slotKey": "2026-05-20T13:05+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T05:05:00.000Z",
+      "timeLabel": "13:05",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/13-05.json",
+      "count": 170,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.957205,
+        "maxLat": 25.138767,
+        "minLon": 121.424147,
+        "maxLon": 121.6386
+      }
+    },
+    {
+      "slotKey": "2026-05-20T13:10+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T05:10:00.000Z",
+      "timeLabel": "13:10",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/13-10.json",
+      "count": 171,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.959223,
+        "maxLat": 25.144532,
+        "minLon": 121.426013,
+        "maxLon": 121.636125
+      }
+    },
+    {
+      "slotKey": "2026-05-20T13:15+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T05:15:00.000Z",
+      "timeLabel": "13:15",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/13-15.json",
+      "count": 171,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.959253,
+        "maxLat": 25.1352,
+        "minLon": 121.425947,
+        "maxLon": 121.637075
+      }
+    },
+    {
+      "slotKey": "2026-05-20T13:20+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T05:20:00.000Z",
+      "timeLabel": "13:20",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/13-20.json",
+      "count": 174,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.954187,
+        "maxLat": 25.131825,
+        "minLon": 121.423767,
+        "maxLon": 121.635457
+      }
+    },
+    {
+      "slotKey": "2026-05-20T13:25+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T05:25:00.000Z",
+      "timeLabel": "13:25",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/13-25.json",
+      "count": 177,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.958527,
+        "maxLat": 25.141518,
+        "minLon": 121.425937,
+        "maxLon": 121.636622
+      }
+    },
+    {
+      "slotKey": "2026-05-20T13:30+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T05:30:00.000Z",
+      "timeLabel": "13:30",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/13-30.json",
+      "count": 176,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.960772,
+        "maxLat": 25.142237,
+        "minLon": 121.425993,
+        "maxLon": 121.63437
+      }
+    },
+    {
+      "slotKey": "2026-05-20T13:35+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T05:35:00.000Z",
+      "timeLabel": "13:35",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/13-35.json",
+      "count": 176,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.957168,
+        "maxLat": 25.138597,
+        "minLon": 121.426092,
+        "maxLon": 121.634127
+      }
+    },
+    {
+      "slotKey": "2026-05-20T13:40+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T05:40:00.000Z",
+      "timeLabel": "13:40",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/13-40.json",
+      "count": 175,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.95691,
+        "maxLat": 25.143648,
+        "minLon": 121.426477,
+        "maxLon": 121.637045
+      }
+    },
+    {
+      "slotKey": "2026-05-20T13:45+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T05:45:00.000Z",
+      "timeLabel": "13:45",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/13-45.json",
+      "count": 177,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.955028,
+        "maxLat": 25.13418,
+        "minLon": 121.426582,
+        "maxLon": 121.63809
+      }
+    },
+    {
+      "slotKey": "2026-05-20T13:50+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T05:50:00.000Z",
+      "timeLabel": "13:50",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/13-50.json",
+      "count": 172,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.957205,
+        "maxLat": 25.134517,
+        "minLon": 121.426058,
+        "maxLon": 121.638822
+      }
+    },
+    {
+      "slotKey": "2026-05-20T13:55+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T05:55:00.000Z",
+      "timeLabel": "13:55",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/13-55.json",
+      "count": 169,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.956835,
+        "maxLat": 25.142998,
+        "minLon": 121.426605,
+        "maxLon": 121.637678
+      }
+    },
+    {
+      "slotKey": "2026-05-20T14:00+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T06:00:00.000Z",
+      "timeLabel": "14:00",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/14-00.json",
+      "count": 175,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.959398,
+        "maxLat": 25.138913,
+        "minLon": 121.426682,
+        "maxLon": 121.6379
+      }
+    },
+    {
+      "slotKey": "2026-05-20T14:05+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T06:05:00.000Z",
+      "timeLabel": "14:05",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/14-05.json",
+      "count": 173,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.954875,
+        "maxLat": 25.137272,
+        "minLon": 121.42722,
+        "maxLon": 121.638255
+      }
+    },
+    {
+      "slotKey": "2026-05-20T14:10+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T06:10:00.000Z",
+      "timeLabel": "14:10",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/14-10.json",
+      "count": 172,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.95853,
+        "maxLat": 25.125708,
+        "minLon": 121.425907,
+        "maxLon": 121.638948
+      }
+    },
+    {
+      "slotKey": "2026-05-20T14:15+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T06:15:00.000Z",
+      "timeLabel": "14:15",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/14-15.json",
+      "count": 170,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.95853,
+        "maxLat": 25.109895,
+        "minLon": 121.427355,
+        "maxLon": 121.63624
+      }
+    },
+    {
+      "slotKey": "2026-05-20T14:20+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T06:20:00.000Z",
+      "timeLabel": "14:20",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/14-20.json",
+      "count": 168,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.958453,
+        "maxLat": 25.109478,
+        "minLon": 121.424207,
+        "maxLon": 121.631378
+      }
+    },
+    {
+      "slotKey": "2026-05-20T14:25+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T06:25:00.000Z",
+      "timeLabel": "14:25",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/14-25.json",
+      "count": 168,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.957098,
+        "maxLat": 25.113097,
+        "minLon": 121.425567,
+        "maxLon": 121.638445
+      }
+    },
+    {
+      "slotKey": "2026-05-20T14:30+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T06:30:00.000Z",
+      "timeLabel": "14:30",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/14-30.json",
+      "count": 168,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.955047,
+        "maxLat": 25.134675,
+        "minLon": 121.423867,
+        "maxLon": 121.638822
+      }
+    },
+    {
+      "slotKey": "2026-05-20T14:35+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T06:35:00.000Z",
+      "timeLabel": "14:35",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/14-35.json",
+      "count": 166,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.958518,
+        "maxLat": 25.142105,
+        "minLon": 121.425993,
+        "maxLon": 121.633553
+      }
+    },
+    {
+      "slotKey": "2026-05-20T14:40+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T06:40:00.000Z",
+      "timeLabel": "14:40",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/14-40.json",
+      "count": 167,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.954222,
+        "maxLat": 25.13996,
+        "minLon": 121.425598,
+        "maxLon": 121.637443
+      }
+    },
+    {
+      "slotKey": "2026-05-20T14:45+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T06:45:00.000Z",
+      "timeLabel": "14:45",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/14-45.json",
+      "count": 170,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.958495,
+        "maxLat": 25.13157,
+        "minLon": 121.425955,
+        "maxLon": 121.630263
+      }
+    },
+    {
+      "slotKey": "2026-05-20T14:50+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T06:50:00.000Z",
+      "timeLabel": "14:50",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/14-50.json",
+      "count": 172,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.956017,
+        "maxLat": 25.131573,
+        "minLon": 121.424218,
+        "maxLon": 121.639008
+      }
+    },
+    {
+      "slotKey": "2026-05-20T14:55+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T06:55:00.000Z",
+      "timeLabel": "14:55",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/14-55.json",
+      "count": 174,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.957988,
+        "maxLat": 25.139627,
+        "minLon": 121.425413,
+        "maxLon": 121.638275
+      }
+    },
+    {
+      "slotKey": "2026-05-20T15:00+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T07:00:00.000Z",
+      "timeLabel": "15:00",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/15-00.json",
+      "count": 171,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.954438,
+        "maxLat": 25.143923,
+        "minLon": 121.423738,
+        "maxLon": 121.637822
+      }
+    },
+    {
+      "slotKey": "2026-05-20T15:05+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T07:05:00.000Z",
+      "timeLabel": "15:05",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/15-05.json",
+      "count": 171,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.958342,
+        "maxLat": 25.138188,
+        "minLon": 121.426028,
+        "maxLon": 121.63483
+      }
+    },
+    {
+      "slotKey": "2026-05-20T15:10+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T07:10:00.000Z",
+      "timeLabel": "15:10",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/15-10.json",
+      "count": 172,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.958042,
+        "maxLat": 25.137263,
+        "minLon": 121.423688,
+        "maxLon": 121.634835
+      }
+    },
+    {
+      "slotKey": "2026-05-20T15:15+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T07:15:00.000Z",
+      "timeLabel": "15:15",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/15-15.json",
+      "count": 169,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.954285,
+        "maxLat": 25.13604,
+        "minLon": 121.424743,
+        "maxLon": 121.636318
+      }
+    },
+    {
+      "slotKey": "2026-05-20T15:20+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T07:20:00.000Z",
+      "timeLabel": "15:20",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/15-20.json",
+      "count": 167,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.95838,
+        "maxLat": 25.119982,
+        "minLon": 121.42403,
+        "maxLon": 121.636173
+      }
+    },
+    {
+      "slotKey": "2026-05-20T15:25+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T07:25:00.000Z",
+      "timeLabel": "15:25",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/15-25.json",
+      "count": 164,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.958413,
+        "maxLat": 25.109493,
+        "minLon": 121.4259,
+        "maxLon": 121.633435
+      }
+    },
+    {
+      "slotKey": "2026-05-20T15:30+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T07:30:00.000Z",
+      "timeLabel": "15:30",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/15-30.json",
+      "count": 151,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.958393,
+        "maxLat": 25.116865,
+        "minLon": 121.425565,
+        "maxLon": 121.633293
+      }
+    },
+    {
+      "slotKey": "2026-05-20T15:35+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T07:35:00.000Z",
+      "timeLabel": "15:35",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/15-35.json",
+      "count": 151,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.955063,
+        "maxLat": 25.133378,
+        "minLon": 121.424002,
+        "maxLon": 121.637843
+      }
+    },
+    {
+      "slotKey": "2026-05-20T15:40+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T07:40:00.000Z",
+      "timeLabel": "15:40",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/15-40.json",
+      "count": 149,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.957477,
+        "maxLat": 25.142543,
+        "minLon": 121.426493,
+        "maxLon": 121.634472
+      }
+    },
+    {
+      "slotKey": "2026-05-20T15:45+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T07:45:00.000Z",
+      "timeLabel": "15:45",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/15-45.json",
+      "count": 150,
+      "routeCount": 17,
+      "bounds": {
+        "minLat": 24.954528,
+        "maxLat": 25.139405,
+        "minLon": 121.425995,
+        "maxLon": 121.638275
+      }
+    },
+    {
+      "slotKey": "2026-05-20T15:50+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T07:50:00.000Z",
+      "timeLabel": "15:50",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/15-50.json",
+      "count": 154,
+      "routeCount": 17,
+      "bounds": {
+        "minLat": 24.957745,
+        "maxLat": 25.131545,
+        "minLon": 121.426077,
+        "maxLon": 121.637185
+      }
+    },
+    {
+      "slotKey": "2026-05-20T15:55+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T07:55:00.000Z",
+      "timeLabel": "15:55",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/15-55.json",
+      "count": 157,
+      "routeCount": 18,
+      "bounds": {
+        "minLat": 24.958377,
+        "maxLat": 25.13569,
+        "minLon": 121.424637,
+        "maxLon": 121.636333
+      }
+    },
+    {
+      "slotKey": "2026-05-20T16:00+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T08:00:00.000Z",
+      "timeLabel": "16:00",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/16-00.json",
+      "count": 172,
+      "routeCount": 19,
+      "bounds": {
+        "minLat": 24.954463,
+        "maxLat": 25.143778,
+        "minLon": 121.418357,
+        "maxLon": 121.635487
+      }
+    },
+    {
+      "slotKey": "2026-05-20T16:05+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T08:05:00.000Z",
+      "timeLabel": "16:05",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/16-05.json",
+      "count": 175,
+      "routeCount": 19,
+      "bounds": {
+        "minLat": 24.958512,
+        "maxLat": 25.138178,
+        "minLon": 121.414703,
+        "maxLon": 121.638218
+      }
+    },
+    {
+      "slotKey": "2026-05-20T16:10+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T08:10:00.000Z",
+      "timeLabel": "16:10",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/16-10.json",
+      "count": 178,
+      "routeCount": 19,
+      "bounds": {
+        "minLat": 24.95862,
+        "maxLat": 25.138747,
+        "minLon": 121.417865,
+        "maxLon": 121.638938
+      }
+    },
+    {
+      "slotKey": "2026-05-20T16:15+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T08:15:00.000Z",
+      "timeLabel": "16:15",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/16-15.json",
+      "count": 178,
+      "routeCount": 19,
+      "bounds": {
+        "minLat": 24.958787,
+        "maxLat": 25.137537,
+        "minLon": 121.424068,
+        "maxLon": 121.638628
+      }
+    },
+    {
+      "slotKey": "2026-05-20T16:20+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T08:20:00.000Z",
+      "timeLabel": "16:20",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/16-20.json",
+      "count": 182,
+      "routeCount": 19,
+      "bounds": {
+        "minLat": 24.958348,
+        "maxLat": 25.130013,
+        "minLon": 121.426082,
+        "maxLon": 121.637095
+      }
+    },
+    {
+      "slotKey": "2026-05-20T16:25+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T08:25:00.000Z",
+      "timeLabel": "16:25",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/16-25.json",
+      "count": 181,
+      "routeCount": 19,
+      "bounds": {
+        "minLat": 24.958332,
+        "maxLat": 25.129823,
+        "minLon": 121.426018,
+        "maxLon": 121.637905
+      }
+    },
+    {
+      "slotKey": "2026-05-20T16:30+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T08:30:00.000Z",
+      "timeLabel": "16:30",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/16-30.json",
+      "count": 185,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.958332,
+        "maxLat": 25.14575,
+        "minLon": 121.42375,
+        "maxLon": 121.63644
+      }
+    },
+    {
+      "slotKey": "2026-05-20T16:35+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T08:35:00.000Z",
+      "timeLabel": "16:35",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/16-35.json",
+      "count": 191,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.95473,
+        "maxLat": 25.134013,
+        "minLon": 121.425957,
+        "maxLon": 121.63882
+      }
+    },
+    {
+      "slotKey": "2026-05-20T16:40+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T08:40:00.000Z",
+      "timeLabel": "16:40",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/16-40.json",
+      "count": 193,
+      "routeCount": 21,
+      "bounds": {
+        "minLat": 24.96028,
+        "maxLat": 25.142228,
+        "minLon": 121.423855,
+        "maxLon": 121.637993
+      }
+    },
+    {
+      "slotKey": "2026-05-20T16:45+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T08:45:00.000Z",
+      "timeLabel": "16:45",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/16-45.json",
+      "count": 195,
+      "routeCount": 21,
+      "bounds": {
+        "minLat": 24.954108,
+        "maxLat": 25.142688,
+        "minLon": 121.425942,
+        "maxLon": 121.638957
+      }
+    },
+    {
+      "slotKey": "2026-05-20T16:50+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T08:50:00.000Z",
+      "timeLabel": "16:50",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/16-50.json",
+      "count": 197,
+      "routeCount": 21,
+      "bounds": {
+        "minLat": 24.958642,
+        "maxLat": 25.13522,
+        "minLon": 121.426847,
+        "maxLon": 121.63383
+      }
+    },
+    {
+      "slotKey": "2026-05-20T16:55+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T08:55:00.000Z",
+      "timeLabel": "16:55",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/16-55.json",
+      "count": 196,
+      "routeCount": 21,
+      "bounds": {
+        "minLat": 24.95857,
+        "maxLat": 25.131338,
+        "minLon": 121.425933,
+        "maxLon": 121.63358
+      }
+    },
+    {
+      "slotKey": "2026-05-20T17:00+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T09:00:00.000Z",
+      "timeLabel": "17:00",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/17-00.json",
+      "count": 197,
+      "routeCount": 21,
+      "bounds": {
+        "minLat": 24.958953,
+        "maxLat": 25.136115,
+        "minLon": 121.424242,
+        "maxLon": 121.63734
+      }
+    },
+    {
+      "slotKey": "2026-05-20T17:05+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T09:05:00.000Z",
+      "timeLabel": "17:05",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/17-05.json",
+      "count": 196,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.956992,
+        "maxLat": 25.144738,
+        "minLon": 121.425507,
+        "maxLon": 121.637875
+      }
+    },
+    {
+      "slotKey": "2026-05-20T17:10+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T09:10:00.000Z",
+      "timeLabel": "17:10",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/17-10.json",
+      "count": 199,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.95854,
+        "maxLat": 25.138015,
+        "minLon": 121.424595,
+        "maxLon": 121.635733
+      }
+    },
+    {
+      "slotKey": "2026-05-20T17:15+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T09:15:00.000Z",
+      "timeLabel": "17:15",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/17-15.json",
+      "count": 201,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.954367,
+        "maxLat": 25.13757,
+        "minLon": 121.426418,
+        "maxLon": 121.638018
+      }
+    },
+    {
+      "slotKey": "2026-05-20T17:20+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T09:20:00.000Z",
+      "timeLabel": "17:20",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/17-20.json",
+      "count": 201,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.959458,
+        "maxLat": 25.144652,
+        "minLon": 121.426002,
+        "maxLon": 121.638903
+      }
+    },
+    {
+      "slotKey": "2026-05-20T17:25+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T09:25:00.000Z",
+      "timeLabel": "17:25",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/17-25.json",
+      "count": 199,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.958277,
+        "maxLat": 25.141135,
+        "minLon": 121.426133,
+        "maxLon": 121.637752
+      }
+    },
+    {
+      "slotKey": "2026-05-20T17:30+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T09:30:00.000Z",
+      "timeLabel": "17:30",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/17-30.json",
+      "count": 198,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.958277,
+        "maxLat": 25.141135,
+        "minLon": 121.426133,
+        "maxLon": 121.637752
+      }
+    },
+    {
+      "slotKey": "2026-05-20T17:35+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T09:35:00.000Z",
+      "timeLabel": "17:35",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/17-35.json",
+      "count": 198,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.958277,
+        "maxLat": 25.141135,
+        "minLon": 121.426133,
+        "maxLon": 121.637752
+      }
+    },
+    {
+      "slotKey": "2026-05-20T17:40+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T09:40:00.000Z",
+      "timeLabel": "17:40",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/17-40.json",
+      "count": 203,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.957053,
+        "maxLat": 25.137038,
+        "minLon": 121.424237,
+        "maxLon": 121.637583
+      }
+    },
+    {
+      "slotKey": "2026-05-20T17:45+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T09:45:00.000Z",
+      "timeLabel": "17:45",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/17-45.json",
+      "count": 203,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.955968,
+        "maxLat": 25.143635,
+        "minLon": 121.426423,
+        "maxLon": 121.634903
+      }
+    },
+    {
+      "slotKey": "2026-05-20T17:50+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T09:50:00.000Z",
+      "timeLabel": "17:50",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/17-50.json",
+      "count": 203,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.955487,
+        "maxLat": 25.138922,
+        "minLon": 121.425843,
+        "maxLon": 121.636077
+      }
+    },
+    {
+      "slotKey": "2026-05-20T17:55+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T09:55:00.000Z",
+      "timeLabel": "17:55",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/17-55.json",
+      "count": 201,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.95634,
+        "maxLat": 25.130975,
+        "minLon": 121.42391,
+        "maxLon": 121.637945
+      }
+    },
+    {
+      "slotKey": "2026-05-20T18:00+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T10:00:00.000Z",
+      "timeLabel": "18:00",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/18-00.json",
+      "count": 195,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.95634,
+        "maxLat": 25.140892,
+        "minLon": 121.424475,
+        "maxLon": 121.636192
+      }
+    },
+    {
+      "slotKey": "2026-05-20T18:05+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T10:05:00.000Z",
+      "timeLabel": "18:05",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/18-05.json",
+      "count": 198,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.95634,
+        "maxLat": 25.143078,
+        "minLon": 121.423828,
+        "maxLon": 121.635888
+      }
+    },
+    {
+      "slotKey": "2026-05-20T18:10+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T10:10:00.000Z",
+      "timeLabel": "18:10",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/18-10.json",
+      "count": 200,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.95634,
+        "maxLat": 25.13648,
+        "minLon": 121.425473,
+        "maxLon": 121.636485
+      }
+    },
+    {
+      "slotKey": "2026-05-20T18:15+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T10:15:00.000Z",
+      "timeLabel": "18:15",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/18-15.json",
+      "count": 202,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.95634,
+        "maxLat": 25.131357,
+        "minLon": 121.426203,
+        "maxLon": 121.635925
+      }
+    },
+    {
+      "slotKey": "2026-05-20T18:20+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T10:20:00.000Z",
+      "timeLabel": "18:20",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/18-20.json",
+      "count": 202,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.95634,
+        "maxLat": 25.139563,
+        "minLon": 121.426015,
+        "maxLon": 121.636598
+      }
+    },
+    {
+      "slotKey": "2026-05-20T18:25+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T10:25:00.000Z",
+      "timeLabel": "18:25",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/18-25.json",
+      "count": 198,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.960805,
+        "maxLat": 25.14313,
+        "minLon": 121.425862,
+        "maxLon": 121.638382
+      }
+    },
+    {
+      "slotKey": "2026-05-20T18:30+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T10:30:00.000Z",
+      "timeLabel": "18:30",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/18-30.json",
+      "count": 199,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.95458,
+        "maxLat": 25.134843,
+        "minLon": 121.42387,
+        "maxLon": 121.633058
+      }
+    },
+    {
+      "slotKey": "2026-05-20T18:35+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T10:35:00.000Z",
+      "timeLabel": "18:35",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/18-35.json",
+      "count": 198,
+      "routeCount": 20,
+      "bounds": {
+        "minLat": 24.955045,
+        "maxLat": 25.113328,
+        "minLon": 121.424687,
+        "maxLon": 121.638912
+      }
+    },
+    {
+      "slotKey": "2026-05-20T18:40+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T10:40:00.000Z",
+      "timeLabel": "18:40",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/18-40.json",
+      "count": 198,
+      "routeCount": 19,
+      "bounds": {
+        "minLat": 24.95863,
+        "maxLat": 25.115887,
+        "minLon": 121.425627,
+        "maxLon": 121.63755
+      }
+    },
+    {
+      "slotKey": "2026-05-20T18:45+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T10:45:00.000Z",
+      "timeLabel": "18:45",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/18-45.json",
+      "count": 197,
+      "routeCount": 19,
+      "bounds": {
+        "minLat": 24.960578,
+        "maxLat": 25.123398,
+        "minLon": 121.42468,
+        "maxLon": 121.6381
+      }
+    },
+    {
+      "slotKey": "2026-05-20T18:50+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T10:50:00.000Z",
+      "timeLabel": "18:50",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/18-50.json",
+      "count": 196,
+      "routeCount": 18,
+      "bounds": {
+        "minLat": 24.959367,
+        "maxLat": 25.130507,
+        "minLon": 121.417898,
+        "maxLon": 121.636545
+      }
+    },
+    {
+      "slotKey": "2026-05-20T18:55+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T10:55:00.000Z",
+      "timeLabel": "18:55",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/18-55.json",
+      "count": 194,
+      "routeCount": 18,
+      "bounds": {
+        "minLat": 24.958728,
+        "maxLat": 25.145973,
+        "minLon": 121.415483,
+        "maxLon": 121.637283
+      }
+    },
+    {
+      "slotKey": "2026-05-20T19:00+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T11:00:00.000Z",
+      "timeLabel": "19:00",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/19-00.json",
+      "count": 192,
+      "routeCount": 18,
+      "bounds": {
+        "minLat": 24.95828,
+        "maxLat": 25.141963,
+        "minLon": 121.424675,
+        "maxLon": 121.633405
+      }
+    },
+    {
+      "slotKey": "2026-05-20T19:05+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T11:05:00.000Z",
+      "timeLabel": "19:05",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/19-05.json",
+      "count": 193,
+      "routeCount": 18,
+      "bounds": {
+        "minLat": 24.95838,
+        "maxLat": 25.14108,
+        "minLon": 121.42435,
+        "maxLon": 121.638007
+      }
+    },
+    {
+      "slotKey": "2026-05-20T19:10+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T11:10:00.000Z",
+      "timeLabel": "19:10",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/19-10.json",
+      "count": 193,
+      "routeCount": 17,
+      "bounds": {
+        "minLat": 24.954203,
+        "maxLat": 25.13136,
+        "minLon": 121.42481,
+        "maxLon": 121.633788
+      }
+    },
+    {
+      "slotKey": "2026-05-20T19:15+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T11:15:00.000Z",
+      "timeLabel": "19:15",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/19-15.json",
+      "count": 190,
+      "routeCount": 17,
+      "bounds": {
+        "minLat": 24.95855,
+        "maxLat": 25.137778,
+        "minLon": 121.425883,
+        "maxLon": 121.638023
+      }
+    },
+    {
+      "slotKey": "2026-05-20T19:20+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T11:20:00.000Z",
+      "timeLabel": "19:20",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/19-20.json",
+      "count": 190,
+      "routeCount": 17,
+      "bounds": {
+        "minLat": 24.957783,
+        "maxLat": 25.144143,
+        "minLon": 121.424068,
+        "maxLon": 121.633625
+      }
+    },
+    {
+      "slotKey": "2026-05-20T19:25+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T11:25:00.000Z",
+      "timeLabel": "19:25",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/19-25.json",
+      "count": 187,
+      "routeCount": 17,
+      "bounds": {
+        "minLat": 24.95822,
+        "maxLat": 25.137922,
+        "minLon": 121.425772,
+        "maxLon": 121.636307
+      }
+    },
+    {
+      "slotKey": "2026-05-20T19:30+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T11:30:00.000Z",
+      "timeLabel": "19:30",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/19-30.json",
+      "count": 170,
+      "routeCount": 17,
+      "bounds": {
+        "minLat": 24.95837,
+        "maxLat": 25.123342,
+        "minLon": 121.425975,
+        "maxLon": 121.634107
+      }
+    },
+    {
+      "slotKey": "2026-05-20T19:35+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T11:35:00.000Z",
+      "timeLabel": "19:35",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/19-35.json",
+      "count": 164,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.958368,
+        "maxLat": 25.1391,
+        "minLon": 121.426255,
+        "maxLon": 121.638112
+      }
+    },
+    {
+      "slotKey": "2026-05-20T19:40+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T11:40:00.000Z",
+      "timeLabel": "19:40",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/19-40.json",
+      "count": 163,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.958098,
+        "maxLat": 25.14567,
+        "minLon": 121.42383,
+        "maxLon": 121.634803
+      }
+    },
+    {
+      "slotKey": "2026-05-20T19:45+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T11:45:00.000Z",
+      "timeLabel": "19:45",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/19-45.json",
+      "count": 160,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.958357,
+        "maxLat": 25.139573,
+        "minLon": 121.425897,
+        "maxLon": 121.63716
+      }
+    },
+    {
+      "slotKey": "2026-05-20T19:50+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T11:50:00.000Z",
+      "timeLabel": "19:50",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/19-50.json",
+      "count": 159,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.958357,
+        "maxLat": 25.131357,
+        "minLon": 121.426115,
+        "maxLon": 121.633598
+      }
+    },
+    {
+      "slotKey": "2026-05-20T19:55+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T11:55:00.000Z",
+      "timeLabel": "19:55",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/19-55.json",
+      "count": 158,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.958357,
+        "maxLat": 25.139592,
+        "minLon": 121.426208,
+        "maxLon": 121.636738
+      }
+    },
+    {
+      "slotKey": "2026-05-20T20:00+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T12:00:00.000Z",
+      "timeLabel": "20:00",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/20-00.json",
+      "count": 168,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.958357,
+        "maxLat": 25.14222,
+        "minLon": 121.424697,
+        "maxLon": 121.637075
+      }
+    },
+    {
+      "slotKey": "2026-05-20T20:05+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T12:05:00.000Z",
+      "timeLabel": "20:05",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/20-05.json",
+      "count": 163,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.958357,
+        "maxLat": 25.128667,
+        "minLon": 121.42601,
+        "maxLon": 121.638223
+      }
+    },
+    {
+      "slotKey": "2026-05-20T20:10+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T12:10:00.000Z",
+      "timeLabel": "20:10",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/20-10.json",
+      "count": 163,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.954632,
+        "maxLat": 25.109095,
+        "minLon": 121.426008,
+        "maxLon": 121.631825
+      }
+    },
+    {
+      "slotKey": "2026-05-20T20:15+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T12:15:00.000Z",
+      "timeLabel": "20:15",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/20-15.json",
+      "count": 162,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.958357,
+        "maxLat": 25.109095,
+        "minLon": 121.425978,
+        "maxLon": 121.637695
+      }
+    },
+    {
+      "slotKey": "2026-05-20T20:20+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T12:20:00.000Z",
+      "timeLabel": "20:20",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/20-20.json",
+      "count": 164,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.958465,
+        "maxLat": 25.109095,
+        "minLon": 121.426693,
+        "maxLon": 121.637743
+      }
+    },
+    {
+      "slotKey": "2026-05-20T20:25+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T12:25:00.000Z",
+      "timeLabel": "20:25",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/20-25.json",
+      "count": 163,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.955925,
+        "maxLat": 25.109095,
+        "minLon": 121.425992,
+        "maxLon": 121.63562
+      }
+    },
+    {
+      "slotKey": "2026-05-20T20:30+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T12:30:00.000Z",
+      "timeLabel": "20:30",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/20-30.json",
+      "count": 157,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.959388,
+        "maxLat": 25.111052,
+        "minLon": 121.426102,
+        "maxLon": 121.634307
+      }
+    },
+    {
+      "slotKey": "2026-05-20T20:35+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T12:35:00.000Z",
+      "timeLabel": "20:35",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/20-35.json",
+      "count": 153,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.959418,
+        "maxLat": 25.133757,
+        "minLon": 121.424043,
+        "maxLon": 121.636307
+      }
+    },
+    {
+      "slotKey": "2026-05-20T20:40+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T12:40:00.000Z",
+      "timeLabel": "20:40",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/20-40.json",
+      "count": 148,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.95854,
+        "maxLat": 25.142945,
+        "minLon": 121.424352,
+        "maxLon": 121.633428
+      }
+    },
+    {
+      "slotKey": "2026-05-20T20:45+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T12:45:00.000Z",
+      "timeLabel": "20:45",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/20-45.json",
+      "count": 147,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.955973,
+        "maxLat": 25.140757,
+        "minLon": 121.426147,
+        "maxLon": 121.638003
+      }
+    },
+    {
+      "slotKey": "2026-05-20T20:50+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T12:50:00.000Z",
+      "timeLabel": "20:50",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/20-50.json",
+      "count": 146,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.959028,
+        "maxLat": 25.130913,
+        "minLon": 121.427302,
+        "maxLon": 121.634167
+      }
+    },
+    {
+      "slotKey": "2026-05-20T20:55+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T12:55:00.000Z",
+      "timeLabel": "20:55",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/20-55.json",
+      "count": 143,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.959028,
+        "maxLat": 25.134898,
+        "minLon": 121.42517,
+        "maxLon": 121.631908
+      }
+    },
+    {
+      "slotKey": "2026-05-20T21:00+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T13:00:00.000Z",
+      "timeLabel": "21:00",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/21-00.json",
+      "count": 142,
+      "routeCount": 16,
+      "bounds": {
+        "minLat": 24.96044,
+        "maxLat": 25.14336,
+        "minLon": 121.425308,
+        "maxLon": 121.631608
+      }
+    },
+    {
+      "slotKey": "2026-05-20T21:05+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T13:05:00.000Z",
+      "timeLabel": "21:05",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/21-05.json",
+      "count": 140,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.958453,
+        "maxLat": 25.13879,
+        "minLon": 121.423892,
+        "maxLon": 121.637497
+      }
+    },
+    {
+      "slotKey": "2026-05-20T21:10+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T13:10:00.000Z",
+      "timeLabel": "21:10",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/21-10.json",
+      "count": 136,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.958383,
+        "maxLat": 25.123467,
+        "minLon": 121.42602,
+        "maxLon": 121.637383
+      }
+    },
+    {
+      "slotKey": "2026-05-20T21:15+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T13:15:00.000Z",
+      "timeLabel": "21:15",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/21-15.json",
+      "count": 131,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.958497,
+        "maxLat": 25.103772,
+        "minLon": 121.426793,
+        "maxLon": 121.63411
+      }
+    },
+    {
+      "slotKey": "2026-05-20T21:20+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T13:20:00.000Z",
+      "timeLabel": "21:20",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/21-20.json",
+      "count": 129,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.95849,
+        "maxLat": 25.102978,
+        "minLon": 121.426568,
+        "maxLon": 121.633477
+      }
+    },
+    {
+      "slotKey": "2026-05-20T21:25+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T13:25:00.000Z",
+      "timeLabel": "21:25",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/21-25.json",
+      "count": 126,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.958547,
+        "maxLat": 25.107645,
+        "minLon": 121.42457,
+        "maxLon": 121.637193
+      }
+    },
+    {
+      "slotKey": "2026-05-20T21:30+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T13:30:00.000Z",
+      "timeLabel": "21:30",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/21-30.json",
+      "count": 125,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.958123,
+        "maxLat": 25.122412,
+        "minLon": 121.426102,
+        "maxLon": 121.633607
+      }
+    },
+    {
+      "slotKey": "2026-05-20T21:35+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T13:35:00.000Z",
+      "timeLabel": "21:35",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/21-35.json",
+      "count": 123,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.956398,
+        "maxLat": 25.138808,
+        "minLon": 121.424363,
+        "maxLon": 121.634422
+      }
+    },
+    {
+      "slotKey": "2026-05-20T21:40+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T13:40:00.000Z",
+      "timeLabel": "21:40",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/21-40.json",
+      "count": 120,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.958457,
+        "maxLat": 25.144655,
+        "minLon": 121.425982,
+        "maxLon": 121.63463
+      }
+    },
+    {
+      "slotKey": "2026-05-20T21:45+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T13:45:00.000Z",
+      "timeLabel": "21:45",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/21-45.json",
+      "count": 120,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.958457,
+        "maxLat": 25.1363,
+        "minLon": 121.42602,
+        "maxLon": 121.63637
+      }
+    },
+    {
+      "slotKey": "2026-05-20T21:50+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T13:50:00.000Z",
+      "timeLabel": "21:50",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/21-50.json",
+      "count": 119,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.958472,
+        "maxLat": 25.130773,
+        "minLon": 121.424002,
+        "maxLon": 121.638928
+      }
+    },
+    {
+      "slotKey": "2026-05-20T21:55+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T13:55:00.000Z",
+      "timeLabel": "21:55",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/21-55.json",
+      "count": 115,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.958472,
+        "maxLat": 25.141525,
+        "minLon": 121.423995,
+        "maxLon": 121.63129
+      }
+    },
+    {
+      "slotKey": "2026-05-20T22:00+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T14:00:00.000Z",
+      "timeLabel": "22:00",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/22-00.json",
+      "count": 116,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.958472,
+        "maxLat": 25.138378,
+        "minLon": 121.426185,
+        "maxLon": 121.636463
+      }
+    },
+    {
+      "slotKey": "2026-05-20T22:05+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T14:05:00.000Z",
+      "timeLabel": "22:05",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/22-05.json",
+      "count": 116,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.957802,
+        "maxLat": 25.128567,
+        "minLon": 121.425187,
+        "maxLon": 121.63191
+      }
+    },
+    {
+      "slotKey": "2026-05-20T22:10+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T14:10:00.000Z",
+      "timeLabel": "22:10",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/22-10.json",
+      "count": 113,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.958083,
+        "maxLat": 25.138418,
+        "minLon": 121.425925,
+        "maxLon": 121.623598
+      }
+    },
+    {
+      "slotKey": "2026-05-20T22:15+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T14:15:00.000Z",
+      "timeLabel": "22:15",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/22-15.json",
+      "count": 108,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.955783,
+        "maxLat": 25.144532,
+        "minLon": 121.4326,
+        "maxLon": 121.631523
+      }
+    },
+    {
+      "slotKey": "2026-05-20T22:20+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T14:20:00.000Z",
+      "timeLabel": "22:20",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/22-20.json",
+      "count": 105,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.955388,
+        "maxLat": 25.143092,
+        "minLon": 121.43393,
+        "maxLon": 121.636383
+      }
+    },
+    {
+      "slotKey": "2026-05-20T22:25+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T14:25:00.000Z",
+      "timeLabel": "22:25",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/22-25.json",
+      "count": 100,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.959228,
+        "maxLat": 25.144728,
+        "minLon": 121.432613,
+        "maxLon": 121.635292
+      }
+    },
+    {
+      "slotKey": "2026-05-20T22:30+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T14:30:00.000Z",
+      "timeLabel": "22:30",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/22-30.json",
+      "count": 99,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.959228,
+        "maxLat": 25.13456,
+        "minLon": 121.42614,
+        "maxLon": 121.637308
+      }
+    },
+    {
+      "slotKey": "2026-05-20T22:35+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T14:35:00.000Z",
+      "timeLabel": "22:35",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/22-35.json",
+      "count": 98,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.960657,
+        "maxLat": 25.1316,
+        "minLon": 121.426293,
+        "maxLon": 121.63163
+      }
+    },
+    {
+      "slotKey": "2026-05-20T22:40+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T14:40:00.000Z",
+      "timeLabel": "22:40",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/22-40.json",
+      "count": 95,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.960657,
+        "maxLat": 25.136223,
+        "minLon": 121.424298,
+        "maxLon": 121.632942
+      }
+    },
+    {
+      "slotKey": "2026-05-20T22:45+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T14:45:00.000Z",
+      "timeLabel": "22:45",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/22-45.json",
+      "count": 91,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.960657,
+        "maxLat": 25.14202,
+        "minLon": 121.427028,
+        "maxLon": 121.63468
+      }
+    },
+    {
+      "slotKey": "2026-05-20T22:50+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T14:50:00.000Z",
+      "timeLabel": "22:50",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/22-50.json",
+      "count": 89,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.954803,
+        "maxLat": 25.134745,
+        "minLon": 121.426257,
+        "maxLon": 121.631738
+      }
+    },
+    {
+      "slotKey": "2026-05-20T22:55+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T14:55:00.000Z",
+      "timeLabel": "22:55",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/22-55.json",
+      "count": 85,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.960612,
+        "maxLat": 25.112093,
+        "minLon": 121.424022,
+        "maxLon": 121.636987
+      }
+    },
+    {
+      "slotKey": "2026-05-20T23:00+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T15:00:00.000Z",
+      "timeLabel": "23:00",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/23-00.json",
+      "count": 83,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.959837,
+        "maxLat": 25.126983,
+        "minLon": 121.425673,
+        "maxLon": 121.635808
+      }
+    },
+    {
+      "slotKey": "2026-05-20T23:05+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T15:05:00.000Z",
+      "timeLabel": "23:05",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/23-05.json",
+      "count": 77,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.960932,
+        "maxLat": 25.142182,
+        "minLon": 121.429535,
+        "maxLon": 121.632023
+      }
+    },
+    {
+      "slotKey": "2026-05-20T23:10+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T15:10:00.000Z",
+      "timeLabel": "23:10",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/23-10.json",
+      "count": 75,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.959255,
+        "maxLat": 25.1417,
+        "minLon": 121.426237,
+        "maxLon": 121.624762
+      }
+    },
+    {
+      "slotKey": "2026-05-20T23:15+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T15:15:00.000Z",
+      "timeLabel": "23:15",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/23-15.json",
+      "count": 71,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.956658,
+        "maxLat": 25.143157,
+        "minLon": 121.426578,
+        "maxLon": 121.633587
+      }
+    },
+    {
+      "slotKey": "2026-05-20T23:20+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T15:20:00.000Z",
+      "timeLabel": "23:20",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/23-20.json",
+      "count": 69,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.957363,
+        "maxLat": 25.135257,
+        "minLon": 121.426112,
+        "maxLon": 121.635538
+      }
+    },
+    {
+      "slotKey": "2026-05-20T23:25+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T15:25:00.000Z",
+      "timeLabel": "23:25",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/23-25.json",
+      "count": 67,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.956782,
+        "maxLat": 25.144287,
+        "minLon": 121.426478,
+        "maxLon": 121.624303
+      }
+    },
+    {
+      "slotKey": "2026-05-20T23:30+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T15:30:00.000Z",
+      "timeLabel": "23:30",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/23-30.json",
+      "count": 61,
+      "routeCount": 15,
+      "bounds": {
+        "minLat": 24.95471,
+        "maxLat": 25.137993,
+        "minLon": 121.432188,
+        "maxLon": 121.624045
+      }
+    },
+    {
+      "slotKey": "2026-05-20T23:35+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T15:35:00.000Z",
+      "timeLabel": "23:35",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/23-35.json",
+      "count": 57,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.958152,
+        "maxLat": 25.119502,
+        "minLon": 121.433902,
+        "maxLon": 121.624045
+      }
+    },
+    {
+      "slotKey": "2026-05-20T23:40+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T15:40:00.000Z",
+      "timeLabel": "23:40",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/23-40.json",
+      "count": 53,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.956583,
+        "maxLat": 25.109412,
+        "minLon": 121.424962,
+        "maxLon": 121.62354
+      }
+    },
+    {
+      "slotKey": "2026-05-20T23:45+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T15:45:00.000Z",
+      "timeLabel": "23:45",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/23-45.json",
+      "count": 46,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.960647,
+        "maxLat": 25.100857,
+        "minLon": 121.425897,
+        "maxLon": 121.629432
+      }
+    },
+    {
+      "slotKey": "2026-05-20T23:50+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T15:50:00.000Z",
+      "timeLabel": "23:50",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/23-50.json",
+      "count": 45,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.96084,
+        "maxLat": 25.100857,
+        "minLon": 121.429527,
+        "maxLon": 121.635747
+      }
+    },
+    {
+      "slotKey": "2026-05-20T23:55+08:00",
+      "captureDate": "2026-05-20",
+      "capturedAt": "2026-05-20T15:55:00.000Z",
+      "timeLabel": "23:55",
+      "intervalMinutes": 5,
+      "path": "/data/tdx-bus/archive/2026-05-20/23-55.json",
+      "count": 43,
+      "routeCount": 14,
+      "bounds": {
+        "minLat": 24.959255,
+        "maxLat": 25.100857,
+        "minLon": 121.433927,
+        "maxLon": 121.637845
+      }
+    }
+  ]
+}

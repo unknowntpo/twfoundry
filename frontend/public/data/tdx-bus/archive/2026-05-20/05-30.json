@@ -1,0 +1,700 @@
+{
+  "schema": "twfoundry.tdx.citybus.snapshot.v1",
+  "source": {
+    "provider": "TDX",
+    "dataset": "Historical.Bus.RealTimeByFrequency.City",
+    "city": "Taipei",
+    "mode": "tdx-historical"
+  },
+  "captureDate": "2026-05-20",
+  "capturedAt": "2026-05-19T21:30:00.000Z",
+  "slot": {
+    "key": "2026-05-20T05:30+08:00",
+    "date": "2026-05-20",
+    "timeLabel": "05:30",
+    "intervalMinutes": 5,
+    "timeZone": "Asia/Taipei"
+  },
+  "count": 32,
+  "routeCount": 12,
+  "bounds": {
+    "minLat": 24.95717,
+    "maxLat": 25.148283,
+    "minLon": 121.426218,
+    "maxLon": 121.635275
+  },
+  "records": [
+    {
+      "PlateNumb": "EAL-3179",
+      "RouteUID": "TPE10251",
+      "RouteName": "南京幹線",
+      "Direction": 1,
+      "BusPosition": {
+        "PositionLat": 25.057888,
+        "PositionLon": 121.601017
+      },
+      "Speed": 0,
+      "Azimuth": 187,
+      "GPSTime": "2026-05-20T05:34:48+08:00",
+      "UpdateTime": "2026-05-20T05:34:55+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "78.23%",
+      "y": "48.06%"
+    },
+    {
+      "PlateNumb": "EAL-3193",
+      "RouteUID": "TPE10251",
+      "RouteName": "南京幹線",
+      "Direction": 0,
+      "BusPosition": {
+        "PositionLat": 25.057975,
+        "PositionLon": 121.59729
+      },
+      "Speed": 0,
+      "Azimuth": 213,
+      "GPSTime": "2026-05-20T05:34:46+08:00",
+      "UpdateTime": "2026-05-20T05:34:55+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "76.74%",
+      "y": "48.02%"
+    },
+    {
+      "PlateNumb": "EAL-3199",
+      "RouteUID": "TPE10251",
+      "RouteName": "南京幹線",
+      "Direction": 1,
+      "BusPosition": {
+        "PositionLat": 25.058052,
+        "PositionLon": 121.597345
+      },
+      "Speed": 0,
+      "Azimuth": 88,
+      "GPSTime": "2026-05-20T05:34:48+08:00",
+      "UpdateTime": "2026-05-20T05:34:55+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "76.76%",
+      "y": "47.99%"
+    },
+    {
+      "PlateNumb": "EAL-3200",
+      "RouteUID": "TPE10251",
+      "RouteName": "南京幹線",
+      "Direction": 1,
+      "BusPosition": {
+        "PositionLat": 25.058042,
+        "PositionLon": 121.600793
+      },
+      "Speed": 0,
+      "Azimuth": 276,
+      "GPSTime": "2026-05-20T05:34:40+08:00",
+      "UpdateTime": "2026-05-20T05:34:55+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "78.14%",
+      "y": "48.00%"
+    },
+    {
+      "PlateNumb": "EAL-2088",
+      "RouteUID": "TPE10132",
+      "RouteName": "234",
+      "Direction": 0,
+      "BusPosition": {
+        "PositionLat": 25.014195,
+        "PositionLon": 121.470553
+      },
+      "Speed": 53,
+      "Azimuth": 59,
+      "GPSTime": "2026-05-20T05:34:45+08:00",
+      "UpdateTime": "2026-05-20T05:34:55+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "25.81%",
+      "y": "64.52%"
+    },
+    {
+      "PlateNumb": "556-U5",
+      "RouteUID": "TPE10181",
+      "RouteName": "205",
+      "Direction": 1,
+      "BusPosition": {
+        "PositionLat": 25.032757,
+        "PositionLon": 121.613573
+      },
+      "Speed": 0,
+      "Azimuth": 191,
+      "GPSTime": "2026-05-20T05:34:45+08:00",
+      "UpdateTime": "2026-05-20T05:34:55+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "83.28%",
+      "y": "57.52%"
+    },
+    {
+      "PlateNumb": "KKC-1282",
+      "RouteUID": "TPE10272",
+      "RouteName": "303",
+      "Direction": 0,
+      "BusPosition": {
+        "PositionLat": 25.148283,
+        "PositionLon": 121.549357
+      },
+      "Speed": 40,
+      "Azimuth": 19,
+      "GPSTime": "2026-05-20T05:34:48+08:00",
+      "UpdateTime": "2026-05-20T05:34:55+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "57.48%",
+      "y": "14.00%"
+    },
+    {
+      "PlateNumb": "EAL-3197",
+      "RouteUID": "TPE10251",
+      "RouteName": "南京幹線",
+      "Direction": 0,
+      "BusPosition": {
+        "PositionLat": 25.05903,
+        "PositionLon": 121.61403
+      },
+      "Speed": 32,
+      "Azimuth": 91,
+      "GPSTime": "2026-05-20T05:34:49+08:00",
+      "UpdateTime": "2026-05-20T05:34:55+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "83.46%",
+      "y": "47.63%"
+    },
+    {
+      "PlateNumb": "EAL-1657",
+      "RouteUID": "TPE10241",
+      "RouteName": "藍36",
+      "Direction": 0,
+      "BusPosition": {
+        "PositionLat": 25.063057,
+        "PositionLon": 121.623667
+      },
+      "Speed": 0,
+      "Azimuth": 219,
+      "GPSTime": "2026-05-20T05:34:43+08:00",
+      "UpdateTime": "2026-05-20T05:34:55+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "87.34%",
+      "y": "46.11%"
+    },
+    {
+      "PlateNumb": "EAL-2188",
+      "RouteUID": "TPE10142",
+      "RouteName": "南環幹線",
+      "Direction": 0,
+      "BusPosition": {
+        "PositionLat": 24.961223,
+        "PositionLon": 121.51245
+      },
+      "Speed": 28,
+      "Azimuth": 23,
+      "GPSTime": "2026-05-20T05:34:42+08:00",
+      "UpdateTime": "2026-05-20T05:34:55+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "42.65%",
+      "y": "84.47%"
+    },
+    {
+      "PlateNumb": "EAL-2183",
+      "RouteUID": "TPE10142",
+      "RouteName": "南環幹線",
+      "Direction": 0,
+      "BusPosition": {
+        "PositionLat": 24.958893,
+        "PositionLon": 121.537722
+      },
+      "Speed": 13,
+      "Azimuth": 50,
+      "GPSTime": "2026-05-20T05:34:42+08:00",
+      "UpdateTime": "2026-05-20T05:34:55+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "52.80%",
+      "y": "85.35%"
+    },
+    {
+      "PlateNumb": "EAA-379",
+      "RouteUID": "TPE10278",
+      "RouteName": "669",
+      "Direction": 1,
+      "BusPosition": {
+        "PositionLat": 25.092745,
+        "PositionLon": 121.484632
+      },
+      "Speed": 0,
+      "Azimuth": 114,
+      "GPSTime": "2026-05-20T05:34:45+08:00",
+      "UpdateTime": "2026-05-20T05:34:55+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "31.47%",
+      "y": "34.92%"
+    },
+    {
+      "PlateNumb": "EAL-2062",
+      "RouteUID": "TPE10292",
+      "RouteName": "藍10",
+      "Direction": 0,
+      "BusPosition": {
+        "PositionLat": 25.065253,
+        "PositionLon": 121.565648
+      },
+      "Speed": 27,
+      "Azimuth": 352,
+      "GPSTime": "2026-05-20T05:34:49+08:00",
+      "UpdateTime": "2026-05-20T05:34:55+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "64.02%",
+      "y": "45.28%"
+    },
+    {
+      "PlateNumb": "KKC-1285",
+      "RouteUID": "TPE10273",
+      "RouteName": "303區",
+      "Direction": 1,
+      "BusPosition": {
+        "PositionLat": 25.099093,
+        "PositionLon": 121.512777
+      },
+      "Speed": 0,
+      "Azimuth": 157,
+      "GPSTime": "2026-05-20T05:34:40+08:00",
+      "UpdateTime": "2026-05-20T05:34:55+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "42.78%",
+      "y": "32.53%"
+    },
+    {
+      "PlateNumb": "EAL-2187",
+      "RouteUID": "TPE10142",
+      "RouteName": "南環幹線",
+      "Direction": 0,
+      "BusPosition": {
+        "PositionLat": 24.95717,
+        "PositionLon": 121.501287
+      },
+      "Speed": 35,
+      "Azimuth": 74,
+      "GPSTime": "2026-05-20T05:34:49+08:00",
+      "UpdateTime": "2026-05-20T05:34:55+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "38.16%",
+      "y": "86.00%"
+    },
+    {
+      "PlateNumb": "EAL-2087",
+      "RouteUID": "TPE10132",
+      "RouteName": "234",
+      "Direction": 0,
+      "BusPosition": {
+        "PositionLat": 25.011828,
+        "PositionLon": 121.445702
+      },
+      "Speed": 0,
+      "Azimuth": 103,
+      "GPSTime": "2026-05-20T05:34:47+08:00",
+      "UpdateTime": "2026-05-20T05:34:55+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "15.83%",
+      "y": "65.41%"
+    },
+    {
+      "PlateNumb": "EAL-3072",
+      "RouteUID": "TPE10241",
+      "RouteName": "藍36",
+      "Direction": 0,
+      "BusPosition": {
+        "PositionLat": 25.065683,
+        "PositionLon": 121.635275
+      },
+      "Speed": 0,
+      "Azimuth": 58,
+      "GPSTime": "2026-05-20T05:34:44+08:00",
+      "UpdateTime": "2026-05-20T05:34:55+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "92.00%",
+      "y": "45.12%"
+    },
+    {
+      "PlateNumb": "EAL-3075",
+      "RouteUID": "TPE10241",
+      "RouteName": "藍36",
+      "Direction": 1,
+      "BusPosition": {
+        "PositionLat": 25.062843,
+        "PositionLon": 121.623375
+      },
+      "Speed": 0,
+      "Azimuth": 160,
+      "GPSTime": "2026-05-20T05:34:30+08:00",
+      "UpdateTime": "2026-05-20T05:34:45+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "87.22%",
+      "y": "46.19%"
+    },
+    {
+      "PlateNumb": "KKC-1281",
+      "RouteUID": "TPE10272",
+      "RouteName": "303",
+      "Direction": 0,
+      "BusPosition": {
+        "PositionLat": 25.095168,
+        "PositionLon": 121.5254
+      },
+      "Speed": 6,
+      "Azimuth": 78,
+      "GPSTime": "2026-05-20T05:34:37+08:00",
+      "UpdateTime": "2026-05-20T05:34:45+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "47.85%",
+      "y": "34.01%"
+    },
+    {
+      "PlateNumb": "EAL-3189",
+      "RouteUID": "TPE10251",
+      "RouteName": "南京幹線",
+      "Direction": 1,
+      "BusPosition": {
+        "PositionLat": 25.058212,
+        "PositionLon": 121.597168
+      },
+      "Speed": 0,
+      "Azimuth": 235,
+      "GPSTime": "2026-05-20T05:34:38+08:00",
+      "UpdateTime": "2026-05-20T05:34:45+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "76.69%",
+      "y": "47.93%"
+    },
+    {
+      "PlateNumb": "EAL-3183",
+      "RouteUID": "TPE10251",
+      "RouteName": "南京幹線",
+      "Direction": 1,
+      "BusPosition": {
+        "PositionLat": 25.058183,
+        "PositionLon": 121.597175
+      },
+      "Speed": 0,
+      "Azimuth": 34,
+      "GPSTime": "2026-05-20T05:34:37+08:00",
+      "UpdateTime": "2026-05-20T05:34:45+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "76.69%",
+      "y": "47.94%"
+    },
+    {
+      "PlateNumb": "EAL-3177",
+      "RouteUID": "TPE10251",
+      "RouteName": "南京幹線",
+      "Direction": 1,
+      "BusPosition": {
+        "PositionLat": 25.057722,
+        "PositionLon": 121.597357
+      },
+      "Speed": 0,
+      "Azimuth": 155,
+      "GPSTime": "2026-05-20T05:34:32+08:00",
+      "UpdateTime": "2026-05-20T05:34:45+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "76.76%",
+      "y": "48.12%"
+    },
+    {
+      "PlateNumb": "EAL-3073",
+      "RouteUID": "TPE10241",
+      "RouteName": "藍36",
+      "Direction": 0,
+      "BusPosition": {
+        "PositionLat": 25.062993,
+        "PositionLon": 121.623585
+      },
+      "Speed": 0,
+      "Azimuth": 57,
+      "GPSTime": "2026-05-20T05:34:34+08:00",
+      "UpdateTime": "2026-05-20T05:34:45+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "87.30%",
+      "y": "46.13%"
+    },
+    {
+      "PlateNumb": "731-FW",
+      "RouteUID": "TPE10283",
+      "RouteName": "235",
+      "Direction": 0,
+      "BusPosition": {
+        "PositionLat": 25.034997,
+        "PositionLon": 121.447668
+      },
+      "Speed": 38,
+      "Azimuth": 81,
+      "GPSTime": "2026-05-20T05:34:34+08:00",
+      "UpdateTime": "2026-05-20T05:34:45+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "16.62%",
+      "y": "56.68%"
+    },
+    {
+      "PlateNumb": "EAL-2089",
+      "RouteUID": "TPE10132",
+      "RouteName": "234",
+      "Direction": 0,
+      "BusPosition": {
+        "PositionLat": 25.00224,
+        "PositionLon": 121.459647
+      },
+      "Speed": 28,
+      "Azimuth": 25,
+      "GPSTime": "2026-05-20T05:34:39+08:00",
+      "UpdateTime": "2026-05-20T05:34:45+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "21.43%",
+      "y": "69.02%"
+    },
+    {
+      "PlateNumb": "EAL-3198",
+      "RouteUID": "TPE10251",
+      "RouteName": "南京幹線",
+      "Direction": 1,
+      "BusPosition": {
+        "PositionLat": 25.057887,
+        "PositionLon": 121.600778
+      },
+      "Speed": 0,
+      "Azimuth": 0,
+      "GPSTime": "2026-05-20T05:34:30+08:00",
+      "UpdateTime": "2026-05-20T05:34:45+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "78.14%",
+      "y": "48.06%"
+    },
+    {
+      "PlateNumb": "EAL-2085",
+      "RouteUID": "TPE10132",
+      "RouteName": "234",
+      "Direction": 0,
+      "BusPosition": {
+        "PositionLat": 24.995567,
+        "PositionLon": 121.441003
+      },
+      "Speed": 44,
+      "Azimuth": 180,
+      "GPSTime": "2026-05-20T05:34:31+08:00",
+      "UpdateTime": "2026-05-20T05:34:45+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "13.94%",
+      "y": "71.53%"
+    },
+    {
+      "PlateNumb": "359-FZ",
+      "RouteUID": "TPE10283",
+      "RouteName": "235",
+      "Direction": 0,
+      "BusPosition": {
+        "PositionLat": 25.016758,
+        "PositionLon": 121.426218
+      },
+      "Speed": 0,
+      "Azimuth": 5,
+      "GPSTime": "2026-05-20T05:34:38+08:00",
+      "UpdateTime": "2026-05-20T05:34:45+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "8.00%",
+      "y": "63.55%"
+    },
+    {
+      "PlateNumb": "EAA-037",
+      "RouteUID": "TPE10231",
+      "RouteName": "民權幹線",
+      "Direction": 0,
+      "BusPosition": {
+        "PositionLat": 25.056033,
+        "PositionLon": 121.594183
+      },
+      "Speed": 0,
+      "Azimuth": 136,
+      "GPSTime": "2026-05-20T05:34:39+08:00",
+      "UpdateTime": "2026-05-20T05:34:45+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "75.49%",
+      "y": "48.75%"
+    },
+    {
+      "PlateNumb": "EAA-205",
+      "RouteUID": "TPE10232",
+      "RouteName": "紅25",
+      "Direction": 1,
+      "BusPosition": {
+        "PositionLat": 25.057782,
+        "PositionLon": 121.600788
+      },
+      "Speed": 0,
+      "Azimuth": 0,
+      "GPSTime": "2026-05-20T05:34:34+08:00",
+      "UpdateTime": "2026-05-20T05:34:45+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical",
+      "age": "0s",
+      "x": "78.14%",
+      "y": "48.10%"
+    },
+    {
+      "PlateNumb": "EAL-3175",
+      "RouteUID": "TPE10251",
+      "RouteName": "南京幹線",
+      "Direction": 1,
+      "BusPosition": {
+        "PositionLat": 25.058118,
+        "PositionLon": 121.59737
+      },
+      "Speed": 0,
+      "Azimuth": 0,
+      "GPSTime": "2026-05-20T05:26:36+08:00",
+      "UpdateTime": "2026-05-20T05:26:45+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei carried forward 30m",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical-carried",
+      "age": "195s",
+      "x": "76.77%",
+      "y": "47.97%"
+    },
+    {
+      "PlateNumb": "373-FZ",
+      "RouteUID": "TPE10283",
+      "RouteName": "235",
+      "Direction": 1,
+      "BusPosition": {
+        "PositionLat": 25.020142,
+        "PositionLon": 121.434847
+      },
+      "Speed": 0,
+      "Azimuth": 198,
+      "GPSTime": "2026-05-20T05:21:51+08:00",
+      "UpdateTime": "2026-05-20T05:22:05+08:00",
+      "source": "TDX Historical Bus RealTimeByFrequency City Taipei carried forward 30m",
+      "freshness": "fresh",
+      "completeness": 1,
+      "mode": "tdx-historical-carried",
+      "age": "475s",
+      "x": "11.47%",
+      "y": "62.28%"
+    }
+  ]
+}
