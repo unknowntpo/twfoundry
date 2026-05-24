@@ -32,7 +32,14 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['select-observation', 'hover-observation', 'leave-observation', 'map-state', 'status']);
+const emit = defineEmits([
+  'select-observation',
+  'clear-observation',
+  'hover-observation',
+  'leave-observation',
+  'map-state',
+  'status',
+]);
 
 const mapEl = ref(null);
 const cameraState = ref({ zoom: 11, pitch: 34, bearing: -8 });
@@ -49,6 +56,7 @@ const shiftPitchDrag = {
 };
 
 const ROAD_READABLE_STYLE_URL = 'https://tiles.openfreemap.org/styles/fiord';
+const INTERACTION_PICK_RADIUS_PIXELS = 22;
 
 const DARK_NAVIGATION_PAINT = [
   ['background', 'background-color', '#050912'],
@@ -117,6 +125,9 @@ onMounted(() => {
   map.on('zoom', emitMapState);
   map.on('pitch', emitMapState);
   map.on('rotate', emitMapState);
+  map.on('click', handleMapClick);
+  map.on('mousemove', handleMapHover);
+  map.on('mouseout', clearMapHover);
   map.on('error', (event) => {
     emit('status', {
       level: 'warn',
@@ -176,13 +187,12 @@ function updateLayers() {
 
   const data = props.visible ? validObservations(props.observations) : [];
   const selectedData = data.filter((observation) => observation.id === props.selectedObservationId);
-  const baseData = data.filter((observation) => observation.id !== props.selectedObservationId);
 
   overlay.setProps({
     layers: [
       new ScatterplotLayer({
         id: 'twf-bus-points',
-        data: baseData,
+        data,
         pickable: true,
         radiusUnits: 'pixels',
         lineWidthUnits: 'pixels',
@@ -199,25 +209,12 @@ function updateLayers() {
         getLineColor: (observation) => observationLineColor(observation),
         updateTriggers: {
           getRadius: [props.pointScale],
+          getFillColor: [props.selectedObservationId],
+          getLineColor: [props.selectedObservationId],
         },
         transitions: {
           getPosition: 820,
           getRadius: 160,
-        },
-        onClick: ({ object }) => {
-          if (object?.id) emit('select-observation', object.id);
-        },
-        onHover: (info) => {
-          if (!info.object) {
-            emit('leave-observation');
-            return;
-          }
-          const rect = map.getCanvas().getBoundingClientRect();
-          emit('hover-observation', {
-            observation: info.object,
-            x: rect.left + info.x,
-            y: rect.top + info.y,
-          });
         },
       }),
       new ScatterplotLayer({
@@ -241,23 +238,7 @@ function updateLayers() {
           getRadius: [props.pointScale],
         },
         transitions: {
-          getPosition: 820,
           getRadius: 160,
-        },
-        onClick: ({ object }) => {
-          if (object?.id) emit('select-observation', object.id);
-        },
-        onHover: (info) => {
-          if (!info.object) {
-            emit('leave-observation');
-            return;
-          }
-          const rect = map.getCanvas().getBoundingClientRect();
-          emit('hover-observation', {
-            observation: info.object,
-            x: rect.left + info.x,
-            y: rect.top + info.y,
-          });
         },
       }),
       new ScatterplotLayer({
@@ -277,12 +258,61 @@ function updateLayers() {
         getFillColor: [255, 255, 255, 0],
         getLineColor: [255, 218, 92, 230],
         transitions: {
-          getPosition: 820,
           getRadius: 160,
         },
       }),
     ],
   });
+}
+
+function handleMapClick(event) {
+  if (!overlay || shiftPitchDrag.active) return;
+  const picked = pickObservationAt(event.point);
+
+  if (picked?.object?.id) {
+    emit('select-observation', picked.object.id);
+    return;
+  }
+
+  emit('clear-observation');
+  emit('leave-observation');
+}
+
+function handleMapHover(event) {
+  if (!overlay || shiftPitchDrag.active) return;
+  const picked = pickObservationAt(event.point);
+
+  if (!picked?.object) {
+    clearMapHover();
+    return;
+  }
+
+  setMapCursor('pointer');
+  const rect = map.getCanvas().getBoundingClientRect();
+  emit('hover-observation', {
+    observation: picked.object,
+    x: rect.left + event.point.x,
+    y: rect.top + event.point.y,
+  });
+}
+
+function clearMapHover() {
+  setMapCursor('');
+  emit('leave-observation');
+}
+
+function pickObservationAt(point) {
+  return overlay?.pickObject({
+    x: point.x,
+    y: point.y,
+    radius: INTERACTION_PICK_RADIUS_PIXELS,
+    layerIds: ['twf-bus-selected-core', 'twf-bus-points'],
+  });
+}
+
+function setMapCursor(cursor) {
+  if (!map || shiftPitchDrag.active) return;
+  map.getCanvas().style.cursor = cursor;
 }
 
 function hideTextLabels() {
@@ -438,6 +468,7 @@ function endShiftPitchDrag(event) {
 
   shiftPitchDrag.active = false;
   map?.dragPan.enable();
+  setMapCursor('');
   mapEl.value?.classList.remove('is-shift-pitching');
   emitMapState();
   emit('status', {

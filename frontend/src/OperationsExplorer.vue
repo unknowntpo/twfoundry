@@ -21,7 +21,7 @@ import {
 const PLAYBACK_SPEED_OPTIONS = [1, 1.5, 2, 4];
 
 const observations = ref(createOperationsFixture());
-const selectedObservationId = ref(observations.value[0]?.id ?? '');
+const selectedObservationId = ref('');
 const activeDataSource = ref(fallbackOperationsDataSource);
 const activeSnapshot = ref(null);
 const activeSnapshotIndex = ref(0);
@@ -35,7 +35,6 @@ const hideStale = ref(false);
 const layerVisible = ref(true);
 const pointSize = ref(0.86);
 const pointOpacity = ref(0.74);
-const inspectorCollapsed = ref(false);
 const healthDrawerOpen = ref(false);
 const pulseLayer = ref(false);
 const movingLayer = ref(true);
@@ -80,8 +79,7 @@ const mapObservations = computed(() => (
     : visibleObservations.value
 ));
 const selectedObservation = computed(() => (
-  mapObservations.value.find((observation) => observation.id === selectedObservationId.value)
-  ?? observations.value[0]
+  mapObservations.value.find((observation) => observation.id === selectedObservationId.value) ?? null
 ));
 const visibleSummary = computed(() => summarizeOperations(visibleObservations.value));
 const allSummary = computed(() => summarizeOperations(observations.value));
@@ -146,6 +144,44 @@ const selectedDirectionLabel = computed(() => (
 ));
 const selectedFreshnessLabel = computed(() => formatFreshness(selectedObservation.value?.status?.freshness));
 const pollStatusLabel = computed(() => t(pollStatusKey.value, pollStatusParams.value));
+const healthSources = computed(() => [
+  {
+    id: 'tdx-bus',
+    name: t('healthSource.bus'),
+    type: t('healthSource.vehiclePositions'),
+    status: archiveError.value ? 'error' : (visibleSummary.value.active > 0 ? 'ok' : 'empty'),
+    mode: sourceModeLabel.value,
+    cadence: `${OPERATIONS_ARCHIVE_INTERVAL_MINUTES} min`,
+    coverage: t('healthSource.busCoverage', {
+      visible: visibleSummary.value.active,
+      sampled: operationsDataSource.value.count,
+    }),
+    updated: activeSnapshotLabel.value,
+  },
+  {
+    id: 'basemap',
+    name: t('healthSource.basemap'),
+    type: t('healthSource.mapContext'),
+    status: mapRendererStatus.value.toLowerCase().includes('ready') ? 'ok' : 'syncing',
+    mode: 'MapLibre',
+    cadence: t('healthSource.providerManaged'),
+    coverage: mapStatusLabel.value,
+    updated: zoomLabel.value,
+  },
+  {
+    id: 'youbike',
+    name: t('healthSource.youbike'),
+    type: t('healthSource.availability'),
+    status: 'planned',
+    mode: t('healthStatus.planned'),
+    cadence: '--',
+    coverage: '--',
+    updated: '--',
+  },
+]);
+const activeHealthSourceCount = computed(() => (
+  healthSources.value.filter((source) => source.status === 'ok' || source.status === 'syncing').length
+));
 const vehicleTelemetrySummary = computed(() => [
   t('filters.route', { route: selectedObservation.value?.route?.name ?? '--' }),
   `${selectedObservation.value?.motion?.speedKph ?? 0} km/h`,
@@ -159,12 +195,19 @@ function setPollStatusKey(key, params = {}) {
 
 function selectObservation(id) {
   selectedObservationId.value = id;
-  const observation = observations.value.find((item) => item.id === id);
+  const observation = mapObservations.value.find((item) => item.id === id);
   if (trackVehicleMode.value) {
     trackedVehicleId.value = id;
     if (observation) lastTrackedObservation.value = observation;
     followTrackedVehicle(observation ?? lastTrackedObservation.value);
   }
+}
+
+function clearSelectedObservation() {
+  selectedObservationId.value = '';
+  trackVehicleMode.value = false;
+  trackedVehicleId.value = '';
+  lastTrackedObservation.value = null;
 }
 
 function toggleTrackSelectedVehicle() {
@@ -412,9 +455,10 @@ async function loadTimelineSnapshot(index, trigger = 'timeline', { showLoading =
     activeDataSource.value = createOperationsDataSource(snapshot, manifestEntry);
     observations.value = createOperationsFromSnapshot(snapshot, manifestEntry);
     if (!syncTrackedVehicleSelection(trigger)) {
-      selectedObservationId.value = observations.value.some((observation) => observation.id === selectedObservationId.value)
+      selectedObservationId.value = selectedObservationId.value
+        && observations.value.some((observation) => observation.id === selectedObservationId.value)
         ? selectedObservationId.value
-        : (observations.value[0]?.id ?? '');
+        : '';
     }
     countdown.value = OPERATIONS_POLL_INTERVAL_SECONDS;
     elapsed.value = 0;
@@ -459,7 +503,7 @@ function useFallbackFixture(reason) {
   activeSnapshot.value = null;
   activeDataSource.value = fallbackOperationsDataSource;
   observations.value = createOperationsFixture();
-  selectedObservationId.value = observations.value[0]?.id ?? '';
+  selectedObservationId.value = '';
   trackVehicleMode.value = false;
   trackedVehicleId.value = '';
   lastTrackedObservation.value = null;
@@ -502,6 +546,15 @@ function formatAgeLabel(ageLabel) {
   return ageLabel === 'carried' ? t('age.carried') : ageLabel;
 }
 
+function formatHealthStatus(status) {
+  if (status === 'ok') return t('healthStatus.ok');
+  if (status === 'empty') return t('healthStatus.empty');
+  if (status === 'syncing') return t('healthStatus.syncing');
+  if (status === 'planned') return t('healthStatus.planned');
+  if (status === 'error') return t('healthStatus.error');
+  return status;
+}
+
 function formatHourDuration(minutes) {
   if (minutes >= 60 && minutes % 60 === 0) return `${minutes / 60}h`;
   if (minutes >= 60) return `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
@@ -528,7 +581,7 @@ onBeforeUnmount(() => {
 <template>
   <main
     class="operations-explorer app"
-    :class="{ 'inspector-collapsed': inspectorCollapsed }"
+    :class="{ 'inspector-open': selectedObservation }"
     :style="rootStyle"
   >
     <header class="status-bar">
@@ -574,6 +627,7 @@ onBeforeUnmount(() => {
           :point-opacity="pointOpacity"
           :fit-key="mapFitKey"
           @select-observation="selectObservation"
+          @clear-observation="clearSelectedObservation"
           @hover-observation="showDeckTooltip"
           @leave-observation="hideTooltip"
           @map-state="onMapState"
@@ -650,7 +704,7 @@ onBeforeUnmount(() => {
       </div>
     </aside>
 
-    <aside class="panel right-panel" :class="{ 'is-collapsed': inspectorCollapsed }" :aria-label="t('inspector.aria')">
+    <aside v-if="selectedObservation" class="panel right-panel" :aria-label="t('inspector.aria')">
       <div class="panel-header">
         <div class="panel-headline">
           <div class="inspector-summary">
@@ -658,20 +712,6 @@ onBeforeUnmount(() => {
             <h2 class="panel-title">{{ t('inspector.heading') }}</h2>
             <p class="panel-copy">{{ t('inspector.copy') }}</p>
           </div>
-          <button
-            class="collapse-btn"
-            type="button"
-            :aria-label="inspectorCollapsed ? t('inspector.open') : t('inspector.collapse')"
-            :aria-expanded="String(!inspectorCollapsed)"
-            aria-controls="inspectorBody"
-            :title="inspectorCollapsed ? t('inspector.open') : t('inspector.collapse')"
-            @click="inspectorCollapsed = !inspectorCollapsed"
-          >
-            <svg class="collapse-icon" viewBox="0 0 24 24" aria-hidden="true">
-              <path v-if="inspectorCollapsed" d="m9 18 6-6-6-6" />
-              <path v-else d="m15 18-6-6 6-6" />
-            </svg>
-          </button>
         </div>
       </div>
       <div id="inspectorBody" class="panel-body">
@@ -811,18 +851,34 @@ onBeforeUnmount(() => {
         <div>
           <div class="eyebrow">{{ t('drawer.kicker') }}</div>
           <h2 class="panel-title">{{ t('drawer.title') }}</h2>
-          <p class="panel-copy">{{ t('drawer.copy') }}</p>
+          <p class="panel-copy">{{ t('drawer.copy', { active: activeHealthSourceCount, total: healthSources.length }) }}</p>
         </div>
         <button class="btn" type="button" @click="healthDrawerOpen = false">{{ t('drawer.close') }}</button>
       </div>
-      <div class="state-grid">
-        <article class="state-card active"><h3>{{ t('drawer.normalTitle') }}</h3><p>{{ t('drawer.normalCopy') }}</p></article>
-        <article class="state-card"><h3>{{ t('drawer.emptyTitle') }}</h3><p>{{ t('drawer.emptyCopy') }}</p></article>
-        <article class="state-card critical"><h3>{{ t('drawer.credentialTitle') }}</h3><p>{{ t('drawer.credentialCopy') }}</p></article>
-        <article class="state-card critical"><h3>{{ t('drawer.rateTitle') }}</h3><p>{{ t('drawer.rateCopy') }}</p></article>
-        <article class="state-card"><h3>{{ t('drawer.staleTitle') }}</h3><p>{{ t('drawer.staleCopy') }}</p></article>
-        <article class="state-card"><h3>{{ t('drawer.partialTitle') }}</h3><p>{{ t('drawer.partialCopy') }}</p></article>
-        <article class="state-card"><h3>{{ t('drawer.mapTitle') }}</h3><p>{{ t('drawer.mapCopy') }}</p></article>
+      <div class="source-health-list" role="table" :aria-label="t('drawer.sourceTable')">
+        <div class="source-health-row source-health-head" role="row">
+          <span role="columnheader">{{ t('drawer.source') }}</span>
+          <span role="columnheader">{{ t('drawer.status') }}</span>
+          <span role="columnheader">{{ t('drawer.cadence') }}</span>
+          <span role="columnheader">{{ t('drawer.coverage') }}</span>
+          <span role="columnheader">{{ t('drawer.updated') }}</span>
+        </div>
+        <div
+          v-for="source in healthSources"
+          :key="source.id"
+          class="source-health-row"
+          role="row"
+          :class="`status-${source.status}`"
+        >
+          <span class="source-name" role="cell">
+            <strong>{{ source.name }}</strong>
+            <small>{{ source.type }} · {{ source.mode }}</small>
+          </span>
+          <span role="cell"><b class="health-status">{{ formatHealthStatus(source.status) }}</b></span>
+          <span role="cell">{{ source.cadence }}</span>
+          <span role="cell">{{ source.coverage }}</span>
+          <span role="cell">{{ source.updated }}</span>
+        </div>
       </div>
     </section>
   </main>
@@ -1274,7 +1330,7 @@ onBeforeUnmount(() => {
 .zoom-controls {
   position: absolute;
   top: 18px;
-  right: 410px;
+  right: 14px;
   z-index: 12;
   display: grid;
   grid-template-columns: 34px 48px 34px;
@@ -1285,6 +1341,10 @@ onBeforeUnmount(() => {
   background: rgba(8, 15, 26, 0.76);
   backdrop-filter: blur(14px);
   box-shadow: 0 14px 44px rgba(0, 0, 0, 0.34);
+}
+
+.operations-explorer.inspector-open .zoom-controls {
+  right: 410px;
 }
 
 .zoom-btn {
@@ -1347,34 +1407,7 @@ onBeforeUnmount(() => {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: width 0.18s ease, border-color 0.18s ease;
-}
-
-.right-panel.is-collapsed {
-  width: 48px;
-  border-color: color-mix(in oklch, var(--accent) 38%, var(--border));
-}
-
-.right-panel.is-collapsed .panel-header {
-  display: grid;
-  place-items: center;
-  height: 100%;
-  padding: 10px 0;
-  border-bottom: 0;
-}
-
-.right-panel.is-collapsed .panel-headline {
-  display: block;
-}
-
-.right-panel.is-collapsed .inspector-summary,
-.right-panel.is-collapsed .panel-body {
-  display: none;
-}
-
-.right-panel.is-collapsed .collapse-btn {
-  width: 32px;
-  height: 32px;
+  transition: opacity 0.18s ease, transform 0.18s ease;
 }
 
 .panel-header {
@@ -1383,38 +1416,7 @@ onBeforeUnmount(() => {
 }
 
 .panel-headline {
-  display: grid;
-  grid-template-columns: 1fr max-content;
-  gap: 10px;
-  align-items: start;
-}
-
-.collapse-btn {
-  width: 32px;
-  height: 32px;
-  display: inline-grid;
-  place-items: center;
-  border: 1px solid color-mix(in oklch, var(--border) 62%, transparent);
-  border-radius: 7px;
-  background: color-mix(in oklch, var(--surface) 48%, transparent);
-  color: color-mix(in oklch, var(--muted) 92%, white);
-}
-
-.collapse-btn:hover,
-.collapse-btn:focus-visible {
-  border-color: color-mix(in oklch, var(--accent) 58%, var(--border));
-  color: var(--fg);
-  outline: none;
-}
-
-.collapse-icon {
-  width: 17px;
-  height: 17px;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 2;
+  display: block;
 }
 
 .eyebrow {
@@ -1986,7 +1988,7 @@ pre {
   top: 62px;
   right: 16px;
   display: none;
-  width: min(620px, calc(100% - 32px));
+  width: min(680px, calc(100% - 32px));
   max-height: calc(100% - 158px);
   overflow: auto;
   padding: 14px;
@@ -2010,44 +2012,89 @@ pre {
   border-bottom: 1px solid color-mix(in oklch, var(--border) 46%, transparent);
 }
 
-.state-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+.source-health-list {
   margin-top: 12px;
+  overflow: hidden;
+  border: 1px solid color-mix(in oklch, var(--border) 46%, transparent);
+  border-radius: 10px;
+  background: color-mix(in oklch, var(--surface) 28%, transparent);
 }
 
-.state-card {
+.source-health-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.5fr) 92px 84px minmax(96px, 1fr) 80px;
+  gap: 10px;
+  align-items: center;
   min-width: 0;
-  padding: 12px;
-  border: 1px solid color-mix(in oklch, var(--border) 48%, transparent);
-  border-radius: 9px;
-  background: color-mix(in oklch, var(--surface) 38%, transparent);
+  padding: 10px 12px;
+  border-top: 1px solid color-mix(in oklch, var(--border) 34%, transparent);
+  color: color-mix(in oklch, var(--fg) 88%, var(--muted));
+  font-size: 12px;
 }
 
-.state-card.active {
-  border-color: color-mix(in oklch, var(--ok) 48%, var(--border));
+.source-health-row:first-child {
+  border-top: 0;
 }
 
-.state-card.critical {
-  border-color: color-mix(in oklch, var(--critical) 44%, var(--border));
-}
-
-.state-card h3 {
-  margin-bottom: 6px;
-  font-size: 13px;
-  font-weight: 590;
-}
-
-.state-card p {
+.source-health-head {
+  background: color-mix(in oklch, var(--surface) 44%, black);
   color: var(--muted);
-  font-size: 11px;
-  line-height: 1.45;
+  font: 10px/1 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.state-card code {
-  color: color-mix(in oklch, var(--fg) 84%, var(--accent));
-  font-family: var(--font-mono);
+.source-name {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.source-name strong {
+  overflow: hidden;
+  color: var(--fg);
+  font-weight: 620;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.source-name small {
+  color: var(--muted);
+  font: 10px/1.2 var(--font-mono);
+}
+
+.health-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 8px;
+  border: 1px solid color-mix(in oklch, var(--border) 52%, transparent);
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--surface) 52%, transparent);
+  color: var(--muted);
+  font: 10px/1 var(--font-mono);
+  text-transform: uppercase;
+}
+
+.status-ok .health-status {
+  border-color: color-mix(in oklch, var(--ok) 42%, var(--border));
+  color: color-mix(in oklch, var(--ok) 42%, white);
+}
+
+.status-syncing .health-status {
+  border-color: color-mix(in oklch, var(--accent) 46%, var(--border));
+  color: color-mix(in oklch, var(--accent) 38%, white);
+}
+
+.status-planned .health-status {
+  border-color: color-mix(in oklch, var(--warn) 38%, var(--border));
+  color: color-mix(in oklch, var(--warn) 35%, white);
+}
+
+.status-empty .health-status,
+.status-error .health-status {
+  border-color: color-mix(in oklch, var(--critical) 44%, var(--border));
+  color: color-mix(in oklch, var(--critical) 26%, white);
 }
 
 @media (max-width: 1180px) {
@@ -2059,21 +2106,17 @@ pre {
     width: 342px;
   }
 
-  .right-panel.is-collapsed {
-    width: 48px;
-  }
-
   .map-chip-row {
     left: 330px;
     max-width: calc(100% - 700px);
   }
 
   .zoom-controls {
-    right: 374px;
+    right: 14px;
   }
 
-  .operations-explorer.inspector-collapsed .zoom-controls {
-    right: 70px;
+  .operations-explorer.inspector-open .zoom-controls {
+    right: 374px;
   }
 
   .metric.budget {
@@ -2112,17 +2155,16 @@ pre {
     min-width: 0;
   }
 
-  .right-panel.is-collapsed {
-    left: auto;
-    width: 48px;
-  }
-
   .map-chip-row {
     display: none;
   }
 
   .zoom-controls {
     top: 18px;
+    right: 14px;
+  }
+
+  .operations-explorer.inspector-open .zoom-controls {
     right: 14px;
   }
 
@@ -2185,13 +2227,6 @@ pre {
     height: 30%;
   }
 
-  .right-panel.is-collapsed {
-    right: 10px;
-    left: auto;
-    width: 48px;
-    height: min(42%, 260px);
-  }
-
   .panel-header {
     padding: 11px 12px 9px;
   }
@@ -2206,7 +2241,7 @@ pre {
 
   .health-grid,
   .kv,
-  .state-grid {
+  .source-health-row {
     grid-template-columns: 1fr;
   }
 
@@ -2215,6 +2250,10 @@ pre {
     right: 10px;
     z-index: 30;
     grid-template-columns: 38px;
+  }
+
+  .operations-explorer.inspector-open .zoom-controls {
+    right: 10px;
   }
 
   .zoom-readout {
@@ -2248,9 +2287,5 @@ pre {
   .timeline-actions {
     gap: 6px;
   }
-}
-
-.operations-explorer.inspector-collapsed .zoom-controls {
-  right: 76px;
 }
 </style>
