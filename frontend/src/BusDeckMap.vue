@@ -97,6 +97,110 @@ const DARK_NAVIGATION_PAINT = [
   ['boundary_country_z5-', 'line-opacity', 0.5],
 ];
 
+const LOCATION_CONTEXT_LABELS = [
+  {
+    id: 'water_name',
+    zoom: [9.8, 22],
+    color: '#5f9fc0',
+    halo: '#050912',
+    opacity: 0.72,
+  },
+  {
+    id: 'highway_ref',
+    zoom: [10.4, 22],
+    color: '#d5e1f6',
+    halo: '#07101c',
+    opacity: 0.76,
+  },
+  {
+    id: 'highway_name_other',
+    zoom: [12.2, 22],
+    color: '#b9c8e6',
+    halo: '#050912',
+    opacity: 0.72,
+  },
+  {
+    id: 'place_city_large',
+    zoom: [7.2, 11.5],
+    color: '#e1eaf7',
+    halo: '#050912',
+    opacity: 0.88,
+  },
+  {
+    id: 'place_city',
+    zoom: [8.4, 13],
+    color: '#d7e4f5',
+    halo: '#050912',
+    opacity: 0.82,
+  },
+  {
+    id: 'place_town',
+    zoom: [9.6, 14.2],
+    color: '#c5d3e9',
+    halo: '#050912',
+    opacity: 0.72,
+  },
+  {
+    id: 'place_village',
+    zoom: [10.8, 15.2],
+    color: '#abbcd6',
+    halo: '#050912',
+    opacity: 0.62,
+  },
+  {
+    id: 'place_suburb',
+    zoom: [12.4, 16.2],
+    color: '#a8bad5',
+    halo: '#050912',
+    opacity: 0.58,
+  },
+  {
+    id: 'place_other',
+    zoom: [13.6, 17],
+    color: '#93a7c2',
+    halo: '#050912',
+    opacity: 0.48,
+  },
+];
+
+const HIDDEN_CONTEXT_LABELS = [
+  'place_country_major',
+  'place_country_minor',
+  'place_country_other',
+  'place_continent',
+  'place_state',
+];
+
+const POI_NAME_FIELD = [
+  'coalesce',
+  ['get', 'name:zh-Hant'],
+  ['get', 'name:zh'],
+  ['get', 'name:en'],
+  ['get', 'name_en'],
+  ['get', 'name'],
+];
+
+const TRANSIT_POI_FILTER = [
+  'all',
+  ['has', 'name'],
+  [
+    'any',
+    ['in', ['get', 'class'], ['literal', ['railway', 'bus', 'station']]],
+    ['in', ['get', 'subclass'], ['literal', ['station', 'halt', 'subway', 'tram_stop', 'bus_stop']]],
+  ],
+];
+
+const GENERAL_POI_FILTER = [
+  'all',
+  ['has', 'name'],
+  ['<=', ['coalesce', ['get', 'rank'], 99], 24],
+  [
+    'any',
+    ['in', ['get', 'class'], ['literal', ['shop', 'food', 'cafe', 'restaurant', 'education', 'hospital', 'park', 'commercial', 'tourism']]],
+    ['in', ['get', 'subclass'], ['literal', ['cafe', 'restaurant', 'convenience', 'supermarket', 'mall', 'school', 'university', 'hospital', 'hotel', 'attraction', 'museum']]],
+  ],
+];
+
 onMounted(() => {
   map = new maplibregl.Map({
     container: mapEl.value,
@@ -315,28 +419,135 @@ function setMapCursor(cursor) {
   map.getCanvas().style.cursor = cursor;
 }
 
-function hideTextLabels() {
+function tuneLocationContextLabels() {
   if (!map) return;
-  const labelLayers = map.getStyle().layers?.filter((layer) => layer.type === 'symbol') ?? [];
-  labelLayers.forEach((layer) => {
-    if (map.getLayer(layer.id)) {
-      map.setLayoutProperty(layer.id, 'visibility', 'none');
-    }
+  HIDDEN_CONTEXT_LABELS.forEach((layerId) => {
+    if (map.getLayer(layerId)) map.setLayoutProperty(layerId, 'visibility', 'none');
+  });
+
+  LOCATION_CONTEXT_LABELS.forEach((label) => {
+    if (!map.getLayer(label.id)) return;
+
+    map.setLayoutProperty(label.id, 'visibility', 'visible');
+    map.setLayerZoomRange(label.id, label.zoom[0], label.zoom[1]);
+    setPaintProperty(label.id, 'text-color', label.color);
+    setPaintProperty(label.id, 'text-halo-color', label.halo);
+    setPaintProperty(label.id, 'text-halo-width', 1.25);
+    setPaintProperty(label.id, 'text-halo-blur', 0.6);
+    setPaintProperty(label.id, 'text-opacity', label.opacity);
   });
 }
 
 function tuneDarkNavigationStyle() {
   if (!map) return;
   DARK_NAVIGATION_PAINT.forEach(([layerId, property, value]) => {
-    if (map.getLayer(layerId)) {
-      try {
-        map.setPaintProperty(layerId, property, value);
-      } catch {
-        // Vector basemap styles can change layer capabilities across releases.
-      }
-    }
+    setPaintProperty(layerId, property, value);
   });
-  hideTextLabels();
+  tuneLocationContextLabels();
+  tuneContextFeatureLayers();
+}
+
+function setPaintProperty(layerId, property, value) {
+  if (!map?.getLayer(layerId)) return;
+  try {
+    map.setPaintProperty(layerId, property, value);
+  } catch {
+    // Vector basemap styles can change layer capabilities across releases.
+  }
+}
+
+function tuneContextFeatureLayers() {
+  addOrReplaceStyleLayer({
+    id: 'twf-transit-poi-dot',
+    type: 'circle',
+    source: 'openmaptiles',
+    'source-layer': 'poi',
+    minzoom: 14.2,
+    filter: TRANSIT_POI_FILTER,
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 14, 2.4, 17, 4.8],
+      'circle-color': '#65d9ff',
+      'circle-opacity': 0.84,
+      'circle-stroke-color': '#07101c',
+      'circle-stroke-width': 1.2,
+    },
+  });
+
+  addOrReplaceStyleLayer({
+    id: 'twf-transit-poi-label',
+    type: 'symbol',
+    source: 'openmaptiles',
+    'source-layer': 'poi',
+    minzoom: 15.2,
+    filter: TRANSIT_POI_FILTER,
+    layout: {
+      'text-field': POI_NAME_FIELD,
+      'text-font': ['Noto Sans Regular'],
+      'text-size': ['interpolate', ['linear'], ['zoom'], 15, 10, 18, 12],
+      'text-offset': [0, 1.05],
+      'text-anchor': 'top',
+      'text-allow-overlap': false,
+      'text-optional': true,
+    },
+    paint: {
+      'text-color': '#c9f3ff',
+      'text-halo-color': '#050912',
+      'text-halo-width': 1.4,
+      'text-halo-blur': 0.5,
+      'text-opacity': ['interpolate', ['linear'], ['zoom'], 15, 0.58, 17, 0.88],
+    },
+  });
+
+  addOrReplaceStyleLayer({
+    id: 'twf-general-poi-dot',
+    type: 'circle',
+    source: 'openmaptiles',
+    'source-layer': 'poi',
+    minzoom: 15.6,
+    filter: GENERAL_POI_FILTER,
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 15, 2, 18, 4],
+      'circle-color': '#d7b46a',
+      'circle-opacity': ['interpolate', ['linear'], ['zoom'], 15, 0.42, 17, 0.72],
+      'circle-stroke-color': '#07101c',
+      'circle-stroke-width': 1,
+    },
+  });
+
+  addOrReplaceStyleLayer({
+    id: 'twf-general-poi-label',
+    type: 'symbol',
+    source: 'openmaptiles',
+    'source-layer': 'poi',
+    minzoom: 16.2,
+    filter: GENERAL_POI_FILTER,
+    layout: {
+      'text-field': POI_NAME_FIELD,
+      'text-font': ['Noto Sans Regular'],
+      'text-size': ['interpolate', ['linear'], ['zoom'], 16, 9.5, 19, 11.5],
+      'text-offset': [0, 1.08],
+      'text-anchor': 'top',
+      'text-allow-overlap': false,
+      'text-optional': true,
+    },
+    paint: {
+      'text-color': '#ead7aa',
+      'text-halo-color': '#050912',
+      'text-halo-width': 1.35,
+      'text-halo-blur': 0.5,
+      'text-opacity': ['interpolate', ['linear'], ['zoom'], 16, 0.48, 18, 0.76],
+    },
+  });
+}
+
+function addOrReplaceStyleLayer(layer) {
+  if (!map?.getSource(layer.source)) return;
+  if (map.getLayer(layer.id)) map.removeLayer(layer.id);
+  try {
+    map.addLayer(layer);
+  } catch {
+    // Optional context layers depend on the tile schema and should not block the map.
+  }
 }
 
 function observationFillColor(observation) {
@@ -514,7 +725,7 @@ defineExpose({
     ref="mapEl"
     class="deck-map-root"
     aria-label="interactive bus map"
-    data-basemap-style="dark-shapes-no-labels"
+    data-basemap-style="dark-progressive-location-context"
     :data-zoom="cameraState.zoom.toFixed(2)"
     :data-pitch="cameraState.pitch.toFixed(2)"
     :data-bearing="cameraState.bearing.toFixed(2)"
