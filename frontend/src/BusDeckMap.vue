@@ -458,18 +458,25 @@ function setPaintProperty(layerId, property, value) {
 
 function tuneContextFeatureLayers() {
   addOrReplaceStyleLayer({
-    id: 'twf-transit-poi-dot',
-    type: 'circle',
+    id: 'twf-transit-poi-marker',
+    type: 'symbol',
     source: 'openmaptiles',
     'source-layer': 'poi',
     minzoom: 14.2,
     filter: TRANSIT_POI_FILTER,
+    layout: {
+      'text-field': '◆',
+      'text-font': ['Noto Sans Regular'],
+      'text-size': ['interpolate', ['linear'], ['zoom'], 14, 9, 17, 13],
+      'text-allow-overlap': false,
+      'text-ignore-placement': false,
+    },
     paint: {
-      'circle-radius': ['interpolate', ['linear'], ['zoom'], 14, 2.4, 17, 4.8],
-      'circle-color': '#65d9ff',
-      'circle-opacity': 0.84,
-      'circle-stroke-color': '#07101c',
-      'circle-stroke-width': 1.2,
+      'text-color': '#e7eefc',
+      'text-halo-color': '#07101c',
+      'text-halo-width': 1.6,
+      'text-halo-blur': 0.45,
+      'text-opacity': ['interpolate', ['linear'], ['zoom'], 14, 0.7, 16, 0.95],
     },
   });
 
@@ -484,13 +491,13 @@ function tuneContextFeatureLayers() {
       'text-field': POI_NAME_FIELD,
       'text-font': ['Noto Sans Regular'],
       'text-size': ['interpolate', ['linear'], ['zoom'], 15, 10, 18, 12],
-      'text-offset': [0, 1.05],
+      'text-offset': [0, 1.12],
       'text-anchor': 'top',
       'text-allow-overlap': false,
       'text-optional': true,
     },
     paint: {
-      'text-color': '#c9f3ff',
+      'text-color': '#dce8fb',
       'text-halo-color': '#050912',
       'text-halo-width': 1.4,
       'text-halo-blur': 0.5,
@@ -499,18 +506,25 @@ function tuneContextFeatureLayers() {
   });
 
   addOrReplaceStyleLayer({
-    id: 'twf-general-poi-dot',
-    type: 'circle',
+    id: 'twf-general-poi-marker',
+    type: 'symbol',
     source: 'openmaptiles',
     'source-layer': 'poi',
     minzoom: 15.6,
     filter: GENERAL_POI_FILTER,
+    layout: {
+      'text-field': '◇',
+      'text-font': ['Noto Sans Regular'],
+      'text-size': ['interpolate', ['linear'], ['zoom'], 15, 8, 18, 11],
+      'text-allow-overlap': false,
+      'text-ignore-placement': false,
+    },
     paint: {
-      'circle-radius': ['interpolate', ['linear'], ['zoom'], 15, 2, 18, 4],
-      'circle-color': '#d7b46a',
-      'circle-opacity': ['interpolate', ['linear'], ['zoom'], 15, 0.42, 17, 0.72],
-      'circle-stroke-color': '#07101c',
-      'circle-stroke-width': 1,
+      'text-color': '#d7b46a',
+      'text-halo-color': '#050912',
+      'text-halo-width': 1.35,
+      'text-halo-blur': 0.5,
+      'text-opacity': ['interpolate', ['linear'], ['zoom'], 15, 0.36, 17, 0.64],
     },
   });
 
