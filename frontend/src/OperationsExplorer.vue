@@ -1329,8 +1329,8 @@ onBeforeUnmount(() => {
 
 .zoom-controls {
   position: absolute;
-  top: 18px;
   right: 14px;
+  bottom: 46px;
   z-index: 12;
   display: grid;
   grid-template-columns: 34px 48px 34px;
@@ -2112,6 +2112,7 @@ pre {
   }
 
   .zoom-controls {
+    bottom: 46px;
     right: 14px;
   }
 
@@ -2162,6 +2163,7 @@ pre {
   .zoom-controls {
     top: 18px;
     right: 14px;
+    bottom: auto;
   }
 
   .operations-explorer.inspector-open .zoom-controls {
@@ -2248,6 +2250,7 @@ pre {
   .zoom-controls {
     top: 45%;
     right: 10px;
+    bottom: auto;
     z-index: 30;
     grid-template-columns: 38px;
   }
