@@ -1,6 +1,11 @@
 export const OPERATIONS_ARCHIVE_INTERVAL_MINUTES = 5;
 export const OPERATIONS_POLL_INTERVAL_SECONDS = OPERATIONS_ARCHIVE_INTERVAL_MINUTES * 60;
 export const OPERATIONS_ARCHIVE_MANIFEST_URL = '/data/tdx-bus/archive/manifest.json';
+export const OPERATIONS_BASELINE_ARCHIVE_MANIFEST_URL = '/data/tdx-bus/baseline-archive/manifest.json';
+export const OPERATIONS_ROUTE_CONTEXT_MANIFEST_URL = '/data/tdx-bus/route-context/manifest.json';
+export const OPERATIONS_ROUTE_QUALITY_MANIFEST_URL = '/data/tdx-bus/route-quality/manifest.json';
+
+const ROUTE_GEOMETRY_SIGNAL_QUALITIES = new Set(['good', 'usable']);
 
 const SOURCE_FIELDS = [
   'PlateNumb',
@@ -104,6 +109,41 @@ export function createOperationsFromSnapshot(snapshot, manifestEntry = null) {
 
 export function createOperationsFromRows(rows, dataSource = fallbackOperationsDataSource) {
   return rows.map((raw, index) => normalizeVehicleObservation(raw, index, dataSource));
+}
+
+export function createRouteQualityIndex(manifest = null) {
+  const routes = Array.isArray(manifest?.routes) ? manifest.routes : [];
+  const byRouteDirection = new Map();
+  const byRouteName = new Map();
+
+  for (const route of routes) {
+    const routeUID = String(route.routeUID ?? '');
+    const routeName = String(route.routeName ?? '');
+    const direction = Number(route.direction);
+    if (!routeUID || !routeName || !Number.isFinite(direction)) continue;
+
+    byRouteDirection.set(routeQualityKey(routeUID, direction), route);
+    const routeRows = byRouteName.get(routeName) ?? [];
+    routeRows.push(route);
+    byRouteName.set(routeName, routeRows);
+  }
+
+  return { byRouteDirection, byRouteName };
+}
+
+export function getObservationRouteQuality(observation, qualityIndex) {
+  const routeUID = observation?.route?.uid;
+  const direction = Number(observation?.route?.direction);
+  if (!routeUID || !Number.isFinite(direction)) return null;
+  return qualityIndex?.byRouteDirection?.get(routeQualityKey(routeUID, direction)) ?? null;
+}
+
+export function isRouteGeometrySignalReady(routeQuality) {
+  return ROUTE_GEOMETRY_SIGNAL_QUALITIES.has(routeQuality?.quality);
+}
+
+export function routeQualityKey(routeUID, direction) {
+  return `${routeUID}:${direction}`;
 }
 
 export function normalizeVehicleObservation(raw, index = 0, dataSource = fallbackOperationsDataSource) {

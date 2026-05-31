@@ -10,13 +10,17 @@ import {
   createOperationsDataSource,
   createOperationsFixture,
   createOperationsFromSnapshot,
+  createRouteQualityIndex,
   fallbackOperationsDataSource,
   filterOperationsObservations,
+  getObservationRouteQuality,
+  isRouteGeometrySignalReady,
   listRouteOptions,
   summarizeOperations,
 } from '../src/operationsWorkflowData.js';
 
 const manifest = JSON.parse(readFileSync(resolve('public/data/tdx-bus/archive/manifest.json'), 'utf8'));
+const routeQualityManifest = JSON.parse(readFileSync(resolve('public/data/tdx-bus/route-quality/manifest.json'), 'utf8'));
 const latestEntry = manifest.source?.mode === 'tdx-historical'
   ? manifest.snapshots.reduce((best, snapshot) => (snapshot.count > best.count ? snapshot : best), manifest.snapshots[0])
   : manifest.snapshots.at(-1);
@@ -52,6 +56,13 @@ const firstRoute = sample.route.name;
 const firstRouteRows = filterOperationsObservations(observations, { routeName: firstRoute });
 assert.ok(firstRouteRows.length >= 1);
 assert.ok(firstRouteRows.every((observation) => observation.route.name === firstRoute));
+
+const routeQualityIndex = createRouteQualityIndex(routeQualityManifest);
+const auditedSample = observations.find((observation) => getObservationRouteQuality(observation, routeQualityIndex));
+assert.ok(auditedSample, 'sample should include at least one audited route');
+const auditedRouteQuality = getObservationRouteQuality(auditedSample, routeQualityIndex);
+assert.ok(isRouteGeometrySignalReady(auditedRouteQuality), 'audited route should be signal-ready');
+assert.ok(routeQualityIndex.byRouteName.get(auditedSample.route.name).length >= 1);
 
 const noStale = filterOperationsObservations(observations, { hideStale: true });
 assert.ok(noStale.length <= observations.length);

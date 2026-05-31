@@ -1,0 +1,124 @@
+{
+  "schema": "twfoundry.tdx.citybus.route-context-manifest.v1",
+  "source": {
+    "provider": "TDX",
+    "city": "Taipei",
+    "datasets": [
+      "Bus.Shape.City",
+      "Bus.StopOfRoute.City"
+    ]
+  },
+  "generatedAt": "2026-05-30T14:10:47.006Z",
+  "routes": [
+    {
+      "routeName": "2",
+      "path": "/data/tdx-bus/route-context/2.json",
+      "shapeCount": 2,
+      "stopOfRouteCount": 2,
+      "directions": [
+        0,
+        1
+      ]
+    },
+    {
+      "routeName": "205",
+      "path": "/data/tdx-bus/route-context/205.json",
+      "shapeCount": 2,
+      "stopOfRouteCount": 2,
+      "directions": [
+        0,
+        1
+      ]
+    },
+    {
+      "routeName": "234",
+      "path": "/data/tdx-bus/route-context/234.json",
+      "shapeCount": 2,
+      "stopOfRouteCount": 2,
+      "directions": [
+        0,
+        1
+      ]
+    },
+    {
+      "routeName": "235",
+      "path": "/data/tdx-bus/route-context/235.json",
+      "shapeCount": 2,
+      "stopOfRouteCount": 2,
+      "directions": [
+        0,
+        1
+      ]
+    },
+    {
+      "routeName": "303區",
+      "path": "/data/tdx-bus/route-context/303%E5%8D%80.json",
+      "shapeCount": 10,
+      "stopOfRouteCount": 13,
+      "directions": [
+        0,
+        1
+      ]
+    },
+    {
+      "routeName": "669",
+      "path": "/data/tdx-bus/route-context/669.json",
+      "shapeCount": 4,
+      "stopOfRouteCount": 4,
+      "directions": [
+        0,
+        1
+      ]
+    },
+    {
+      "routeName": "南京幹線",
+      "path": "/data/tdx-bus/route-context/%E5%8D%97%E4%BA%AC%E5%B9%B9%E7%B7%9A.json",
+      "shapeCount": 2,
+      "stopOfRouteCount": 4,
+      "directions": [
+        0,
+        1
+      ]
+    },
+    {
+      "routeName": "民權幹線",
+      "path": "/data/tdx-bus/route-context/%E6%B0%91%E6%AC%8A%E5%B9%B9%E7%B7%9A.json",
+      "shapeCount": 2,
+      "stopOfRouteCount": 2,
+      "directions": [
+        0,
+        1
+      ]
+    },
+    {
+      "routeName": "民生幹線",
+      "path": "/data/tdx-bus/route-context/%E6%B0%91%E7%94%9F%E5%B9%B9%E7%B7%9A.json",
+      "shapeCount": 2,
+      "stopOfRouteCount": 2,
+      "directions": [
+        0,
+        1
+      ]
+    },
+    {
+      "routeName": "藍10",
+      "path": "/data/tdx-bus/route-context/%E8%97%8D10.json",
+      "shapeCount": 2,
+      "stopOfRouteCount": 2,
+      "directions": [
+        0,
+        1
+      ]
+    },
+    {
+      "routeName": "藍36",
+      "path": "/data/tdx-bus/route-context/%E8%97%8D36.json",
+      "shapeCount": 2,
+      "stopOfRouteCount": 4,
+      "directions": [
+        0,
+        1
+      ]
+    }
+  ]
+}

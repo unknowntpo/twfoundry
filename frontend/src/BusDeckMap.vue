@@ -10,6 +10,18 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  ghostObservations: {
+    type: Array,
+    default: () => [],
+  },
+  routeStopLocations: {
+    type: Array,
+    default: () => [],
+  },
+  routeProgressEncoding: {
+    type: Boolean,
+    default: false,
+  },
   selectedObservationId: {
     type: String,
     default: '',
@@ -37,6 +49,8 @@ const emit = defineEmits([
   'clear-observation',
   'hover-observation',
   'leave-observation',
+  'hover-route-stop',
+  'leave-route-stop',
   'map-state',
   'status',
 ]);
@@ -47,6 +61,11 @@ let map = null;
 let overlay = null;
 let loaded = false;
 let shiftPitchHandlersMounted = false;
+let positionTweenFrameId = 0;
+let positionTweenStartedAt = 0;
+let positionTweenFrom = new Map();
+let positionTweenTarget = [];
+let renderedObservations = [];
 const shiftPitchDrag = {
   active: false,
   startX: 0,
@@ -57,6 +76,8 @@ const shiftPitchDrag = {
 
 const ROAD_READABLE_STYLE_URL = 'https://tiles.openfreemap.org/styles/fiord';
 const INTERACTION_PICK_RADIUS_PIXELS = 22;
+const POSITION_TWEEN_MS = 760;
+const MAX_POSITION_TWEEN_METERS = 2200;
 
 const DARK_NAVIGATION_PAINT = [
   ['background', 'background-color', '#050912'],
@@ -254,6 +275,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   unmountShiftPitchGesture();
+  window.cancelAnimationFrame(positionTweenFrameId);
   if (map && overlay) {
     try {
       map.removeControl(overlay);
@@ -269,8 +291,17 @@ onBeforeUnmount(() => {
 });
 
 watch(
+  () => props.observations,
+  () => {
+    startObservationPositionTween();
+  },
+);
+
+watch(
   () => [
-    props.observations,
+    props.ghostObservations,
+    props.routeStopLocations,
+    props.routeProgressEncoding,
     props.selectedObservationId,
     props.visible,
     props.pointScale,
@@ -289,11 +320,106 @@ watch(
 function updateLayers() {
   if (!overlay || !loaded) return;
 
-  const data = props.visible ? validObservations(props.observations) : [];
+  const sourceData = renderedObservations.length > 0 || props.observations.length === 0
+    ? renderedObservations
+    : props.observations;
+  const data = props.visible ? validObservations(sourceData) : [];
+  const ghostData = props.visible ? validObservations(props.ghostObservations) : [];
+  const routeStopData = props.visible ? validRouteStops(props.routeStopLocations) : [];
+  const lateProgressData = props.routeProgressEncoding
+    ? data.filter((observation) => {
+      const progressRatio = observation.routeProgress?.progressRatio;
+      return observation.id !== props.selectedObservationId
+        && Number.isFinite(progressRatio)
+        && progressRatio >= 0.66;
+    })
+    : [];
   const selectedData = data.filter((observation) => observation.id === props.selectedObservationId);
 
   overlay.setProps({
     layers: [
+      new ScatterplotLayer({
+        id: 'twf-bus-route-stop-halo',
+        data: routeStopData,
+        pickable: false,
+        radiusUnits: 'pixels',
+        lineWidthUnits: 'pixels',
+        opacity: 0.18,
+        stroked: false,
+        filled: true,
+        getPosition: (stop) => [
+          stop.position.longitude,
+          stop.position.latitude,
+        ],
+        getRadius: () => Math.max(5, 5.8 * props.pointScale),
+        getFillColor: [242, 179, 61, 42],
+        updateTriggers: {
+          getRadius: [props.pointScale],
+        },
+      }),
+      new ScatterplotLayer({
+        id: 'twf-bus-route-stops',
+        data: routeStopData,
+        pickable: true,
+        radiusUnits: 'pixels',
+        lineWidthUnits: 'pixels',
+        opacity: 0.72,
+        stroked: true,
+        filled: true,
+        getPosition: (stop) => [
+          stop.position.longitude,
+          stop.position.latitude,
+        ],
+        getRadius: () => Math.max(2.6, 3.2 * props.pointScale),
+        getLineWidth: 1,
+        getFillColor: [242, 179, 61, 96],
+        getLineColor: [255, 240, 194, 168],
+        updateTriggers: {
+          getRadius: [props.pointScale],
+        },
+      }),
+      new ScatterplotLayer({
+        id: 'twf-bus-ghost-points',
+        data: ghostData,
+        pickable: false,
+        radiusUnits: 'pixels',
+        lineWidthUnits: 'pixels',
+        opacity: 0.28,
+        stroked: true,
+        filled: true,
+        getPosition: (observation) => [
+          observation.position.longitude,
+          observation.position.latitude,
+        ],
+        getRadius: () => 2.8 * props.pointScale,
+        getLineWidth: 0.8,
+        getFillColor: [198, 208, 224, 48],
+        getLineColor: [234, 241, 255, 108],
+        updateTriggers: {
+          getRadius: [props.pointScale],
+        },
+      }),
+      new ScatterplotLayer({
+        id: 'twf-bus-route-progress-late-halo',
+        data: lateProgressData,
+        pickable: false,
+        radiusUnits: 'pixels',
+        lineWidthUnits: 'pixels',
+        opacity: 0.46,
+        stroked: true,
+        filled: true,
+        getPosition: (observation) => [
+          observation.position.longitude,
+          observation.position.latitude,
+        ],
+        getRadius: () => 10.5 * props.pointScale,
+        getLineWidth: 1.5,
+        getFillColor: [84, 231, 255, 36],
+        getLineColor: [210, 252, 255, 176],
+        updateTriggers: {
+          getRadius: [props.pointScale],
+        },
+      }),
       new ScatterplotLayer({
         id: 'twf-bus-points',
         data,
@@ -307,17 +433,16 @@ function updateLayers() {
           observation.position.longitude,
           observation.position.latitude,
         ],
-        getRadius: () => 4.8 * props.pointScale,
+        getRadius: (observation) => observationRadius(observation),
         getLineWidth: 1,
         getFillColor: (observation) => observationFillColor(observation),
         getLineColor: (observation) => observationLineColor(observation),
         updateTriggers: {
-          getRadius: [props.pointScale],
-          getFillColor: [props.selectedObservationId],
-          getLineColor: [props.selectedObservationId],
+          getRadius: [props.pointScale, props.routeProgressEncoding],
+          getFillColor: [props.selectedObservationId, props.routeProgressEncoding],
+          getLineColor: [props.selectedObservationId, props.routeProgressEncoding],
         },
         transitions: {
-          getPosition: 820,
           getRadius: 160,
         },
       }),
@@ -369,6 +494,65 @@ function updateLayers() {
   });
 }
 
+function startObservationPositionTween() {
+  const nextObservations = validObservations(props.observations);
+  const previousById = new Map(renderedObservations.map((observation) => [observation.id, observation]));
+
+  window.cancelAnimationFrame(positionTweenFrameId);
+  positionTweenStartedAt = performance.now();
+  positionTweenTarget = nextObservations;
+  positionTweenFrom = new Map(nextObservations.map((observation) => {
+    const previous = previousById.get(observation.id);
+    const shouldTween = previous
+      && Number.isFinite(previous.position?.longitude)
+      && Number.isFinite(previous.position?.latitude)
+      && distanceMeters(previous.position, observation.position) <= MAX_POSITION_TWEEN_METERS;
+
+    return [
+      observation.id,
+      shouldTween
+        ? { longitude: previous.position.longitude, latitude: previous.position.latitude }
+        : { longitude: observation.position.longitude, latitude: observation.position.latitude },
+    ];
+  }));
+
+  if (!loaded) {
+    renderedObservations = positionTweenTarget;
+    return;
+  }
+
+  stepObservationPositionTween(positionTweenStartedAt);
+}
+
+function stepObservationPositionTween(now) {
+  const progress = clamp((now - positionTweenStartedAt) / POSITION_TWEEN_MS, 0, 1);
+  renderedObservations = positionTweenTarget.map((observation) => (
+    tweenObservationPosition(observation, easeOutCubic(progress))
+  ));
+  updateLayers();
+
+  if (progress < 1) {
+    positionTweenFrameId = window.requestAnimationFrame(stepObservationPositionTween);
+    return;
+  }
+
+  renderedObservations = positionTweenTarget;
+  positionTweenFrameId = 0;
+  updateLayers();
+}
+
+function tweenObservationPosition(observation, progress) {
+  const from = positionTweenFrom.get(observation.id) ?? observation.position;
+  return {
+    ...observation,
+    position: {
+      ...observation.position,
+      longitude: from.longitude + (observation.position.longitude - from.longitude) * progress,
+      latitude: from.latitude + (observation.position.latitude - from.latitude) * progress,
+    },
+  };
+}
+
 function handleMapClick(event) {
   if (!overlay || shiftPitchDrag.active) return;
   const picked = pickObservationAt(event.point);
@@ -386,15 +570,28 @@ function handleMapHover(event) {
   if (!overlay || shiftPitchDrag.active) return;
   const picked = pickObservationAt(event.point);
 
-  if (!picked?.object) {
+  if (picked?.object) {
+    setMapCursor('pointer');
+    const rect = map.getCanvas().getBoundingClientRect();
+    emit('hover-observation', {
+      observation: picked.object,
+      x: rect.left + event.point.x,
+      y: rect.top + event.point.y,
+    });
+    return;
+  }
+
+  const pickedStop = pickRouteStopAt(event.point);
+
+  if (!pickedStop?.object) {
     clearMapHover();
     return;
   }
 
   setMapCursor('pointer');
   const rect = map.getCanvas().getBoundingClientRect();
-  emit('hover-observation', {
-    observation: picked.object,
+  emit('hover-route-stop', {
+    stop: pickedStop.object,
     x: rect.left + event.point.x,
     y: rect.top + event.point.y,
   });
@@ -403,6 +600,7 @@ function handleMapHover(event) {
 function clearMapHover() {
   setMapCursor('');
   emit('leave-observation');
+  emit('leave-route-stop');
 }
 
 function pickObservationAt(point) {
@@ -411,6 +609,15 @@ function pickObservationAt(point) {
     y: point.y,
     radius: INTERACTION_PICK_RADIUS_PIXELS,
     layerIds: ['twf-bus-selected-core', 'twf-bus-points'],
+  });
+}
+
+function pickRouteStopAt(point) {
+  return overlay?.pickObject({
+    x: point.x,
+    y: point.y,
+    radius: 16,
+    layerIds: ['twf-bus-route-stops'],
   });
 }
 
@@ -567,13 +774,35 @@ function addOrReplaceStyleLayer(layer) {
 function observationFillColor(observation) {
   if (observation.id === props.selectedObservationId) return [0, 190, 240, 240];
   if (observation.status.freshness === 'stale') return [0, 151, 200, 118];
+  if (props.routeProgressEncoding && Number.isFinite(observation.routeProgress?.progressRatio)) {
+    const progressRatio = observation.routeProgress.progressRatio;
+    if (progressRatio < 0.33) return [54, 120, 210, 150];
+    if (progressRatio >= 0.66) return [94, 235, 255, 228];
+    return [0, 174, 220, 188];
+  }
   return [0, 151, 200, 172];
 }
 
 function observationLineColor(observation) {
   if (observation.id === props.selectedObservationId) return [255, 255, 255, 245];
   if (observation.status.freshness === 'stale') return [165, 237, 255, 132];
+  if (props.routeProgressEncoding && Number.isFinite(observation.routeProgress?.progressRatio)) {
+    const progressRatio = observation.routeProgress.progressRatio;
+    if (progressRatio < 0.33) return [154, 206, 255, 178];
+    if (progressRatio >= 0.66) return [239, 255, 255, 240];
+    return [220, 251, 255, 222];
+  }
   return [238, 253, 255, 210];
+}
+
+function observationRadius(observation) {
+  if (!props.routeProgressEncoding || !Number.isFinite(observation.routeProgress?.progressRatio)) {
+    return 4.8 * props.pointScale;
+  }
+  const progressRatio = observation.routeProgress.progressRatio;
+  if (progressRatio < 0.33) return 3.7 * props.pointScale;
+  if (progressRatio >= 0.66) return 5.7 * props.pointScale;
+  return 4.8 * props.pointScale;
 }
 
 function fitToObservations(animate = true) {
@@ -721,6 +950,27 @@ function validObservations(observations) {
     Number.isFinite(observation.position?.longitude)
     && Number.isFinite(observation.position?.latitude)
   ));
+}
+
+function validRouteStops(stops) {
+  return stops.filter((stop) => (
+    Number.isFinite(stop.position?.longitude)
+    && Number.isFinite(stop.position?.latitude)
+  ));
+}
+
+function distanceMeters(left, right) {
+  const lat1 = left.latitude * Math.PI / 180;
+  const lat2 = right.latitude * Math.PI / 180;
+  const deltaLat = (right.latitude - left.latitude) * Math.PI / 180;
+  const deltaLon = (right.longitude - left.longitude) * Math.PI / 180;
+  const a = Math.sin(deltaLat / 2) ** 2
+    + Math.cos(lat1) * Math.cos(lat2) * Math.sin(deltaLon / 2) ** 2;
+  return 6371000 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function easeOutCubic(value) {
+  return 1 - (1 - value) ** 3;
 }
 
 function clamp(value, min, max) {

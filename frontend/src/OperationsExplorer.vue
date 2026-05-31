@@ -1,19 +1,26 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import BusDeckMap from './BusDeckMap.vue';
+import { buildRouteProgressObservation } from './busRouteGeometry.js';
 import { SUPPORTED_LOCALES, locale, setLocale, t } from './i18n.js';
 import {
+  OPERATIONS_BASELINE_ARCHIVE_MANIFEST_URL,
   OPERATIONS_ARCHIVE_MANIFEST_URL,
   OPERATIONS_ARCHIVE_INTERVAL_MINUTES,
   OPERATIONS_POLL_INTERVAL_SECONDS,
+  OPERATIONS_ROUTE_CONTEXT_MANIFEST_URL,
+  OPERATIONS_ROUTE_QUALITY_MANIFEST_URL,
   advanceOperationsFixtureTick,
   advanceOperationsMotionFrame,
   ageOperationsObservations,
+  createRouteQualityIndex,
   createOperationsDataSource,
   createOperationsFromSnapshot,
   createOperationsFixture,
   fallbackOperationsDataSource,
   filterOperationsObservations,
+  getObservationRouteQuality,
+  isRouteGeometrySignalReady,
   listRouteOptions,
   summarizeOperations,
 } from './operationsWorkflowData.js';
@@ -21,15 +28,27 @@ import {
 const PLAYBACK_SPEED_OPTIONS = [1, 1.5, 2, 4];
 
 const observations = ref(createOperationsFixture());
+const ghostObservations = ref([]);
+const routeStopLocations = ref([]);
+const routeProgressObservation = ref(null);
+const routeProgressEncodingMap = ref(new Map());
 const selectedObservationId = ref('');
 const activeDataSource = ref(fallbackOperationsDataSource);
 const activeSnapshot = ref(null);
 const activeSnapshotIndex = ref(0);
 const playbackCursorIndex = ref(0);
 const timelineSnapshots = ref([]);
+const baselineSnapshots = ref([]);
+const routeContextManifest = ref(null);
+const routeQualityManifest = ref(null);
+const baselineArchiveError = ref('');
+const routeQualityError = ref('');
+const routeProgressError = ref('');
 const trackVehicleMode = ref(false);
 const trackedVehicleId = ref('');
 const lastTrackedObservation = ref(null);
+const ghostMode = ref(false);
+const routeProgressEncoding = ref(false);
 const routeFilter = ref('all');
 const hideStale = ref(false);
 const layerVisible = ref(true);
@@ -48,7 +67,8 @@ const archiveError = ref('');
 const playbackRunning = ref(true);
 const playbackSpeed = ref(2);
 const mapRendererStatus = ref('initializing renderer');
-const tooltip = ref({ visible: false, x: 0, y: 0, observation: null });
+const tooltip = ref({ visible: false, x: 0, y: 0, observation: null, routeStop: null });
+const timelineHover = ref({ visible: false, left: 0, label: '', index: 0 });
 const mapRef = ref(null);
 const mapState = ref({ zoom: 11, pitch: 34, bearing: -8, center: [121.56, 25.05] });
 const mapFitKey = ref('initial');
@@ -61,9 +81,60 @@ let playbackFrameId = 0;
 let playbackLastFrameMs = 0;
 let playbackPendingIndex = -1;
 let initialArchiveFitApplied = false;
+let ghostRequestId = 0;
+let routeStopRequestId = 0;
+let routeProgressRequestId = 0;
+let routeProgressEncodingRequestId = 0;
+const ghostSnapshotCache = new Map();
+const routeContextCache = new Map();
+const routeQualityRetryRoutes = new Set();
 
 const operationsDataSource = computed(() => activeDataSource.value);
+const routeQualityIndex = computed(() => createRouteQualityIndex(routeQualityManifest.value));
 const routeOptions = computed(() => listRouteOptions(observations.value));
+const routeQualitySummary = computed(() => {
+  const summary = routeQualityManifest.value?.summary;
+  if (!summary) return null;
+  return {
+    total: Number(summary.routeDirectionCount ?? 0),
+    good: Number(summary.good ?? 0),
+    usable: Number(summary.usable ?? 0),
+    bad: Number(summary.bad ?? 0),
+  };
+});
+const selectedRouteQualityRows = computed(() => (
+  routeFilter.value === 'all'
+    ? []
+    : routeQualityIndex.value.byRouteName.get(routeFilter.value) ?? []
+));
+const selectedRouteContextRows = computed(() => (
+  routeFilter.value === 'all'
+    ? []
+    : (routeContextManifest.value?.routes ?? []).filter((route) => route.routeName === routeFilter.value)
+));
+const selectedRouteGeometryReady = computed(() => (
+  routeFilter.value !== 'all'
+  && selectedRouteQualityRows.value.some((routeQuality) => isRouteGeometrySignalReady(routeQuality))
+));
+const selectedRouteQualityLabel = computed(() => {
+  if (routeFilter.value === 'all') {
+    if (!routeQualitySummary.value) return routeQualityError.value ? t('routeQuality.unavailable') : t('routeQuality.loading');
+    return t('routeQuality.summary', {
+      ready: routeQualitySummary.value.good + routeQualitySummary.value.usable,
+      total: routeQualitySummary.value.total,
+    });
+  }
+  if (selectedRouteQualityRows.value.length === 0) return t('routeQuality.notAudited');
+  const readyRows = selectedRouteQualityRows.value.filter((routeQuality) => isRouteGeometrySignalReady(routeQuality));
+  if (readyRows.length === 0) return t('routeQuality.blocked');
+  const p95 = Math.max(...readyRows.map((routeQuality) => Number(routeQuality.p95DistanceToRouteMeters ?? 0)));
+  return t('routeQuality.ready', { count: readyRows.length, p95: Math.round(p95) });
+});
+const routeProgressEncodingEnabled = computed(() => (
+  routeProgressEncoding.value
+  && routeFilter.value !== 'all'
+  && selectedRouteGeometryReady.value
+));
 const visibleObservations = computed(() => filterOperationsObservations(observations.value, {
   routeName: routeFilter.value,
   hideStale: hideStale.value,
@@ -81,6 +152,40 @@ const mapObservations = computed(() => (
 const selectedObservation = computed(() => (
   mapObservations.value.find((observation) => observation.id === selectedObservationId.value) ?? null
 ));
+const selectedObservationRouteQuality = computed(() => (
+  getObservationRouteQuality(selectedObservation.value, routeQualityIndex.value)
+));
+const selectedObservationGeometryReady = computed(() => (
+  isRouteGeometrySignalReady(selectedObservationRouteQuality.value)
+));
+const routeFocusActive = computed(() => Boolean(ghostMode.value && selectedObservation.value && ghostObservations.value.length > 0));
+const routeStopLabel = computed(() => (
+  routeFilter.value !== 'all' && routeStopLocations.value.length > 0
+    ? t('routeStops.summary', {
+      route: routeFilter.value,
+      count: routeStopLocations.value.length,
+    })
+    : routeFilter.value !== 'all' && routeContextManifest.value && selectedRouteContextRows.value.length === 0
+      ? t('routeStops.missingContext')
+    : ''
+));
+const displayMapObservations = computed(() => {
+  const selected = selectedObservation.value;
+  const baseObservations = !routeFocusActive.value || !selected
+    ? mapObservations.value
+    : mapObservations.value.filter((observation) => (
+      observation.id === selected.id
+      || (
+        observation.route.uid === selected.route.uid
+        && observation.route.direction === selected.route.direction
+      )
+    ));
+  if (!routeProgressEncodingEnabled.value || routeProgressEncodingMap.value.size === 0) return baseObservations;
+  return baseObservations.map((observation) => ({
+    ...observation,
+    routeProgress: routeProgressEncodingMap.value.get(observation.id) ?? null,
+  }));
+});
 const visibleSummary = computed(() => summarizeOperations(visibleObservations.value));
 const allSummary = computed(() => summarizeOperations(observations.value));
 const rootStyle = computed(() => ({
@@ -139,9 +244,47 @@ const trackingActiveForSelected = computed(() => (
 const trackToggleLabel = computed(() => (
   trackingActiveForSelected.value ? t('inspector.stopTrack') : t('inspector.track')
 ));
+const ghostToggleLabel = computed(() => (
+  ghostMode.value ? t('ghost.hide') : t('ghost.show')
+));
+const ghostBaselineLabel = computed(() => {
+  if (!ghostMode.value || !selectedObservation.value || ghostObservations.value.length === 0) return '';
+  return t('ghost.baseline', {
+    route: selectedObservation.value.route.name,
+    count: ghostObservations.value.length,
+    days: baselineDayCount.value,
+  });
+});
+const baselineDayCount = computed(() => (
+  new Set(baselineSnapshots.value.map((snapshot) => snapshot.captureDate).filter(Boolean)).size
+));
 const selectedDirectionLabel = computed(() => (
   selectedObservation.value?.route?.direction === 0 ? t('direction.outbound') : t('direction.inbound')
 ));
+const routeProgressPercentLabel = computed(() => (
+  Number.isFinite(routeProgressObservation.value?.progressRatio)
+    ? `${Math.round(routeProgressObservation.value.progressRatio * 100)}%`
+    : '--'
+));
+const routeProgressDistanceLabel = computed(() => (
+  Number.isFinite(routeProgressObservation.value?.distanceToRouteMeters)
+    ? `${Math.round(routeProgressObservation.value.distanceToRouteMeters)} m`
+    : '--'
+));
+const routeProgressStopLabel = computed(() => (
+  routeProgressObservation.value?.nearestStop?.name ?? routeProgressStatusLabel.value
+));
+const routeProgressNextStopLabel = computed(() => (
+  routeProgressObservation.value?.betweenStops?.next?.name ?? '--'
+));
+const routeProgressStatusLabel = computed(() => {
+  if (!selectedObservation.value) return '--';
+  if (routeProgressError.value) return t('routeProgress.unavailable');
+  if (!selectedObservationRouteQuality.value) return t('routeProgress.notAudited');
+  if (!selectedObservationGeometryReady.value) return t('routeProgress.blocked');
+  if (!routeProgressObservation.value) return t('routeProgress.loading');
+  return t('routeProgress.ready');
+});
 const selectedFreshnessLabel = computed(() => formatFreshness(selectedObservation.value?.status?.freshness));
 const pollStatusLabel = computed(() => t(pollStatusKey.value, pollStatusParams.value));
 const healthSources = computed(() => [
@@ -157,6 +300,23 @@ const healthSources = computed(() => [
       sampled: operationsDataSource.value.count,
     }),
     updated: activeSnapshotLabel.value,
+  },
+  {
+    id: 'route-geometry',
+    name: t('healthSource.routeGeometry'),
+    type: t('healthSource.qualityGate'),
+    status: routeQualityError.value ? 'error' : (routeQualityManifest.value ? 'ok' : 'syncing'),
+    mode: t('healthSource.routeAudit'),
+    cadence: t('healthSource.buildTime'),
+    coverage: routeQualitySummary.value
+      ? t('routeQuality.summary', {
+        ready: routeQualitySummary.value.good + routeQualitySummary.value.usable,
+        total: routeQualitySummary.value.total,
+      })
+      : '--',
+    updated: routeQualityManifest.value?.generatedAt
+      ? formatTaipeiTime(routeQualityManifest.value.generatedAt, true)
+      : '--',
   },
   {
     id: 'basemap',
@@ -264,12 +424,22 @@ function showDeckTooltip({ observation, x, y }) {
   tooltip.value = {
     visible: true,
     observation,
+    routeStop: null,
+    ...tooltipPosition(x, y),
+  };
+}
+
+function showRouteStopTooltip({ stop, x, y }) {
+  tooltip.value = {
+    visible: true,
+    observation: null,
+    routeStop: stop,
     ...tooltipPosition(x, y),
   };
 }
 
 function hideTooltip() {
-  tooltip.value = { visible: false, x: 0, y: 0, observation: null };
+  tooltip.value = { visible: false, x: 0, y: 0, observation: null, routeStop: null };
 }
 
 function tooltipPosition(x, y) {
@@ -377,9 +547,331 @@ function onMapStatus(status) {
   mapRendererStatus.value = status.message;
 }
 
+watch(
+  () => [
+    selectedObservation.value?.id ?? '',
+    selectedObservation.value?.route.uid ?? '',
+    selectedObservation.value?.route.direction ?? '',
+    activeSnapshotIndex.value,
+    timelineSnapshots.value.length,
+  ],
+  () => {
+    void refreshGhostOverlay();
+    void refreshSelectedRouteProgress();
+  },
+);
+
+watch(
+  () => routeQualityManifest.value?.generatedAt ?? '',
+  () => {
+    void refreshSelectedRouteProgress();
+  },
+);
+
+async function refreshGhostOverlay() {
+  const target = selectedObservation.value;
+  if (!ghostMode.value || !target || timelineSnapshots.value.length === 0) {
+    ghostObservations.value = [];
+    return;
+  }
+
+  const requestId = ++ghostRequestId;
+  const manifestEntries = ghostBaselineEntries();
+
+  try {
+    const snapshots = await Promise.all(manifestEntries.map((entry) => loadGhostSnapshotEntry(entry)));
+    if (requestId !== ghostRequestId) return;
+
+    ghostObservations.value = snapshots
+      .flatMap(({ snapshot, manifestEntry }) => createOperationsFromSnapshot(snapshot, manifestEntry))
+      .filter((observation) => (
+        observation.route.uid === target.route.uid
+        && observation.route.direction === target.route.direction
+      ));
+  } catch {
+    if (requestId === ghostRequestId) ghostObservations.value = [];
+  }
+}
+
+function ghostBaselineEntries() {
+  const activeEntry = timelineSnapshots.value[activeSnapshotIndex.value];
+  if (!activeEntry) return [];
+
+  const baselineEntries = matchingBaselineEntries(activeEntry);
+  if (baselineEntries.length > 0) return baselineEntries;
+
+  return [
+    activeSnapshotIndex.value - 1,
+    activeSnapshotIndex.value,
+    activeSnapshotIndex.value + 1,
+  ]
+    .filter((index) => index >= 0 && index < timelineSnapshots.value.length)
+    .map((index) => timelineSnapshots.value[index]);
+}
+
+function matchingBaselineEntries(activeEntry) {
+  if (baselineSnapshots.value.length === 0) return [];
+
+  const centerMinutes = timeLabelToMinutes(activeEntry.timeLabel);
+  if (!Number.isFinite(centerMinutes)) return [];
+
+  const allowedMinutes = new Set([
+    centerMinutes - OPERATIONS_ARCHIVE_INTERVAL_MINUTES,
+    centerMinutes,
+    centerMinutes + OPERATIONS_ARCHIVE_INTERVAL_MINUTES,
+  ].map((value) => moduloMinutes(value)));
+
+  const candidates = baselineSnapshots.value.filter((snapshot) => (
+    snapshot.path
+    && allowedMinutes.has(timeLabelToMinutes(snapshot.timeLabel))
+  ));
+
+  const historicalOnly = candidates.filter((snapshot) => snapshot.captureDate !== activeEntry.captureDate);
+  return historicalOnly.length > 0 ? historicalOnly : candidates;
+}
+
+async function loadGhostSnapshot(index) {
+  const manifestEntry = timelineSnapshots.value[index];
+  return loadGhostSnapshotEntry(manifestEntry);
+}
+
+async function loadGhostSnapshotEntry(manifestEntry) {
+  if (!manifestEntry?.path) throw new Error('missing ghost snapshot path');
+  if (manifestEntry.slotKey === timelineSnapshots.value[activeSnapshotIndex.value]?.slotKey && activeSnapshot.value) {
+    return { snapshot: activeSnapshot.value, manifestEntry };
+  }
+  const cached = ghostSnapshotCache.get(manifestEntry.path);
+  if (cached) return { snapshot: cached, manifestEntry };
+
+  const response = await fetch(`${manifestEntry.path}?v=${Date.now()}`, { cache: 'no-store' });
+  if (!response.ok) throw new Error(`ghost snapshot HTTP ${response.status}`);
+  const snapshot = await response.json();
+  ghostSnapshotCache.set(manifestEntry.path, snapshot);
+  return { snapshot, manifestEntry };
+}
+
+function timeLabelToMinutes(value) {
+  const match = String(value ?? '').match(/^(\d{2}):(\d{2})$/);
+  if (!match) return Number.NaN;
+  return Number(match[1]) * 60 + Number(match[2]);
+}
+
+function moduloMinutes(value) {
+  const day = 24 * 60;
+  return ((value % day) + day) % day;
+}
+
+function showTimelineHover(event) {
+  if (timelineSnapshots.value.length === 0) return;
+  const rect = event.currentTarget.getBoundingClientRect();
+  const ratio = clamp((event.clientX - rect.left) / rect.width, 0, 1);
+  const index = Math.round(ratio * Math.max(0, timelineSnapshots.value.length - 1));
+  const snapshot = timelineSnapshots.value[index];
+  timelineHover.value = {
+    visible: true,
+    left: ratio * 100,
+    index,
+    label: formatTimelineHoverLabel(snapshot),
+  };
+}
+
+function hideTimelineHover() {
+  timelineHover.value = { ...timelineHover.value, visible: false };
+}
+
+function formatTimelineHoverLabel(snapshot) {
+  if (!snapshot) return '';
+  const serviceDate = snapshot.captureDate ?? snapshot.slotKey?.slice(0, 10) ?? operationsDataSource.value.captureDate ?? '';
+  const timeLabel = snapshot.timeLabel ?? snapshot.slotKey?.slice(11, 16) ?? '--:--';
+  const count = Number.isFinite(snapshot.count) ? ` · ${snapshot.count} ${t('timeline.vehicles')}` : '';
+  return `${serviceDate} ${timeLabel}${count}`;
+}
+
 function togglePlayback() {
   playbackRunning.value = !playbackRunning.value;
   playbackLastFrameMs = 0;
+}
+
+function toggleGhostMode() {
+  ghostMode.value = !ghostMode.value;
+  if (!ghostMode.value) {
+    ghostObservations.value = [];
+    return;
+  }
+  void refreshGhostOverlay();
+}
+
+watch(
+  () => [
+    routeFilter.value,
+    routeContextManifest.value?.generatedAt ?? '',
+    routeQualityManifest.value?.generatedAt ?? '',
+  ],
+  () => {
+    void ensureRouteQualityForSelectedRoute();
+    void refreshRouteStopLocations();
+    void refreshRouteProgressEncoding();
+  },
+);
+
+watch(
+  () => [
+    routeProgressEncoding.value,
+    activeSnapshotIndex.value,
+    observations.value,
+    routeQualityManifest.value?.generatedAt ?? '',
+  ],
+  () => {
+    void refreshRouteProgressEncoding();
+  },
+);
+
+async function refreshRouteStopLocations() {
+  if (routeFilter.value === 'all' || selectedRouteContextRows.value.length === 0) {
+    routeStopLocations.value = [];
+    return;
+  }
+
+  const requestId = ++routeStopRequestId;
+  const stops = [];
+
+  try {
+    for (const routeIndexEntry of selectedRouteContextRows.value) {
+      const routeContext = await loadRouteContextFromPath(routeIndexEntry.path);
+
+      for (const stopOfRoute of routeContext.stopOfRoutes ?? []) {
+        const sortedStops = [...(stopOfRoute.Stops ?? [])].sort(compareStopSequence);
+        const terminalStopName = getStopDisplayName(sortedStops.at(-1));
+        const directionLabel = terminalStopName
+          ? t('direction.toward', { stop: terminalStopName })
+          : (Number(stopOfRoute.Direction) === 0 ? t('direction.outbound') : t('direction.inbound'));
+
+        for (const stop of sortedStops) {
+          const longitude = Number(stop.StopPosition?.PositionLon);
+          const latitude = Number(stop.StopPosition?.PositionLat);
+          if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) continue;
+
+          stops.push({
+            id: `${stopOfRoute.RouteUID}:${stopOfRoute.Direction}:${stop.StopUID ?? stop.StopID ?? stop.StopSequence}`,
+            routeUID: stopOfRoute.RouteUID,
+            routeName: routeIndexEntry.routeName,
+            direction: Number(stopOfRoute.Direction),
+            directionLabel,
+            sequence: Number(stop.StopSequence ?? 0),
+            stopID: stop.StopID ?? stop.StopUID ?? '',
+            name: getStopDisplayName(stop),
+            position: { longitude, latitude },
+          });
+        }
+      }
+    }
+
+    if (requestId !== routeStopRequestId) return;
+    routeStopLocations.value = stops;
+  } catch {
+    if (requestId === routeStopRequestId) routeStopLocations.value = [];
+  }
+}
+
+async function ensureRouteQualityForSelectedRoute() {
+  const routeName = routeFilter.value;
+  if (
+    routeName === 'all'
+    || selectedRouteQualityRows.value.length > 0
+    || routeQualityRetryRoutes.has(routeName)
+  ) {
+    return;
+  }
+
+  routeQualityRetryRoutes.add(routeName);
+  await loadRouteQualityManifest();
+}
+
+function findRouteStops(routeContext, routeQuality) {
+  const stopOfRoutes = routeContext?.stopOfRoutes ?? [];
+  return stopOfRoutes.find((route) => (
+    route.RouteUID === routeQuality.routeUID
+    && Number(route.Direction) === Number(routeQuality.direction)
+  )) ?? stopOfRoutes.find((route) => Number(route.Direction) === Number(routeQuality.direction));
+}
+
+function compareStopSequence(left, right) {
+  return Number(left.StopSequence ?? 0) - Number(right.StopSequence ?? 0);
+}
+
+function getStopDisplayName(stop) {
+  return stop?.StopName?.Zh_tw ?? stop?.StopName?.En ?? stop?.StopID ?? '';
+}
+
+async function refreshSelectedRouteProgress() {
+  const target = selectedObservation.value;
+  const routeQuality = selectedObservationRouteQuality.value;
+  if (!target || !isRouteGeometrySignalReady(routeQuality)) {
+    routeProgressObservation.value = null;
+    routeProgressError.value = '';
+    return;
+  }
+
+  const requestId = ++routeProgressRequestId;
+  routeProgressError.value = '';
+  try {
+    const routeContext = await loadRouteContextForQuality(routeQuality);
+    if (requestId !== routeProgressRequestId) return;
+    routeProgressObservation.value = buildRouteProgressObservation(target, routeContext);
+    if (!routeProgressObservation.value) routeProgressError.value = 'route progress unavailable';
+  } catch (error) {
+    if (requestId !== routeProgressRequestId) return;
+    routeProgressObservation.value = null;
+    routeProgressError.value = error.message;
+  }
+}
+
+async function refreshRouteProgressEncoding() {
+  if (!routeProgressEncodingEnabled.value || visibleObservations.value.length === 0) {
+    routeProgressEncodingMap.value = new Map();
+    return;
+  }
+
+  const requestId = ++routeProgressEncodingRequestId;
+  try {
+    const contextByRouteKey = new Map();
+    const progressEntries = [];
+
+    for (const observation of visibleObservations.value) {
+      const routeQuality = getObservationRouteQuality(observation, routeQualityIndex.value);
+      if (!isRouteGeometrySignalReady(routeQuality)) continue;
+      const routeKey = `${routeQuality.routeUID}:${routeQuality.direction}`;
+      let routeContext = contextByRouteKey.get(routeKey);
+      if (!routeContext) {
+        routeContext = await loadRouteContextForQuality(routeQuality);
+        contextByRouteKey.set(routeKey, routeContext);
+      }
+      const routeProgress = buildRouteProgressObservation(observation, routeContext);
+      if (routeProgress) progressEntries.push([observation.id, routeProgress]);
+    }
+
+    if (requestId !== routeProgressEncodingRequestId) return;
+    routeProgressEncodingMap.value = new Map(progressEntries);
+  } catch {
+    if (requestId === routeProgressEncodingRequestId) routeProgressEncodingMap.value = new Map();
+  }
+}
+
+async function loadRouteContextForQuality(routeQuality) {
+  const path = routeQuality?.routeContextPath;
+  if (!path) throw new Error('missing route context path');
+  return loadRouteContextFromPath(path);
+}
+
+async function loadRouteContextFromPath(path) {
+  const cached = routeContextCache.get(path);
+  if (cached) return cached;
+
+  const response = await fetch(`${path}?v=${Date.now()}`, { cache: 'no-store' });
+  if (!response.ok) throw new Error(`route context HTTP ${response.status}`);
+  const routeContext = await response.json();
+  routeContextCache.set(path, routeContext);
+  return routeContext;
 }
 
 async function reloadArchive() {
@@ -433,6 +925,53 @@ async function loadArchiveManifest({ preserveSelection = false, preferLatest = f
     useFallbackFixture(error.message);
   } finally {
     archiveLoading.value = false;
+  }
+}
+
+async function loadBaselineManifest() {
+  baselineArchiveError.value = '';
+  try {
+    const response = await fetch(`${OPERATIONS_BASELINE_ARCHIVE_MANIFEST_URL}?v=${Date.now()}`, {
+      cache: 'no-store',
+    });
+    if (!response.ok) throw new Error(`baseline manifest HTTP ${response.status}`);
+    const manifest = await response.json();
+    baselineSnapshots.value = Array.isArray(manifest.snapshots)
+      ? manifest.snapshots
+        .filter((snapshot) => snapshot.path && snapshot.capturedAt)
+        .sort((left, right) => left.capturedAt.localeCompare(right.capturedAt))
+      : [];
+  } catch (error) {
+    baselineSnapshots.value = [];
+    baselineArchiveError.value = error.message;
+  }
+}
+
+async function loadRouteContextManifest() {
+  try {
+    const response = await fetch(`${OPERATIONS_ROUTE_CONTEXT_MANIFEST_URL}?v=${Date.now()}`, {
+      cache: 'no-store',
+    });
+    if (!response.ok) throw new Error(`route context manifest HTTP ${response.status}`);
+    routeContextManifest.value = await response.json();
+    void refreshRouteStopLocations();
+  } catch {
+    routeContextManifest.value = null;
+  }
+}
+
+async function loadRouteQualityManifest() {
+  routeQualityError.value = '';
+  try {
+    const response = await fetch(`${OPERATIONS_ROUTE_QUALITY_MANIFEST_URL}?v=${Date.now()}`, {
+      cache: 'no-store',
+    });
+    if (!response.ok) throw new Error(`route quality manifest HTTP ${response.status}`);
+    routeQualityManifest.value = await response.json();
+    void refreshRouteStopLocations();
+  } catch (error) {
+    routeQualityManifest.value = null;
+    routeQualityError.value = error.message;
   }
 }
 
@@ -503,9 +1042,13 @@ function useFallbackFixture(reason) {
   activeSnapshot.value = null;
   activeDataSource.value = fallbackOperationsDataSource;
   observations.value = createOperationsFixture();
+  ghostObservations.value = [];
+  routeStopLocations.value = [];
+  routeProgressEncodingMap.value = new Map();
   selectedObservationId.value = '';
   trackVehicleMode.value = false;
   trackedVehicleId.value = '';
+  ghostMode.value = false;
   lastTrackedObservation.value = null;
   archiveError.value = reason;
   lastTickLabel.value = 'unavailable';
@@ -566,6 +1109,9 @@ function clamp(value, min, max) {
 }
 
 onMounted(() => {
+  void loadRouteContextManifest();
+  void loadRouteQualityManifest();
+  void loadBaselineManifest();
   void loadArchiveManifest();
   intervalId = window.setInterval(tickFixtureClock, 1000);
   playbackFrameId = window.requestAnimationFrame(runPlaybackFrame);
@@ -620,7 +1166,10 @@ onBeforeUnmount(() => {
       <div class="basemap">
         <BusDeckMap
           ref="mapRef"
-          :observations="mapObservations"
+          :observations="displayMapObservations"
+          :ghost-observations="ghostObservations"
+          :route-stop-locations="routeStopLocations"
+          :route-progress-encoding="routeProgressEncodingEnabled"
           :selected-observation-id="selectedObservation?.id ?? ''"
           :visible="layerVisible"
           :point-scale="pointSize"
@@ -630,6 +1179,8 @@ onBeforeUnmount(() => {
           @clear-observation="clearSelectedObservation"
           @hover-observation="showDeckTooltip"
           @leave-observation="hideTooltip"
+          @hover-route-stop="showRouteStopTooltip"
+          @leave-route-stop="hideTooltip"
           @map-state="onMapState"
           @status="onMapStatus"
         />
@@ -638,6 +1189,9 @@ onBeforeUnmount(() => {
           <div class="map-chip">{{ t('map.basemap') }}</div>
           <div class="map-chip">{{ t('map.vehicleLayer') }}</div>
           <div class="map-chip">{{ t('map.serviceDay', { range: archiveRangeLabel }) }}</div>
+          <div v-if="routeStopLabel" class="map-chip route-stop-chip">{{ routeStopLabel }}</div>
+          <div v-if="routeFocusActive" class="map-chip">{{ t('ghost.focus') }}</div>
+          <div v-if="ghostBaselineLabel" class="map-chip ghost-chip">{{ ghostBaselineLabel }}</div>
         </div>
         <div class="zoom-controls" :aria-label="t('map.zoomControls')">
           <button class="zoom-btn" type="button" :aria-label="t('map.zoomOut')" @click="zoomMap(-1)">-</button>
@@ -685,6 +1239,17 @@ onBeforeUnmount(() => {
             <input v-model="hideStale" type="checkbox">
             <span class="check-label">{{ t('filters.hideStale') }}</span>
           </label>
+          <label class="checkbox experimental-toggle">
+            <input
+              v-model="routeProgressEncoding"
+              type="checkbox"
+              :disabled="routeFilter === 'all'"
+            >
+            <span class="check-label">
+              <strong>{{ t('routeProgressEncoding.title') }}</strong>
+              <small>{{ t('routeProgressEncoding.copy') }}</small>
+            </span>
+          </label>
         </section>
 
         <section class="section">
@@ -697,6 +1262,7 @@ onBeforeUnmount(() => {
               <tr><td>{{ t('data.sampleInterval') }}</td><td>{{ OPERATIONS_ARCHIVE_INTERVAL_MINUTES }} min</td></tr>
               <tr><td>{{ t('data.records') }}</td><td>{{ t('data.recordsValue', { visible: visibleSummary.active, sampled: operationsDataSource.count }) }}</td></tr>
               <tr><td>{{ t('data.routes') }}</td><td>{{ routeOptions.length }}</td></tr>
+              <tr><td>{{ t('routeQuality.title') }}</td><td>{{ selectedRouteQualityLabel }}</td></tr>
             </tbody>
           </table>
           <p v-if="archiveError" class="inline-warning">{{ archiveError }}</p>
@@ -741,6 +1307,53 @@ onBeforeUnmount(() => {
             <span class="badge" :class="{ live: selectedObservation.status.freshness === 'fresh' }">{{ selectedFreshnessLabel }}</span>
           </div>
         </div>
+        <section class="inspector-tool">
+          <div>
+            <strong>{{ t('ghost.title') }}</strong>
+            <p>{{ t('ghost.copy') }}</p>
+          </div>
+          <button
+            class="track-btn"
+            type="button"
+            :class="{ active: ghostMode }"
+            :aria-pressed="String(ghostMode)"
+            :aria-label="ghostToggleLabel"
+            :title="ghostToggleLabel"
+            @click="toggleGhostMode"
+          >
+            <svg class="control-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 12c2.4-4.2 5.1-6.3 8-6.3s5.6 2.1 8 6.3c-2.4 4.2-5.1 6.3-8 6.3S6.4 16.2 4 12Z" />
+              <circle cx="12" cy="12" r="2.8" />
+            </svg>
+          </button>
+        </section>
+        <section class="route-progress-panel">
+          <div class="route-progress-head">
+            <div>
+              <strong>{{ t('routeProgress.title') }}</strong>
+              <p>{{ routeProgressStatusLabel }}</p>
+            </div>
+            <span class="badge" :class="{ source: routeProgressObservation }">{{ routeProgressPercentLabel }}</span>
+          </div>
+          <div class="route-progress-grid">
+            <div>
+              <span>{{ t('routeProgress.nearestStop') }}</span>
+              <strong>{{ routeProgressStopLabel }}</strong>
+            </div>
+            <div>
+              <span>{{ t('routeProgress.nextStop') }}</span>
+              <strong>{{ routeProgressNextStopLabel }}</strong>
+            </div>
+            <div>
+              <span>{{ t('routeProgress.distance') }}</span>
+              <strong>{{ routeProgressDistanceLabel }}</strong>
+            </div>
+            <div>
+              <span>{{ t('routeQuality.title') }}</span>
+              <strong>{{ selectedObservationRouteQuality?.quality ?? t('routeQuality.notAudited') }}</strong>
+            </div>
+          </div>
+        </section>
         <div class="kv">
           <div class="kv-card"><span>{{ t('inspector.direction') }}</span><strong>{{ selectedDirectionLabel }}</strong></div>
           <div class="kv-card"><span>{{ t('inspector.speed') }}</span><strong>{{ selectedObservation.motion.speedKph }} km/h</strong></div>
@@ -769,7 +1382,12 @@ onBeforeUnmount(() => {
         <span>{{ timelineCoverageLabel }}</span>
       </div>
       <div class="timeline-center">
-        <div class="track" :aria-label="t('timeline.currentArchive')">
+        <div
+          class="track"
+          :aria-label="t('timeline.currentArchive')"
+          @pointermove="showTimelineHover"
+          @pointerleave="hideTimelineHover"
+        >
           <input
             class="timeline-slider"
             type="range"
@@ -783,6 +1401,13 @@ onBeforeUnmount(() => {
           <div class="coverage-fill"></div>
           <div class="track-fill"></div>
           <div class="now-marker"></div>
+          <div
+            v-if="timelineHover.visible"
+            class="timeline-hover"
+            :style="{ left: `${timelineHover.left}%` }"
+          >
+            {{ timelineHover.label }}
+          </div>
           <span class="track-label start">{{ timelineStartLabel }}</span>
           <span class="track-label now">{{ timelineEndLabel }}</span>
         </div>
@@ -845,6 +1470,15 @@ onBeforeUnmount(() => {
       <div>{{ t('tooltip.route', { route: tooltip.observation.route.name, speed: tooltip.observation.motion.speedKph }) }}</div>
       <div class="muted">{{ formatFreshness(tooltip.observation.status.freshness) }} / {{ formatSourceMode(tooltip.observation.source.mode) }} / {{ formatAgeLabel(tooltip.observation.status.ageLabel) }}</div>
     </div>
+    <div
+      v-if="tooltip.visible && tooltip.routeStop"
+      class="tooltip"
+      :style="{ left: `${tooltip.x}px`, top: `${tooltip.y}px` }"
+    >
+      <strong>{{ tooltip.routeStop.name || t('routeStops.stop') }}</strong>
+      <div>{{ t('routeStops.tooltip', { route: tooltip.routeStop.routeName, sequence: tooltip.routeStop.sequence }) }}</div>
+      <div class="muted">{{ tooltip.routeStop.directionLabel }} · {{ t('routeStops.stopId', { id: tooltip.routeStop.stopID }) }}</div>
+    </div>
 
     <section class="health-drawer" :class="{ open: healthDrawerOpen }" :aria-label="t('drawer.aria')">
       <div class="drawer-head">
@@ -903,6 +1537,8 @@ onBeforeUnmount(() => {
   --font-mono: "Berkeley Mono", "JetBrains Mono", "IBM Plex Mono", ui-monospace, Menlo, monospace;
   --timeline-height: 76px;
   --timeline-gap: 10px;
+  --panel-top: 68px;
+  --panel-bottom-offset: calc(var(--timeline-height) + var(--timeline-gap) + 28px);
   position: relative;
   width: 100%;
   height: 100%;
@@ -1327,6 +1963,11 @@ onBeforeUnmount(() => {
   font-weight: 400;
 }
 
+.route-stop-chip {
+  border-color: color-mix(in oklch, var(--poi) 54%, transparent);
+  color: color-mix(in oklch, var(--poi) 84%, white);
+}
+
 .zoom-controls {
   position: absolute;
   right: 14px;
@@ -1389,9 +2030,9 @@ onBeforeUnmount(() => {
 
 .left-panel {
   position: fixed;
-  top: 68px;
+  top: var(--panel-top);
   left: 14px;
-  bottom: calc(var(--timeline-height) + var(--timeline-gap) + 18px);
+  bottom: var(--panel-bottom-offset);
   width: 326px;
   display: flex;
   flex-direction: column;
@@ -1400,10 +2041,11 @@ onBeforeUnmount(() => {
 
 .right-panel {
   position: fixed;
-  top: 68px;
+  top: var(--panel-top);
   right: 14px;
-  bottom: calc(var(--timeline-height) + var(--timeline-gap) + 18px);
+  bottom: var(--panel-bottom-offset);
   width: 378px;
+  max-height: calc(100dvh - var(--panel-top) - var(--panel-bottom-offset));
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -1447,10 +2089,15 @@ onBeforeUnmount(() => {
 }
 
 .panel-body {
+  flex: 1 1 auto;
   min-height: 0;
   overflow: auto;
-  padding: 14px;
+  padding: 14px 14px 18px;
   scrollbar-color: color-mix(in oklch, var(--border) 80%, black) transparent;
+}
+
+.right-panel .panel-body {
+  padding-bottom: 26px;
 }
 
 .section {
@@ -1640,6 +2287,35 @@ select {
   accent-color: var(--accent);
 }
 
+.experimental-toggle {
+  align-items: flex-start;
+  padding: 8px;
+  border: 1px dashed color-mix(in oklch, var(--warn) 46%, var(--border));
+  border-radius: 8px;
+  background: color-mix(in oklch, var(--warn) 5%, transparent);
+}
+
+.experimental-toggle input {
+  margin-top: 2px;
+}
+
+.experimental-toggle strong,
+.experimental-toggle small {
+  display: block;
+}
+
+.experimental-toggle strong {
+  color: color-mix(in oklch, var(--warn) 58%, white);
+  font-size: 11px;
+}
+
+.experimental-toggle small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.35;
+}
+
 .mini-table {
   width: 100%;
   border-collapse: collapse;
@@ -1703,6 +2379,87 @@ select {
   border-color: color-mix(in oklch, var(--accent) 58%, var(--border));
   color: var(--fg);
   outline: none;
+}
+
+.inspector-tool {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  margin-top: 12px;
+  padding: 10px;
+  border: 1px solid color-mix(in oklch, var(--border) 46%, transparent);
+  border-radius: 8px;
+  background: color-mix(in oklch, var(--surface) 34%, transparent);
+}
+
+.inspector-tool strong {
+  display: block;
+  font-size: 13px;
+}
+
+.inspector-tool p {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.route-progress-panel {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid color-mix(in oklch, var(--warn) 30%, var(--border));
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, color-mix(in oklch, var(--warn) 8%, transparent), transparent 42%),
+    color-mix(in oklch, var(--surface) 34%, transparent);
+}
+
+.route-progress-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.route-progress-head strong {
+  display: block;
+  font-size: 13px;
+}
+
+.route-progress-head p {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.route-progress-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.route-progress-grid div {
+  min-width: 0;
+  padding-top: 8px;
+  border-top: 1px solid color-mix(in oklch, var(--border) 40%, transparent);
+}
+
+.route-progress-grid span {
+  display: block;
+  color: var(--muted);
+  font: 10px/1.2 var(--font-mono);
+  text-transform: uppercase;
+}
+
+.route-progress-grid strong {
+  display: block;
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  font-weight: 590;
 }
 
 .plate {
@@ -1922,6 +2679,34 @@ pre {
   background: var(--accent);
   box-shadow: 0 0 14px color-mix(in oklch, var(--accent) 70%, transparent);
   transition: left 0.22s linear;
+}
+
+.timeline-hover {
+  position: absolute;
+  z-index: 4;
+  top: 50%;
+  max-width: calc(100% - 18px);
+  padding: 5px 8px;
+  border: 1px solid color-mix(in oklch, var(--accent) 44%, var(--border));
+  border-radius: 7px;
+  background: color-mix(in oklch, var(--surface) 92%, black);
+  color: var(--fg);
+  font: 10px/1 var(--font-mono);
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+  transform: translate(-50%, -50%);
+}
+
+.timeline-hover::after {
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  width: 1px;
+  height: 7px;
+  content: "";
+  background: var(--accent);
+  transform: translateX(-50%);
 }
 
 .timeline-actions {
@@ -2145,13 +2930,13 @@ pre {
 
   .left-panel {
     right: auto;
-    bottom: 104px;
+    bottom: var(--panel-bottom-offset);
     width: calc(50% - 21px);
     min-width: 0;
   }
 
   .right-panel {
-    bottom: 104px;
+    bottom: var(--panel-bottom-offset);
     width: calc(50% - 21px);
     min-width: 0;
   }
@@ -2223,7 +3008,7 @@ pre {
   .right-panel {
     top: auto;
     right: 10px;
-    bottom: 124px;
+    bottom: var(--panel-bottom-offset);
     left: 10px;
     width: auto;
     height: 30%;

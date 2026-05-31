@@ -1,6 +1,7 @@
 import './mrtTrain.test.mjs';
 import './ontologyComponents.test.mjs';
 import './operationsWorkflowData.test.mjs';
+import './busRouteGeometry.test.mjs';
 import './mapOverlayData.test.mjs';
 import './overlayRegistry.test.mjs';
 import './mapAlignmentDiagnostics.test.mjs';

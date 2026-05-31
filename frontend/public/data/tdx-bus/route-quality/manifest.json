@@ -1,0 +1,2207 @@
+{
+  "schema": "twfoundry.tdx.citybus.route-quality-manifest.v1",
+  "source": {
+    "provider": "TDX",
+    "city": "Taipei",
+    "routeContextRoot": "/data/tdx-bus/route-context"
+  },
+  "generatedAt": "2026-05-30T14:12:26.928Z",
+  "thresholds": {
+    "goodP95Meters": 30,
+    "usableP95Meters": 80,
+    "badStopMeters": 80,
+    "maxBadStopRatio": 0.15
+  },
+  "summary": {
+    "routeDirectionCount": 39,
+    "good": 39,
+    "usable": 0,
+    "bad": 0
+  },
+  "routes": [
+    {
+      "routeName": "2",
+      "routeUID": "TPE10262",
+      "subRouteUID": "TPE102620",
+      "subRouteName": "2",
+      "direction": 0,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/2.json",
+      "stopsCount": 40,
+      "projectedStopsCount": 40,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 4,
+      "p95DistanceToRouteMeters": 9.1,
+      "maxDistanceToRouteMeters": 12.9,
+      "routeLengthMeters": 11070.5,
+      "shapePointCount": 153,
+      "worstStops": [
+        {
+          "sequence": 32,
+          "stopID": "20570",
+          "stopUID": "TPE20570",
+          "name": "捷運大橋頭站",
+          "distanceToRouteMeters": 12.9
+        },
+        {
+          "sequence": 6,
+          "stopID": "20543",
+          "stopUID": "TPE20543",
+          "name": "下溪沙尾",
+          "distanceToRouteMeters": 9.1
+        },
+        {
+          "sequence": 27,
+          "stopID": "20565",
+          "stopUID": "TPE20565",
+          "name": "污水處理廠",
+          "distanceToRouteMeters": 9.1
+        },
+        {
+          "sequence": 37,
+          "stopID": "20575",
+          "stopUID": "TPE20575",
+          "name": "臺北車站(承德)",
+          "distanceToRouteMeters": 8.9
+        },
+        {
+          "sequence": 20,
+          "stopID": "20558",
+          "stopUID": "TPE20558",
+          "name": "社子派出所",
+          "distanceToRouteMeters": 8.5
+        }
+      ]
+    },
+    {
+      "routeName": "2",
+      "routeUID": "TPE10262",
+      "subRouteUID": "TPE102620",
+      "subRouteName": "2",
+      "direction": 1,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/2.json",
+      "stopsCount": 46,
+      "projectedStopsCount": 46,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 3.2,
+      "p95DistanceToRouteMeters": 9.4,
+      "maxDistanceToRouteMeters": 11.1,
+      "routeLengthMeters": 13610,
+      "shapePointCount": 193,
+      "worstStops": [
+        {
+          "sequence": 23,
+          "stopID": "20600",
+          "stopUID": "TPE20600",
+          "name": "葫蘆寺(葫蘆里)",
+          "distanceToRouteMeters": 11.1
+        },
+        {
+          "sequence": 27,
+          "stopID": "20604",
+          "stopUID": "TPE20604",
+          "name": "永倫里(南)",
+          "distanceToRouteMeters": 10.1
+        },
+        {
+          "sequence": 5,
+          "stopID": "20582",
+          "stopUID": "TPE20582",
+          "name": "後車站",
+          "distanceToRouteMeters": 9.9
+        },
+        {
+          "sequence": 1,
+          "stopID": "20579",
+          "stopUID": "TPE20579",
+          "name": "捷運台大醫院站",
+          "distanceToRouteMeters": 8.1
+        },
+        {
+          "sequence": 13,
+          "stopID": "20590",
+          "stopUID": "TPE20590",
+          "name": "民族承德路口",
+          "distanceToRouteMeters": 7.8
+        }
+      ]
+    },
+    {
+      "routeName": "205",
+      "routeUID": "TPE10181",
+      "subRouteUID": "TPE101810",
+      "subRouteName": "205",
+      "direction": 0,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/205.json",
+      "stopsCount": 61,
+      "projectedStopsCount": 61,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 4.2,
+      "p95DistanceToRouteMeters": 10.1,
+      "maxDistanceToRouteMeters": 13.7,
+      "routeLengthMeters": 18574.8,
+      "shapePointCount": 206,
+      "worstStops": [
+        {
+          "sequence": 24,
+          "stopID": "34704",
+          "stopUID": "TPE34704",
+          "name": "南港路三段",
+          "distanceToRouteMeters": 13.7
+        },
+        {
+          "sequence": 35,
+          "stopID": "34715",
+          "stopUID": "TPE34715",
+          "name": "美仁里",
+          "distanceToRouteMeters": 10.9
+        },
+        {
+          "sequence": 15,
+          "stopID": "34695",
+          "stopUID": "TPE34695",
+          "name": "南港",
+          "distanceToRouteMeters": 10.7
+        },
+        {
+          "sequence": 43,
+          "stopID": "34724",
+          "stopUID": "TPE34724",
+          "name": "華山文創園區",
+          "distanceToRouteMeters": 10.1
+        },
+        {
+          "sequence": 32,
+          "stopID": "34712",
+          "stopUID": "TPE34712",
+          "name": "八德東寧路口",
+          "distanceToRouteMeters": 9.8
+        }
+      ]
+    },
+    {
+      "routeName": "205",
+      "routeUID": "TPE10181",
+      "subRouteUID": "TPE101810",
+      "subRouteName": "205",
+      "direction": 1,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/205.json",
+      "stopsCount": 55,
+      "projectedStopsCount": 55,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 4.3,
+      "p95DistanceToRouteMeters": 10.1,
+      "maxDistanceToRouteMeters": 13.8,
+      "routeLengthMeters": 18399.7,
+      "shapePointCount": 215,
+      "worstStops": [
+        {
+          "sequence": 22,
+          "stopID": "34762",
+          "stopUID": "TPE34762",
+          "name": "美仁里",
+          "distanceToRouteMeters": 13.8
+        },
+        {
+          "sequence": 19,
+          "stopID": "34759",
+          "stopUID": "TPE34759",
+          "name": "中崙",
+          "distanceToRouteMeters": 13.5
+        },
+        {
+          "sequence": 27,
+          "stopID": "34767",
+          "stopUID": "TPE34767",
+          "name": "饒河街觀光夜市(八德)",
+          "distanceToRouteMeters": 10.3
+        },
+        {
+          "sequence": 33,
+          "stopID": "34773",
+          "stopUID": "TPE34773",
+          "name": "西新里(新新公園)",
+          "distanceToRouteMeters": 10
+        },
+        {
+          "sequence": 6,
+          "stopID": "34746",
+          "stopUID": "TPE34746",
+          "name": "萬華車站",
+          "distanceToRouteMeters": 9.4
+        }
+      ]
+    },
+    {
+      "routeName": "234",
+      "routeUID": "TPE10132",
+      "subRouteUID": "TPE101320",
+      "subRouteName": "234",
+      "direction": 0,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/234.json",
+      "stopsCount": 37,
+      "projectedStopsCount": 37,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 4.8,
+      "p95DistanceToRouteMeters": 11.6,
+      "maxDistanceToRouteMeters": 13.7,
+      "routeLengthMeters": 13839.4,
+      "shapePointCount": 347,
+      "worstStops": [
+        {
+          "sequence": 3,
+          "stopID": "33212",
+          "stopUID": "TPE33212",
+          "name": "大觀路一段28巷",
+          "distanceToRouteMeters": 13.7
+        },
+        {
+          "sequence": 8,
+          "stopID": "33217",
+          "stopUID": "TPE33217",
+          "name": "力行新村",
+          "distanceToRouteMeters": 13
+        },
+        {
+          "sequence": 1,
+          "stopID": "33210",
+          "stopUID": "TPE33210",
+          "name": "歡仔園",
+          "distanceToRouteMeters": 11.3
+        },
+        {
+          "sequence": 6,
+          "stopID": "33215",
+          "stopUID": "TPE33215",
+          "name": "中山實小",
+          "distanceToRouteMeters": 9.4
+        },
+        {
+          "sequence": 5,
+          "stopID": "33214",
+          "stopUID": "TPE33214",
+          "name": "國立臺灣藝術大學",
+          "distanceToRouteMeters": 8.8
+        }
+      ]
+    },
+    {
+      "routeName": "234",
+      "routeUID": "TPE10132",
+      "subRouteUID": "TPE101320",
+      "subRouteName": "234",
+      "direction": 1,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/234.json",
+      "stopsCount": 38,
+      "projectedStopsCount": 38,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 4.9,
+      "p95DistanceToRouteMeters": 12,
+      "maxDistanceToRouteMeters": 16,
+      "routeLengthMeters": 13905.4,
+      "shapePointCount": 325,
+      "worstStops": [
+        {
+          "sequence": 28,
+          "stopID": "33273",
+          "stopUID": "TPE33273",
+          "name": "亞東科技大學",
+          "distanceToRouteMeters": 16
+        },
+        {
+          "sequence": 4,
+          "stopID": "33250",
+          "stopUID": "TPE33250",
+          "name": "桂林昆明街口",
+          "distanceToRouteMeters": 12.9
+        },
+        {
+          "sequence": 37,
+          "stopID": "33282",
+          "stopUID": "TPE33282",
+          "name": "大觀路一段28巷",
+          "distanceToRouteMeters": 11.8
+        },
+        {
+          "sequence": 20,
+          "stopID": "33265",
+          "stopUID": "TPE33265",
+          "name": "新北市政府(新府路)",
+          "distanceToRouteMeters": 9.6
+        },
+        {
+          "sequence": 11,
+          "stopID": "33257",
+          "stopUID": "TPE33257",
+          "name": "光復橋",
+          "distanceToRouteMeters": 9
+        }
+      ]
+    },
+    {
+      "routeName": "235",
+      "routeUID": "TPE10283",
+      "subRouteUID": "TPE10283",
+      "subRouteName": "235",
+      "direction": 0,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/235.json",
+      "stopsCount": 65,
+      "projectedStopsCount": 65,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 4.6,
+      "p95DistanceToRouteMeters": 9.9,
+      "maxDistanceToRouteMeters": 11.9,
+      "routeLengthMeters": 22985.4,
+      "shapePointCount": 320,
+      "worstStops": [
+        {
+          "sequence": 55,
+          "stopID": "18566",
+          "stopUID": "TPE18566",
+          "name": "國立臺北教育大學",
+          "distanceToRouteMeters": 11.9
+        },
+        {
+          "sequence": 42,
+          "stopID": "18540",
+          "stopUID": "TPE18540",
+          "name": "一女中(公園)",
+          "distanceToRouteMeters": 10.8
+        },
+        {
+          "sequence": 34,
+          "stopID": "18524",
+          "stopUID": "TPE18524",
+          "name": "重新大橋",
+          "distanceToRouteMeters": 10.3
+        },
+        {
+          "sequence": 27,
+          "stopID": "18514",
+          "stopUID": "TPE18514",
+          "name": "保元宮",
+          "distanceToRouteMeters": 9.9
+        },
+        {
+          "sequence": 32,
+          "stopID": "18681",
+          "stopUID": "TPE18681",
+          "name": "捷運先嗇宮站",
+          "distanceToRouteMeters": 9.7
+        }
+      ]
+    },
+    {
+      "routeName": "235",
+      "routeUID": "TPE10283",
+      "subRouteUID": "TPE10283",
+      "subRouteName": "235",
+      "direction": 1,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/235.json",
+      "stopsCount": 64,
+      "projectedStopsCount": 64,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 5.4,
+      "p95DistanceToRouteMeters": 10.3,
+      "maxDistanceToRouteMeters": 13.5,
+      "routeLengthMeters": 22986.1,
+      "shapePointCount": 334,
+      "worstStops": [
+        {
+          "sequence": 54,
+          "stopID": "18674",
+          "stopUID": "TPE18674",
+          "name": "光明里",
+          "distanceToRouteMeters": 13.5
+        },
+        {
+          "sequence": 61,
+          "stopID": "18680",
+          "stopUID": "TPE18680",
+          "name": "家麒新天地",
+          "distanceToRouteMeters": 11.4
+        },
+        {
+          "sequence": 36,
+          "stopID": "18654",
+          "stopUID": "TPE18654",
+          "name": "頭前",
+          "distanceToRouteMeters": 10.9
+        },
+        {
+          "sequence": 11,
+          "stopID": "18606",
+          "stopUID": "TPE18606",
+          "name": "安和路口",
+          "distanceToRouteMeters": 10.3
+        },
+        {
+          "sequence": 40,
+          "stopID": "18660",
+          "stopUID": "TPE18660",
+          "name": "新泰路口",
+          "distanceToRouteMeters": 10.2
+        }
+      ]
+    },
+    {
+      "routeName": "303區",
+      "routeUID": "TPE10273",
+      "subRouteUID": "TPE102730",
+      "subRouteName": "303區",
+      "direction": 0,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/303%E5%8D%80.json",
+      "stopsCount": 45,
+      "projectedStopsCount": 45,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 3.2,
+      "p95DistanceToRouteMeters": 12.3,
+      "maxDistanceToRouteMeters": 14.7,
+      "routeLengthMeters": 23996.8,
+      "shapePointCount": 658,
+      "worstStops": [
+        {
+          "sequence": 35,
+          "stopID": "20823",
+          "stopUID": "TPE20823",
+          "name": "菁山里二",
+          "distanceToRouteMeters": 14.7
+        },
+        {
+          "sequence": 36,
+          "stopID": "20824",
+          "stopUID": "TPE20824",
+          "name": "菁山里三",
+          "distanceToRouteMeters": 12.8
+        },
+        {
+          "sequence": 12,
+          "stopID": "20801",
+          "stopUID": "TPE20801",
+          "name": "華興中學",
+          "distanceToRouteMeters": 12.8
+        },
+        {
+          "sequence": 30,
+          "stopID": "20819",
+          "stopUID": "TPE20819",
+          "name": "乾坑子",
+          "distanceToRouteMeters": 10.3
+        },
+        {
+          "sequence": 42,
+          "stopID": "20830",
+          "stopUID": "TPE20830",
+          "name": "倫仔尾",
+          "distanceToRouteMeters": 9.2
+        }
+      ]
+    },
+    {
+      "routeName": "303區",
+      "routeUID": "TPE10273",
+      "subRouteUID": "TPE102760",
+      "subRouteName": "303區上午經文化",
+      "direction": 0,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/303%E5%8D%80.json",
+      "stopsCount": 49,
+      "projectedStopsCount": 49,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 3,
+      "p95DistanceToRouteMeters": 11.8,
+      "maxDistanceToRouteMeters": 14.7,
+      "routeLengthMeters": 23996.8,
+      "shapePointCount": 658,
+      "worstStops": [
+        {
+          "sequence": 39,
+          "stopID": "20823",
+          "stopUID": "TPE20823",
+          "name": "菁山里二",
+          "distanceToRouteMeters": 14.7
+        },
+        {
+          "sequence": 40,
+          "stopID": "20824",
+          "stopUID": "TPE20824",
+          "name": "菁山里三",
+          "distanceToRouteMeters": 12.8
+        },
+        {
+          "sequence": 12,
+          "stopID": "20801",
+          "stopUID": "TPE20801",
+          "name": "華興中學",
+          "distanceToRouteMeters": 12.8
+        },
+        {
+          "sequence": 34,
+          "stopID": "20819",
+          "stopUID": "TPE20819",
+          "name": "乾坑子",
+          "distanceToRouteMeters": 10.3
+        },
+        {
+          "sequence": 46,
+          "stopID": "20830",
+          "stopUID": "TPE20830",
+          "name": "倫仔尾",
+          "distanceToRouteMeters": 9.2
+        }
+      ]
+    },
+    {
+      "routeName": "303區",
+      "routeUID": "TPE10273",
+      "subRouteUID": "TPE157453",
+      "subRouteName": "303區經陽明山",
+      "direction": 0,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/303%E5%8D%80.json",
+      "stopsCount": 57,
+      "projectedStopsCount": 57,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 3.3,
+      "p95DistanceToRouteMeters": 12.8,
+      "maxDistanceToRouteMeters": 14.7,
+      "routeLengthMeters": 23996.8,
+      "shapePointCount": 658,
+      "worstStops": [
+        {
+          "sequence": 47,
+          "stopID": "20823",
+          "stopUID": "TPE20823",
+          "name": "菁山里二",
+          "distanceToRouteMeters": 14.7
+        },
+        {
+          "sequence": 36,
+          "stopID": "125660",
+          "stopUID": "TPE125660",
+          "name": "菁山遊憩區一",
+          "distanceToRouteMeters": 13.3
+        },
+        {
+          "sequence": 48,
+          "stopID": "20824",
+          "stopUID": "TPE20824",
+          "name": "菁山里三",
+          "distanceToRouteMeters": 12.8
+        },
+        {
+          "sequence": 12,
+          "stopID": "20801",
+          "stopUID": "TPE20801",
+          "name": "華興中學",
+          "distanceToRouteMeters": 12.8
+        },
+        {
+          "sequence": 33,
+          "stopID": "125657",
+          "stopUID": "TPE125657",
+          "name": "陽明山",
+          "distanceToRouteMeters": 11.5
+        }
+      ]
+    },
+    {
+      "routeName": "303區",
+      "routeUID": "TPE10273",
+      "subRouteUID": "TPE159697",
+      "subRouteName": "303區往返捷運劍潭站至衛星電臺",
+      "direction": 0,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/303%E5%8D%80.json",
+      "stopsCount": 33,
+      "projectedStopsCount": 33,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 2.8,
+      "p95DistanceToRouteMeters": 9.5,
+      "maxDistanceToRouteMeters": 12.8,
+      "routeLengthMeters": 23996.8,
+      "shapePointCount": 658,
+      "worstStops": [
+        {
+          "sequence": 12,
+          "stopID": "20801",
+          "stopUID": "TPE20801",
+          "name": "華興中學",
+          "distanceToRouteMeters": 12.8
+        },
+        {
+          "sequence": 30,
+          "stopID": "20819",
+          "stopUID": "TPE20819",
+          "name": "乾坑子",
+          "distanceToRouteMeters": 10.3
+        },
+        {
+          "sequence": 27,
+          "stopID": "20816",
+          "stopUID": "TPE20816",
+          "name": "淨水廠",
+          "distanceToRouteMeters": 9
+        },
+        {
+          "sequence": 6,
+          "stopID": "20795",
+          "stopUID": "TPE20795",
+          "name": "福林國小",
+          "distanceToRouteMeters": 9
+        },
+        {
+          "sequence": 22,
+          "stopID": "20811",
+          "stopUID": "TPE20811",
+          "name": "新安",
+          "distanceToRouteMeters": 7.6
+        }
+      ]
+    },
+    {
+      "routeName": "303區",
+      "routeUID": "TPE10273",
+      "subRouteUID": "TPE159698",
+      "subRouteName": "303區往返衛星電臺至平等里",
+      "direction": 0,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/303%E5%8D%80.json",
+      "stopsCount": 12,
+      "projectedStopsCount": 12,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 5.6,
+      "p95DistanceToRouteMeters": 13.7,
+      "maxDistanceToRouteMeters": 14.7,
+      "routeLengthMeters": 23996.8,
+      "shapePointCount": 658,
+      "worstStops": [
+        {
+          "sequence": 2,
+          "stopID": "20823",
+          "stopUID": "TPE20823",
+          "name": "菁山里二",
+          "distanceToRouteMeters": 14.7
+        },
+        {
+          "sequence": 3,
+          "stopID": "20824",
+          "stopUID": "TPE20824",
+          "name": "菁山里三",
+          "distanceToRouteMeters": 12.8
+        },
+        {
+          "sequence": 9,
+          "stopID": "20830",
+          "stopUID": "TPE20830",
+          "name": "倫仔尾",
+          "distanceToRouteMeters": 9.2
+        },
+        {
+          "sequence": 10,
+          "stopID": "20831",
+          "stopUID": "TPE20831",
+          "name": "公地嶺",
+          "distanceToRouteMeters": 8
+        },
+        {
+          "sequence": 6,
+          "stopID": "20827",
+          "stopUID": "TPE20827",
+          "name": "鄭厝",
+          "distanceToRouteMeters": 6.1
+        }
+      ]
+    },
+    {
+      "routeName": "303區",
+      "routeUID": "TPE10273",
+      "subRouteUID": "TPE162486",
+      "subRouteName": "303區下午經文化",
+      "direction": 0,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/303%E5%8D%80.json",
+      "stopsCount": 45,
+      "projectedStopsCount": 45,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 3.2,
+      "p95DistanceToRouteMeters": 12.3,
+      "maxDistanceToRouteMeters": 14.7,
+      "routeLengthMeters": 23996.8,
+      "shapePointCount": 658,
+      "worstStops": [
+        {
+          "sequence": 35,
+          "stopID": "20823",
+          "stopUID": "TPE20823",
+          "name": "菁山里二",
+          "distanceToRouteMeters": 14.7
+        },
+        {
+          "sequence": 36,
+          "stopID": "20824",
+          "stopUID": "TPE20824",
+          "name": "菁山里三",
+          "distanceToRouteMeters": 12.8
+        },
+        {
+          "sequence": 12,
+          "stopID": "20801",
+          "stopUID": "TPE20801",
+          "name": "華興中學",
+          "distanceToRouteMeters": 12.8
+        },
+        {
+          "sequence": 30,
+          "stopID": "20819",
+          "stopUID": "TPE20819",
+          "name": "乾坑子",
+          "distanceToRouteMeters": 10.3
+        },
+        {
+          "sequence": 42,
+          "stopID": "20830",
+          "stopUID": "TPE20830",
+          "name": "倫仔尾",
+          "distanceToRouteMeters": 9.2
+        }
+      ]
+    },
+    {
+      "routeName": "303區",
+      "routeUID": "TPE10273",
+      "subRouteUID": "TPE102730",
+      "subRouteName": "303區",
+      "direction": 1,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/303%E5%8D%80.json",
+      "stopsCount": 46,
+      "projectedStopsCount": 46,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 4.6,
+      "p95DistanceToRouteMeters": 8.4,
+      "maxDistanceToRouteMeters": 9.8,
+      "routeLengthMeters": 17540.3,
+      "shapePointCount": 532,
+      "worstStops": [
+        {
+          "sequence": 17,
+          "stopID": "20848",
+          "stopUID": "TPE20848",
+          "name": "乾坑子",
+          "distanceToRouteMeters": 9.8
+        },
+        {
+          "sequence": 23,
+          "stopID": "20856",
+          "stopUID": "TPE20856",
+          "name": "下竹林",
+          "distanceToRouteMeters": 9.3
+        },
+        {
+          "sequence": 36,
+          "stopID": "20869",
+          "stopUID": "TPE20869",
+          "name": "岩山里一",
+          "distanceToRouteMeters": 8.5
+        },
+        {
+          "sequence": 45,
+          "stopID": "20878",
+          "stopUID": "TPE20878",
+          "name": "士林市場(銘傳會館)",
+          "distanceToRouteMeters": 8.3
+        },
+        {
+          "sequence": 14,
+          "stopID": "20846",
+          "stopUID": "TPE20846",
+          "name": "衛星電台",
+          "distanceToRouteMeters": 8.2
+        }
+      ]
+    },
+    {
+      "routeName": "303區",
+      "routeUID": "TPE10273",
+      "subRouteUID": "TPE102760",
+      "subRouteName": "303區上午經文化",
+      "direction": 1,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/303%E5%8D%80.json",
+      "stopsCount": 46,
+      "projectedStopsCount": 46,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 4.6,
+      "p95DistanceToRouteMeters": 8.4,
+      "maxDistanceToRouteMeters": 9.8,
+      "routeLengthMeters": 17540.3,
+      "shapePointCount": 532,
+      "worstStops": [
+        {
+          "sequence": 17,
+          "stopID": "20848",
+          "stopUID": "TPE20848",
+          "name": "乾坑子",
+          "distanceToRouteMeters": 9.8
+        },
+        {
+          "sequence": 23,
+          "stopID": "20856",
+          "stopUID": "TPE20856",
+          "name": "下竹林",
+          "distanceToRouteMeters": 9.3
+        },
+        {
+          "sequence": 36,
+          "stopID": "20869",
+          "stopUID": "TPE20869",
+          "name": "岩山里一",
+          "distanceToRouteMeters": 8.5
+        },
+        {
+          "sequence": 45,
+          "stopID": "20878",
+          "stopUID": "TPE20878",
+          "name": "士林市場(銘傳會館)",
+          "distanceToRouteMeters": 8.3
+        },
+        {
+          "sequence": 14,
+          "stopID": "20846",
+          "stopUID": "TPE20846",
+          "name": "衛星電台",
+          "distanceToRouteMeters": 8.2
+        }
+      ]
+    },
+    {
+      "routeName": "303區",
+      "routeUID": "TPE10273",
+      "subRouteUID": "TPE157453",
+      "subRouteName": "303區經陽明山",
+      "direction": 1,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/303%E5%8D%80.json",
+      "stopsCount": 46,
+      "projectedStopsCount": 46,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 4.6,
+      "p95DistanceToRouteMeters": 8.4,
+      "maxDistanceToRouteMeters": 9.8,
+      "routeLengthMeters": 17540.3,
+      "shapePointCount": 532,
+      "worstStops": [
+        {
+          "sequence": 17,
+          "stopID": "20848",
+          "stopUID": "TPE20848",
+          "name": "乾坑子",
+          "distanceToRouteMeters": 9.8
+        },
+        {
+          "sequence": 23,
+          "stopID": "20856",
+          "stopUID": "TPE20856",
+          "name": "下竹林",
+          "distanceToRouteMeters": 9.3
+        },
+        {
+          "sequence": 36,
+          "stopID": "20869",
+          "stopUID": "TPE20869",
+          "name": "岩山里一",
+          "distanceToRouteMeters": 8.5
+        },
+        {
+          "sequence": 45,
+          "stopID": "20878",
+          "stopUID": "TPE20878",
+          "name": "士林市場(銘傳會館)",
+          "distanceToRouteMeters": 8.3
+        },
+        {
+          "sequence": 14,
+          "stopID": "20846",
+          "stopUID": "TPE20846",
+          "name": "衛星電台",
+          "distanceToRouteMeters": 8.2
+        }
+      ]
+    },
+    {
+      "routeName": "303區",
+      "routeUID": "TPE10273",
+      "subRouteUID": "TPE159697",
+      "subRouteName": "303區往返捷運劍潭站至衛星電臺",
+      "direction": 1,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/303%E5%8D%80.json",
+      "stopsCount": 33,
+      "projectedStopsCount": 33,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 4.9,
+      "p95DistanceToRouteMeters": 8.8,
+      "maxDistanceToRouteMeters": 9.8,
+      "routeLengthMeters": 17540.3,
+      "shapePointCount": 532,
+      "worstStops": [
+        {
+          "sequence": 4,
+          "stopID": "20848",
+          "stopUID": "TPE20848",
+          "name": "乾坑子",
+          "distanceToRouteMeters": 9.8
+        },
+        {
+          "sequence": 10,
+          "stopID": "20856",
+          "stopUID": "TPE20856",
+          "name": "下竹林",
+          "distanceToRouteMeters": 9.3
+        },
+        {
+          "sequence": 23,
+          "stopID": "20869",
+          "stopUID": "TPE20869",
+          "name": "岩山里一",
+          "distanceToRouteMeters": 8.5
+        },
+        {
+          "sequence": 32,
+          "stopID": "20878",
+          "stopUID": "TPE20878",
+          "name": "士林市場(銘傳會館)",
+          "distanceToRouteMeters": 8.3
+        },
+        {
+          "sequence": 1,
+          "stopID": "20846",
+          "stopUID": "TPE20846",
+          "name": "衛星電台",
+          "distanceToRouteMeters": 8.2
+        }
+      ]
+    },
+    {
+      "routeName": "303區",
+      "routeUID": "TPE10273",
+      "subRouteUID": "TPE159698",
+      "subRouteName": "303區往返衛星電臺至平等里",
+      "direction": 1,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/303%E5%8D%80.json",
+      "stopsCount": 13,
+      "projectedStopsCount": 13,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 4.3,
+      "p95DistanceToRouteMeters": 7.5,
+      "maxDistanceToRouteMeters": 7.8,
+      "routeLengthMeters": 17540.3,
+      "shapePointCount": 532,
+      "worstStops": [
+        {
+          "sequence": 4,
+          "stopID": "20837",
+          "stopUID": "TPE20837",
+          "name": "倫仔尾",
+          "distanceToRouteMeters": 7.8
+        },
+        {
+          "sequence": 10,
+          "stopID": "20842",
+          "stopUID": "TPE20842",
+          "name": "下過溪",
+          "distanceToRouteMeters": 7.3
+        },
+        {
+          "sequence": 8,
+          "stopID": "20840",
+          "stopUID": "TPE20840",
+          "name": "鄭厝",
+          "distanceToRouteMeters": 6.7
+        },
+        {
+          "sequence": 12,
+          "stopID": "20844",
+          "stopUID": "TPE20844",
+          "name": "菁山里二",
+          "distanceToRouteMeters": 5.2
+        },
+        {
+          "sequence": 3,
+          "stopID": "20836",
+          "stopUID": "TPE20836",
+          "name": "公地嶺",
+          "distanceToRouteMeters": 5
+        }
+      ]
+    },
+    {
+      "routeName": "303區",
+      "routeUID": "TPE10273",
+      "subRouteUID": "TPE159699",
+      "subRouteName": "303區平等里往衛星電臺",
+      "direction": 1,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/303%E5%8D%80.json",
+      "stopsCount": 14,
+      "projectedStopsCount": 14,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 4.5,
+      "p95DistanceToRouteMeters": 8,
+      "maxDistanceToRouteMeters": 8.2,
+      "routeLengthMeters": 17540.3,
+      "shapePointCount": 532,
+      "worstStops": [
+        {
+          "sequence": 14,
+          "stopID": "20846",
+          "stopUID": "TPE20846",
+          "name": "衛星電台",
+          "distanceToRouteMeters": 8.2
+        },
+        {
+          "sequence": 4,
+          "stopID": "20837",
+          "stopUID": "TPE20837",
+          "name": "倫仔尾",
+          "distanceToRouteMeters": 7.8
+        },
+        {
+          "sequence": 10,
+          "stopID": "20842",
+          "stopUID": "TPE20842",
+          "name": "下過溪",
+          "distanceToRouteMeters": 7.3
+        },
+        {
+          "sequence": 8,
+          "stopID": "20840",
+          "stopUID": "TPE20840",
+          "name": "鄭厝",
+          "distanceToRouteMeters": 6.7
+        },
+        {
+          "sequence": 12,
+          "stopID": "20844",
+          "stopUID": "TPE20844",
+          "name": "菁山里二",
+          "distanceToRouteMeters": 5.2
+        }
+      ]
+    },
+    {
+      "routeName": "303區",
+      "routeUID": "TPE10273",
+      "subRouteUID": "TPE162486",
+      "subRouteName": "303區下午經文化",
+      "direction": 1,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/303%E5%8D%80.json",
+      "stopsCount": 50,
+      "projectedStopsCount": 50,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 4.2,
+      "p95DistanceToRouteMeters": 8.4,
+      "maxDistanceToRouteMeters": 9.8,
+      "routeLengthMeters": 17540.3,
+      "shapePointCount": 532,
+      "worstStops": [
+        {
+          "sequence": 17,
+          "stopID": "20848",
+          "stopUID": "TPE20848",
+          "name": "乾坑子",
+          "distanceToRouteMeters": 9.8
+        },
+        {
+          "sequence": 27,
+          "stopID": "20856",
+          "stopUID": "TPE20856",
+          "name": "下竹林",
+          "distanceToRouteMeters": 9.3
+        },
+        {
+          "sequence": 40,
+          "stopID": "20869",
+          "stopUID": "TPE20869",
+          "name": "岩山里一",
+          "distanceToRouteMeters": 8.5
+        },
+        {
+          "sequence": 49,
+          "stopID": "20878",
+          "stopUID": "TPE20878",
+          "name": "士林市場(銘傳會館)",
+          "distanceToRouteMeters": 8.3
+        },
+        {
+          "sequence": 14,
+          "stopID": "20846",
+          "stopUID": "TPE20846",
+          "name": "衛星電台",
+          "distanceToRouteMeters": 8.2
+        }
+      ]
+    },
+    {
+      "routeName": "669",
+      "routeUID": "TPE10278",
+      "subRouteUID": "TPE102780",
+      "subRouteName": "669路",
+      "direction": 0,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/669.json",
+      "stopsCount": 38,
+      "projectedStopsCount": 38,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 5.4,
+      "p95DistanceToRouteMeters": 13.9,
+      "maxDistanceToRouteMeters": 17.6,
+      "routeLengthMeters": 14135.2,
+      "shapePointCount": 234,
+      "worstStops": [
+        {
+          "sequence": 18,
+          "stopID": "35427",
+          "stopUID": "TPE35427",
+          "name": "延平長安路口",
+          "distanceToRouteMeters": 17.6
+        },
+        {
+          "sequence": 12,
+          "stopID": "35421",
+          "stopUID": "TPE35421",
+          "name": "延平國小",
+          "distanceToRouteMeters": 15
+        },
+        {
+          "sequence": 28,
+          "stopID": "35437",
+          "stopUID": "TPE35437",
+          "name": "微風廣場",
+          "distanceToRouteMeters": 13.7
+        },
+        {
+          "sequence": 1,
+          "stopID": "35415",
+          "stopUID": "TPE35415",
+          "name": "自然公園",
+          "distanceToRouteMeters": 12.2
+        },
+        {
+          "sequence": 30,
+          "stopID": "35439",
+          "stopUID": "TPE35439",
+          "name": "市民延吉街口",
+          "distanceToRouteMeters": 11.6
+        }
+      ]
+    },
+    {
+      "routeName": "669",
+      "routeUID": "TPE10278",
+      "subRouteUID": "TPE159520",
+      "subRouteName": "669狗狗公車",
+      "direction": 0,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/669.json",
+      "stopsCount": 38,
+      "projectedStopsCount": 38,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 5.4,
+      "p95DistanceToRouteMeters": 13.9,
+      "maxDistanceToRouteMeters": 17.6,
+      "routeLengthMeters": 14135.2,
+      "shapePointCount": 234,
+      "worstStops": [
+        {
+          "sequence": 18,
+          "stopID": "35427",
+          "stopUID": "TPE35427",
+          "name": "延平長安路口",
+          "distanceToRouteMeters": 17.6
+        },
+        {
+          "sequence": 12,
+          "stopID": "35421",
+          "stopUID": "TPE35421",
+          "name": "延平國小",
+          "distanceToRouteMeters": 15
+        },
+        {
+          "sequence": 28,
+          "stopID": "35437",
+          "stopUID": "TPE35437",
+          "name": "微風廣場",
+          "distanceToRouteMeters": 13.7
+        },
+        {
+          "sequence": 1,
+          "stopID": "35415",
+          "stopUID": "TPE35415",
+          "name": "自然公園",
+          "distanceToRouteMeters": 12.2
+        },
+        {
+          "sequence": 30,
+          "stopID": "35439",
+          "stopUID": "TPE35439",
+          "name": "市民延吉街口",
+          "distanceToRouteMeters": 11.6
+        }
+      ]
+    },
+    {
+      "routeName": "669",
+      "routeUID": "TPE10278",
+      "subRouteUID": "TPE102780",
+      "subRouteName": "669路",
+      "direction": 1,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/669.json",
+      "stopsCount": 39,
+      "projectedStopsCount": 39,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 4.3,
+      "p95DistanceToRouteMeters": 10.7,
+      "maxDistanceToRouteMeters": 12.7,
+      "routeLengthMeters": 14344.7,
+      "shapePointCount": 226,
+      "worstStops": [
+        {
+          "sequence": 20,
+          "stopID": "35468",
+          "stopUID": "TPE35468",
+          "name": "臺北車站(鄭州)",
+          "distanceToRouteMeters": 12.7
+        },
+        {
+          "sequence": 9,
+          "stopID": "35457",
+          "stopUID": "TPE35457",
+          "name": "市民延吉街口",
+          "distanceToRouteMeters": 12.3
+        },
+        {
+          "sequence": 39,
+          "stopID": "59102",
+          "stopUID": "TPE59102",
+          "name": "自然公園",
+          "distanceToRouteMeters": 10.5
+        },
+        {
+          "sequence": 38,
+          "stopID": "59101",
+          "stopUID": "TPE59101",
+          "name": "吉祥街口",
+          "distanceToRouteMeters": 10.3
+        },
+        {
+          "sequence": 7,
+          "stopID": "45800",
+          "stopUID": "TPE45800",
+          "name": "復盛京華",
+          "distanceToRouteMeters": 10.1
+        }
+      ]
+    },
+    {
+      "routeName": "669",
+      "routeUID": "TPE10278",
+      "subRouteUID": "TPE159520",
+      "subRouteName": "669狗狗公車",
+      "direction": 1,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/669.json",
+      "stopsCount": 39,
+      "projectedStopsCount": 39,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 4.3,
+      "p95DistanceToRouteMeters": 10.7,
+      "maxDistanceToRouteMeters": 12.7,
+      "routeLengthMeters": 14344.7,
+      "shapePointCount": 226,
+      "worstStops": [
+        {
+          "sequence": 20,
+          "stopID": "35468",
+          "stopUID": "TPE35468",
+          "name": "臺北車站(鄭州)",
+          "distanceToRouteMeters": 12.7
+        },
+        {
+          "sequence": 9,
+          "stopID": "35457",
+          "stopUID": "TPE35457",
+          "name": "市民延吉街口",
+          "distanceToRouteMeters": 12.3
+        },
+        {
+          "sequence": 39,
+          "stopID": "59102",
+          "stopUID": "TPE59102",
+          "name": "自然公園",
+          "distanceToRouteMeters": 10.5
+        },
+        {
+          "sequence": 38,
+          "stopID": "59101",
+          "stopUID": "TPE59101",
+          "name": "吉祥街口",
+          "distanceToRouteMeters": 10.3
+        },
+        {
+          "sequence": 7,
+          "stopID": "45800",
+          "stopUID": "TPE45800",
+          "name": "復盛京華",
+          "distanceToRouteMeters": 10.1
+        }
+      ]
+    },
+    {
+      "routeName": "南京幹線",
+      "routeUID": "TPE10251",
+      "subRouteUID": "TPE10251",
+      "subRouteName": "南京幹線",
+      "direction": 0,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/%E5%8D%97%E4%BA%AC%E5%B9%B9%E7%B7%9A.json",
+      "stopsCount": 41,
+      "projectedStopsCount": 41,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 6.4,
+      "p95DistanceToRouteMeters": 10.8,
+      "maxDistanceToRouteMeters": 13.2,
+      "routeLengthMeters": 15822.4,
+      "shapePointCount": 179,
+      "worstStops": [
+        {
+          "sequence": 29,
+          "stopID": "196412",
+          "stopUID": "TPE196412",
+          "name": "麥帥一橋",
+          "distanceToRouteMeters": 13.2
+        },
+        {
+          "sequence": 20,
+          "stopID": "10407",
+          "stopUID": "TPE10407",
+          "name": "方濟中學",
+          "distanceToRouteMeters": 10.9
+        },
+        {
+          "sequence": 31,
+          "stopID": "10421",
+          "stopUID": "TPE10421",
+          "name": "南京三民路口",
+          "distanceToRouteMeters": 10.8
+        },
+        {
+          "sequence": 28,
+          "stopID": "10417",
+          "stopUID": "TPE10417",
+          "name": "南京舊宗路口",
+          "distanceToRouteMeters": 10.4
+        },
+        {
+          "sequence": 21,
+          "stopID": "10409",
+          "stopUID": "TPE10409",
+          "name": "將軍嶺",
+          "distanceToRouteMeters": 9.7
+        }
+      ]
+    },
+    {
+      "routeName": "南京幹線",
+      "routeUID": "TPE10251",
+      "subRouteUID": "TPE159929",
+      "subRouteName": "南京幹線去程半",
+      "direction": 0,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/%E5%8D%97%E4%BA%AC%E5%B9%B9%E7%B7%9A.json",
+      "stopsCount": 41,
+      "projectedStopsCount": 41,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 6.4,
+      "p95DistanceToRouteMeters": 10.8,
+      "maxDistanceToRouteMeters": 13.2,
+      "routeLengthMeters": 15822.4,
+      "shapePointCount": 179,
+      "worstStops": [
+        {
+          "sequence": 29,
+          "stopID": "196412",
+          "stopUID": "TPE196412",
+          "name": "麥帥一橋",
+          "distanceToRouteMeters": 13.2
+        },
+        {
+          "sequence": 20,
+          "stopID": "10407",
+          "stopUID": "TPE10407",
+          "name": "方濟中學",
+          "distanceToRouteMeters": 10.9
+        },
+        {
+          "sequence": 31,
+          "stopID": "10421",
+          "stopUID": "TPE10421",
+          "name": "南京三民路口",
+          "distanceToRouteMeters": 10.8
+        },
+        {
+          "sequence": 28,
+          "stopID": "10417",
+          "stopUID": "TPE10417",
+          "name": "南京舊宗路口",
+          "distanceToRouteMeters": 10.4
+        },
+        {
+          "sequence": 21,
+          "stopID": "10409",
+          "stopUID": "TPE10409",
+          "name": "將軍嶺",
+          "distanceToRouteMeters": 9.7
+        }
+      ]
+    },
+    {
+      "routeName": "南京幹線",
+      "routeUID": "TPE10251",
+      "subRouteUID": "TPE10251",
+      "subRouteName": "南京幹線",
+      "direction": 1,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/%E5%8D%97%E4%BA%AC%E5%B9%B9%E7%B7%9A.json",
+      "stopsCount": 40,
+      "projectedStopsCount": 40,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 4.4,
+      "p95DistanceToRouteMeters": 10.2,
+      "maxDistanceToRouteMeters": 12.4,
+      "routeLengthMeters": 16489.1,
+      "shapePointCount": 171,
+      "worstStops": [
+        {
+          "sequence": 30,
+          "stopID": "10491",
+          "stopUID": "TPE10491",
+          "name": "衛勤訓練中心",
+          "distanceToRouteMeters": 12.4
+        },
+        {
+          "sequence": 26,
+          "stopID": "10483",
+          "stopUID": "TPE10483",
+          "name": "清白里",
+          "distanceToRouteMeters": 11.8
+        },
+        {
+          "sequence": 37,
+          "stopID": "223268",
+          "stopUID": "TPE223268",
+          "name": "三重里",
+          "distanceToRouteMeters": 10.1
+        },
+        {
+          "sequence": 28,
+          "stopID": "10487",
+          "stopUID": "TPE10487",
+          "name": "美國在臺協會",
+          "distanceToRouteMeters": 9.9
+        },
+        {
+          "sequence": 27,
+          "stopID": "10485",
+          "stopUID": "TPE10485",
+          "name": "康寧派出所",
+          "distanceToRouteMeters": 9.4
+        }
+      ]
+    },
+    {
+      "routeName": "南京幹線",
+      "routeUID": "TPE10251",
+      "subRouteUID": "TPE159930",
+      "subRouteName": "南京幹線返程半",
+      "direction": 1,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/%E5%8D%97%E4%BA%AC%E5%B9%B9%E7%B7%9A.json",
+      "stopsCount": 40,
+      "projectedStopsCount": 40,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 4.4,
+      "p95DistanceToRouteMeters": 10.2,
+      "maxDistanceToRouteMeters": 12.4,
+      "routeLengthMeters": 16489.1,
+      "shapePointCount": 171,
+      "worstStops": [
+        {
+          "sequence": 30,
+          "stopID": "10491",
+          "stopUID": "TPE10491",
+          "name": "衛勤訓練中心",
+          "distanceToRouteMeters": 12.4
+        },
+        {
+          "sequence": 26,
+          "stopID": "10483",
+          "stopUID": "TPE10483",
+          "name": "清白里",
+          "distanceToRouteMeters": 11.8
+        },
+        {
+          "sequence": 37,
+          "stopID": "223268",
+          "stopUID": "TPE223268",
+          "name": "三重里",
+          "distanceToRouteMeters": 10.1
+        },
+        {
+          "sequence": 28,
+          "stopID": "10487",
+          "stopUID": "TPE10487",
+          "name": "美國在臺協會",
+          "distanceToRouteMeters": 9.9
+        },
+        {
+          "sequence": 27,
+          "stopID": "10485",
+          "stopUID": "TPE10485",
+          "name": "康寧派出所",
+          "distanceToRouteMeters": 9.4
+        }
+      ]
+    },
+    {
+      "routeName": "民權幹線",
+      "routeUID": "TPE10231",
+      "subRouteUID": "TPE10231",
+      "subRouteName": "民權幹線",
+      "direction": 0,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/%E6%B0%91%E6%AC%8A%E5%B9%B9%E7%B7%9A.json",
+      "stopsCount": 35,
+      "projectedStopsCount": 35,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 6.1,
+      "p95DistanceToRouteMeters": 10.2,
+      "maxDistanceToRouteMeters": 13.7,
+      "routeLengthMeters": 14846.4,
+      "shapePointCount": 158,
+      "worstStops": [
+        {
+          "sequence": 3,
+          "stopID": "10003",
+          "stopUID": "TPE10003",
+          "name": "中國電視公司",
+          "distanceToRouteMeters": 13.7
+        },
+        {
+          "sequence": 27,
+          "stopID": "10051",
+          "stopUID": "TPE10051",
+          "name": "民權復興路口",
+          "distanceToRouteMeters": 11.4
+        },
+        {
+          "sequence": 22,
+          "stopID": "10041",
+          "stopUID": "TPE10041",
+          "name": "民權大橋",
+          "distanceToRouteMeters": 9.7
+        },
+        {
+          "sequence": 33,
+          "stopID": "10063",
+          "stopUID": "TPE10063",
+          "name": "民權中山路口",
+          "distanceToRouteMeters": 9.7
+        },
+        {
+          "sequence": 29,
+          "stopID": "10055",
+          "stopUID": "TPE10055",
+          "name": "民權建國路口",
+          "distanceToRouteMeters": 9.7
+        }
+      ]
+    },
+    {
+      "routeName": "民權幹線",
+      "routeUID": "TPE10231",
+      "subRouteUID": "TPE10231",
+      "subRouteName": "民權幹線",
+      "direction": 1,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/%E6%B0%91%E6%AC%8A%E5%B9%B9%E7%B7%9A.json",
+      "stopsCount": 38,
+      "projectedStopsCount": 38,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 4,
+      "p95DistanceToRouteMeters": 9.4,
+      "maxDistanceToRouteMeters": 10.4,
+      "routeLengthMeters": 15410.7,
+      "shapePointCount": 138,
+      "worstStops": [
+        {
+          "sequence": 31,
+          "stopID": "10129",
+          "stopUID": "TPE10129",
+          "name": "南港",
+          "distanceToRouteMeters": 10.4
+        },
+        {
+          "sequence": 11,
+          "stopID": "10089",
+          "stopUID": "TPE10089",
+          "name": "民權東路口",
+          "distanceToRouteMeters": 9.7
+        },
+        {
+          "sequence": 35,
+          "stopID": "10137",
+          "stopUID": "TPE10137",
+          "name": "東新國小",
+          "distanceToRouteMeters": 9.3
+        },
+        {
+          "sequence": 30,
+          "stopID": "10127",
+          "stopUID": "TPE10127",
+          "name": "南港軟體園區南站",
+          "distanceToRouteMeters": 9
+        },
+        {
+          "sequence": 19,
+          "stopID": "10105",
+          "stopUID": "TPE10105",
+          "name": "內湖行政大樓",
+          "distanceToRouteMeters": 7.5
+        }
+      ]
+    },
+    {
+      "routeName": "民生幹線",
+      "routeUID": "TPE10293",
+      "subRouteUID": "TPE10293",
+      "subRouteName": "民生幹線",
+      "direction": 0,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/%E6%B0%91%E7%94%9F%E5%B9%B9%E7%B7%9A.json",
+      "stopsCount": 33,
+      "projectedStopsCount": 33,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 4.9,
+      "p95DistanceToRouteMeters": 13.1,
+      "maxDistanceToRouteMeters": 18.8,
+      "routeLengthMeters": 11253.5,
+      "shapePointCount": 80,
+      "worstStops": [
+        {
+          "sequence": 26,
+          "stopID": "19041",
+          "stopUID": "TPE19041",
+          "name": "民生松江路口",
+          "distanceToRouteMeters": 18.8
+        },
+        {
+          "sequence": 28,
+          "stopID": "19043",
+          "stopUID": "TPE19043",
+          "name": "中原街口(老人住宅)",
+          "distanceToRouteMeters": 13.9
+        },
+        {
+          "sequence": 27,
+          "stopID": "19042",
+          "stopUID": "TPE19042",
+          "name": "捷運行天宮站(民生東路)",
+          "distanceToRouteMeters": 12.5
+        },
+        {
+          "sequence": 4,
+          "stopID": "19019",
+          "stopUID": "TPE19019",
+          "name": "新湖三路口(台北花市)",
+          "distanceToRouteMeters": 10.8
+        },
+        {
+          "sequence": 11,
+          "stopID": "19026",
+          "stopUID": "TPE19026",
+          "name": "松山車站(八德)",
+          "distanceToRouteMeters": 10.3
+        }
+      ]
+    },
+    {
+      "routeName": "民生幹線",
+      "routeUID": "TPE10293",
+      "subRouteUID": "TPE10293",
+      "subRouteName": "民生幹線",
+      "direction": 1,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/%E6%B0%91%E7%94%9F%E5%B9%B9%E7%B7%9A.json",
+      "stopsCount": 36,
+      "projectedStopsCount": 36,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 4.6,
+      "p95DistanceToRouteMeters": 15.1,
+      "maxDistanceToRouteMeters": 19.4,
+      "routeLengthMeters": 11864.1,
+      "shapePointCount": 90,
+      "worstStops": [
+        {
+          "sequence": 7,
+          "stopID": "19055",
+          "stopUID": "TPE19055",
+          "name": "華泰飯店",
+          "distanceToRouteMeters": 19.4
+        },
+        {
+          "sequence": 35,
+          "stopID": "19083",
+          "stopUID": "TPE19083",
+          "name": "行愛路",
+          "distanceToRouteMeters": 18
+        },
+        {
+          "sequence": 10,
+          "stopID": "19058",
+          "stopUID": "TPE19058",
+          "name": "捷運行天宮站(民生東路)",
+          "distanceToRouteMeters": 14.2
+        },
+        {
+          "sequence": 21,
+          "stopID": "19069",
+          "stopUID": "TPE19069",
+          "name": "新東里",
+          "distanceToRouteMeters": 12.7
+        },
+        {
+          "sequence": 36,
+          "stopID": "19084",
+          "stopUID": "TPE19084",
+          "name": "行愛路77巷口",
+          "distanceToRouteMeters": 11.4
+        }
+      ]
+    },
+    {
+      "routeName": "藍10",
+      "routeUID": "TPE10292",
+      "subRouteUID": "TPE10292",
+      "subRouteName": "藍10",
+      "direction": 0,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/%E8%97%8D10.json",
+      "stopsCount": 23,
+      "projectedStopsCount": 23,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 5.2,
+      "p95DistanceToRouteMeters": 11.6,
+      "maxDistanceToRouteMeters": 13.6,
+      "routeLengthMeters": 7608.2,
+      "shapePointCount": 129,
+      "worstStops": [
+        {
+          "sequence": 6,
+          "stopID": "10911",
+          "stopUID": "TPE10911",
+          "name": "三民健康路口(西松高中)",
+          "distanceToRouteMeters": 13.6
+        },
+        {
+          "sequence": 9,
+          "stopID": "10917",
+          "stopUID": "TPE10917",
+          "name": "東興路一",
+          "distanceToRouteMeters": 11.6
+        },
+        {
+          "sequence": 12,
+          "stopID": "10923",
+          "stopUID": "TPE10923",
+          "name": "捷運市政府站",
+          "distanceToRouteMeters": 11
+        },
+        {
+          "sequence": 21,
+          "stopID": "10939",
+          "stopUID": "TPE10939",
+          "name": "信義行政中心(奉天宮)",
+          "distanceToRouteMeters": 10.2
+        },
+        {
+          "sequence": 17,
+          "stopID": "163200",
+          "stopUID": "TPE163200",
+          "name": "捷運象山站",
+          "distanceToRouteMeters": 9.2
+        }
+      ]
+    },
+    {
+      "routeName": "藍10",
+      "routeUID": "TPE10292",
+      "subRouteUID": "TPE10292",
+      "subRouteName": "藍10",
+      "direction": 1,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/%E8%97%8D10.json",
+      "stopsCount": 27,
+      "projectedStopsCount": 27,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 3.8,
+      "p95DistanceToRouteMeters": 9.8,
+      "maxDistanceToRouteMeters": 11.2,
+      "routeLengthMeters": 9126.8,
+      "shapePointCount": 180,
+      "worstStops": [
+        {
+          "sequence": 17,
+          "stopID": "149165",
+          "stopUID": "TPE149165",
+          "name": "基隆路口二",
+          "distanceToRouteMeters": 11.2
+        },
+        {
+          "sequence": 9,
+          "stopID": "10965",
+          "stopUID": "TPE10965",
+          "name": "國稅局宿舍",
+          "distanceToRouteMeters": 10.2
+        },
+        {
+          "sequence": 10,
+          "stopID": "163201",
+          "stopUID": "TPE163201",
+          "name": "捷運象山站",
+          "distanceToRouteMeters": 8.9
+        },
+        {
+          "sequence": 15,
+          "stopID": "10975",
+          "stopUID": "TPE10975",
+          "name": "捷運市政府站",
+          "distanceToRouteMeters": 8.3
+        },
+        {
+          "sequence": 23,
+          "stopID": "10989",
+          "stopUID": "TPE10989",
+          "name": "三民路",
+          "distanceToRouteMeters": 8
+        }
+      ]
+    },
+    {
+      "routeName": "藍36",
+      "routeUID": "TPE10241",
+      "subRouteUID": "TPE10241",
+      "subRouteName": "藍36",
+      "direction": 0,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/%E8%97%8D36.json",
+      "stopsCount": 36,
+      "projectedStopsCount": 36,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 5.3,
+      "p95DistanceToRouteMeters": 11.3,
+      "maxDistanceToRouteMeters": 16,
+      "routeLengthMeters": 10320.8,
+      "shapePointCount": 219,
+      "worstStops": [
+        {
+          "sequence": 34,
+          "stopID": "10263",
+          "stopUID": "TPE10263",
+          "name": "南港分局(向陽)",
+          "distanceToRouteMeters": 16
+        },
+        {
+          "sequence": 12,
+          "stopID": "10221",
+          "stopUID": "TPE10221",
+          "name": "興福里",
+          "distanceToRouteMeters": 11.4
+        },
+        {
+          "sequence": 25,
+          "stopID": "10247",
+          "stopUID": "TPE10247",
+          "name": "民權隧道",
+          "distanceToRouteMeters": 11.2
+        },
+        {
+          "sequence": 19,
+          "stopID": "10235",
+          "stopUID": "TPE10235",
+          "name": "北山里",
+          "distanceToRouteMeters": 11.2
+        },
+        {
+          "sequence": 33,
+          "stopID": "10261",
+          "stopUID": "TPE10261",
+          "name": "石潭公園(成功)",
+          "distanceToRouteMeters": 10.6
+        }
+      ]
+    },
+    {
+      "routeName": "藍36",
+      "routeUID": "TPE10241",
+      "subRouteUID": "TPE159927",
+      "subRouteName": "藍36去程半",
+      "direction": 0,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/%E8%97%8D36.json",
+      "stopsCount": 36,
+      "projectedStopsCount": 36,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 5.3,
+      "p95DistanceToRouteMeters": 11.3,
+      "maxDistanceToRouteMeters": 16,
+      "routeLengthMeters": 10320.8,
+      "shapePointCount": 219,
+      "worstStops": [
+        {
+          "sequence": 34,
+          "stopID": "10263",
+          "stopUID": "TPE10263",
+          "name": "南港分局(向陽)",
+          "distanceToRouteMeters": 16
+        },
+        {
+          "sequence": 12,
+          "stopID": "10221",
+          "stopUID": "TPE10221",
+          "name": "興福里",
+          "distanceToRouteMeters": 11.4
+        },
+        {
+          "sequence": 25,
+          "stopID": "10247",
+          "stopUID": "TPE10247",
+          "name": "民權隧道",
+          "distanceToRouteMeters": 11.2
+        },
+        {
+          "sequence": 19,
+          "stopID": "10235",
+          "stopUID": "TPE10235",
+          "name": "北山里",
+          "distanceToRouteMeters": 11.2
+        },
+        {
+          "sequence": 33,
+          "stopID": "10261",
+          "stopUID": "TPE10261",
+          "name": "石潭公園(成功)",
+          "distanceToRouteMeters": 10.6
+        }
+      ]
+    },
+    {
+      "routeName": "藍36",
+      "routeUID": "TPE10241",
+      "subRouteUID": "TPE10241",
+      "subRouteName": "藍36",
+      "direction": 1,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/%E8%97%8D36.json",
+      "stopsCount": 34,
+      "projectedStopsCount": 34,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 5.2,
+      "p95DistanceToRouteMeters": 8.3,
+      "maxDistanceToRouteMeters": 10.4,
+      "routeLengthMeters": 10510.7,
+      "shapePointCount": 229,
+      "worstStops": [
+        {
+          "sequence": 1,
+          "stopID": "10269",
+          "stopUID": "TPE10269",
+          "name": "捷運昆陽站",
+          "distanceToRouteMeters": 10.4
+        },
+        {
+          "sequence": 30,
+          "stopID": "10329",
+          "stopUID": "TPE10329",
+          "name": "北峰國小",
+          "distanceToRouteMeters": 8.8
+        },
+        {
+          "sequence": 27,
+          "stopID": "10323",
+          "stopUID": "TPE10323",
+          "name": "柏克力托兒所",
+          "distanceToRouteMeters": 8
+        },
+        {
+          "sequence": 28,
+          "stopID": "10325",
+          "stopUID": "TPE10325",
+          "name": "台北奇蹟",
+          "distanceToRouteMeters": 8
+        },
+        {
+          "sequence": 8,
+          "stopID": "10281",
+          "stopUID": "TPE10281",
+          "name": "福華商場",
+          "distanceToRouteMeters": 7.9
+        }
+      ]
+    },
+    {
+      "routeName": "藍36",
+      "routeUID": "TPE10241",
+      "subRouteUID": "TPE159928",
+      "subRouteName": "藍36返程半",
+      "direction": 1,
+      "quality": "good",
+      "reason": "ok",
+      "routeContextPath": "/data/tdx-bus/route-context/%E8%97%8D36.json",
+      "stopsCount": 34,
+      "projectedStopsCount": 34,
+      "badStopCount": 0,
+      "badStopRatio": 0,
+      "medianDistanceToRouteMeters": 5.2,
+      "p95DistanceToRouteMeters": 8.3,
+      "maxDistanceToRouteMeters": 10.4,
+      "routeLengthMeters": 10510.7,
+      "shapePointCount": 229,
+      "worstStops": [
+        {
+          "sequence": 1,
+          "stopID": "10269",
+          "stopUID": "TPE10269",
+          "name": "捷運昆陽站",
+          "distanceToRouteMeters": 10.4
+        },
+        {
+          "sequence": 30,
+          "stopID": "10329",
+          "stopUID": "TPE10329",
+          "name": "北峰國小",
+          "distanceToRouteMeters": 8.8
+        },
+        {
+          "sequence": 27,
+          "stopID": "10323",
+          "stopUID": "TPE10323",
+          "name": "柏克力托兒所",
+          "distanceToRouteMeters": 8
+        },
+        {
+          "sequence": 28,
+          "stopID": "10325",
+          "stopUID": "TPE10325",
+          "name": "台北奇蹟",
+          "distanceToRouteMeters": 8
+        },
+        {
+          "sequence": 8,
+          "stopID": "10281",
+          "stopUID": "TPE10281",
+          "name": "福華商場",
+          "distanceToRouteMeters": 7.9
+        }
+      ]
+    }
+  ]
+}
