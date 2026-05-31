@@ -173,6 +173,66 @@ Fields:
 Observations MUST NOT be rendered directly by product UI unless they first pass through a projection
 contract.
 
+### 4.2.1 Transit Observation Profiles
+
+Transit data MAY define domain-specific observation profiles that conform to the generic
+`Observation` contract. These profiles are API and storage contracts, not renderer contracts.
+
+#### VehicleObservation
+
+A `VehicleObservation` is one time-bound observation of a transit vehicle reported by a source such
+as TDX. It represents "vehicle X was observed at position Y at time T"; it does not represent the
+stable vehicle object itself and it does not imply delay.
+
+Required normalized fields:
+
+- `id` (string)
+- `city` (string)
+- `provider` (string)
+- `vehicle_id` (string)
+- `route.uid` (string or null)
+- `route.name` (string)
+- `route.direction` (integer or string)
+- `position.longitude` (number)
+- `position.latitude` (number)
+- `speed_kph` (number or null)
+- `azimuth_deg` (number or null)
+- `observed_at` (timestamp)
+- `received_at` (timestamp or null)
+- `service_date` (date)
+- `slot` (string or null)
+- `source_ref` (string)
+- `raw_ref` (string or null)
+
+Mapping to generic `Observation`:
+
+- `kind` SHOULD be `vehicle_position`.
+- `subject_ref` SHOULD reference the stable vehicle ontology object when available.
+- `geometry` SHOULD be a GeoJSON `Point`.
+- `value` SHOULD contain route, motion, and source-specific normalized fields.
+
+#### RouteProgressObservation
+
+A `RouteProgressObservation` is a derived observation produced by projecting a
+`VehicleObservation` onto route geometry and ordered stops.
+
+Required normalized fields:
+
+- `source_observation_id` (string)
+- `route_uid` (string)
+- `route_name` (string)
+- `direction` (integer or string)
+- `progress_meters` (number or null)
+- `progress_ratio` (number between 0 and 1, or null)
+- `distance_to_route_meters` (number or null)
+- `nearest_stop` (object or null)
+- `between_stops` (object or null)
+- `geometry_quality` (`good`, `usable`, `bad`, or implementation-defined)
+- `confidence` (number or null)
+
+`RouteProgressObservation` MUST NOT be treated as a delay signal by itself. Delay-like conclusions
+MUST be expressed as derived signals with evidence and confidence.
+
 ### 4.3 Ontology Object
 
 Stable product object users inspect and reason about.
