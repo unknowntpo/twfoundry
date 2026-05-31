@@ -16,8 +16,13 @@ frontend/scripts/test.html
 frontend/.env
 frontend/.env.*
 !frontend/.env.example
+frontend/screenshots/
+frontend/public/data/tdx-bus/baseline-archive/
 experiments/**/node_modules/
 experiments/**/dist/
+screenshots/
+notebooks/.venv/
+notebooks/.ipynb_checkpoints/
 .gradle/
 build/
 backend/**/build/
