@@ -21,6 +21,7 @@ export default defineConfig({
     },
   },
   server: {
+    allowedHosts: ['twfoundry-dev.unknowntpo.com'],
     proxy: {
       '/api': {
         target: process.env.VITE_API_TARGET ?? 'http://localhost:8080',

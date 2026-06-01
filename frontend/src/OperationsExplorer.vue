@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import BusDeckMap from './BusDeckMap.vue';
+import { detectHeadwayGapSignals } from './busHeadwaySignals.js';
 import { buildRouteProgressObservation } from './busRouteGeometry.js';
 import { SUPPORTED_LOCALES, locale, setLocale, t } from './i18n.js';
 import {
@@ -33,6 +34,7 @@ const routeStopLocations = ref([]);
 const routeProgressObservation = ref(null);
 const routeProgressEncodingMap = ref(new Map());
 const selectedObservationId = ref('');
+const selectedTransitSignalId = ref('');
 const activeDataSource = ref(fallbackOperationsDataSource);
 const activeSnapshot = ref(null);
 const activeSnapshotIndex = ref(0);
@@ -185,6 +187,33 @@ const displayMapObservations = computed(() => {
     ...observation,
     routeProgress: routeProgressEncodingMap.value.get(observation.id) ?? null,
   }));
+});
+const transitSignalEntries = computed(() => (
+  routeFilter.value === 'all'
+    ? []
+    : visibleObservations.value
+      .map((observation) => {
+        const routeProgress = routeProgressEncodingMap.value.get(observation.id);
+        const routeQuality = getObservationRouteQuality(observation, routeQualityIndex.value);
+        return routeProgress
+          ? { observation, routeProgress, geometryQuality: routeQuality?.quality ?? null }
+          : null;
+      })
+      .filter(Boolean)
+));
+const transitSignals = computed(() => detectHeadwayGapSignals(transitSignalEntries.value));
+const primaryTransitSignal = computed(() => transitSignals.value[0] ?? null);
+const selectedTransitSignal = computed(() => (
+  transitSignals.value.find((signal) => signal.id === selectedTransitSignalId.value) ?? null
+));
+const transitSignalSummaryLabel = computed(() => {
+  const signal = primaryTransitSignal.value;
+  if (!signal) return '';
+  return t('signal.alertSummary', {
+    route: signal.routeName,
+    observed: Math.round(signal.observedHeadwayMinutes),
+    expected: Math.round(signal.expectedHeadwayMinutes),
+  });
 });
 const visibleSummary = computed(() => summarizeOperations(visibleObservations.value));
 const allSummary = computed(() => summarizeOperations(observations.value));
@@ -355,6 +384,7 @@ function setPollStatusKey(key, params = {}) {
 
 function selectObservation(id) {
   selectedObservationId.value = id;
+  selectedTransitSignalId.value = '';
   const observation = mapObservations.value.find((item) => item.id === id);
   if (trackVehicleMode.value) {
     trackedVehicleId.value = id;
@@ -368,6 +398,16 @@ function clearSelectedObservation() {
   trackVehicleMode.value = false;
   trackedVehicleId.value = '';
   lastTrackedObservation.value = null;
+}
+
+function selectTransitSignal(signal) {
+  if (!signal?.id) return;
+  selectedTransitSignalId.value = signal.id;
+  selectedObservationId.value = '';
+}
+
+function clearTransitSignal() {
+  selectedTransitSignalId.value = '';
 }
 
 function toggleTrackSelectedVehicle() {
@@ -715,6 +755,13 @@ watch(
 );
 
 watch(
+  () => routeFilter.value,
+  () => {
+    selectedTransitSignalId.value = '';
+  },
+);
+
+watch(
   () => [
     routeProgressEncoding.value,
     activeSnapshotIndex.value,
@@ -827,7 +874,7 @@ async function refreshSelectedRouteProgress() {
 }
 
 async function refreshRouteProgressEncoding() {
-  if (!routeProgressEncodingEnabled.value || visibleObservations.value.length === 0) {
+  if (routeFilter.value === 'all' || !selectedRouteGeometryReady.value || visibleObservations.value.length === 0) {
     routeProgressEncodingMap.value = new Map();
     return;
   }
@@ -1046,6 +1093,7 @@ function useFallbackFixture(reason) {
   routeStopLocations.value = [];
   routeProgressEncodingMap.value = new Map();
   selectedObservationId.value = '';
+  selectedTransitSignalId.value = '';
   trackVehicleMode.value = false;
   trackedVehicleId.value = '';
   ghostMode.value = false;
@@ -1127,7 +1175,7 @@ onBeforeUnmount(() => {
 <template>
   <main
     class="operations-explorer app"
-    :class="{ 'inspector-open': selectedObservation }"
+    :class="{ 'inspector-open': selectedObservation || selectedTransitSignal }"
     :style="rootStyle"
   >
     <header class="status-bar">
@@ -1192,6 +1240,16 @@ onBeforeUnmount(() => {
           <div v-if="routeStopLabel" class="map-chip route-stop-chip">{{ routeStopLabel }}</div>
           <div v-if="routeFocusActive" class="map-chip">{{ t('ghost.focus') }}</div>
           <div v-if="ghostBaselineLabel" class="map-chip ghost-chip">{{ ghostBaselineLabel }}</div>
+        </div>
+        <div v-if="primaryTransitSignal" class="signal-alert-stack" :aria-label="t('signal.alerts')">
+          <button class="signal-alert-pill" type="button" @click="selectTransitSignal(primaryTransitSignal)">
+            <span class="signal-alert-icon" aria-hidden="true">!</span>
+            <span>
+              <strong>{{ t('signal.headwayGap') }}</strong>
+              <small>{{ transitSignalSummaryLabel }}</small>
+            </span>
+            <em>{{ Math.round(primaryTransitSignal.confidence * 100) }}%</em>
+          </button>
         </div>
         <div class="zoom-controls" :aria-label="t('map.zoomControls')">
           <button class="zoom-btn" type="button" :aria-label="t('map.zoomOut')" @click="zoomMap(-1)">-</button>
@@ -1270,7 +1328,62 @@ onBeforeUnmount(() => {
       </div>
     </aside>
 
-    <aside v-if="selectedObservation" class="panel right-panel" :aria-label="t('inspector.aria')">
+    <aside v-if="selectedTransitSignal" class="panel right-panel signal-panel" :aria-label="t('signal.inspectorAria')">
+      <div class="panel-header">
+        <div class="panel-headline">
+          <div class="inspector-summary">
+            <div class="eyebrow"><span>{{ t('signal.inspectorKicker') }}</span><span>{{ sourceModeLabel }}</span></div>
+            <h2 class="panel-title">{{ t('signal.inspectorTitle', { route: selectedTransitSignal.routeName }) }}</h2>
+            <p class="panel-copy">{{ t('signal.inspectorCopy') }}</p>
+          </div>
+          <button class="track-btn" type="button" :aria-label="t('drawer.close')" :title="t('drawer.close')" @click="clearTransitSignal">
+            <svg class="control-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <section class="signal-detail-panel">
+          <div class="signal-detail-head">
+            <div>
+              <strong>{{ t('signal.headwayGap') }}</strong>
+              <p>{{ t('signal.statusCopy') }}</p>
+            </div>
+            <span class="badge sample">{{ Math.round(selectedTransitSignal.confidence * 100) }}%</span>
+          </div>
+          <div class="signal-meter" :style="{ '--signal-confidence': `${Math.round(selectedTransitSignal.confidence * 100)}%` }">
+            <span></span>
+          </div>
+          <div class="route-progress-grid">
+            <div>
+              <span>{{ t('signal.expectedHeadway') }}</span>
+              <strong>{{ Math.round(selectedTransitSignal.expectedHeadwayMinutes) }} min</strong>
+            </div>
+            <div>
+              <span>{{ t('signal.observedHeadway') }}</span>
+              <strong>{{ Math.round(selectedTransitSignal.observedHeadwayMinutes) }} min</strong>
+            </div>
+            <div>
+              <span>{{ t('routeQuality.title') }}</span>
+              <strong>{{ selectedTransitSignal.geometryQuality }}</strong>
+            </div>
+            <div>
+              <span>{{ t('signal.sampleCount') }}</span>
+              <strong>{{ selectedTransitSignal.sampleCount }}</strong>
+            </div>
+          </div>
+        </section>
+        <div class="evidence-list">
+          <div class="evidence-item"><strong>{{ t('signal.baseline') }}:</strong> {{ t('signal.prototypeBaseline', { minutes: Math.round(selectedTransitSignal.expectedHeadwayMinutes) }) }}.</div>
+          <div class="evidence-item"><strong>{{ t('signal.gapVehicles') }}:</strong> {{ selectedTransitSignal.trailingVehicleId }} -> {{ selectedTransitSignal.leadingVehicleId }}.</div>
+          <div class="evidence-item"><strong>{{ t('signal.note') }}:</strong> {{ t('signal.noteCopy') }}</div>
+        </div>
+      </div>
+    </aside>
+
+    <aside v-if="selectedObservation && !selectedTransitSignal" class="panel right-panel" :aria-label="t('inspector.aria')">
       <div class="panel-header">
         <div class="panel-headline">
           <div class="inspector-summary">
@@ -1968,6 +2081,70 @@ onBeforeUnmount(() => {
   color: color-mix(in oklch, var(--poi) 84%, white);
 }
 
+.signal-alert-stack {
+  position: absolute;
+  left: 360px;
+  top: 70px;
+  z-index: 13;
+  max-width: min(360px, calc(100% - 790px));
+}
+
+.signal-alert-pill {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) max-content;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid color-mix(in oklch, var(--warn) 58%, var(--border));
+  border-radius: 999px;
+  background:
+    linear-gradient(135deg, color-mix(in oklch, var(--warn) 18%, transparent), transparent 58%),
+    rgba(12, 18, 27, 0.86);
+  color: var(--fg);
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(14px);
+  cursor: pointer;
+  text-align: left;
+}
+
+.signal-alert-pill:hover,
+.signal-alert-pill:focus-visible {
+  border-color: color-mix(in oklch, var(--warn) 72%, white);
+  outline: none;
+}
+
+.signal-alert-icon {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid color-mix(in oklch, var(--warn) 54%, white);
+  border-radius: 50%;
+  background: color-mix(in oklch, var(--warn) 28%, transparent);
+  color: color-mix(in oklch, var(--warn) 28%, white);
+  font: 13px/1 var(--font-mono);
+}
+
+.signal-alert-pill strong,
+.signal-alert-pill small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.signal-alert-pill strong {
+  font-size: 12px;
+}
+
+.signal-alert-pill small,
+.signal-alert-pill em {
+  color: var(--muted);
+  font: 10px/1.2 var(--font-mono);
+  font-style: normal;
+}
+
 .zoom-controls {
   position: absolute;
   right: 14px;
@@ -2059,6 +2236,13 @@ onBeforeUnmount(() => {
 
 .panel-headline {
   display: block;
+}
+
+.signal-panel .panel-headline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .eyebrow {
@@ -2460,6 +2644,50 @@ select {
   overflow-wrap: anywhere;
   font-size: 12px;
   font-weight: 590;
+}
+
+.signal-detail-panel {
+  padding: 11px;
+  border: 1px solid color-mix(in oklch, var(--warn) 34%, var(--border));
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, color-mix(in oklch, var(--warn) 9%, transparent), transparent 48%),
+    color-mix(in oklch, var(--surface) 34%, transparent);
+}
+
+.signal-detail-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.signal-detail-head strong {
+  display: block;
+  font-size: 14px;
+}
+
+.signal-detail-head p {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.signal-meter {
+  height: 6px;
+  margin-top: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--border) 50%, transparent);
+}
+
+.signal-meter span {
+  display: block;
+  width: var(--signal-confidence);
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, color-mix(in oklch, var(--warn) 72%, transparent), color-mix(in oklch, var(--warn) 42%, white));
 }
 
 .plate {
@@ -2896,6 +3124,11 @@ pre {
     max-width: calc(100% - 700px);
   }
 
+  .signal-alert-stack {
+    left: 330px;
+    max-width: calc(100% - 710px);
+  }
+
   .zoom-controls {
     bottom: 46px;
     right: 14px;
@@ -2943,6 +3176,12 @@ pre {
 
   .map-chip-row {
     display: none;
+  }
+
+  .signal-alert-stack {
+    left: 14px;
+    top: 70px;
+    max-width: calc(100% - 390px);
   }
 
   .zoom-controls {
