@@ -3207,11 +3207,11 @@ pre {
 
 @media (max-width: 680px) {
   .operations-explorer {
-    --timeline-height: 96px;
+    --timeline-height: 92px;
   }
 
   .status-bar {
-    height: 88px;
+    height: 82px;
     grid-template-columns: 1fr max-content;
     align-items: start;
     padding-top: 8px;
@@ -3231,17 +3231,35 @@ pre {
     grid-column: auto;
   }
 
+  .btn {
+    height: 28px;
+    padding-inline: 9px;
+    font-size: 11px;
+  }
+
+  .locale-btn {
+    height: 24px;
+    min-width: 34px;
+    padding-inline: 7px;
+  }
+
+  .metric {
+    height: 26px;
+    padding-inline: 8px;
+    font-size: 11px;
+  }
+
   .map-shell {
-    inset: 88px 0 calc(var(--timeline-height) + var(--timeline-gap)) 0;
+    inset: 82px 0 calc(var(--timeline-height) + var(--timeline-gap)) 0;
   }
 
   .left-panel {
-    top: 100px;
+    top: 94px;
     right: 10px;
     bottom: auto;
     left: 10px;
     width: auto;
-    max-height: 34%;
+    max-height: 176px;
   }
 
   .right-panel {
@@ -3250,19 +3268,59 @@ pre {
     bottom: var(--panel-bottom-offset);
     left: 10px;
     width: auto;
-    height: 30%;
+    height: min(32dvh, 256px);
+  }
+
+  .operations-explorer.inspector-open .left-panel {
+    display: none;
+  }
+
+  .operations-explorer.inspector-open .tooltip {
+    display: none;
   }
 
   .panel-header {
-    padding: 11px 12px 9px;
+    padding: 10px 12px 8px;
   }
 
   .panel-title {
     font-size: 14px;
   }
 
+  .left-panel .panel-copy,
+  .left-panel .badge-row {
+    display: none;
+  }
+
+  .right-panel .panel-copy {
+    display: none;
+  }
+
   .panel-body {
     padding: 10px 12px;
+  }
+
+  .left-panel .section:first-child,
+  .left-panel .section:nth-child(3) {
+    display: none;
+  }
+
+  .left-panel .section {
+    padding: 0;
+    border-top: 0;
+  }
+
+  .left-panel .section-title {
+    display: none;
+  }
+
+  .left-panel .field label,
+  .left-panel .checkbox {
+    display: none;
+  }
+
+  .left-panel select {
+    min-height: 42px;
   }
 
   .health-grid,
@@ -3288,7 +3346,7 @@ pre {
   }
 
   .zoom-reset {
-    grid-column: auto;
+    display: none;
   }
 
   .timeline {
