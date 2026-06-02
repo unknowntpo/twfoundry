@@ -4,6 +4,7 @@ import BusDeckMap from './BusDeckMap.vue';
 import { detectHeadwayGapSignals } from './busHeadwaySignals.js';
 import { buildRouteProgressObservation } from './busRouteGeometry.js';
 import { SUPPORTED_LOCALES, locale, setLocale, t } from './i18n.js';
+import { OPERATIONS_LAYER_IDS, getOperationsLayer, operationsLayerRegistry } from './layerRegistry.js';
 import {
   OPERATIONS_BASELINE_ARCHIVE_MANIFEST_URL,
   OPERATIONS_ARCHIVE_MANIFEST_URL,
@@ -35,6 +36,7 @@ const routeProgressObservation = ref(null);
 const routeProgressEncodingMap = ref(new Map());
 const selectedObservationId = ref('');
 const selectedTransitSignalId = ref('');
+const activeLayerId = ref(OPERATIONS_LAYER_IDS.BUS_VEHICLES);
 const activeDataSource = ref(fallbackOperationsDataSource);
 const activeSnapshot = ref(null);
 const activeSnapshotIndex = ref(0);
@@ -247,6 +249,9 @@ const sourceTitle = computed(() => operationsDataSource.value.captureDate
 const mapStatusLabel = computed(() => (
   mapRendererStatus.value.toLowerCase().includes('ready') ? t('map.ready') : t('map.loading')
 ));
+const activeLayer = computed(() => getOperationsLayer(activeLayerId.value));
+const layerOptions = computed(() => operationsLayerRegistry);
+const activeLayerFilterLabel = computed(() => t(activeLayer.value.primaryFilter.labelKey));
 const timelineMax = computed(() => Math.max(0, timelineSnapshots.value.length - 1));
 const timelineDisabled = computed(() => timelineSnapshots.value.length <= 1);
 const timelineSliderValue = computed(() => timelineScrubIndex.value ?? activeSnapshotIndex.value);
@@ -1281,12 +1286,12 @@ onBeforeUnmount(() => {
     <aside class="panel left-panel" :aria-label="t('layer.aria')">
       <div class="panel-header">
         <div class="eyebrow"><span>{{ t('layer.label') }}</span><span>{{ layerVisible ? t('layer.visible') : t('layer.hidden') }}</span></div>
-        <h1 class="panel-title">{{ t('layer.title') }}</h1>
-        <p class="panel-copy">{{ t('layer.copy') }}</p>
+        <h1 class="panel-title">{{ t(activeLayer.labelKey) }}</h1>
+        <p class="panel-copy">{{ t(activeLayer.descriptionKey) }}</p>
         <div class="badge-row">
           <span class="badge source">TDX API</span>
           <span class="badge sample">{{ sourceModeLabel }}</span>
-          <span class="badge">{{ t('layer.vehiclePositions') }}</span>
+          <span class="badge">{{ t(activeLayer.shortLabelKey) }}</span>
         </div>
       </div>
       <div class="panel-body">
@@ -1303,17 +1308,32 @@ onBeforeUnmount(() => {
         </section>
 
         <section class="section">
-          <div class="section-title"><span>{{ t('filters.title') }}</span><span>{{ t('filters.busRoute') }}</span></div>
+          <div class="section-title"><span>{{ t('filters.title') }}</span><span>{{ activeLayerFilterLabel }}</span></div>
           <div class="mobile-layer-context" aria-hidden="true">
             <span>{{ t('layer.currentLayer') }}</span>
-            <strong>{{ t('layer.busVehicles') }}</strong>
+            <strong>{{ t(activeLayer.shortLabelKey) }}</strong>
           </div>
-          <div class="field">
-            <label for="routeFilter">{{ t('filters.routeFilter') }}</label>
-            <select id="routeFilter" v-model="routeFilter">
-              <option value="all">{{ t('filters.allRoutes') }}</option>
-              <option v-for="route in routeOptions" :key="route" :value="route">{{ t('filters.route', { route }) }}</option>
-            </select>
+          <div class="filter-grid">
+            <div class="field layer-field">
+              <label for="layerFilter">{{ t('filters.layerFilter') }}</label>
+              <select id="layerFilter" v-model="activeLayerId">
+                <option
+                  v-for="layer in layerOptions"
+                  :key="layer.id"
+                  :value="layer.id"
+                  :disabled="layer.status !== 'active'"
+                >
+                  {{ t(layer.shortLabelKey) }}{{ layer.status !== 'active' ? ` · ${t('layer.planned')}` : '' }}
+                </option>
+              </select>
+            </div>
+            <div class="field route-field">
+              <label for="routeFilter">{{ t('filters.routeFilter') }}</label>
+              <select id="routeFilter" v-model="routeFilter">
+                <option value="all">{{ t('filters.allRoutes') }}</option>
+                <option v-for="route in routeOptions" :key="route" :value="route">{{ t('filters.route', { route }) }}</option>
+              </select>
+            </div>
           </div>
           <label class="checkbox">
             <input v-model="hideStale" type="checkbox">
@@ -2464,6 +2484,10 @@ onBeforeUnmount(() => {
   display: none;
 }
 
+.filter-grid {
+  display: grid;
+}
+
 .field label,
 .check-label {
   color: color-mix(in oklch, var(--muted) 78%, white);
@@ -3387,6 +3411,15 @@ pre {
   .left-panel .field label,
   .left-panel .checkbox {
     display: none;
+  }
+
+  .left-panel .filter-grid {
+    grid-template-columns: minmax(116px, 0.9fr) minmax(0, 1.3fr);
+    gap: 7px;
+  }
+
+  .left-panel .field {
+    margin: 0;
   }
 
   .left-panel select {

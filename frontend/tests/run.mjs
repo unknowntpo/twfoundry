@@ -3,6 +3,7 @@ import './ontologyComponents.test.mjs';
 import './operationsWorkflowData.test.mjs';
 import './busRouteGeometry.test.mjs';
 import './busHeadwaySignals.test.mjs';
+import './layerRegistry.test.mjs';
 import './mapOverlayData.test.mjs';
 import './overlayRegistry.test.mjs';
 import './mapAlignmentDiagnostics.test.mjs';
