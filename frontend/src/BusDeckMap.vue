@@ -1021,4 +1021,30 @@ defineExpose({
 :deep(.maplibregl-ctrl-attrib a) {
   color: rgba(126, 213, 240, 0.82);
 }
+
+@media (max-width: 680px) {
+  :deep(.maplibregl-ctrl-attrib.maplibregl-compact) {
+    max-width: 28px;
+    max-height: 28px;
+    overflow: hidden;
+    transition: max-width 0.16s ease, max-height 0.16s ease;
+  }
+
+  :deep(.maplibregl-ctrl-attrib.maplibregl-compact:hover),
+  :deep(.maplibregl-ctrl-attrib.maplibregl-compact:focus-within) {
+    max-width: min(340px, calc(100vw - 20px));
+    max-height: 64px;
+  }
+
+  :deep(.maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-inner) {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  :deep(.maplibregl-ctrl-attrib.maplibregl-compact:hover .maplibregl-ctrl-attrib-inner),
+  :deep(.maplibregl-ctrl-attrib.maplibregl-compact:focus-within .maplibregl-ctrl-attrib-inner) {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
 </style>

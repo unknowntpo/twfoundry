@@ -1420,7 +1420,7 @@ onBeforeUnmount(() => {
             <span class="badge" :class="{ live: selectedObservation.status.freshness === 'fresh' }">{{ selectedFreshnessLabel }}</span>
           </div>
         </div>
-        <section class="inspector-tool">
+        <section class="inspector-tool inspector-ghost-tool">
           <div>
             <strong>{{ t('ghost.title') }}</strong>
             <p>{{ t('ghost.copy') }}</p>
@@ -3207,11 +3207,11 @@ pre {
 
 @media (max-width: 680px) {
   .operations-explorer {
-    --timeline-height: 92px;
+    --timeline-height: 88px;
   }
 
   .status-bar {
-    height: 82px;
+    height: 76px;
     grid-template-columns: 1fr max-content;
     align-items: start;
     padding-top: 8px;
@@ -3249,17 +3249,22 @@ pre {
     font-size: 11px;
   }
 
+  .metric:nth-child(4) {
+    display: none;
+  }
+
   .map-shell {
-    inset: 82px 0 calc(var(--timeline-height) + var(--timeline-gap)) 0;
+    inset: 76px 0 calc(var(--timeline-height) + var(--timeline-gap)) 0;
   }
 
   .left-panel {
-    top: 94px;
+    top: 88px;
     right: 10px;
     bottom: auto;
     left: 10px;
     width: auto;
-    max-height: 176px;
+    max-height: none;
+    border-radius: 8px;
   }
 
   .right-panel {
@@ -3268,7 +3273,7 @@ pre {
     bottom: var(--panel-bottom-offset);
     left: 10px;
     width: auto;
-    height: min(32dvh, 256px);
+    height: min(30dvh, 240px);
   }
 
   .operations-explorer.inspector-open .left-panel {
@@ -3287,6 +3292,10 @@ pre {
     font-size: 14px;
   }
 
+  .left-panel .panel-header {
+    display: none;
+  }
+
   .left-panel .panel-copy,
   .left-panel .badge-row {
     display: none;
@@ -3296,8 +3305,16 @@ pre {
     display: none;
   }
 
+  .right-panel .inspector-ghost-tool {
+    display: none;
+  }
+
   .panel-body {
     padding: 10px 12px;
+  }
+
+  .left-panel .panel-body {
+    padding: 8px;
   }
 
   .left-panel .section:first-child,
@@ -3321,6 +3338,19 @@ pre {
 
   .left-panel select {
     min-height: 42px;
+    border-radius: 8px;
+  }
+
+  .signal-alert-stack {
+    top: 178px;
+    right: 24px;
+    left: 24px;
+    z-index: 32;
+    max-width: none;
+  }
+
+  .operations-explorer.inspector-open .signal-alert-stack {
+    display: none;
   }
 
   .health-grid,
@@ -3350,7 +3380,7 @@ pre {
   }
 
   .timeline {
-    padding: 9px 10px;
+    padding: 8px 10px;
   }
 
   .track {
