@@ -38,6 +38,7 @@ const selectedTransitSignalId = ref('');
 const activeDataSource = ref(fallbackOperationsDataSource);
 const activeSnapshot = ref(null);
 const activeSnapshotIndex = ref(0);
+const timelineScrubIndex = ref(null);
 const playbackCursorIndex = ref(0);
 const timelineSnapshots = ref([]);
 const baselineSnapshots = ref([]);
@@ -82,6 +83,7 @@ let pulseTimeoutId = 0;
 let playbackFrameId = 0;
 let playbackLastFrameMs = 0;
 let playbackPendingIndex = -1;
+let timelineCommitPendingIndex = -1;
 let initialArchiveFitApplied = false;
 let ghostRequestId = 0;
 let routeStopRequestId = 0;
@@ -226,7 +228,8 @@ const rootStyle = computed(() => ({
 }));
 const timelineProgressPercent = computed(() => {
   if (timelineSnapshots.value.length <= 1) return timelineSnapshots.value.length === 1 ? 100 : 0;
-  return Math.min(100, Math.max(0, (playbackCursorIndex.value / (timelineSnapshots.value.length - 1)) * 100));
+  const displayIndex = timelineScrubIndex.value ?? playbackCursorIndex.value;
+  return Math.min(100, Math.max(0, (displayIndex / (timelineSnapshots.value.length - 1)) * 100));
 });
 const zoomLabel = computed(() => `${mapState.value.zoom.toFixed(1)}z`);
 const freshnessLabel = computed(() => `${allSummary.value.minAgeSeconds}s`);
@@ -246,6 +249,7 @@ const mapStatusLabel = computed(() => (
 ));
 const timelineMax = computed(() => Math.max(0, timelineSnapshots.value.length - 1));
 const timelineDisabled = computed(() => timelineSnapshots.value.length <= 1);
+const timelineSliderValue = computed(() => timelineScrubIndex.value ?? activeSnapshotIndex.value);
 const canStepBackward = computed(() => timelineSnapshots.value.length > 1 && activeSnapshotIndex.value > 0);
 const canStepForward = computed(() => timelineSnapshots.value.length > 1 && activeSnapshotIndex.value < timelineSnapshots.value.length - 1);
 const timelineStartLabel = computed(() => timelineSnapshots.value[0]?.timeLabel ?? '00:00');
@@ -1066,10 +1070,23 @@ async function loadTimelineSnapshot(index, trigger = 'timeline', { showLoading =
   }
 }
 
-function selectTimelineSnapshot(event) {
+function previewTimelineSnapshot(event) {
   playbackRunning.value = false;
   playbackLastFrameMs = 0;
-  void loadTimelineSnapshot(Number(event.target.value), 'timeline');
+  timelineScrubIndex.value = clamp(Number(event.target.value), 0, timelineSnapshots.value.length - 1);
+}
+
+function commitTimelineSnapshot(event) {
+  playbackRunning.value = false;
+  playbackLastFrameMs = 0;
+  const fallbackValue = Number(event?.target?.value ?? activeSnapshotIndex.value);
+  const targetIndex = clamp(timelineScrubIndex.value ?? fallbackValue, 0, timelineSnapshots.value.length - 1);
+  timelineScrubIndex.value = null;
+  if (timelineCommitPendingIndex === targetIndex) return;
+  timelineCommitPendingIndex = targetIndex;
+  void loadTimelineSnapshot(targetIndex, 'timeline').finally(() => {
+    if (timelineCommitPendingIndex === targetIndex) timelineCommitPendingIndex = -1;
+  });
 }
 
 function densestSnapshotIndex(snapshots) {
@@ -1082,6 +1099,7 @@ async function stepTimeline(delta) {
   if (timelineSnapshots.value.length <= 1) return;
   playbackRunning.value = false;
   playbackLastFrameMs = 0;
+  timelineScrubIndex.value = null;
   await loadTimelineSnapshot(activeSnapshotIndex.value + delta, 'timeline');
 }
 
@@ -1510,10 +1528,13 @@ onBeforeUnmount(() => {
             type="range"
             min="0"
             :max="timelineMax"
-            :value="activeSnapshotIndex"
+            :value="timelineSliderValue"
             :disabled="timelineDisabled"
             :aria-label="t('timeline.selectSnapshot')"
-            @input="selectTimelineSnapshot"
+            @input="previewTimelineSnapshot"
+            @change="commitTimelineSnapshot"
+            @pointerup="commitTimelineSnapshot"
+            @touchend="commitTimelineSnapshot"
           >
           <div class="coverage-fill"></div>
           <div class="track-fill"></div>
