@@ -1286,6 +1286,10 @@ onBeforeUnmount(() => {
 
         <section class="section">
           <div class="section-title"><span>{{ t('filters.title') }}</span><span>{{ t('filters.busRoute') }}</span></div>
+          <div class="mobile-layer-context" aria-hidden="true">
+            <span>{{ t('layer.currentLayer') }}</span>
+            <strong>{{ t('layer.busVehicles') }}</strong>
+          </div>
           <div class="field">
             <label for="routeFilter">{{ t('filters.routeFilter') }}</label>
             <select id="routeFilter" v-model="routeFilter">
@@ -2435,6 +2439,10 @@ onBeforeUnmount(() => {
   margin: 11px 0;
 }
 
+.mobile-layer-context {
+  display: none;
+}
+
 .field label,
 .check-label {
   color: color-mix(in oklch, var(--muted) 78%, white);
@@ -3329,6 +3337,30 @@ pre {
 
   .left-panel .section-title {
     display: none;
+  }
+
+  .mobile-layer-context {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 0 3px 7px;
+  }
+
+  .mobile-layer-context span {
+    color: var(--muted);
+    font: 10px/1 var(--font-mono);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .mobile-layer-context strong {
+    overflow: hidden;
+    color: color-mix(in oklch, var(--accent) 42%, white);
+    font-size: 12px;
+    font-weight: 620;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .left-panel .field label,
