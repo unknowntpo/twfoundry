@@ -6,8 +6,9 @@ import { buildRouteProgressObservation } from './busRouteGeometry.js';
 import { SUPPORTED_LOCALES, locale, setLocale, t } from './i18n.js';
 import { OPERATIONS_LAYER_IDS, getOperationsLayer, operationsLayerRegistry } from './layerRegistry.js';
 import {
+  BUS_VEHICLE_PROJECTION_TIMELINE_URL,
+  BUS_VEHICLE_PROJECTION_URL,
   OPERATIONS_BASELINE_ARCHIVE_MANIFEST_URL,
-  OPERATIONS_ARCHIVE_MANIFEST_URL,
   OPERATIONS_ARCHIVE_INTERVAL_MINUTES,
   OPERATIONS_POLL_INTERVAL_SECONDS,
   OPERATIONS_ROUTE_CONTEXT_MANIFEST_URL,
@@ -17,7 +18,8 @@ import {
   ageOperationsObservations,
   createRouteQualityIndex,
   createOperationsDataSource,
-  createOperationsFromSnapshot,
+  createOperationsDataSourceFromProjection,
+  createOperationsFromArchivePayload,
   createOperationsFixture,
   fallbackOperationsDataSource,
   filterOperationsObservations,
@@ -632,7 +634,7 @@ async function refreshGhostOverlay() {
     if (requestId !== ghostRequestId) return;
 
     ghostObservations.value = snapshots
-      .flatMap(({ snapshot, manifestEntry }) => createOperationsFromSnapshot(snapshot, manifestEntry))
+      .flatMap(({ snapshot, manifestEntry }) => createOperationsFromArchivePayload(snapshot, manifestEntry))
       .filter((observation) => (
         observation.route.uid === target.route.uid
         && observation.route.direction === target.route.direction
@@ -692,11 +694,16 @@ async function loadGhostSnapshotEntry(manifestEntry) {
   const cached = ghostSnapshotCache.get(manifestEntry.path);
   if (cached) return { snapshot: cached, manifestEntry };
 
-  const response = await fetch(`${manifestEntry.path}?v=${Date.now()}`, { cache: 'no-store' });
+  const response = await fetch(cacheBustedUrl(manifestEntry.path), { cache: 'no-store' });
   if (!response.ok) throw new Error(`ghost snapshot HTTP ${response.status}`);
   const snapshot = await response.json();
   ghostSnapshotCache.set(manifestEntry.path, snapshot);
   return { snapshot, manifestEntry };
+}
+
+function cacheBustedUrl(path) {
+  const separator = String(path).includes('?') ? '&' : '?';
+  return `${path}${separator}v=${Date.now()}`;
 }
 
 function timeLabelToMinutes(value) {
@@ -945,7 +952,7 @@ async function loadArchiveManifest({ preserveSelection = false, preferLatest = f
   archiveLoading.value = true;
   archiveError.value = '';
   try {
-    const response = await fetch(`${OPERATIONS_ARCHIVE_MANIFEST_URL}?v=${Date.now()}`, {
+    const response = await fetch(cacheBustedUrl(BUS_VEHICLE_PROJECTION_TIMELINE_URL), {
       cache: 'no-store',
     });
     if (!response.ok) throw new Error(`manifest HTTP ${response.status}`);
@@ -953,7 +960,12 @@ async function loadArchiveManifest({ preserveSelection = false, preferLatest = f
     const manifest = await response.json();
     const snapshots = Array.isArray(manifest.snapshots)
       ? manifest.snapshots
-        .filter((snapshot) => snapshot.path && snapshot.capturedAt)
+        .filter((snapshot) => snapshot.capturedAt)
+        .map((snapshot) => ({
+          ...snapshot,
+          source: manifest.source,
+          path: `${BUS_VEHICLE_PROJECTION_URL}?slot=${encodeURIComponent(snapshot.timeLabel)}`,
+        }))
         .sort((left, right) => left.capturedAt.localeCompare(right.capturedAt))
       : [];
     timelineSnapshots.value = snapshots;
@@ -1038,17 +1050,19 @@ async function loadTimelineSnapshot(index, trigger = 'timeline', { showLoading =
   if (showLoading) archiveLoading.value = true;
   archiveError.value = '';
   try {
-    const response = await fetch(`${manifestEntry.path}?v=${Date.now()}`, {
+    const response = await fetch(cacheBustedUrl(manifestEntry.path), {
       cache: 'no-store',
     });
     if (!response.ok) throw new Error(`snapshot HTTP ${response.status}`);
 
-    const snapshot = await response.json();
-    activeSnapshot.value = snapshot;
+    const payload = await response.json();
+    activeSnapshot.value = payload;
     activeSnapshotIndex.value = safeIndex;
     if (syncCursor) playbackCursorIndex.value = safeIndex;
-    activeDataSource.value = createOperationsDataSource(snapshot, manifestEntry);
-    observations.value = createOperationsFromSnapshot(snapshot, manifestEntry);
+    activeDataSource.value = Array.isArray(payload?.features)
+      ? createOperationsDataSourceFromProjection(payload, manifestEntry)
+      : createOperationsDataSource(payload, manifestEntry);
+    observations.value = createOperationsFromArchivePayload(payload, manifestEntry);
     if (!syncTrackedVehicleSelection(trigger)) {
       selectedObservationId.value = selectedObservationId.value
         && observations.value.some((observation) => observation.id === selectedObservationId.value)

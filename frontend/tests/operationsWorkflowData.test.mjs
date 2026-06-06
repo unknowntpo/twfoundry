@@ -8,6 +8,8 @@ import {
   advanceOperationsFixtureTick,
   ageOperationsObservations,
   createOperationsDataSource,
+  createOperationsDataSourceFromProjection,
+  createOperationsFromProjection,
   createOperationsFixture,
   createOperationsFromSnapshot,
   createRouteQualityIndex,
@@ -89,6 +91,45 @@ const summary = summarizeOperations(observations);
 assert.equal(summary.active, observations.length);
 assert.equal(summary.fresh + summary.stale, observations.length);
 assert.ok(summary.completeness > 0.75);
+
+const projection = {
+  layerId: 'bus_vehicles',
+  projectionType: 'vehicle_position_projection',
+  capturedAt: snapshot.capturedAt,
+  timelineSlot: latestEntry.timeLabel,
+  features: snapshot.records.slice(0, 3).map((row) => ({
+    id: `bus:${row.PlateNumb}`,
+    longitude: row.BusPosition.PositionLon,
+    latitude: row.BusPosition.PositionLat,
+    vehicleId: row.PlateNumb,
+    routeUid: row.RouteUID,
+    routeName: row.RouteName,
+    direction: row.Direction,
+    speedKph: row.Speed,
+    azimuthDeg: row.Azimuth,
+    gpsTime: row.GPSTime,
+    updateTime: row.UpdateTime,
+    freshness: row.freshness,
+    completeness: row.completeness,
+  })),
+  summary: {
+    vehicleCount: 3,
+    routeCount: 1,
+    freshCount: 3,
+    staleCount: 0,
+    averageCompleteness: 1,
+  },
+};
+const projectionDataSource = createOperationsDataSourceFromProjection(projection, latestEntry);
+const projectionObservations = createOperationsFromProjection(projection, latestEntry);
+assert.equal(projectionDataSource.badge, 'projection');
+assert.equal(projectionDataSource.count, 3);
+assert.equal(projectionObservations.length, 3);
+assert.equal(projectionObservations[0].id, projection.features[0].vehicleId);
+assert.equal(projectionObservations[0].position.longitude, projection.features[0].longitude);
+assert.equal(projectionObservations[0].route.name, projection.features[0].routeName);
+assert.equal(projectionObservations[0].source.mode, 'backend-projection');
+assert.equal(projectionObservations[0].raw.PlateNumb, projection.features[0].vehicleId);
 
 console.log(JSON.stringify({
   archivedCount: observations.length,

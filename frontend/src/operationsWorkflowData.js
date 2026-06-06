@@ -1,6 +1,8 @@
 export const OPERATIONS_ARCHIVE_INTERVAL_MINUTES = 5;
 export const OPERATIONS_POLL_INTERVAL_SECONDS = OPERATIONS_ARCHIVE_INTERVAL_MINUTES * 60;
 export const OPERATIONS_ARCHIVE_MANIFEST_URL = '/data/tdx-bus/archive/manifest.json';
+export const BUS_VEHICLE_PROJECTION_TIMELINE_URL = '/api/projections/bus_vehicles/timeline';
+export const BUS_VEHICLE_PROJECTION_URL = '/api/projections/bus_vehicles';
 export const OPERATIONS_BASELINE_ARCHIVE_MANIFEST_URL = '/data/tdx-bus/baseline-archive/manifest.json';
 export const OPERATIONS_ROUTE_CONTEXT_MANIFEST_URL = '/data/tdx-bus/route-context/manifest.json';
 export const OPERATIONS_ROUTE_QUALITY_MANIFEST_URL = '/data/tdx-bus/route-quality/manifest.json';
@@ -98,6 +100,27 @@ export function createOperationsDataSource(snapshot = null, manifestEntry = null
   };
 }
 
+export function createOperationsDataSourceFromProjection(projection = null, manifestEntry = null) {
+  if (!projection || !Array.isArray(projection.features)) return fallbackOperationsDataSource;
+
+  return {
+    mode: projection.source?.mode ?? manifestEntry?.source?.mode ?? 'backend-projection',
+    label: `${projection.source?.provider ?? manifestEntry?.source?.provider ?? 'Backend'} ${projection.source?.city ?? manifestEntry?.source?.city ?? 'City'} Bus projection`,
+    badge: 'projection',
+    provider: projection.source?.provider ?? manifestEntry?.source?.provider ?? 'Backend',
+    dataset: projection.source?.dataset ?? manifestEntry?.source?.dataset ?? projection.projectionType ?? 'vehicle_position_projection',
+    city: projection.source?.city ?? manifestEntry?.source?.city ?? '',
+    captureDate: manifestEntry?.captureDate ?? null,
+    capturedAt: projection.capturedAt ?? manifestEntry?.capturedAt ?? null,
+    timeLabel: projection.timelineSlot ?? manifestEntry?.timeLabel ?? formatTaipeiTime(projection.capturedAt),
+    intervalMinutes: manifestEntry?.intervalMinutes ?? OPERATIONS_ARCHIVE_INTERVAL_MINUTES,
+    count: projection.summary?.vehicleCount ?? projection.features.length,
+    bounds: manifestEntry?.bounds ?? null,
+    path: manifestEntry?.path ?? null,
+    slotKey: manifestEntry?.slotKey ?? null,
+  };
+}
+
 export function createOperationsFixture() {
   return createOperationsFromRows(cityBusA1RawFixture, fallbackOperationsDataSource);
 }
@@ -105,6 +128,41 @@ export function createOperationsFixture() {
 export function createOperationsFromSnapshot(snapshot, manifestEntry = null) {
   const dataSource = createOperationsDataSource(snapshot, manifestEntry);
   return createOperationsFromRows(snapshot?.records ?? [], dataSource);
+}
+
+export function createOperationsFromProjection(projection, manifestEntry = null) {
+  const dataSource = createOperationsDataSourceFromProjection(projection, manifestEntry);
+  return createOperationsFromRows(
+    Array.isArray(projection?.features) ? projection.features.map(projectionFeatureToRawRow) : [],
+    dataSource,
+  );
+}
+
+export function createOperationsFromArchivePayload(payload, manifestEntry = null) {
+  if (Array.isArray(payload?.features)) return createOperationsFromProjection(payload, manifestEntry);
+  return createOperationsFromSnapshot(payload, manifestEntry);
+}
+
+function projectionFeatureToRawRow(feature) {
+  return {
+    PlateNumb: feature.vehicleId,
+    RouteUID: feature.routeUid,
+    RouteName: feature.routeName,
+    Direction: feature.direction,
+    BusPosition: {
+      PositionLat: feature.latitude,
+      PositionLon: feature.longitude,
+    },
+    Speed: feature.speedKph,
+    Azimuth: feature.azimuthDeg,
+    GPSTime: feature.gpsTime,
+    UpdateTime: feature.updateTime,
+    source: 'Backend Bus Vehicle Projection',
+    freshness: feature.freshness,
+    completeness: feature.completeness,
+    mode: 'backend-projection',
+    age: '0s',
+  };
 }
 
 export function createOperationsFromRows(rows, dataSource = fallbackOperationsDataSource) {
