@@ -10,10 +10,13 @@ import {
 
 const DEFAULT_ARCHIVE_ROOT = 'public/data/tdx-bus/archive';
 const DEFAULT_OUTPUT_ROOT = '../cloudflare/artifacts/bus-projections';
+const DEFAULT_STATIC_OUTPUT_ROOT = 'public/data/cloudflare-bus-projections';
 
 const options = parseArgs(process.argv.slice(2));
 const archiveRoot = resolve(process.cwd(), options['archive-root'] ?? DEFAULT_ARCHIVE_ROOT);
 const outputRoot = resolve(process.cwd(), options['output-root'] ?? DEFAULT_OUTPUT_ROOT);
+const staticOutputRoot = resolve(process.cwd(), options['static-output-root'] ?? DEFAULT_STATIC_OUTPUT_ROOT);
+const outputRoots = uniquePaths([outputRoot, staticOutputRoot]);
 const limit = options.limit ? Number(options.limit) : null;
 
 if (!existsSync(join(archiveRoot, 'manifest.json'))) {
@@ -50,8 +53,10 @@ for (const entry of selectedSnapshots) {
     summary: summarizeBusMapFeatures(features),
   };
 
-  const outputFile = join(outputRoot, entry.captureDate, `${entry.timeLabel.replace(':', '-')}.json`);
-  writeJson(outputFile, projection);
+  for (const root of outputRoots) {
+    const outputFile = join(root, entry.captureDate, `${entry.timeLabel.replace(':', '-')}.json`);
+    writeJson(outputFile, projection);
+  }
 
   projectionManifest.snapshots.push({
     slotKey: entry.slotKey,
@@ -66,11 +71,13 @@ for (const entry of selectedSnapshots) {
   });
 }
 
-writeJson(join(outputRoot, 'manifest.json'), projectionManifest);
+for (const root of outputRoots) {
+  writeJson(join(root, 'manifest.json'), projectionManifest);
+}
 
 console.log(JSON.stringify({
-  outputRoot: relative(process.cwd(), outputRoot),
-  manifest: relative(process.cwd(), join(outputRoot, 'manifest.json')),
+  outputRoots: outputRoots.map((root) => relative(process.cwd(), root)),
+  manifests: outputRoots.map((root) => relative(process.cwd(), join(root, 'manifest.json'))),
   snapshots: projectionManifest.snapshots.length,
 }, null, 2));
 
@@ -89,6 +96,10 @@ function readJson(path) {
 function writeJson(path, value) {
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, `${JSON.stringify(value, null, 2)}\n`);
+}
+
+function uniquePaths(paths) {
+  return [...new Set(paths)];
 }
 
 function parseArgs(args) {

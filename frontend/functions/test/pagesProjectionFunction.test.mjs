@@ -43,6 +43,24 @@ const fakeBucket = {
   },
 };
 
+const fakeAssets = {
+  async fetch(request) {
+    const path = new URL(request.url).pathname;
+    const payloads = {
+      '/data/cloudflare-bus-projections/manifest.json': manifest,
+      '/data/cloudflare-bus-projections/2026-05-20/09-55.json': projection,
+    };
+    const payload = payloads[path];
+    return new Response(payload ? JSON.stringify(payload) : 'not found', {
+      status: payload ? 200 : 404,
+      headers: {
+        'content-type': payload ? 'application/json' : 'text/plain',
+        etag: '"asset-test"',
+      },
+    });
+  },
+};
+
 assert.equal(selectSnapshot(manifest, null).timeLabel, '09:55');
 assert.equal(selectSnapshot(manifest, '09-50').slotKey, '2026-05-20T09:50+08:00');
 
@@ -61,6 +79,22 @@ const projectionResponse = await onRequest({
 });
 assert.equal(projectionResponse.status, 200);
 assert.deepEqual(await projectionResponse.json(), projection);
+
+const assetTimelineResponse = await onRequest({
+  request: new Request('https://demo.example/api/projections/bus_vehicles/timeline'),
+  params: { path: ['bus_vehicles', 'timeline'] },
+  env: { ASSETS: fakeAssets },
+});
+assert.equal(assetTimelineResponse.status, 200);
+assert.deepEqual(await assetTimelineResponse.json(), manifest);
+
+const assetProjectionResponse = await onRequest({
+  request: new Request('https://demo.example/api/projections/bus_vehicles?slot=09%3A55'),
+  params: { path: ['bus_vehicles'] },
+  env: { ASSETS: fakeAssets },
+});
+assert.equal(assetProjectionResponse.status, 200);
+assert.deepEqual(await assetProjectionResponse.json(), projection);
 
 const missingResponse = await onRequest({
   request: new Request('https://demo.example/api/projections/bus_vehicles?slot=12%3A00'),

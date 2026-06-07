@@ -10,16 +10,18 @@ Cloudflare Pages
   frontend/functions
   /api/projections/bus_vehicles
   /api/projections/bus_vehicles/timeline
+  /data/cloudflare-bus-projections
 
 Cloudflare R2
   bus/projections/manifest.json
   bus/projections/{captureDate}/{HH-mm}.json
+  optional after R2 is enabled
 
 Cloudflare Access
   optional customer email allowlist for private demo
 ```
 
-Pages Functions serve the same projection contract that the Java backend exposes locally. The POC keeps projection computation offline: local archive files are converted into static projection artifacts, uploaded to R2, and read by the Pages Function at request time.
+Pages Functions serve the same projection contract that the Java backend exposes locally. The POC keeps projection computation offline: local archive files are converted into static projection artifacts, copied into the Pages static assets, and read by the Pages Function at request time. After R2 is enabled, the same artifacts can also be uploaded to R2 and the Function can use the `BUS_PROJECTION_BUCKET` binding.
 
 The standalone Worker under `cloudflare/worker/` is a fallback deployment shape. Prefer the Pages Function path for the first customer-facing POC because the frontend and `/api/*` stay on the same hostname.
 
@@ -29,7 +31,6 @@ The standalone Worker under `cloudflare/worker/` is a fallback deployment shape.
 cd cloudflare/worker
 bun install
 bunx wrangler login
-bunx wrangler r2 bucket create twfoundry-poc-archive
 ```
 
 Create and deploy the Cloudflare Pages project:
@@ -41,7 +42,7 @@ bun run build
 bunx wrangler pages deploy
 ```
 
-`frontend/wrangler.toml` binds `BUS_PROJECTION_BUCKET` to `twfoundry-poc-archive`, and `frontend/public/_routes.json` limits Function invocation to `/api/*`. The frontend fetches relative URLs, so the public site should look like:
+`frontend/public/_routes.json` limits Function invocation to `/api/*`. The frontend fetches relative URLs, so the public site should look like:
 
 ```text
 https://<demo-host>/
@@ -56,13 +57,34 @@ cd frontend
 bun run build:cloudflare-bus-projections
 ```
 
-This writes generated artifacts under `cloudflare/artifacts/bus-projections/`, which is intentionally ignored by git.
+This writes generated artifacts under both ignored paths:
+
+```text
+cloudflare/artifacts/bus-projections/
+frontend/public/data/cloudflare-bus-projections/
+```
+
+The first path is for R2 uploads. The second path is copied into `frontend/dist` by Vite so Pages can serve the public POC even before R2 is enabled.
 
 Dry-run upload commands first:
 
 ```bash
 cd cloudflare/worker
 bun run upload:bus-projections -- --dry-run
+```
+
+Optional: after R2 is enabled in the Cloudflare Dashboard, create the bucket:
+
+```bash
+bunx wrangler r2 bucket create twfoundry-poc-archive
+```
+
+Then add this binding back to `frontend/wrangler.toml`:
+
+```toml
+[[r2_buckets]]
+binding = "BUS_PROJECTION_BUCKET"
+bucket_name = "twfoundry-poc-archive"
 ```
 
 Upload to R2:

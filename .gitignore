@@ -18,6 +18,7 @@ frontend/.env.*
 !frontend/.env.example
 frontend/screenshots/
 frontend/public/data/tdx-bus/baseline-archive/
+frontend/public/data/cloudflare-bus-projections/
 frontend/.wrangler/
 cloudflare/artifacts/
 cloudflare/.wrangler-local/

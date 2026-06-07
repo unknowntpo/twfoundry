@@ -1,9 +1,12 @@
 import {
   BUS_PROJECTION_MANIFEST_KEY,
+  BUS_PROJECTION_R2_PREFIX,
   selectSnapshot,
 } from '../../_shared/busProjectionContract.js';
 
 export { selectSnapshot };
+
+const staticProjectionAssetPrefix = '/data/cloudflare-bus-projections';
 
 const jsonHeaders = {
   'content-type': 'application/json; charset=utf-8',
@@ -19,20 +22,17 @@ export async function onRequest(context) {
     return jsonResponse({ error: 'method_not_allowed' }, 405);
   }
 
-  if (!context.env.BUS_PROJECTION_BUCKET) {
-    return jsonResponse({ error: 'missing_r2_binding' }, 500);
-  }
-
   const url = new URL(context.request.url);
   const path = Array.isArray(context.params.path) ? context.params.path : [context.params.path].filter(Boolean);
+  const store = projectionStore(context);
 
   try {
     if (path.length === 2 && path[0] === 'bus_vehicles' && path[1] === 'timeline') {
-      return await serveR2Json(context.env.BUS_PROJECTION_BUCKET, BUS_PROJECTION_MANIFEST_KEY);
+      return await store.serveJson(BUS_PROJECTION_MANIFEST_KEY);
     }
 
     if (path.length === 1 && path[0] === 'bus_vehicles') {
-      return await serveProjection(context.env.BUS_PROJECTION_BUCKET, url.searchParams.get('slot'));
+      return await serveProjection(store, url.searchParams.get('slot'));
     }
   } catch (error) {
     return jsonResponse({ error: 'internal_error', message: error.message }, 500);
@@ -41,8 +41,22 @@ export async function onRequest(context) {
   return jsonResponse({ error: 'not_found' }, 404);
 }
 
-export async function serveProjection(bucket, slot) {
-  const manifest = await readR2Json(bucket, BUS_PROJECTION_MANIFEST_KEY);
+export function projectionStore(context) {
+  if (context.env.BUS_PROJECTION_BUCKET) {
+    return {
+      serveJson: (key) => serveR2Json(context.env.BUS_PROJECTION_BUCKET, key),
+      readJson: (key) => readR2Json(context.env.BUS_PROJECTION_BUCKET, key),
+    };
+  }
+
+  return {
+    serveJson: (key) => serveAssetJson(context, key),
+    readJson: (key) => readAssetJson(context, key),
+  };
+}
+
+export async function serveProjection(store, slot) {
+  const manifest = await store.readJson(BUS_PROJECTION_MANIFEST_KEY);
   if (!Array.isArray(manifest.snapshots) || manifest.snapshots.length === 0) {
     return jsonResponse({ error: 'empty_projection_manifest' }, 404);
   }
@@ -57,7 +71,7 @@ export async function serveProjection(bucket, slot) {
     return jsonResponse({ error: 'missing_projection_path', slot: entry.slotKey }, 500);
   }
 
-  return serveR2Json(bucket, key);
+  return store.serveJson(key);
 }
 
 async function serveR2Json(bucket, key) {
@@ -78,6 +92,51 @@ async function readR2Json(bucket, key) {
     throw new Error(`R2 object not found: ${key}`);
   }
   return object.json();
+}
+
+async function serveAssetJson(context, key) {
+  const response = await fetchAsset(context, key);
+  if (!response.ok) {
+    return jsonResponse({ error: 'asset_not_found', key }, 404);
+  }
+
+  const headers = new Headers(jsonHeaders);
+  Object.entries(corsHeaders()).forEach(([name, value]) => headers.set(name, value));
+  const etag = response.headers.get('etag');
+  if (etag) headers.set('etag', etag);
+  return new Response(response.body, { headers });
+}
+
+async function readAssetJson(context, key) {
+  const response = await fetchAsset(context, key);
+  if (!response.ok) {
+    throw new Error(`Static projection asset not found: ${key}`);
+  }
+  return response.json();
+}
+
+async function fetchAsset(context, key) {
+  if (!context.env.ASSETS) {
+    return jsonResponse({ error: 'missing_assets_binding' }, 500);
+  }
+
+  const url = new URL(context.request.url);
+  url.pathname = assetPathForProjectionKey(key);
+  url.search = '';
+  return context.env.ASSETS.fetch(new Request(url.toString(), { method: 'GET' }));
+}
+
+function assetPathForProjectionKey(key) {
+  if (key === BUS_PROJECTION_MANIFEST_KEY) {
+    return `${staticProjectionAssetPrefix}/manifest.json`;
+  }
+
+  const prefix = `${BUS_PROJECTION_R2_PREFIX}/`;
+  if (key.startsWith(prefix)) {
+    return `${staticProjectionAssetPrefix}/${key.slice(prefix.length)}`;
+  }
+
+  return `${staticProjectionAssetPrefix}/${key}`;
 }
 
 function jsonResponse(payload, status = 200) {
