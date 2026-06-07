@@ -38,8 +38,9 @@ Create and deploy the Cloudflare Pages project:
 ```bash
 cd frontend
 bun install
+bun run build:cloudflare-bus-projections
 bun run build
-bunx wrangler pages deploy
+bunx wrangler pages deploy dist --project-name twfoundry-poc --commit-dirty=true
 ```
 
 `frontend/public/_routes.json` limits Function invocation to `/api/*`. The frontend fetches relative URLs, so the public site should look like:
@@ -142,8 +143,14 @@ This is suitable for short-lived POC review only. It is not a replacement for a 
 After deploying Pages to the demo hostname:
 
 ```bash
-curl -s https://<demo-host>/api/projections/bus_vehicles/timeline
-curl -s "https://<demo-host>/api/projections/bus_vehicles?slot=09%3A55"
+cd frontend
+bun run verify:cloudflare-poc -- --url https://<demo-host>
+```
+
+The current public POC host is:
+
+```text
+https://0b7fe481.twfoundry-poc.pages.dev
 ```
 
 Open `https://<demo-host>/` and verify:
