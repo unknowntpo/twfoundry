@@ -80,7 +80,7 @@ Optional: after R2 is enabled in the Cloudflare Dashboard, create the bucket:
 bunx wrangler r2 bucket create twfoundry-poc-archive
 ```
 
-Then add this binding back to `frontend/wrangler.toml`:
+Then add this binding to `frontend/wrangler.toml`:
 
 ```toml
 [[r2_buckets]]
@@ -88,7 +88,7 @@ binding = "BUS_PROJECTION_BUCKET"
 bucket_name = "twfoundry-poc-archive"
 ```
 
-Upload to R2:
+Upload to remote R2:
 
 ```bash
 cd cloudflare/worker

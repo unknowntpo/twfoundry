@@ -35,7 +35,11 @@ for (const file of files) {
     '--content-type',
     'application/json',
   ];
-  if (local) command.push('--local');
+  if (local) {
+    command.push('--local');
+  } else {
+    command.push('--remote');
+  }
   if (persistTo) command.push('--persist-to', persistTo);
 
   if (dryRun) {
