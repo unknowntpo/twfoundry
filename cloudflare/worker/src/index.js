@@ -1,4 +1,9 @@
-const MANIFEST_KEY = 'bus/projections/manifest.json';
+import {
+  BUS_PROJECTION_MANIFEST_KEY,
+  selectSnapshot,
+} from '../../../frontend/functions/_shared/busProjectionContract.js';
+
+export { selectSnapshot };
 
 const jsonHeaders = {
   'content-type': 'application/json; charset=utf-8',
@@ -23,7 +28,7 @@ export default {
 
     try {
       if (url.pathname === '/api/projections/bus_vehicles/timeline') {
-        return await serveR2Json(env.BUS_PROJECTION_BUCKET, MANIFEST_KEY);
+        return await serveR2Json(env.BUS_PROJECTION_BUCKET, BUS_PROJECTION_MANIFEST_KEY);
       }
 
       if (url.pathname === '/api/projections/bus_vehicles') {
@@ -38,7 +43,7 @@ export default {
 };
 
 export async function serveProjection(bucket, slot) {
-  const manifest = await readR2Json(bucket, MANIFEST_KEY);
+  const manifest = await readR2Json(bucket, BUS_PROJECTION_MANIFEST_KEY);
   if (!Array.isArray(manifest.snapshots) || manifest.snapshots.length === 0) {
     return jsonResponse({ error: 'empty_projection_manifest' }, 404);
   }
@@ -54,22 +59,6 @@ export async function serveProjection(bucket, slot) {
   }
 
   return serveR2Json(bucket, key);
-}
-
-export function selectSnapshot(manifest, slot) {
-  const requestedSlot = slot && slot.trim() ? slot.trim() : 'latest';
-
-  if (requestedSlot.toLowerCase() === 'latest') {
-    return manifest.snapshots.find((entry) => entry.slotKey === manifest.latestSlotKey)
-      ?? [...manifest.snapshots].sort((left, right) => String(right.capturedAt).localeCompare(String(left.capturedAt)))[0];
-  }
-
-  const normalized = requestedSlot.replace(':', '-');
-  return manifest.snapshots.find((entry) => (
-    requestedSlot === entry.slotKey
-    || requestedSlot === entry.timeLabel
-    || normalized === String(entry.timeLabel ?? '').replace(':', '-')
-  ));
 }
 
 async function serveR2Json(bucket, key) {
