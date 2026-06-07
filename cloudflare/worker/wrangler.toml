@@ -1,0 +1,12 @@
+name = "twfoundry-poc-api"
+main = "src/index.js"
+compatibility_date = "2026-06-07"
+
+workers_dev = true
+
+[[r2_buckets]]
+binding = "BUS_PROJECTION_BUCKET"
+bucket_name = "twfoundry-poc-archive"
+
+[observability]
+enabled = true

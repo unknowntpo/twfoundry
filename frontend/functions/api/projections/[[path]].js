@@ -1,0 +1,110 @@
+const MANIFEST_KEY = 'bus/projections/manifest.json';
+
+const jsonHeaders = {
+  'content-type': 'application/json; charset=utf-8',
+  'cache-control': 'public, max-age=60',
+};
+
+export async function onRequest(context) {
+  if (context.request.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: corsHeaders() });
+  }
+
+  if (context.request.method !== 'GET') {
+    return jsonResponse({ error: 'method_not_allowed' }, 405);
+  }
+
+  if (!context.env.BUS_PROJECTION_BUCKET) {
+    return jsonResponse({ error: 'missing_r2_binding' }, 500);
+  }
+
+  const url = new URL(context.request.url);
+  const path = Array.isArray(context.params.path) ? context.params.path : [context.params.path].filter(Boolean);
+
+  try {
+    if (path.length === 2 && path[0] === 'bus_vehicles' && path[1] === 'timeline') {
+      return await serveR2Json(context.env.BUS_PROJECTION_BUCKET, MANIFEST_KEY);
+    }
+
+    if (path.length === 1 && path[0] === 'bus_vehicles') {
+      return await serveProjection(context.env.BUS_PROJECTION_BUCKET, url.searchParams.get('slot'));
+    }
+  } catch (error) {
+    return jsonResponse({ error: 'internal_error', message: error.message }, 500);
+  }
+
+  return jsonResponse({ error: 'not_found' }, 404);
+}
+
+export async function serveProjection(bucket, slot) {
+  const manifest = await readR2Json(bucket, MANIFEST_KEY);
+  if (!Array.isArray(manifest.snapshots) || manifest.snapshots.length === 0) {
+    return jsonResponse({ error: 'empty_projection_manifest' }, 404);
+  }
+
+  const entry = selectSnapshot(manifest, slot);
+  if (!entry) {
+    return jsonResponse({ error: 'unknown_slot', slot }, 404);
+  }
+
+  const key = entry.projectionPath;
+  if (!key) {
+    return jsonResponse({ error: 'missing_projection_path', slot: entry.slotKey }, 500);
+  }
+
+  return serveR2Json(bucket, key);
+}
+
+export function selectSnapshot(manifest, slot) {
+  const requestedSlot = slot && slot.trim() ? slot.trim() : 'latest';
+
+  if (requestedSlot.toLowerCase() === 'latest') {
+    return manifest.snapshots.find((entry) => entry.slotKey === manifest.latestSlotKey)
+      ?? [...manifest.snapshots].sort((left, right) => String(right.capturedAt).localeCompare(String(left.capturedAt)))[0];
+  }
+
+  const normalized = requestedSlot.replace(':', '-');
+  return manifest.snapshots.find((entry) => (
+    requestedSlot === entry.slotKey
+    || requestedSlot === entry.timeLabel
+    || normalized === String(entry.timeLabel ?? '').replace(':', '-')
+  ));
+}
+
+async function serveR2Json(bucket, key) {
+  const object = await bucket.get(key);
+  if (!object) {
+    return jsonResponse({ error: 'r2_object_not_found', key }, 404);
+  }
+
+  const headers = new Headers(jsonHeaders);
+  Object.entries(corsHeaders()).forEach(([name, value]) => headers.set(name, value));
+  if (object.httpEtag) headers.set('etag', object.httpEtag);
+  return new Response(object.body, { headers });
+}
+
+async function readR2Json(bucket, key) {
+  const object = await bucket.get(key);
+  if (!object) {
+    throw new Error(`R2 object not found: ${key}`);
+  }
+  return object.json();
+}
+
+function jsonResponse(payload, status = 200) {
+  return new Response(JSON.stringify(payload), {
+    status,
+    headers: {
+      ...jsonHeaders,
+      ...corsHeaders(),
+    },
+  });
+}
+
+function corsHeaders() {
+  return {
+    'access-control-allow-origin': '*',
+    'access-control-allow-methods': 'GET, OPTIONS',
+    'access-control-allow-headers': 'content-type',
+  };
+}

@@ -18,6 +18,9 @@ frontend/.env.*
 !frontend/.env.example
 frontend/screenshots/
 frontend/public/data/tdx-bus/baseline-archive/
+cloudflare/artifacts/
+cloudflare/worker/node_modules/
+cloudflare/worker/.wrangler/
 experiments/**/node_modules/
 experiments/**/dist/
 screenshots/

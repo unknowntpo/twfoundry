@@ -1,0 +1,70 @@
+import assert from 'node:assert/strict';
+import { onRequest, selectSnapshot } from '../api/projections/[[path]].js';
+
+const manifest = {
+  latestSlotKey: '2026-05-20T09:55+08:00',
+  snapshots: [
+    {
+      slotKey: '2026-05-20T09:50+08:00',
+      capturedAt: '2026-05-20T01:50:00.000Z',
+      timeLabel: '09:50',
+      projectionPath: 'bus/projections/2026-05-20/09-50.json',
+    },
+    {
+      slotKey: '2026-05-20T09:55+08:00',
+      capturedAt: '2026-05-20T01:55:00.000Z',
+      timeLabel: '09:55',
+      projectionPath: 'bus/projections/2026-05-20/09-55.json',
+    },
+  ],
+};
+
+const projection = {
+  layerId: 'bus_vehicles',
+  projectionType: 'vehicle_position_projection',
+  features: [{ id: 'bus:EAL-3079', longitude: 121.590663, latitude: 25.06696 }],
+};
+
+const fakeBucket = {
+  async get(key) {
+    const payloads = {
+      'bus/projections/manifest.json': manifest,
+      'bus/projections/2026-05-20/09-55.json': projection,
+    };
+    const payload = payloads[key];
+    if (!payload) return null;
+    return {
+      httpEtag: '"test"',
+      body: JSON.stringify(payload),
+      async json() {
+        return payload;
+      },
+    };
+  },
+};
+
+assert.equal(selectSnapshot(manifest, null).timeLabel, '09:55');
+assert.equal(selectSnapshot(manifest, '09-50').slotKey, '2026-05-20T09:50+08:00');
+
+const timelineResponse = await onRequest({
+  request: new Request('https://demo.example/api/projections/bus_vehicles/timeline'),
+  params: { path: ['bus_vehicles', 'timeline'] },
+  env: { BUS_PROJECTION_BUCKET: fakeBucket },
+});
+assert.equal(timelineResponse.status, 200);
+assert.deepEqual(await timelineResponse.json(), manifest);
+
+const projectionResponse = await onRequest({
+  request: new Request('https://demo.example/api/projections/bus_vehicles?slot=09%3A55'),
+  params: { path: ['bus_vehicles'] },
+  env: { BUS_PROJECTION_BUCKET: fakeBucket },
+});
+assert.equal(projectionResponse.status, 200);
+assert.deepEqual(await projectionResponse.json(), projection);
+
+const missingResponse = await onRequest({
+  request: new Request('https://demo.example/api/projections/bus_vehicles?slot=12%3A00'),
+  params: { path: ['bus_vehicles'] },
+  env: { BUS_PROJECTION_BUCKET: fakeBucket },
+});
+assert.equal(missingResponse.status, 404);
