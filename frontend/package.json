@@ -16,6 +16,7 @@
     "collect:tdx-bus:day": "bun scripts/fetch-tdx-taipei-bus-snapshot.mjs --limit 1200 --interval-minutes 5 --loop --max-captures 288",
     "build:cloudflare-bus-projections": "bun scripts/build-cloudflare-bus-projections.mjs",
     "deploy:cloudflare-pages": "bunx wrangler pages deploy",
+    "preview:cloudflare-pages": "bunx wrangler pages dev dist --persist-to ../cloudflare/.wrangler-local --ip 127.0.0.1 --port 8788",
     "test": "bun ./tests/run.mjs",
     "test:cloudflare-pages": "node ./functions/test/pagesProjectionFunction.test.mjs",
     "test:mrt-train": "bun ./tests/mrtTrain.test.mjs",

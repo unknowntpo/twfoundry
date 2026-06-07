@@ -74,6 +74,47 @@ bun run upload:bus-projections
 
 Redeploy Pages after uploading artifacts so the Pages Function can read the R2 bucket binding.
 
+## Local Cloudflare Preview
+
+Use this path when Cloudflare auth is not ready yet, or when you want to verify Pages Functions and R2 before a real deploy.
+
+Build the frontend and projection artifacts:
+
+```bash
+cd frontend
+bun run build
+bun run build:cloudflare-bus-projections
+```
+
+Seed Wrangler local R2:
+
+```bash
+cd cloudflare/worker
+bun run upload:bus-projections:local
+```
+
+Start local Pages Functions with the same R2 binding name:
+
+```bash
+cd frontend
+bun run preview:cloudflare-pages
+```
+
+Verify locally:
+
+```bash
+curl -s http://127.0.0.1:8788/api/projections/bus_vehicles/timeline
+curl -s "http://127.0.0.1:8788/api/projections/bus_vehicles?slot=09%3A55"
+```
+
+For a temporary public demo, expose the local Pages preview with a Cloudflare quick tunnel:
+
+```bash
+cloudflared tunnel --url http://127.0.0.1:8788
+```
+
+This is suitable for short-lived POC review only. It is not a replacement for a named tunnel or a Pages production deployment.
+
 ## Verify
 
 After deploying Pages to the demo hostname:
