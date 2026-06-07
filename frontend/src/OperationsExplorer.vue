@@ -71,7 +71,7 @@ const sampleFrame = ref(0);
 const lastTickLabel = ref('--:--');
 const archiveLoading = ref(false);
 const archiveError = ref('');
-const playbackRunning = ref(true);
+const playbackRunning = ref(false);
 const playbackSpeed = ref(2);
 const mapRendererStatus = ref('initializing renderer');
 const tooltip = ref({ visible: false, x: 0, y: 0, observation: null, routeStop: null });
@@ -943,7 +943,7 @@ async function reloadArchive() {
 
 async function liveUpdateArchive() {
   await loadArchiveManifest({ preserveSelection: false, preferLatest: true });
-  playbackRunning.value = true;
+  playbackRunning.value = false;
   playbackLastFrameMs = 0;
   setPollStatusKey('status.latestLoaded');
 }
