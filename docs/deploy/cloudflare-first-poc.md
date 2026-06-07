@@ -97,6 +97,33 @@ bun run upload:bus-projections
 
 Redeploy Pages after uploading artifacts so the Pages Function can read the R2 bucket binding.
 
+## Historical Backfill
+
+Use a manual backfill when you need to load a specific historical service day from TDX and publish it to R2. The job fetches historical bus records, rebuilds the bus projection artifacts, and optionally uploads them to remote R2.
+
+Preview the commands first:
+
+```bash
+cd frontend
+bun run backfill:tdx-bus-projections -- --date 2026-05-20 --dry-run --upload
+```
+
+Run a one-day backfill and upload to R2:
+
+```bash
+cd frontend
+bun run backfill:tdx-bus-projections -- --date 2026-05-20 --force --upload
+```
+
+Run a date range:
+
+```bash
+cd frontend
+bun run backfill:tdx-bus-projections -- --from 2026-05-20 --to 2026-05-21 --force --upload
+```
+
+Backfill uses TDX historical data. It should not be used to pretend a failed live slot succeeded unless the source data actually covers that slot.
+
 ## Local Cloudflare Preview
 
 Use this path when Cloudflare auth is not ready yet, or when you want to verify Pages Functions and R2 before a real deploy.
