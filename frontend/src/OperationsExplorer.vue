@@ -259,9 +259,9 @@ const timelineDisabled = computed(() => timelineSnapshots.value.length <= 1);
 const timelineSliderValue = computed(() => timelineScrubIndex.value ?? activeSnapshotIndex.value);
 const canStepBackward = computed(() => timelineSnapshots.value.length > 1 && activeSnapshotIndex.value > 0);
 const canStepForward = computed(() => timelineSnapshots.value.length > 1 && activeSnapshotIndex.value < timelineSnapshots.value.length - 1);
-const timelineStartLabel = computed(() => timelineSnapshots.value[0]?.timeLabel ?? '00:00');
-const timelineEndLabel = computed(() => timelineSnapshots.value.at(-1)?.timeLabel ?? '23:55');
-const activeSnapshotLabel = computed(() => operationsDataSource.value.timeLabel ?? '--:--');
+const timelineStartLabel = computed(() => formatSnapshotCompactDateTime(timelineSnapshots.value[0]) || '00:00');
+const timelineEndLabel = computed(() => formatSnapshotCompactDateTime(timelineSnapshots.value.at(-1)) || '23:55');
+const activeSnapshotLabel = computed(() => formatDataSourceDateTime(operationsDataSource.value) || '--:--');
 const elapsedLabel = computed(() => formatDuration(elapsed.value));
 const pollIntervalLabel = computed(() => formatDuration(OPERATIONS_POLL_INTERVAL_SECONDS));
 const timelineCapturedMinutes = computed(() => timelineSnapshots.value.length * OPERATIONS_ARCHIVE_INTERVAL_MINUTES);
@@ -1149,6 +1149,39 @@ function formatTaipeiTime(value, withSeconds = false) {
     second: withSeconds ? '2-digit' : undefined,
     hour12: false,
   }).format(new Date(value));
+}
+
+function formatDataSourceDateTime(source) {
+  if (!source) return '';
+  const date = source.captureDate ?? source.slotKey?.slice(0, 10);
+  const time = source.timeLabel ?? source.slotKey?.slice(11, 16);
+  if (date && time) return `${date} ${time}`;
+  if (source.capturedAt) return formatTaipeiDateTime(source.capturedAt);
+  return time ?? '';
+}
+
+function formatSnapshotCompactDateTime(snapshot) {
+  if (!snapshot) return '';
+  const date = snapshot.captureDate ? snapshot.captureDate.slice(5) : snapshot.slotKey?.slice(5, 10);
+  const time = snapshot.timeLabel ?? snapshot.slotKey?.slice(11, 16);
+  if (date && time) return `${date} ${time}`;
+  if (snapshot.capturedAt) return formatTaipeiDateTime(snapshot.capturedAt).slice(5);
+  return time ?? '';
+}
+
+function formatTaipeiDateTime(value) {
+  if (!value) return '';
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Taipei',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).formatToParts(new Date(value));
+  const pick = (type) => parts.find((part) => part.type === type)?.value ?? '';
+  return `${pick('year')}-${pick('month')}-${pick('day')} ${pick('hour')}:${pick('minute')}`;
 }
 
 function formatDuration(seconds) {
@@ -3292,6 +3325,7 @@ pre {
     grid-column: 1 / -1;
     order: 3;
     width: 100%;
+    gap: 6px;
   }
 
   .actions {
@@ -3312,8 +3346,13 @@ pre {
 
   .metric {
     height: 26px;
-    padding-inline: 8px;
-    font-size: 11px;
+    gap: 5px;
+    padding-inline: 6px;
+    font-size: 10.5px;
+  }
+
+  .metric-source {
+    max-width: 122px;
   }
 
   .metric:nth-child(4) {
