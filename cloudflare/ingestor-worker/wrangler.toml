@@ -1,0 +1,18 @@
+name = "twfoundry-bus-ingestor"
+main = "src/index.js"
+compatibility_date = "2026-06-07"
+workers_dev = false
+
+[vars]
+TDX_AUTH_URL = "https://tdx.transportdata.tw/auth/realms/TDXConnect/protocol/openid-connect/token"
+TDX_API_BASE_URL = "https://tdx.transportdata.tw/api/basic/v2"
+TDX_CITY = "Taipei"
+TDX_TOP = "1200"
+INGEST_INTERVAL_MINUTES = "5"
+
+[[r2_buckets]]
+binding = "BUS_PROJECTION_BUCKET"
+bucket_name = "twfoundry-poc-archive"
+
+[triggers]
+crons = ["*/5 * * * *"]

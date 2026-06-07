@@ -24,6 +24,8 @@ cloudflare/artifacts/
 cloudflare/.wrangler-local/
 cloudflare/worker/node_modules/
 cloudflare/worker/.wrangler/
+cloudflare/ingestor-worker/node_modules/
+cloudflare/ingestor-worker/.wrangler/
 experiments/**/node_modules/
 experiments/**/dist/
 screenshots/

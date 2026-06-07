@@ -124,6 +124,62 @@ bun run backfill:tdx-bus-projections -- --from 2026-05-20 --to 2026-05-21 --forc
 
 Backfill uses TDX historical data. It should not be used to pretend a failed live slot succeeded unless the source data actually covers that slot.
 
+## Live Bus Ingestor Cron
+
+The live ingestor is a Cloudflare Worker under `cloudflare/ingestor-worker/`. It runs every 5 minutes, fetches TDX `Bus.RealTimeByFrequency.City`, writes a raw snapshot to R2, writes the matching bus projection JSON, and updates `bus/projections/manifest.json`.
+
+Configure secrets once:
+
+```bash
+cd cloudflare/ingestor-worker
+bun install
+bunx wrangler secret put TDX_CLIENT_ID
+bunx wrangler secret put TDX_CLIENT_SECRET
+```
+
+Optional manual run support requires an admin token:
+
+```bash
+bunx wrangler secret put INGESTOR_ADMIN_TOKEN
+```
+
+Deploy the scheduled Worker:
+
+```bash
+cd cloudflare/ingestor-worker
+bun run test
+bun run deploy
+```
+
+Cloudflare requires an account-level `workers.dev` subdomain before Cron Triggers can be attached, even when this Worker keeps `workers_dev = false`. This account uses:
+
+```text
+unknowntpo.workers.dev
+```
+
+After deploy, Cloudflare Cron Triggers run the Worker on this schedule:
+
+```text
+*/5 * * * *
+```
+
+The Worker is idempotent per 5-minute slot. If a slot already has a successful projection, later retries skip it unless the manual run uses `?force=1`.
+
+The Worker is scheduled-only by default (`workers_dev = false`), so it does not expose a public URL. If you later add a route or enable workers.dev for manual verification, call the protected endpoint with the configured token:
+
+```bash
+curl -X POST \
+  -H "Authorization: Bearer <INGESTOR_ADMIN_TOKEN>" \
+  https://<ingestor-worker-host>/run
+```
+
+Then verify the public Pages API:
+
+```bash
+cd frontend
+bun run verify:cloudflare-poc -- --url https://twfoundry-poc.pages.dev --min-features 50
+```
+
 ## Local Cloudflare Preview
 
 Use this path when Cloudflare auth is not ready yet, or when you want to verify Pages Functions and R2 before a real deploy.
@@ -177,13 +233,13 @@ bun run verify:cloudflare-poc -- --url https://<demo-host>
 The current public POC host is:
 
 ```text
-https://0b7fe481.twfoundry-poc.pages.dev
+https://twfoundry-poc.pages.dev
 ```
 
 Open `https://<demo-host>/` and verify:
 
 - map renders archived bus vehicle points
-- timeline has 288 slots for the current archive day
+- timeline has at least 288 archived slots, plus live slots after the ingestor cron starts writing
 - selecting a timeline slot updates vehicle positions
 - no request falls back to fixture data
 

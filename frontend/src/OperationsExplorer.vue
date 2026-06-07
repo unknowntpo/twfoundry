@@ -964,7 +964,7 @@ async function loadArchiveManifest({ preserveSelection = false, preferLatest = f
         .map((snapshot) => ({
           ...snapshot,
           source: manifest.source,
-          path: `${BUS_VEHICLE_PROJECTION_URL}?slot=${encodeURIComponent(snapshot.timeLabel)}`,
+          path: `${BUS_VEHICLE_PROJECTION_URL}?slot=${encodeURIComponent(snapshot.slotKey ?? snapshot.timeLabel)}`,
         }))
         .sort((left, right) => left.capturedAt.localeCompare(right.capturedAt))
       : [];

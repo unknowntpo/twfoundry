@@ -12,11 +12,12 @@ export function selectSnapshot(manifest, slot) {
   }
 
   const normalized = requestedSlot.replace(':', '-');
-  return manifest.snapshots.find((entry) => (
+  const matches = manifest.snapshots.filter((entry) => (
     requestedSlot === entry.slotKey
     || requestedSlot === entry.timeLabel
     || normalized === String(entry.timeLabel ?? '').replace(':', '-')
   ));
+  return matches.sort((left, right) => String(right.capturedAt).localeCompare(String(left.capturedAt)))[0];
 }
 
 export function toBusMapFeature(row) {

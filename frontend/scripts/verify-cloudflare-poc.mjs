@@ -1,5 +1,5 @@
-const DEFAULT_URL = 'https://0b7fe481.twfoundry-poc.pages.dev';
-const DEFAULT_SLOT = '09:55';
+const DEFAULT_URL = 'https://twfoundry-poc.pages.dev';
+const DEFAULT_SLOT = 'latest';
 const DEFAULT_MIN_SNAPSHOTS = 1;
 const DEFAULT_MIN_FEATURES = 1;
 
