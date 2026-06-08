@@ -30,6 +30,7 @@ import {
 } from './operationsWorkflowData.js';
 
 const PLAYBACK_SPEED_OPTIONS = [1, 1.5, 2, 4];
+const LIVE_FOLLOW_POLL_MS = 60_000;
 
 const observations = ref(createOperationsFixture());
 const ghostObservations = ref([]);
@@ -72,6 +73,7 @@ const lastTickLabel = ref('--:--');
 const archiveLoading = ref(false);
 const archiveError = ref('');
 const playbackRunning = ref(false);
+const followLiveEnabled = ref(false);
 const playbackSpeed = ref(2);
 const mapRendererStatus = ref('initializing renderer');
 const tooltip = ref({ visible: false, x: 0, y: 0, observation: null, routeStop: null });
@@ -83,6 +85,7 @@ const pollStatusKey = ref('status.loadingArchive');
 const pollStatusParams = ref({});
 
 let intervalId = 0;
+let liveFollowTimerId = 0;
 let pulseTimeoutId = 0;
 let playbackFrameId = 0;
 let playbackLastFrameMs = 0;
@@ -262,6 +265,14 @@ const canStepForward = computed(() => timelineSnapshots.value.length > 1 && acti
 const timelineStartLabel = computed(() => formatSnapshotCompactDateTime(timelineSnapshots.value[0]) || '00:00');
 const timelineEndLabel = computed(() => formatSnapshotCompactDateTime(timelineSnapshots.value.at(-1)) || '23:55');
 const activeSnapshotLabel = computed(() => formatDataSourceDateTime(operationsDataSource.value) || '--:--');
+const activeSnapshotTimeZoneLabel = computed(() => (operationsDataSource.value.capturedAt ? 'TPE UTC+8' : ''));
+const timelineStatusDetail = computed(() => (
+  [activeSnapshotTimeZoneLabel.value, timelineCoverageLabel.value].filter(Boolean).join(' · ')
+));
+const isLiveSnapshot = computed(() => (
+  operationsDataSource.value.mode === 'tdx-live-cron'
+  && activeSnapshotIndex.value === timelineSnapshots.value.length - 1
+));
 const elapsedLabel = computed(() => formatDuration(elapsed.value));
 const pollIntervalLabel = computed(() => formatDuration(OPERATIONS_POLL_INTERVAL_SECONDS));
 const timelineCapturedMinutes = computed(() => timelineSnapshots.value.length * OPERATIONS_ARCHIVE_INTERVAL_MINUTES);
@@ -277,7 +288,15 @@ const archiveRangeLabel = computed(() => {
   return `${timelineStartLabel.value}-${timelineEndLabel.value}`;
 });
 const playbackToggleLabel = computed(() => (playbackRunning.value ? t('timeline.pause') : t('timeline.play')));
-const syncLatestLabel = computed(() => (archiveLoading.value ? t('timeline.syncing') : t('timeline.sync')));
+const followLiveLabel = computed(() => {
+  if (archiveLoading.value) return t('timeline.syncing');
+  return followLiveEnabled.value ? t('timeline.followLiveOn') : t('timeline.followLive');
+});
+const liveStateLabel = computed(() => {
+  if (followLiveEnabled.value) return t('timeline.followingLive');
+  if (isLiveSnapshot.value) return t('timeline.live');
+  return t('timeline.archive');
+});
 const trackingActiveForSelected = computed(() => (
   trackVehicleMode.value && trackedVehicleId.value === selectedObservation.value?.id
 ));
@@ -744,6 +763,7 @@ function formatTimelineHoverLabel(snapshot) {
 }
 
 function togglePlayback() {
+  if (!playbackRunning.value) disableFollowLive();
   playbackRunning.value = !playbackRunning.value;
   playbackLastFrameMs = 0;
 }
@@ -948,6 +968,37 @@ async function liveUpdateArchive() {
   setPollStatusKey('status.latestLoaded');
 }
 
+async function toggleFollowLive() {
+  if (followLiveEnabled.value) {
+    disableFollowLive();
+    return;
+  }
+
+  followLiveEnabled.value = true;
+  playbackRunning.value = false;
+  playbackLastFrameMs = 0;
+  startFollowLiveTimer();
+  await liveUpdateArchive();
+}
+
+async function refreshFollowLive() {
+  if (!followLiveEnabled.value || archiveLoading.value) return;
+  await liveUpdateArchive();
+}
+
+function startFollowLiveTimer() {
+  window.clearInterval(liveFollowTimerId);
+  liveFollowTimerId = window.setInterval(() => {
+    void refreshFollowLive();
+  }, LIVE_FOLLOW_POLL_MS);
+}
+
+function disableFollowLive() {
+  followLiveEnabled.value = false;
+  window.clearInterval(liveFollowTimerId);
+  liveFollowTimerId = 0;
+}
+
 async function loadArchiveManifest({ preserveSelection = false, preferLatest = false } = {}) {
   archiveLoading.value = true;
   archiveError.value = '';
@@ -1090,12 +1141,14 @@ async function loadTimelineSnapshot(index, trigger = 'timeline', { showLoading =
 }
 
 function previewTimelineSnapshot(event) {
+  disableFollowLive();
   playbackRunning.value = false;
   playbackLastFrameMs = 0;
   timelineScrubIndex.value = clamp(Number(event.target.value), 0, timelineSnapshots.value.length - 1);
 }
 
 function commitTimelineSnapshot(event) {
+  disableFollowLive();
   playbackRunning.value = false;
   playbackLastFrameMs = 0;
   const fallbackValue = Number(event?.target?.value ?? activeSnapshotIndex.value);
@@ -1116,6 +1169,7 @@ function densestSnapshotIndex(snapshots) {
 
 async function stepTimeline(delta) {
   if (timelineSnapshots.value.length <= 1) return;
+  disableFollowLive();
   playbackRunning.value = false;
   playbackLastFrameMs = 0;
   timelineScrubIndex.value = null;
@@ -1237,6 +1291,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.clearInterval(intervalId);
+  window.clearInterval(liveFollowTimerId);
   window.clearTimeout(pulseTimeoutId);
   window.cancelAnimationFrame(playbackFrameId);
 });
@@ -1258,7 +1313,7 @@ onBeforeUnmount(() => {
       </div>
       <div class="status-strip" :aria-label="t('status.aria')">
         <div class="metric metric-source"><span class="dot accent"></span><strong>{{ sourceTitle }}</strong></div>
-        <div class="metric"><span>{{ t('status.time') }}</span><strong>{{ activeSnapshotLabel }}</strong></div>
+        <div class="metric metric-time"><span>{{ t('status.time') }}</span><strong>{{ activeSnapshotLabel }}</strong><em v-if="activeSnapshotTimeZoneLabel">{{ activeSnapshotTimeZoneLabel }}</em></div>
         <div class="metric"><span>{{ t('status.vehicles') }}</span><strong>{{ visibleSummary.active }}</strong></div>
         <div class="metric"><span>{{ t('status.playback') }}</span><strong>{{ nextTickLabel }}</strong></div>
       </div>
@@ -1579,9 +1634,15 @@ onBeforeUnmount(() => {
 
     <footer class="timeline" :aria-label="t('timeline.aria')">
       <div class="timeline-status">
-        <div class="timeline-title">{{ t('timeline.title') }}</div>
+        <div class="timeline-title-row">
+          <div class="timeline-title">{{ t('timeline.title') }}</div>
+          <span class="live-pill" :class="{ active: followLiveEnabled, idle: isLiveSnapshot && !followLiveEnabled }">
+            <span class="live-dot"></span>{{ liveStateLabel }}
+          </span>
+        </div>
         <strong>{{ activeSnapshotLabel }}</strong>
-        <span>{{ timelineCoverageLabel }}</span>
+        <span class="timeline-detail">{{ timelineStatusDetail }}</span>
+        <span class="timeline-zone">{{ activeSnapshotTimeZoneLabel }}</span>
       </div>
       <div class="timeline-center">
         <div
@@ -1655,12 +1716,22 @@ onBeforeUnmount(() => {
             <path d="m13 6 6 6-6 6" />
           </svg>
         </button>
-        <button class="btn icon-btn" type="button" :disabled="archiveLoading" :aria-label="syncLatestLabel" :title="syncLatestLabel" @click="liveUpdateArchive">
+        <button
+          class="btn icon-btn live-follow-btn"
+          type="button"
+          :class="{ primary: followLiveEnabled, live: followLiveEnabled || isLiveSnapshot }"
+          :disabled="archiveLoading"
+          :aria-label="followLiveLabel"
+          :title="followLiveLabel"
+          :aria-pressed="followLiveEnabled"
+          @click="toggleFollowLive"
+        >
           <svg class="control-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M4 12a8 8 0 0 1 13.66-5.66" />
-            <path d="M18 3v4h-4" />
-            <path d="M20 12a8 8 0 0 1-13.66 5.66" />
-            <path d="M6 21v-4h4" />
+            <circle cx="12" cy="12" r="2.5" />
+            <path d="M8.5 8.5a5 5 0 0 0 0 7" />
+            <path d="M15.5 8.5a5 5 0 0 1 0 7" />
+            <path d="M5.5 5.5a9.2 9.2 0 0 0 0 13" />
+            <path d="M18.5 5.5a9.2 9.2 0 0 1 0 13" />
           </svg>
         </button>
       </div>
@@ -1864,8 +1935,18 @@ onBeforeUnmount(() => {
   font-weight: 590;
 }
 
+.metric em {
+  color: color-mix(in oklch, var(--muted) 84%, var(--accent));
+  font: 9px/1 var(--font-mono);
+  font-style: normal;
+}
+
 .metric-source {
   max-width: min(280px, 30vw);
+}
+
+.metric-time strong {
+  font-family: var(--font-mono);
 }
 
 .metric-source strong {
@@ -1954,6 +2035,10 @@ onBeforeUnmount(() => {
   color: color-mix(in oklch, var(--accent) 18%, white);
 }
 
+.btn.live {
+  border-color: color-mix(in oklch, var(--ok) 50%, var(--border));
+}
+
 .btn.compact {
   padding-inline: 10px;
 }
@@ -1978,6 +2063,10 @@ onBeforeUnmount(() => {
 .play-icon {
   fill: currentColor;
   stroke: none;
+}
+
+.live-follow-btn.primary .control-icon {
+  stroke: color-mix(in oklch, var(--ok) 24%, white);
 }
 
 .btn:disabled {
@@ -2885,10 +2974,55 @@ pre {
   gap: 2px;
 }
 
+.timeline-title-row {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .timeline-title {
   color: var(--muted);
   font: 10px/1 var(--font-mono);
   text-transform: uppercase;
+}
+
+.live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  flex: 0 0 auto;
+  padding: 2px 6px;
+  border: 1px solid color-mix(in oklch, var(--border) 58%, transparent);
+  border-radius: 999px;
+  color: color-mix(in oklch, var(--muted) 86%, white);
+  font: 9px/1 var(--font-mono);
+  text-transform: uppercase;
+}
+
+.live-pill.active,
+.live-pill.idle {
+  border-color: color-mix(in oklch, var(--ok) 54%, transparent);
+  color: color-mix(in oklch, var(--ok) 24%, white);
+}
+
+.live-dot {
+  width: 5px;
+  height: 5px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+.live-pill.active .live-dot,
+.live-pill.idle .live-dot {
+  background: var(--ok);
+  box-shadow: 0 0 10px color-mix(in oklch, var(--ok) 68%, transparent);
+}
+
+.live-pill.active .live-dot {
+  animation: livePulse 1.4s ease-in-out infinite;
 }
 
 .timeline-status strong {
@@ -2900,12 +3034,17 @@ pre {
   white-space: nowrap;
 }
 
-.timeline-status span {
+.timeline-detail,
+.timeline-zone {
   overflow: hidden;
   color: var(--muted);
   font: 10px/1.1 var(--font-mono);
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.timeline-zone {
+  display: none;
 }
 
 .timeline-center {
@@ -3043,6 +3182,19 @@ pre {
   align-items: center;
   justify-content: flex-end;
   gap: 7px;
+}
+
+@keyframes livePulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.8);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
 }
 
 .speed-control {
@@ -3355,6 +3507,10 @@ pre {
     max-width: 122px;
   }
 
+  .metric-time em {
+    display: none;
+  }
+
   .metric:nth-child(4) {
     display: none;
   }
@@ -3534,8 +3690,14 @@ pre {
     font-size: 15px;
   }
 
-  .timeline-status span {
+  .timeline-detail {
     display: none;
+  }
+
+  .timeline-zone {
+    display: block;
+    color: color-mix(in oklch, var(--muted) 82%, var(--accent));
+    font-size: 8px;
   }
 
   .timeline-actions {
