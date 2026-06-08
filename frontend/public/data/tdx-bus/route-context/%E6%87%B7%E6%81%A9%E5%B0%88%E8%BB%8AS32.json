@@ -1,0 +1,247 @@
+{
+  "schema": "twfoundry.tdx.citybus.route-context.v1",
+  "source": {
+    "provider": "TDX",
+    "city": "Taipei",
+    "datasets": [
+      "Bus.Shape.City",
+      "Bus.StopOfRoute.City"
+    ]
+  },
+  "routeName": "懷恩專車S32",
+  "generatedAt": "2026-06-08T03:20:50.695Z",
+  "shapes": [
+    {
+      "RouteUID": "TPE17018",
+      "RouteID": "17018",
+      "RouteName": {
+        "Zh_tw": "懷恩專車S32",
+        "En": "S32"
+      },
+      "SubRouteName": {},
+      "Direction": 0,
+      "Geometry": "LINESTRING (121.551857335415 25.0236727831919, 121.552472332828 25.0242073404359, 121.552585555286 25.0242020338408, 121.554079896516 25.0228488446051, 121.554521073679 25.0224358093634, 121.554564020128 25.0223066802874, 121.554417611778 25.0221439420804, 121.554251682314 25.0219192922445, 121.553884685382 25.0212842562327, 121.553763654479 25.0211109032129, 121.552662663684 25.0203821102887, 121.552039940166 25.019959337653, 121.551758836134 25.0196197033513, 121.551423072983 25.0190465683364, 121.551248359018 25.0187608842974, 121.550919428257 25.018406210618, 121.550800349466 25.0182531964698, 121.550254734346 25.0181382146145, 121.549900426138 25.0180515359139, 121.549687646002 25.0179347849144, 121.549402637747 25.0175447296335, 121.549166432275 25.017224547275, 121.548953652139 25.0169397434809, 121.549041497149 25.0167663843263, 121.550562191882 25.0157456831159, 121.552590435564 25.0143924006642, 121.552882276209 25.0140297538131, 121.553245856946 25.0136777199918)",
+      "EncodedPolyline": "}lvwCcr{dVkByB@WlGiHpAwAXG`@Zj@`@~BhA`@VpCzErAzBbAv@pBbAx@`@dA`A^VTlBPdAVh@lAx@~@l@v@j@`@QjEoHnGuKfAy@dAiA",
+      "UpdateTime": "2026-06-08T08:05:02+08:00",
+      "VersionID": 0
+    },
+    {
+      "RouteUID": "TPE17018",
+      "RouteID": "17018",
+      "RouteName": {
+        "Zh_tw": "懷恩專車S32",
+        "En": "S32"
+      },
+      "SubRouteName": {},
+      "Direction": 1,
+      "Geometry": "LINESTRING (121.553245856946 25.0136777199918, 121.553432283579 25.0135224886771, 121.55364408766 25.0135224886771, 121.55373876506 25.0135658296337, 121.553716315779 25.0136675481453, 121.553250737225 25.0142062125976, 121.552832985398 25.0146493485774, 121.551985769077 25.015121671394, 121.55074520232 25.0159672485277, 121.549775002985 25.0166279621725, 121.549275262482 25.0170003306788, 121.548250404028 25.0179546856607, 121.547032286553 25.0191398798522, 121.547003980938 25.0192309801262, 121.547363169425 25.0195688465716, 121.549166920302 25.0212201333329, 121.549897009943 25.021913543326, 121.551857335414 25.0236727831909)",
+      "EncodedPolyline": "ontwCyz{dV^c@?i@ISSBkB|AwArA}AfDiDvFcC`EiAbB}DlEmFrFQDcAgAiIiJiCqC_JgK",
+      "UpdateTime": "2026-06-08T08:05:02+08:00",
+      "VersionID": 0
+    }
+  ],
+  "stopOfRoutes": [
+    {
+      "RouteUID": "TPE17018",
+      "RouteID": "17018",
+      "RouteName": {
+        "Zh_tw": "懷恩專車S32",
+        "En": "S32"
+      },
+      "Operators": [
+        {
+          "OperatorID": "100",
+          "OperatorName": {
+            "Zh_tw": "臺北客運",
+            "En": "Taipei Bus Co., Ltd."
+          },
+          "OperatorCode": "TaipeiBus",
+          "OperatorNo": "1407"
+        }
+      ],
+      "SubRouteUID": "TPE158145",
+      "SubRouteID": "158145",
+      "SubRouteName": {
+        "Zh_tw": "懷恩專車S32",
+        "En": "S32"
+      },
+      "Direction": 0,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE163285",
+          "StopID": "163285",
+          "StopName": {
+            "Zh_tw": "捷運六張犁站(基隆路)",
+            "En": "MRT Liuzhangli (Keelung Rd.)"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.551906976436,
+            "PositionLat": 25.0236369355906,
+            "GeoHash": "wsqqmgrmk"
+          },
+          "StationID": "2307",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE213164",
+          "StopID": "213164",
+          "StopName": {
+            "Zh_tw": "捷運六張犁站(和平)",
+            "En": "MRT Liuzhangli Sta. (Heping)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 2,
+          "StopPosition": {
+            "PositionLon": 121.553534505165,
+            "PositionLat": 25.0232432826612,
+            "GeoHash": "wsqqq52df"
+          },
+          "StationID": "2146",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE163286",
+          "StopID": "163286",
+          "StopName": {
+            "Zh_tw": "黎明社教中心",
+            "En": "Liming Social Education Center"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.55150423663828,
+            "PositionLat": 25.01926507278785,
+            "GeoHash": "wsqqmfx5g"
+          },
+          "StationID": "4131",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE163287",
+          "StopID": "163287",
+          "StopName": {
+            "Zh_tw": "芳和國中",
+            "En": "Fangfe Junior High School"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 6,
+          "StopPosition": {
+            "PositionLon": 121.550257364418,
+            "PositionLat": 25.0181390276757,
+            "GeoHash": "wsqqmfqjn"
+          },
+          "StationID": "1165604766",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE163288",
+          "StopID": "163288",
+          "StopName": {
+            "Zh_tw": "青峰活動中心",
+            "En": "Qingfeng Activity Center"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.5513423711172,
+            "PositionLat": 25.015144865886427,
+            "GeoHash": "wsqqmcygz"
+          },
+          "StationID": "15109",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE185567",
+          "StopID": "185567",
+          "StopName": {
+            "Zh_tw": "臺北市懷愛館",
+            "En": "Taipei Huai Ai Funeral Parlor"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.55319791903287,
+            "PositionLat": 25.013699726936505,
+            "GeoHash": "wsqqq1876"
+          },
+          "StationID": "1165604471",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    },
+    {
+      "RouteUID": "TPE17018",
+      "RouteID": "17018",
+      "RouteName": {
+        "Zh_tw": "懷恩專車S32",
+        "En": "S32"
+      },
+      "Operators": [
+        {
+          "OperatorID": "100",
+          "OperatorName": {
+            "Zh_tw": "臺北客運",
+            "En": "Taipei Bus Co., Ltd."
+          },
+          "OperatorCode": "TaipeiBus",
+          "OperatorNo": "1407"
+        }
+      ],
+      "SubRouteUID": "TPE158145",
+      "SubRouteID": "158145",
+      "SubRouteName": {
+        "Zh_tw": "懷恩專車S32",
+        "En": "S32"
+      },
+      "Direction": 1,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE163290",
+          "StopID": "163290",
+          "StopName": {
+            "Zh_tw": "青峰活動中心",
+            "En": "Qingfeng Activity Center"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.55075149283692,
+            "PositionLat": 25.016039021546764,
+            "GeoHash": "wsqqmfn8c"
+          },
+          "StationID": "2275",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE163291",
+          "StopID": "163291",
+          "StopName": {
+            "Zh_tw": "捷運六張犁站(基隆路)",
+            "En": "MRT Liuzhangli (Keelung Rd.)"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.551906976436,
+            "PositionLat": 25.0236369355906,
+            "GeoHash": "wsqqmgrmk"
+          },
+          "StationID": "2307",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    }
+  ],
+  "shapeCount": 2,
+  "stopOfRouteCount": 2
+}

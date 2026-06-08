@@ -15,6 +15,8 @@ Cloudflare Pages
 Cloudflare R2
   bus/projections/manifest.json
   bus/projections/{captureDate}/{HH-mm}.json
+  data/tdx-bus/route-context/manifest.json
+  data/tdx-bus/route-quality/manifest.json
   optional after R2 is enabled
 
 Cloudflare Access
@@ -96,6 +98,33 @@ bun run upload:bus-projections
 ```
 
 Redeploy Pages after uploading artifacts so the Pages Function can read the R2 bucket binding.
+
+## Route Context Backfill
+
+Route context is separate from vehicle projections. Vehicle projections answer
+"where are buses now"; route context answers "where are the stops and route
+shapes for this route." The current POC keeps this as a manual maintenance
+backfill, not a cron job.
+
+Run from `frontend/`:
+
+```bash
+bun run check:tdx-token
+bun run fetch:tdx-bus-route-context
+bun run audit:tdx-bus-route-quality
+```
+
+Upload the generated route context and quality manifests to R2:
+
+```bash
+cd cloudflare/worker
+bun run upload:route-context -- --dry-run
+bun run upload:route-context
+```
+
+The frontend currently reads route context from deployed static assets under
+`/data/tdx-bus/`. After a route-context backfill, rebuild and redeploy Pages.
+Full handoff notes: `docs/deploy/route-context-backfill.md`.
 
 ## Historical Backfill
 

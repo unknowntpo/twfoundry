@@ -1,0 +1,910 @@
+{
+  "schema": "twfoundry.tdx.citybus.route-context.v1",
+  "source": {
+    "provider": "TDX",
+    "city": "Taipei",
+    "datasets": [
+      "Bus.Shape.City",
+      "Bus.StopOfRoute.City"
+    ]
+  },
+  "routeName": "棕3",
+  "generatedAt": "2026-06-08T03:16:44.131Z",
+  "shapes": [
+    {
+      "RouteUID": "TPE10741",
+      "RouteID": "10741",
+      "RouteName": {
+        "Zh_tw": "棕3",
+        "En": "BR3"
+      },
+      "SubRouteName": {},
+      "Direction": 0,
+      "Geometry": "LINESTRING (121.59136636076553 24.999297155131536, 121.590521987362 25.0000056570934, 121.589186790345 25.0011648293174, 121.58883893268 25.001463862758, 121.588799308149 25.0015273986217, 121.587440120046 25.0029653423423, 121.587027658202 25.0031356180717, 121.586433290231 25.0031756727591, 121.584776680014 25.0031100659367, 121.584046843864 25.0029856468302, 121.58396539663208 25.002885512794848, 121.58400629304003 25.0026122742488, 121.58410710744104 25.002317486240042, 121.58420792184201 25.002022697523966, 121.5842440628537 25.00172101243308, 121.58418699809842 25.001509832428688, 121.58404814052726 25.001279688908532, 121.58391023403534 25.001146084794559, 121.58359637788134 25.000890943631347, 121.58330915194647 25.000722860480952, 121.58309420803494 25.000515126628663, 121.58288021520265 25.00035911051696, 121.58274135763148 25.000315150140317, 121.58229244822333 25.000033286175196, 121.58012303644371 24.998745495797117, 121.57650322880086 24.996576736652226, 121.57538190635971 24.995913861057076, 121.57520976101466 24.995827661107093, 121.57454210337796 24.995416486513626, 121.57420351916336 24.995262187935939, 121.57407607454324 24.995153575413124, 121.57391534214922 24.994940660109723, 121.57379455508389 24.994180368445246, 121.57373273493234 24.993482137263427, 121.57362716513512 24.99210548959746, 121.57359102412346 24.991775333231224, 121.57373083277388 24.991595169200455, 121.574015205471 24.9916253402288, 121.57449740265305 24.99169861269538, 121.57505568617547 24.9918451574975, 121.57528489627583 24.991883948739407, 121.57568339848348 24.991852053719182, 121.57596111362579 24.991748610353387, 121.57630445323672 24.991566722224089, 121.57657360866575 24.991343456332494, 121.57672673242574 24.991080536519338, 121.57678569933952 24.990847787363009, 121.57679425905283 24.990681414547833, 121.5768047209246 24.989404732757414, 121.57692741014846 24.9888271613524, 121.57695213820907 24.988687509351568, 121.57691504611813 24.988648717100965, 121.5767295856635 24.988588373575688, 121.57654317412961 24.988461652076193, 121.5763672244675 24.988323723765014, 121.57598393952793 24.987986660803426, 121.57572191719329 24.98774399213999, 121.57565629272473 24.987711665017226, 121.57541947399035 24.987732354376774, 121.57469617821725 24.987869421295819, 121.57391867092667 24.988032349698912, 121.57353205720969 24.988137089272595, 121.57318966867804 24.988175881684647, 121.5729357305171 24.988126744627316, 121.57217391603419 24.987831921870885, 121.57182724764591 24.987702613421334, 121.57161610805137 24.987644424574658, 121.5711595900092 24.987665113945518, 121.57074587053346 24.987740112885707, 121.57054614389001 24.9878008878554, 121.57043201437946 24.987804767107765, 121.5696373876623 24.9876767517151, 121.56934350417261 24.987634079887926, 121.56869153934363 24.9876560623462, 121.56862734149395 24.987707785761927, 121.5686515940149 24.988290965768371, 121.56862448825613 24.988479755155552, 121.56856171702537 24.988841816182806, 121.56863090804113 24.988912288651637, 121.56884418756398 24.98905581961, 121.56932424481772 24.989441800680286, 121.57071163168033 24.990520860257504, 121.57096842307907 24.990688957361684, 121.5711453238204 24.991572109909512, 121.57137786269813 24.992739723523083, 121.57179443541163 24.994798213531777, 121.57187004621237 24.99538265290354, 121.5720726260936 24.9958313246062, 121.57232228439791 24.996140351137527, 121.57324102695783 24.996947178250881, 121.57429244507377 24.997866489226393, 121.57455993611411 24.998090820748256, 121.57462484727324 24.998158701963785, 121.57453925014032 24.998336485921985, 121.57429315838323 24.998849795252386, 121.57408273209812 24.999336596704307, 121.573909397904 24.999659836974779, 121.57368470543011 24.999985662306841, 121.57320821472358 25.0005442180088, 121.57280876143665 25.001043295724127, 121.57239718188923 25.001565644322287, 121.57218604229475 25.001681362337489, 121.57205336673874 25.001779625594441, 121.57199130881739 25.001859141198786, 121.57193923722818 25.001999424700472, 121.57194922356037 25.002996919819434, 121.5718700462124 25.003383503566084, 121.57178016922282 25.003814045236712, 121.57165320014235 25.004111415479578, 121.57148913897096 25.004385512631128, 121.57127371951979 25.004474723364574, 121.56976578336169 25.004897503785536, 121.5695146984385 25.004922068964046, 121.56893977102912 25.004934998003392, 121.56861164868629 25.004891039264059, 121.56850037241351 25.004887160551011, 121.56812659826645 25.0049492199451, 121.56786624032047 25.005094348301618, 121.56770075253019 25.004979279952856, 121.56775781728544 25.004840939211093, 121.56796895687995 25.004690962156172, 121.56809449934156 25.004617266467264, 121.56884204763564 25.004556499813333, 121.56914449083861 25.004533227469825, 121.5696167016885 25.004392300406607, 121.56990773194039 25.004284988864736, 121.57089637882551 25.004097516669056, 121.57106186661581 25.00396822533293, 121.57114318389205 25.003847984268223, 121.571180275983 25.003721278502788, 121.57118598245853 25.003559663816414, 121.57113319755989 25.003438129432205, 121.5710632932347 25.003363140071322, 121.57094631048638 25.003253888248128, 121.57081648816811 25.003201524913813, 121.57069308563484 25.003181484619461, 121.57059036907535 25.003186656308642, 121.5698642200645 25.003405159977461, 121.56964523406614 25.003463987821892, 121.56927359984743 25.003515704584938, 121.56815655726292 25.003547381091558, 121.56701954201411 25.003498250179849, 121.56662294196498 25.003471745337748, 121.56595385770936 25.003474977635864, 121.56537893029997 25.003460755523488, 121.56463708848143 25.00337477635447, 121.56406929416644 25.003300433415465, 121.56373689196698 25.003300433415465, 121.56329321349472 25.003359261310045, 121.56314648037598 25.003392222821752, 121.56308399999995 25.003405000000118, 121.56301554724887 25.003432082398152)",
+      "EncodedPolyline": "stqwCaiceVmChDeFhG{@dAMF_HnGa@pAGvBLhIVpCRNv@Gx@Sz@Sz@Eh@Hl@ZXZr@|@`@x@f@j@^h@FZx@xA~FpLpLrUdC~EN`@pAdC^bATVh@^vCXjCJpGR`AFb@[Ey@M_B]oBEk@DoARw@b@cAl@u@r@_@l@K`@?~FApBYZCFDJd@Xd@Z`@`AlAp@r@DJCn@[nC_@zCUlAGbAHp@z@xCXbAJh@EzAMpAKf@?VV|CHz@E`CIJsBCe@DgAJMM]i@kA_BwEuGa@s@oDc@iFm@{KqAsBOyAg@}@q@aDwDwDqEk@u@MKc@NeBp@aBh@_A`@aAl@mB|AcBnAiBpAUh@SZOJ[HgEAkANuAP{@Xw@^Oj@uAjHCr@ApBF`A?TKhA[r@T`@ZK\\i@LWJuCD{@Z_BTy@b@eEX_@VOXG^AVJNLTTHXBXARk@pCIh@KjAE|EHbFDnA?dC@pBPrCLpB?`AKxAEZCLCJ",
+      "UpdateTime": "2026-06-08T08:05:02+08:00",
+      "VersionID": 0
+    },
+    {
+      "RouteUID": "TPE10741",
+      "RouteID": "10741",
+      "RouteName": {
+        "Zh_tw": "棕3",
+        "En": "BR3"
+      },
+      "SubRouteName": {},
+      "Direction": 1,
+      "Geometry": "LINESTRING (121.56314648037598 25.003392222821752, 121.56308399999995 25.003405000000118, 121.56301554724887 25.003432082398152, 121.56270125817996 25.003544107985839, 121.56249002119687 25.003576832802036, 121.56235160380052 25.003548471295172, 121.56193936068536 25.003393573719052, 121.56176964892116 25.003287763290704, 121.56152892301448 25.00287651983264, 121.56147716694454 25.002706349723187, 121.56148559235127 25.002523089341711, 121.56152892301448 25.002375826337083, 121.56161438071135 25.002223108960649, 121.56168539485382 25.002108570803749, 121.56191528809468 25.001922037005379, 121.56214638496509 25.001827133736111, 121.56253395367483 25.001807498567803, 121.56284689735351 25.001852223113275, 121.56336445805286 25.002087844840133, 121.56362444203207 25.002141296002328, 121.56391572037913 25.002131478443669, 121.56420940598528 25.002013667678565, 121.56452836781162 25.00171150436644, 121.56467400698516 25.00159587488794, 121.56502426317935 25.001459519231013, 121.56555867469217 25.001365706451175, 121.5657440336403 25.001494426293597, 121.56663592312454 25.001980942445989, 121.56699881742884 25.0021331147035, 121.56737555347279 25.002288013868828, 121.56786783795195 25.002398188508412, 121.56836012243107 25.002424368606256, 121.5687537092885 25.002421096094334, 121.56983456860947 25.002300013091798, 121.57043879063521 25.002241107804167, 121.57170621253383 25.002339283267855, 121.5718386117825 25.00227383296745, 121.57186870252085 25.0021942017216, 121.57186388800271 25.002007668053245, 121.57192647673843 25.001859313588504, 121.57201795258298 25.001741502562421, 121.57220210790159 25.001625873112154, 121.57238746684972 25.00149279002526, 121.57358507823541 25.0000201396866, 121.57381136058767 24.99970597199664, 121.57401357034929 24.999347078062303, 121.57407495545549 24.999208538178049, 121.57423985270155 24.998847461052719, 121.57452992741909 24.998221300622127, 121.57449983668079 24.998165666004439, 121.5737908988856 24.997535138576911, 121.57306751753607 24.996914425890406, 121.57235617248186 24.996288255609919, 121.57212507561145 24.996049350080149, 121.57199147273325 24.995870443351912, 121.57187712792756 24.995643536882916, 121.57181453919185 24.995444993378886, 121.57175676497423 24.9951831772788, 121.57170741616336 24.994818815611293, 121.57142456322303 24.993346085289684, 121.57128975671527 24.992707896669916, 121.5711778191687 24.992140615114959, 121.57109958324901 24.991750062061172, 121.57091141583196 24.99074312765379, 121.57050699630877 24.990423845176739, 121.569866665397 24.989939465165747, 121.56925361675468 24.989457992452525, 121.56872803185844 24.989043429844173, 121.56863093907609 24.988959789850195, 121.56853063661497 24.988928515750878, 121.56849693498805 24.988844148373492, 121.56858600357351 24.988425219848935, 121.56860285438697 24.988241210861734, 121.56858680599319 24.98788337441426, 121.56857878179632 24.987679727190486, 121.56857040503948 24.987147976671167, 121.56834776509417 24.986883775848234, 121.56842246665478 24.986792168395162, 121.56920756540923 24.986757649627023, 121.56967921055649 24.986711182039219, 121.57033687723695 24.986599659756848, 121.5706298245334 24.986550536814658, 121.57072649714122 24.98669525029079, 121.57074611737605 24.987707365047779, 121.57116177077491 24.98764263426698, 121.57154773464526 24.987596086268713, 121.57183419847421 24.987670272132618, 121.57293672312676 24.988089930539484, 121.57319109016815 24.988142296825945, 121.57353613063439 24.988100112874708, 121.57391326788817 24.987999016794731, 121.57469803434392 24.987831008017508, 121.57541218786706 24.987697182680026, 121.5756336557012 24.987660817074023, 121.57577167188768 24.9877248205334, 121.57596505503273 24.987905193739653, 121.576444099587 24.98834376135893, 121.57664390208953 24.988489950217676, 121.57678432553509 24.988556862473139, 121.57701301514642 24.988625229305239, 121.57704751919306 24.98871977911676, 121.57691030542627 24.989420900065564, 121.57688864009465 24.990674034705155, 121.57688141831744 24.990844948770473, 121.57681481748328 24.991082773478723, 121.57665192628643 24.991388235731712, 121.5763494140637 24.991658060090437, 121.5758647525716 24.991897337799823, 121.57566976458719 24.991940975021834, 121.57529182491372 24.991964975487335, 121.57516744986195 24.991964248200571, 121.57463785286727 24.991837700238023, 121.57443002616783 24.991782426374421, 121.57412751394511 24.99173297079118, 121.57390765095036 24.991702424685712, 121.57378006621981 24.991714061298218, 121.57376161056696 24.992097341606815, 121.57387394932343 24.993478449921831, 121.57392851386227 24.994180998275461, 121.57400233647364 24.994921360620957, 121.57421257043214 24.995120632239026, 121.57518670793446 24.995709717979651, 121.57544107497586 24.995880625042624, 121.57579975657681 24.996106803811614, 121.57992740345655 24.998557653166444, 121.58243576740408 25.000025230360148, 121.58261871909315 25.00004704753011, 121.58284018692729 25.000036866184608, 121.58315313060596 25.00011395349383, 121.58344521137272 25.000262310066031, 121.58351261462661 25.000662290127984, 121.5836570501706 25.000865915841175, 121.58400209063684 25.001097176063304, 121.58425405041913 25.00139097773031, 121.58434392142432 25.001726957983465, 121.58429577624297 25.0021283877306, 121.58414010682333 25.002612719701329, 121.58414652618085 25.002884701081964, 121.58440490532067 25.002964695491087, 121.58518806693704 25.003076687576357, 121.58553952676078 25.003091231995523, 121.58678006759985 25.003082505344228, 121.58700474511272 25.003070869808209, 121.58740274527844 25.002881792193374, 121.58846033442842 25.0017211401514, 121.58921621377536 25.00097790983958, 121.59060102577931 24.999797490841154, 121.59074000499537 24.999684767520808)",
+      "EncodedPolyline": "enrwCux}dVCLCJU~@Gh@DZ^pAR`@pAn@`@Hd@AZG^OTOd@m@Pm@BkAG_Ao@eBIs@@{@Vy@z@_AT[ZeAPkBWc@aBsD]gA_@kAUaBCaB?mAVwEJyBS}FLYNEb@@\\MVQTc@Ze@dHoF|@k@fAg@ZKfAa@|By@HD|BlC|BnCzBlCn@l@b@Zl@Tf@Lr@HfAHdHx@~BXpBTlANhEd@~@nA~A~B~AzBrAfBNRDRPDpAQd@AfA@f@@hB@t@j@PMD}CH}ATcCHy@]SiECLqAFmAMw@sA}EIq@FeARiA`@}CXmCFk@K[e@g@uA}A]g@M[Mm@QGkCZyFBa@@o@L}@^u@z@o@`BGd@CjA?VVhBJh@Hz@Dj@AXmABsGUkCKsCMg@i@uBcEa@q@m@gAiNyXeHuNCc@@k@M}@]{@oAKi@]m@cAy@q@cAQoAF_B^u@AOq@W}CAeA@wF@k@d@oAfFsErCwCjFsGV[",
+      "UpdateTime": "2026-06-08T08:05:02+08:00",
+      "VersionID": 0
+    }
+  ],
+  "stopOfRoutes": [
+    {
+      "RouteUID": "TPE10741",
+      "RouteID": "10741",
+      "RouteName": {
+        "Zh_tw": "棕3",
+        "En": "BR3"
+      },
+      "Operators": [
+        {
+          "OperatorID": "700",
+          "OperatorName": {
+            "Zh_tw": "欣欣客運",
+            "En": "Shin-Shin Bus Co., Ltd."
+          },
+          "OperatorCode": "ShinshinBus",
+          "OperatorNo": "0813"
+        }
+      ],
+      "SubRouteUID": "TPE10741",
+      "SubRouteID": "10741",
+      "SubRouteName": {
+        "Zh_tw": "棕3",
+        "En": "BR3"
+      },
+      "Direction": 0,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE216083",
+          "StopID": "216083",
+          "StopName": {
+            "Zh_tw": "富德",
+            "En": "Fude"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.5913505957924,
+            "PositionLat": 24.999402832437188,
+            "GeoHash": "wsqqnzh05"
+          },
+          "StationID": "4144",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE216084",
+          "StopID": "216084",
+          "StopName": {
+            "Zh_tw": "象頭埔",
+            "En": "Xiangtoupu"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 2,
+          "StopPosition": {
+            "PositionLon": 121.58954681023364,
+            "PositionLat": 25.000950102464405,
+            "GeoHash": "wsqqnz6c1"
+          },
+          "StationID": "56114",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE216085",
+          "StopID": "216085",
+          "StopName": {
+            "Zh_tw": "萬福橋",
+            "En": "Wanfu Bridge"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.585066207329,
+            "PositionLat": 25.0031479361546,
+            "GeoHash": "wsqqnxxtc"
+          },
+          "StationID": "56112",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14671",
+          "StopID": "14671",
+          "StopName": {
+            "Zh_tw": "捷運動物園站",
+            "En": "MRT Taipei Zoo Sta."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.58021,
+            "PositionLat": 24.99881,
+            "GeoHash": "wsqqnwuh8"
+          },
+          "StationID": "2442",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14673",
+          "StopID": "14673",
+          "StopName": {
+            "Zh_tw": "貓纜動物園站",
+            "En": "Maokong Gondola Taipei Zoo Station"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.576778,
+            "PositionLat": 24.9968,
+            "GeoHash": "wsqqnw98b"
+          },
+          "StationID": "1000436",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14675",
+          "StopID": "14675",
+          "StopName": {
+            "Zh_tw": "萬壽橋頭(新光)",
+            "En": "Wanshou Bridge (Xinguang)"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 6,
+          "StopPosition": {
+            "PositionLon": 121.57363,
+            "PositionLat": 24.993482,
+            "GeoHash": "wsqqnmzjw"
+          },
+          "StationID": "2512",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14677",
+          "StopID": "14677",
+          "StopName": {
+            "Zh_tw": "萬壽橋頭(秀明)",
+            "En": "Wanshou Bridge (Xiuming)"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.574153,
+            "PositionLat": 24.99161,
+            "GeoHash": "wsqqnmxde"
+          },
+          "StationID": "2510",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14679",
+          "StopID": "14679",
+          "StopName": {
+            "Zh_tw": "萬興國小",
+            "En": "Wanxing Elementary School"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.576757,
+            "PositionLat": 24.989679,
+            "GeoHash": "wsqqnt1rr"
+          },
+          "StationID": "2519",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14687",
+          "StopID": "14687",
+          "StopName": {
+            "Zh_tw": "新光路口",
+            "En": "Xinguang Rd. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.573881732316,
+            "PositionLat": 24.9880845060964,
+            "GeoHash": "wsqqnkzqh"
+          },
+          "StationID": "1000854",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14689",
+          "StopID": "14689",
+          "StopName": {
+            "Zh_tw": "指南路",
+            "En": "Zhinan Rd."
+          },
+          "StopBoarding": -1,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.56997997801,
+            "PositionLat": 24.987746922127,
+            "GeoHash": "wsqqnkus1"
+          },
+          "StationID": "1000855",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14691",
+          "StopID": "14691",
+          "StopName": {
+            "Zh_tw": "木柵市場",
+            "En": "Muzha Market"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 11,
+          "StopPosition": {
+            "PositionLon": 121.5686729036256,
+            "PositionLat": 24.98794462737213,
+            "GeoHash": "wsqqnkgt7"
+          },
+          "StationID": "2384",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14693",
+          "StopID": "14693",
+          "StopName": {
+            "Zh_tw": "文山行政中心",
+            "En": "Wenshan Dist. Admin. Center"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 12,
+          "StopPosition": {
+            "PositionLon": 121.56980715638664,
+            "PositionLat": 24.98976355883173,
+            "GeoHash": "wsqqnmhrv"
+          },
+          "StationID": "2380",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14695",
+          "StopID": "14695",
+          "StopName": {
+            "Zh_tw": "萬壽橋頭(木柵)",
+            "En": "Wanshou Bridge (Muzha)"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 13,
+          "StopPosition": {
+            "PositionLon": 121.57111522305,
+            "PositionLat": 24.9913142071305,
+            "GeoHash": "wsqqnmt2u"
+          },
+          "StationID": "1000541",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14697",
+          "StopID": "14697",
+          "StopName": {
+            "Zh_tw": "萬芳路口",
+            "En": "Wanfang Rd. Entrance"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 14,
+          "StopPosition": {
+            "PositionLon": 121.5716055,
+            "PositionLat": 24.99360167,
+            "GeoHash": "wsqqnmvwr"
+          },
+          "StationID": "2499",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14699",
+          "StopID": "14699",
+          "StopName": {
+            "Zh_tw": "木柵高工",
+            "En": "Muzha Vocational High School"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 15,
+          "StopPosition": {
+            "PositionLon": 121.57232800362569,
+            "PositionLat": 24.996044970003638,
+            "GeoHash": "wsqqnqqk8"
+          },
+          "StationID": "1001413",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14701",
+          "StopID": "14701",
+          "StopName": {
+            "Zh_tw": "捷運木柵站",
+            "En": "MRT Muzha"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 16,
+          "StopPosition": {
+            "PositionLon": 121.574371590302,
+            "PositionLat": 24.9978733892446,
+            "GeoHash": "wsqqnqxz0"
+          },
+          "StationID": "2440",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14703",
+          "StopID": "14703",
+          "StopName": {
+            "Zh_tw": "軍功新村",
+            "En": "Jungong New Village"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 17,
+          "StopPosition": {
+            "PositionLon": 121.57367,
+            "PositionLat": 24.99981,
+            "GeoHash": "wsqqnrp4r"
+          },
+          "StationID": "36113",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14705",
+          "StopID": "14705",
+          "StopName": {
+            "Zh_tw": "萬芳社區(和平)",
+            "En": "Wanfang Community (Heping)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 18,
+          "StopPosition": {
+            "PositionLon": 121.571969627588,
+            "PositionLat": 25.0028541470424,
+            "GeoHash": "wsqqnrwh0"
+          },
+          "StationID": "1000680",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14707",
+          "StopID": "14707",
+          "StopName": {
+            "Zh_tw": "和平東路4段",
+            "En": "Heping Rd."
+          },
+          "StopBoarding": -1,
+          "StopSequence": 19,
+          "StopPosition": {
+            "PositionLon": 121.570509533684,
+            "PositionLat": 25.0046814962866,
+            "GeoHash": "wsqqnruyy"
+          },
+          "StationID": "1000088",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14709",
+          "StopID": "14709",
+          "StopName": {
+            "Zh_tw": "名門社區",
+            "En": "Mingmen Community"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 20,
+          "StopPosition": {
+            "PositionLon": 121.567900817651,
+            "PositionLat": 25.0046374220822,
+            "GeoHash": "wsqqnrgn9"
+          },
+          "StationID": "1001411",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14711",
+          "StopID": "14711",
+          "StopName": {
+            "Zh_tw": "萬寧山莊",
+            "En": "WanNing Shanzhuang"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 21,
+          "StopPosition": {
+            "PositionLon": 121.570371684081,
+            "PositionLat": 25.0041631244417,
+            "GeoHash": "wsqqnrugf"
+          },
+          "StationID": "2514",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14713",
+          "StopID": "14713",
+          "StopName": {
+            "Zh_tw": "萬寧街",
+            "En": "Wanning St."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 22,
+          "StopPosition": {
+            "PositionLon": 121.570571682464,
+            "PositionLat": 25.0032053525918,
+            "GeoHash": "wsqqnrsyp"
+          },
+          "StationID": "1000089",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14715",
+          "StopID": "14715",
+          "StopName": {
+            "Zh_tw": "萬芳國宅",
+            "En": "Wanfang Public Housing"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 23,
+          "StopPosition": {
+            "PositionLon": 121.565052,
+            "PositionLat": 25.003405,
+            "GeoHash": "wsqqnr8zr"
+          },
+          "StationID": "50048",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14717",
+          "StopID": "14717",
+          "StopName": {
+            "Zh_tw": "萬美社區",
+            "En": "Wanmei Community"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 24,
+          "StopPosition": {
+            "PositionLon": 121.563084,
+            "PositionLat": 25.003405,
+            "GeoHash": "wsqqnpxx3"
+          },
+          "StationID": "1165604842",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    },
+    {
+      "RouteUID": "TPE10741",
+      "RouteID": "10741",
+      "RouteName": {
+        "Zh_tw": "棕3",
+        "En": "BR3"
+      },
+      "Operators": [
+        {
+          "OperatorID": "700",
+          "OperatorName": {
+            "Zh_tw": "欣欣客運",
+            "En": "Shin-Shin Bus Co., Ltd."
+          },
+          "OperatorCode": "ShinshinBus",
+          "OperatorNo": "0813"
+        }
+      ],
+      "SubRouteUID": "TPE10741",
+      "SubRouteID": "10741",
+      "SubRouteName": {
+        "Zh_tw": "棕3",
+        "En": "BR3"
+      },
+      "Direction": 1,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE14719",
+          "StopID": "14719",
+          "StopName": {
+            "Zh_tw": "公務人員訓練處",
+            "En": "Dept. of Civil Servant Development"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.562127594784,
+            "PositionLat": 25.0018116822751,
+            "GeoHash": "wsqqnpqy4"
+          },
+          "StationID": "2373",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14721",
+          "StopID": "14721",
+          "StopName": {
+            "Zh_tw": "萬芳派出所",
+            "En": "Wanfang Police Substation"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 2,
+          "StopPosition": {
+            "PositionLon": 121.566256708836,
+            "PositionLat": 25.0017624091424,
+            "GeoHash": "wsqqnr3vg"
+          },
+          "StationID": "2492",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14723",
+          "StopID": "14723",
+          "StopName": {
+            "Zh_tw": "萬芳活動中心",
+            "En": "Wanfang Activity Center"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.568378960175,
+            "PositionLat": 25.002391659383,
+            "GeoHash": "wsqqnre3k"
+          },
+          "StationID": "2493",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14725",
+          "StopID": "14725",
+          "StopName": {
+            "Zh_tw": "萬芳社區",
+            "En": "Wanfang Community"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.569815966856,
+            "PositionLat": 25.0022533526966,
+            "GeoHash": "wsqqnrs2w"
+          },
+          "StationID": "2490",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14727",
+          "StopID": "14727",
+          "StopName": {
+            "Zh_tw": "軍功新村",
+            "En": "Jungong New Village"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.57374090486223,
+            "PositionLat": 24.999691818730497,
+            "GeoHash": "wsqqnrp3c"
+          },
+          "StationID": "2427",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14729",
+          "StopID": "14729",
+          "StopName": {
+            "Zh_tw": "捷運木柵站",
+            "En": "MRT Muzha"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 6,
+          "StopPosition": {
+            "PositionLon": 121.57396,
+            "PositionLat": 24.997735,
+            "GeoHash": "wsqqnqxqq"
+          },
+          "StationID": "56109",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14731",
+          "StopID": "14731",
+          "StopName": {
+            "Zh_tw": "木柵高工",
+            "En": "Muzha Vocational High School"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.572590803415,
+            "PositionLat": 24.9965014109618,
+            "GeoHash": "wsqqnqqrn"
+          },
+          "StationID": "1000543",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14733",
+          "StopID": "14733",
+          "StopName": {
+            "Zh_tw": "萬芳路口",
+            "En": "Wanfang Rd. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.571444566484,
+            "PositionLat": 24.9935653207503,
+            "GeoHash": "wsqqnmvw5"
+          },
+          "StationID": "2497",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14735",
+          "StopID": "14735",
+          "StopName": {
+            "Zh_tw": "萬壽橋頭(木柵)",
+            "En": "Wanshou Bridge (Muzha)"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.570973024858,
+            "PositionLat": 24.9913094198003,
+            "GeoHash": "wsqqnmt2b"
+          },
+          "StationID": "1000521",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14737",
+          "StopID": "14737",
+          "StopName": {
+            "Zh_tw": "文山行政中心",
+            "En": "Wenshan Dist. Admin. Center"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.56999253194654,
+            "PositionLat": 24.990114359213134,
+            "GeoHash": "wsqqnmk9f"
+          },
+          "StationID": "2381",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14739",
+          "StopID": "14739",
+          "StopName": {
+            "Zh_tw": "木柵市場",
+            "En": "Muzha Market"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 11,
+          "StopPosition": {
+            "PositionLon": 121.5685523,
+            "PositionLat": 24.98849886,
+            "GeoHash": "wsqqnm588"
+          },
+          "StationID": "50682",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14741",
+          "StopID": "14741",
+          "StopName": {
+            "Zh_tw": "永安街",
+            "En": "Yongan St."
+          },
+          "StopBoarding": -1,
+          "StopSequence": 12,
+          "StopPosition": {
+            "PositionLon": 121.56893,
+            "PositionLat": 24.98672,
+            "GeoHash": "wsqqnkey1"
+          },
+          "StationID": "142",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14743",
+          "StopID": "14743",
+          "StopName": {
+            "Zh_tw": "指南路口",
+            "En": "Zhinan Rd. Entrance"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 13,
+          "StopPosition": {
+            "PositionLon": 121.570722800802,
+            "PositionLat": 24.9871941238226,
+            "GeoHash": "wsqqnkv0g"
+          },
+          "StationID": "2426",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14745",
+          "StopID": "14745",
+          "StopName": {
+            "Zh_tw": "政大",
+            "En": "National Chengchi U."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 14,
+          "StopPosition": {
+            "PositionLon": 121.574633255625,
+            "PositionLat": 24.9878362086283,
+            "GeoHash": "wsqqnkzuw"
+          },
+          "StationID": "2415",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14681",
+          "StopID": "14681",
+          "StopName": {
+            "Zh_tw": "萬興圖書館",
+            "En": "Wanxing Library"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 15,
+          "StopPosition": {
+            "PositionLon": 121.57699279565435,
+            "PositionLat": 24.989020423587586,
+            "GeoHash": "wsqqnt1et"
+          },
+          "StationID": "2520",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14747",
+          "StopID": "14747",
+          "StopName": {
+            "Zh_tw": "大誠高中",
+            "En": "Tacheng High School"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 16,
+          "StopPosition": {
+            "PositionLon": 121.576905,
+            "PositionLat": 24.990413,
+            "GeoHash": "wsqqnt3ee"
+          },
+          "StationID": "2368",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14749",
+          "StopID": "14749",
+          "StopName": {
+            "Zh_tw": "萬壽橋頭(秀明)",
+            "En": "Wanshou Bridge (Xiuming)"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 17,
+          "StopPosition": {
+            "PositionLon": 121.574627,
+            "PositionLat": 24.991863,
+            "GeoHash": "wsqqnmxun"
+          },
+          "StationID": "50671",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14751",
+          "StopID": "14751",
+          "StopName": {
+            "Zh_tw": "萬壽橋頭(新光)",
+            "En": "Wanshou Bridge (Xinguang)"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 18,
+          "StopPosition": {
+            "PositionLon": 121.573853,
+            "PositionLat": 24.992819,
+            "GeoHash": "wsqqnmz3s"
+          },
+          "StationID": "50669",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14753",
+          "StopID": "14753",
+          "StopName": {
+            "Zh_tw": "貓纜動物園站",
+            "En": "Maokong Gondola Taipei Zoo Station"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 19,
+          "StopPosition": {
+            "PositionLon": 121.576314002724,
+            "PositionLat": 24.9963006246947,
+            "GeoHash": "wsqqnw3nj"
+          },
+          "StationID": "2443",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE14755",
+          "StopID": "14755",
+          "StopName": {
+            "Zh_tw": "捷運動物園站",
+            "En": "MRT Taipei Zoo Sta."
+          },
+          "StopBoarding": -1,
+          "StopSequence": 20,
+          "StopPosition": {
+            "PositionLon": 121.57996,
+            "PositionLat": 24.99857,
+            "GeoHash": "wsqqnwgg4"
+          },
+          "StationID": "50672",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE216086",
+          "StopID": "216086",
+          "StopName": {
+            "Zh_tw": "萬福橋",
+            "En": "Wanfu Bridge"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 21,
+          "StopPosition": {
+            "PositionLon": 121.584612472655,
+            "PositionLat": 25.0029972947861,
+            "GeoHash": "wsqqnxxjn"
+          },
+          "StationID": "2518",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE216087",
+          "StopID": "216087",
+          "StopName": {
+            "Zh_tw": "象頭埔",
+            "En": "Xiangtoupu"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 22,
+          "StopPosition": {
+            "PositionLon": 121.58947304948941,
+            "PositionLat": 25.00068878171876,
+            "GeoHash": "wsqqnz4z8"
+          },
+          "StationID": "2480",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE216088",
+          "StopID": "216088",
+          "StopName": {
+            "Zh_tw": "富德",
+            "En": "Fude"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 23,
+          "StopPosition": {
+            "PositionLon": 121.590552451575,
+            "PositionLat": 24.9998141769425,
+            "GeoHash": "wsqqnz5d3"
+          },
+          "StationID": "4143",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    }
+  ],
+  "shapeCount": 2,
+  "stopOfRouteCount": 2
+}

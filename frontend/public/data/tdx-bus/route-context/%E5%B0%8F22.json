@@ -1,0 +1,553 @@
+{
+  "schema": "twfoundry.tdx.citybus.route-context.v1",
+  "source": {
+    "provider": "TDX",
+    "city": "Taipei",
+    "datasets": [
+      "Bus.Shape.City",
+      "Bus.StopOfRoute.City"
+    ]
+  },
+  "routeName": "小22",
+  "generatedAt": "2026-06-08T03:18:02.899Z",
+  "shapes": [
+    {
+      "RouteUID": "TPE11137",
+      "RouteID": "11137",
+      "RouteName": {
+        "Zh_tw": "小22",
+        "En": "S22"
+      },
+      "SubRouteName": {},
+      "Direction": 0,
+      "Geometry": "LINESTRING (121.499402999999 25.1305779999997, 121.497961037476 25.1322658235284, 121.497526087538 25.1327695423835, 121.497011966937 25.1335677013395, 121.496927909196 25.1339128017119, 121.496824303143 25.1341322496465, 121.496630774856 25.134417177425, 121.496441156232 25.1346578612416, 121.496781296857 25.135192319197, 121.497201585562 25.1359798440408, 121.497309101277 25.1359904623186, 121.498706805573 25.1353321273491, 121.49944573176 25.134825985685, 121.500438786001 25.1341623352198, 121.501452365969 25.133454437415, 121.501690855374 25.1334119634162, 121.501988967129 25.1334774441582, 121.502275349897 25.133888910179, 121.502337904495 25.1340083677964, 121.50242782673 25.1343932859908, 121.502561732666 25.1349436726577, 121.502649700069 25.1351038329421, 121.502861799252 25.1353984919222, 121.503381784347 25.1358064120394, 121.504220406925 25.1363293618668, 121.504412957796 25.1364859809224, 121.504393409484 25.1367788668659, 121.504185219963 25.1370186611788, 121.504075749417 25.1371478490636, 121.504057178521 25.1372372186848, 121.504086500989 25.1373964911148, 121.504328900055 25.1376884900302, 121.504864523799 25.1382592131669, 121.505074668152 25.1384512232969, 121.505588788753 25.1385538645329, 121.506056970821 25.1387299471419, 121.506387337291 25.1389175323555, 121.506877999918 25.1391918309698, 121.507280695142 25.1393254407168, 121.507728351483 25.1394802862672, 121.50820337546 25.1396059322266, 121.508463368007 25.1396705248174, 121.508785915153 25.1397289235687, 121.510303841566 25.1400226865607, 121.511106299767 25.1401828401833, 121.511452304886 25.1403279515715, 121.511968380319 25.1405712782074, 121.512477613842 25.1408340704294, 121.51302789882 25.1410968620858, 121.513164737003 25.1412083492842, 121.513289846198 25.1413331086475, 121.513594799863 25.1414242448394, 121.513990653178 25.1415375013715, 121.514192978205 25.1416357159352, 121.514253822326 25.1416755326278)",
+      "EncodedPolyline": "cikxCgjqdVqI~GcBtA_DfBcANk@Ty@d@o@d@iBcA}CsAAUbCwGbBsCdCeElCiEFo@M{@qAy@WKkAQmBY_@Q{@i@qAgBgBgD_@e@y@Bo@f@YTQB_@Ey@o@qBiBe@i@SgBc@}Ae@aAu@aB[oA]yAY}AKs@KaAy@mH_@aD]cAo@gBs@eBu@mBUYWYQ{@WoASg@GK",
+      "UpdateTime": "2026-06-08T08:05:02+08:00",
+      "VersionID": 0
+    },
+    {
+      "RouteUID": "TPE11137",
+      "RouteID": "11137",
+      "RouteName": {
+        "Zh_tw": "小22",
+        "En": "S22"
+      },
+      "SubRouteName": {},
+      "Direction": 1,
+      "Geometry": "LINESTRING (121.514192978205 25.1416357159352, 121.514253822326 25.1416755326278, 121.514503552009 25.1418412141701, 121.514606180646 25.1418783763543, 121.514731152578 25.1418962612918, 121.515178284792 25.1418968835365, 121.515178972159 25.1419647081899, 121.515067275026 25.1420253769993, 121.514947298688 25.1420863074144, 121.514697080296 25.1421464746339, 121.514333481696 25.1421057732828, 121.514147772734 25.1419774754569, 121.514005070058 25.1418686434024, 121.513868231875 25.1418226330737, 121.513416665871 25.1416943349503, 121.512780368321 25.141497905838, 121.512378650513 25.1414952513884, 121.512239857499 25.1414917121221, 121.512045351796 25.1414527801865, 121.511753104535 25.141329790581, 121.511499953896 25.1412289213157, 121.511396347844 25.1411961830274, 121.511067936205 25.1412041463957, 121.510862678931 25.1412351150449, 121.510626144358 25.1411705232819, 121.510425774161 25.1410838109983, 121.510221494303 25.141043109293, 121.509856918287 25.1410705387046, 121.509565648441 25.1410776172614, 121.509118969515 25.1411271671478, 121.508828677085 25.1411103555815, 121.508530565329 25.1410961984712, 121.508064338092 25.1411731777386, 121.507866900143 25.141379340365, 121.507678258934 25.1415262199638, 121.507589314115 25.1415350681268, 121.507513075699 25.1415173718002, 121.507358644035 25.1414430472007, 121.507268721801 25.1414209267754, 121.506856252421 25.1414262356778, 121.506758510862 25.1413315602165, 121.506383183275 25.1408626059144, 121.50629326104 25.1407635059068, 121.506262961157 25.1406644058188, 121.506277622391 25.1405653056503, 121.506349951145 25.140414885598, 121.50649949573 25.139968933295, 121.506464308769 25.1398432877091, 121.506018607259 25.1394327265834, 121.505783050102 25.1392699174788, 121.505713653595 25.1391902825116, 121.505569973503 25.1390841024746, 121.505418474086 25.1389770375105, 121.505299229384 25.138856699918, 121.504988411226 25.1385001106205, 121.504701051042 25.1381709503446, 121.50448406478 25.1379170008156, 121.50397874092 25.1374064456348, 121.503774461061 25.1371197551345, 121.504012950465 25.1369693308374, 121.50420256909 25.1367667001677, 121.504284672 25.1366631725779, 121.504255349532 25.1365154022763, 121.504180088531 25.1363747106253, 121.503553565137 25.1359756409723, 121.50296320612 25.1355818791717, 121.502773587495 25.1354155254901, 121.502669981442 25.1352987238336, 121.502498933714 25.1350394591514, 121.502375779349 25.1345589774148, 121.502258489478 25.1339749639189, 121.502186160725 25.1338687793469, 121.501887071554 25.1335281032216, 121.501737526968 25.1334617376321, 121.501485353746 25.1334803200008, 121.501480466668 25.1330856652768, 121.50137783803 25.1323972286474, 121.50130257703 25.131840636299, 121.501125664808 25.1306575373012, 121.500979181416 25.1296209960847, 121.501170148987 25.1285602247439, 121.501464557326 25.1263936291914, 121.500806117054 25.1262261351671, 121.500267031515 25.1289114149175, 121.500113859609 25.1295417537222, 121.499978590912 25.1297974902526, 121.499700592875 25.1302779167201, 121.499403 25.1305779999985)",
+      "EncodedPolyline": "gnmxCuftdVGK_@q@GUCW?yAK?MTKVKp@FhAXb@TZHZXxAd@~B?nA@ZFd@Vz@Rp@DR?`AGh@Ll@Pf@Fh@EfAAx@IxABx@@z@M|Ai@d@]d@APBNN\\BPApARR|AjARPRDPC^MvA]XFpAvA^n@NLTZR\\VVfA|@`Ax@p@j@dBbBx@h@\\o@f@e@TOZB\\NlA|BnAtB^d@VRr@`@~AVtBVRLbAz@L\\Cp@lA@hCRnBNjF`@nE\\rEe@pLy@^`CwOjB}B^s@X_Bv@{@z@",
+      "UpdateTime": "2026-06-08T08:05:02+08:00",
+      "VersionID": 0
+    }
+  ],
+  "stopOfRoutes": [
+    {
+      "RouteUID": "TPE11137",
+      "RouteID": "11137",
+      "RouteName": {
+        "Zh_tw": "小22",
+        "En": "S22"
+      },
+      "Operators": [
+        {
+          "OperatorID": "1100",
+          "OperatorName": {
+            "Zh_tw": "大南汽車",
+            "En": "Danan Bus Co., Ltd."
+          },
+          "OperatorCode": "DananBus",
+          "OperatorNo": "0307"
+        }
+      ],
+      "SubRouteUID": "TPE111370",
+      "SubRouteID": "111370",
+      "SubRouteName": {
+        "Zh_tw": "小22",
+        "En": "S22"
+      },
+      "Direction": 0,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE207103",
+          "StopID": "207103",
+          "StopName": {
+            "Zh_tw": "大興街口",
+            "En": "Daxing St. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.499403,
+            "PositionLat": 25.130578,
+            "GeoHash": "wsqquychj"
+          },
+          "StationID": "45",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE25797",
+          "StopID": "25797",
+          "StopName": {
+            "Zh_tw": "捷運北投站(北投)",
+            "En": "MRT Beitou Sta. (Beitou)"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 2,
+          "StopPosition": {
+            "PositionLon": 121.49796757939285,
+            "PositionLat": 25.132300275375297,
+            "GeoHash": "wsqquz0n7"
+          },
+          "StationID": "358",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE25798",
+          "StopID": "25798",
+          "StopName": {
+            "Zh_tw": "幼華高中(北投)",
+            "En": "YouHua Vocational High School (Beitou)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.49683,
+            "PositionLat": 25.13423,
+            "GeoHash": "wsqquxx39"
+          },
+          "StationID": "5",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE25799",
+          "StopID": "25799",
+          "StopName": {
+            "Zh_tw": "大業中央北路口",
+            "En": "Daye & Zhongyang N. Rd. Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.498029,
+            "PositionLat": 25.135605,
+            "GeoHash": "wsqquzb1t"
+          },
+          "StationID": "50062",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE25800",
+          "StopID": "25800",
+          "StopName": {
+            "Zh_tw": "北投國小",
+            "En": "Beitou Elementary School"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.5007209,
+            "PositionLat": 25.13384543,
+            "GeoHash": "wsqquz6p7"
+          },
+          "StationID": "120",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE25801",
+          "StopID": "25801",
+          "StopName": {
+            "Zh_tw": "第一銀行",
+            "En": "First Commercial Bank"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 6,
+          "StopPosition": {
+            "PositionLon": 121.50256846263959,
+            "PositionLat": 25.13489933134952,
+            "GeoHash": "wsqquzemr"
+          },
+          "StationID": "7239",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE25802",
+          "StopID": "25802",
+          "StopName": {
+            "Zh_tw": "北投公園",
+            "En": "Beitou Park"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.50444128215462,
+            "PositionLat": 25.13658039419034,
+            "GeoHash": "wsqquzuz4"
+          },
+          "StationID": "113",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE25803",
+          "StopID": "25803",
+          "StopName": {
+            "Zh_tw": "新北投",
+            "En": "Xinbeitou"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.504544748237,
+            "PositionLat": 25.137839376017,
+            "GeoHash": "wsqrhbhyt"
+          },
+          "StationID": "7212",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE25804",
+          "StopID": "25804",
+          "StopName": {
+            "Zh_tw": "新民國中",
+            "En": "Xinmin Junior High School"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.50658,
+            "PositionLat": 25.139088,
+            "GeoHash": "wsqrhbqmu"
+          },
+          "StationID": "1001295",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE25805",
+          "StopID": "25805",
+          "StopName": {
+            "Zh_tw": "國軍北投醫院",
+            "En": "Beitou Armed Forces Hospital"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.5100428,
+            "PositionLat": 25.13997831,
+            "GeoHash": "wsqrj08fv"
+          },
+          "StationID": "1001294",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE25806",
+          "StopID": "25806",
+          "StopName": {
+            "Zh_tw": "林泉里",
+            "En": "Linquan Village"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 11,
+          "StopPosition": {
+            "PositionLon": 121.512460699406,
+            "PositionLat": 25.1407885943507,
+            "GeoHash": "wsqrj0dxt"
+          },
+          "StationID": "7220",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE148849",
+          "StopID": "148849",
+          "StopName": {
+            "Zh_tw": "新民路底",
+            "En": "Xinmin Rd. (End)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 12,
+          "StopPosition": {
+            "PositionLon": 121.514253,
+            "PositionLat": 25.141676,
+            "GeoHash": "wsqrj0guz"
+          },
+          "StationID": "1000257",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    },
+    {
+      "RouteUID": "TPE11137",
+      "RouteID": "11137",
+      "RouteName": {
+        "Zh_tw": "小22",
+        "En": "S22"
+      },
+      "Operators": [
+        {
+          "OperatorID": "1100",
+          "OperatorName": {
+            "Zh_tw": "大南汽車",
+            "En": "Danan Bus Co., Ltd."
+          },
+          "OperatorCode": "DananBus",
+          "OperatorNo": "0307"
+        }
+      ],
+      "SubRouteUID": "TPE111370",
+      "SubRouteID": "111370",
+      "SubRouteName": {
+        "Zh_tw": "小22",
+        "En": "S22"
+      },
+      "Direction": 1,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE25807",
+          "StopID": "25807",
+          "StopName": {
+            "Zh_tw": "上北投",
+            "En": "Shangbeitou"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.5138656,
+            "PositionLat": 25.14187054,
+            "GeoHash": "wsqrj0gwn"
+          },
+          "StationID": "18",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE25808",
+          "StopID": "25808",
+          "StopName": {
+            "Zh_tw": "八勝園",
+            "En": "Bashengyuan"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 2,
+          "StopPosition": {
+            "PositionLon": 121.511701,
+            "PositionLat": 25.14139054,
+            "GeoHash": "wsqrj0f55"
+          },
+          "StationID": "8",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE25809",
+          "StopID": "25809",
+          "StopName": {
+            "Zh_tw": "郵政訓練所",
+            "En": "Postal Service Training Center"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.50929,
+            "PositionLat": 25.14117,
+            "GeoHash": "wsqrj0b3g"
+          },
+          "StationID": "20358",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE25810",
+          "StopID": "25810",
+          "StopName": {
+            "Zh_tw": "源之鄉",
+            "En": "Yuanzhixiang"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.50773,
+            "PositionLat": 25.14152,
+            "GeoHash": "wsqrhbz5z"
+          },
+          "StationID": "20359",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE25811",
+          "StopID": "25811",
+          "StopName": {
+            "Zh_tw": "雅敘園",
+            "En": "Yaxuyuan"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.5062464,
+            "PositionLat": 25.14053914,
+            "GeoHash": "wsqrhbwnk"
+          },
+          "StationID": "448",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE25812",
+          "StopID": "25812",
+          "StopName": {
+            "Zh_tw": "華僑會館",
+            "En": "Overseas Chinese Hotel"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 6,
+          "StopPosition": {
+            "PositionLon": 121.5057796,
+            "PositionLat": 25.13931402,
+            "GeoHash": "wsqrhbmz1"
+          },
+          "StationID": "433",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE25813",
+          "StopID": "25813",
+          "StopName": {
+            "Zh_tw": "新北投",
+            "En": "Xinbeitou"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.504158979648,
+            "PositionLat": 25.1376964610609,
+            "GeoHash": "wsqrhbhts"
+          },
+          "StationID": "7210",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE25814",
+          "StopID": "25814",
+          "StopName": {
+            "Zh_tw": "北投公園",
+            "En": "Beitou Park"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.504124469582,
+            "PositionLat": 25.1363484992167,
+            "GeoHash": "wsqquzutg"
+          },
+          "StationID": "112",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE25815",
+          "StopID": "25815",
+          "StopName": {
+            "Zh_tw": "第一銀行",
+            "En": "First Commercial Bank"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.50235879653,
+            "PositionLat": 25.1345133895389,
+            "GeoHash": "wsqquze74"
+          },
+          "StationID": "399",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE25816",
+          "StopID": "25816",
+          "StopName": {
+            "Zh_tw": "中央南路",
+            "En": "Zhongyang S. Rd."
+          },
+          "StopBoarding": -1,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.50131769692,
+            "PositionLat": 25.1321537676007,
+            "GeoHash": "wsqquz4t3"
+          },
+          "StationID": "7241",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE25817",
+          "StopID": "25817",
+          "StopName": {
+            "Zh_tw": "中央南大興街口",
+            "En": "Zhongyang S. & Daxing St. Intersection"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 11,
+          "StopPosition": {
+            "PositionLon": 121.501062,
+            "PositionLat": 25.130163,
+            "GeoHash": "wsqquyf3g"
+          },
+          "StationID": "357",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE148848",
+          "StopID": "148848",
+          "StopName": {
+            "Zh_tw": "慈后宮",
+            "En": "Cihou Temple"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 12,
+          "StopPosition": {
+            "PositionLon": 121.501189626271,
+            "PositionLat": 25.1278841376109,
+            "GeoHash": "wsqquy6kw"
+          },
+          "StationID": "50086",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE25818",
+          "StopID": "25818",
+          "StopName": {
+            "Zh_tw": "捷運奇岩站",
+            "En": "MRT Qiyan"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 13,
+          "StopPosition": {
+            "PositionLon": 121.500767,
+            "PositionLat": 25.126424,
+            "GeoHash": "wsqquy4hj"
+          },
+          "StationID": "367",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE184824",
+          "StopID": "184824",
+          "StopName": {
+            "Zh_tw": "大興街口",
+            "En": "Daxing St. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 14,
+          "StopPosition": {
+            "PositionLon": 121.499403,
+            "PositionLat": 25.130578,
+            "GeoHash": "wsqquychj"
+          },
+          "StationID": "45",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    }
+  ],
+  "shapeCount": 2,
+  "stopOfRouteCount": 2
+}

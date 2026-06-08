@@ -191,15 +191,22 @@ Script:
 
 ```text
 bun scripts/fetch-tdx-taipei-bus-route-context.mjs --routes 234,307
-bun scripts/fetch-tdx-taipei-bus-route-context.mjs --from-archive --limit-routes 40
+bun scripts/fetch-tdx-taipei-bus-route-context.mjs --from-route-list
+bun scripts/fetch-tdx-taipei-bus-route-context.mjs --from-route-list --dry-run
 ```
 
 Package script:
 
 ```text
 bun run fetch:tdx-bus-route-context
+bun run fetch:tdx-bus-route-context:archive-sample
 bun run audit:tdx-bus-route-quality
 ```
+
+`fetch:tdx-bus-route-context` is the POC default. It reads all Taipei routes
+from TDX `Bus.Route.City`, then fetches `Bus.Shape.City` and
+`Bus.StopOfRoute.City` for each route. The `archive-sample` script is only for
+quick local experiments.
 
 Output:
 
@@ -228,6 +235,9 @@ Route quality audit output:
 ```text
 frontend/public/data/tdx-bus/route-quality/manifest.json
 ```
+
+For the Cloudflare POC handoff and R2 upload workflow, see
+`docs/deploy/route-context-backfill.md`.
 
 The audit is local-only. It reads cached route context, projects every stop onto
 the matching route shape, and stores one summary row per `RouteName + Direction`

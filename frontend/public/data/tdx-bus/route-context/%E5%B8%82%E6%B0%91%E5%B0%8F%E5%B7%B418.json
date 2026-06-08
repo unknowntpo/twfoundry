@@ -1,0 +1,536 @@
+{
+  "schema": "twfoundry.tdx.citybus.route-context.v1",
+  "source": {
+    "provider": "TDX",
+    "city": "Taipei",
+    "datasets": [
+      "Bus.Shape.City",
+      "Bus.StopOfRoute.City"
+    ]
+  },
+  "routeName": "市民小巴18",
+  "generatedAt": "2026-06-08T03:21:35.466Z",
+  "shapes": [
+    {
+      "RouteUID": "TPE19618",
+      "RouteID": "19618",
+      "RouteName": {
+        "Zh_tw": "市民小巴18",
+        "En": "M18"
+      },
+      "SubRouteName": {},
+      "Direction": 0,
+      "Geometry": "LINESTRING (121.565577895005 25.0651293921749, 121.565635134727 25.0648252089681, 121.565843351049 25.0635345932706, 121.565982691157 25.0629201349714, 121.566339246666 25.0616899232925, 121.566545992633 25.0612567467085, 121.566791235191 25.0609324027771, 121.567652775506 25.0600045820407, 121.56833274407 25.0592924193992, 121.565904654225 25.0590988991059, 121.563778338331 25.0589630804745, 121.563756925095 25.0590729440702, 121.563624204744 25.0592034844027, 121.563525255475 25.0592411941407, 121.563360204744 25.0592473602155, 121.563249626613 25.0592263347723, 121.563140126091 25.0591737080588, 121.56306072948 25.0590975647065, 121.563022080913 25.0589992264898, 121.562993603389 25.0589234337129, 121.562997574391 25.0588196055245, 121.563054689136 25.0587237323926, 121.563117822724 25.0586212602798, 121.563260358302 25.0585561361665, 121.563409535578 25.0585333238102, 121.563451504951 25.0580446836326, 121.563487814238 25.057427892301, 121.563526831891 25.0568812830151, 121.563636645096 25.0562662135815, 121.563706108876 25.0555924579663, 121.563804538772 25.0544419301644, 121.563842085332 25.0540848897068, 121.563843462891 25.053569861624, 121.563803873952 25.0519704445154, 121.563772862824 25.0513439460039, 121.563862580221 25.0513188996134, 121.56490237642 25.0512841493059, 121.566532623425 25.051255604403, 121.567352541771 25.0511954118687, 121.569297878533 25.0511532150229, 121.569865040096 25.0511457685192, 121.57013286639 25.0510967456918, 121.570363018908 25.0510570309818, 121.570637010001 25.0509670522945, 121.570802089635 25.0508851406044, 121.571767908238 25.0502528053366, 121.57206655853 25.0500703645255, 121.572418637085 25.0498680658937, 121.573197456767 25.0499034371509, 121.574661254183 25.0499326029168, 121.576947024878 25.0499735590869, 121.578119706757 25.0499834878534, 121.578164572798 25.0498593782149, 121.578186149597 25.0498233863963, 121.578206062017 25.0498061943224)",
+      "EncodedPolyline": "ap~wC{g~dVz@KbGg@xB[tFgAtAi@`Ao@xDkDlCgCd@dNZfLUBYZGPA`@BTJTLNRFNDRARIRMJ[D]`BGxBGlBGxBUfCMdFQfAGdB?~HF|BDBQFoEBeIJcDHeK?qBHs@Fm@Pw@N_@~BaEb@{@f@eAE{CEcHGiMAiFVGFE@C",
+      "UpdateTime": "2026-06-08T08:05:02+08:00",
+      "VersionID": 0
+    },
+    {
+      "RouteUID": "TPE19618",
+      "RouteID": "19618",
+      "RouteName": {
+        "Zh_tw": "市民小巴18",
+        "En": "M18"
+      },
+      "SubRouteName": {},
+      "Direction": 1,
+      "Geometry": "LINESTRING (121.578206062017 25.0498061943224, 121.578254173209 25.0497842238338, 121.578444259224 25.0497814312948, 121.578490153865 25.0498199062706, 121.578519608635 25.0499976977358, 121.578555570854 25.0500582026259, 121.579487848567 25.0502735377361, 121.579775546318 25.0503380761392, 121.579851580724 25.0504758406938, 121.580162568293 25.0511038465217, 121.580208462935 25.0513154564565, 121.580208462935 25.0514383265735, 121.580164623277 25.0514538404684, 121.579930355108 25.0514488760223, 121.579894050392 25.0513992315496, 121.579884460467 25.0512453335567, 121.579715951784 25.0509046473931, 121.579547443101 25.0505503079562, 121.579487163572 25.0504044761916, 121.579426884043 25.0503734481342, 121.5786007805 25.0501835562519, 121.577818516614 25.0501525281386, 121.576944463446 25.0500892307631, 121.573135076501 25.0500133242833, 121.572546112273 25.0499814015634, 121.572186189689 25.0501706575673, 121.570869829471 25.0510519482433, 121.570655889474 25.0512594439623, 121.570431881712 25.0514327368211, 121.569938561248 25.0514190558148, 121.567726169982 25.05146693933, 121.567200129283 25.0514452777421, 121.564822878372 25.0514749199141, 121.563952016736 25.0515022819126, 121.563871474619 25.051551305478, 121.563914262619 25.0540092991101, 121.563803517208 25.0553921838788, 121.563672636269 25.0565926474526, 121.563576992505 25.0577463582489, 121.563525395212 25.0584303713789, 121.563605937329 25.0585591934245, 121.563736818268 25.0586686350559, 121.563770796974 25.0588151270867, 121.563778977032 25.058951928825, 121.563753178386 25.0590665001633, 121.563626702093 25.0591981715691, 121.563524765977 25.0592346519336, 121.563468134801 25.0592363619504, 121.563442336154 25.0593212927556, 121.563398918919 25.0598246063195, 121.563310825979 25.0607525674708, 121.56322399151 25.0616862215366, 121.563145966334 25.0626859872942, 121.563172394217 25.0627509660862, 121.563278105745 25.0627726256759, 121.564722829961 25.062989221362, 121.5658630043 25.063144258039, 121.56597374971 25.0634360912518, 121.565708551325 25.0653016414384)",
+      "EncodedPolyline": "ip{wCyv`eVDG?e@GIc@EKGi@yDMy@[M{B}@k@IW?AH?l@HF\\@dA^dA`@\\JDJd@dDDzCJnDNvVDtBe@fAoDfGi@h@a@l@@`BIxLBhBCzMElDINkNGsGToFXgFPgCHYOUY]EYAWDYVETAHODcBFyDP{DPgELKCCUk@_H]cF{@UsJr@",
+      "UpdateTime": "2026-06-08T08:05:02+08:00",
+      "VersionID": 0
+    }
+  ],
+  "stopOfRoutes": [
+    {
+      "RouteUID": "TPE19618",
+      "RouteID": "19618",
+      "RouteName": {
+        "Zh_tw": "市民小巴18",
+        "En": "M18"
+      },
+      "Operators": [
+        {
+          "OperatorID": "800",
+          "OperatorName": {
+            "Zh_tw": "大都會客運",
+            "En": "Metropolitan Bus Co., Ltd."
+          },
+          "OperatorCode": "MetropolitanBus",
+          "OperatorNo": "0303"
+        }
+      ],
+      "SubRouteUID": "TPE162177",
+      "SubRouteID": "162177",
+      "SubRouteName": {
+        "Zh_tw": "市民小巴18",
+        "En": "M18"
+      },
+      "Direction": 0,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE219237",
+          "StopID": "219237",
+          "StopName": {
+            "Zh_tw": "莊敬里",
+            "En": "Zhuangjing Village"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.565572,
+            "PositionLat": 25.065033,
+            "GeoHash": "wsqqw6cq7"
+          },
+          "StationID": "1000632",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE219236",
+          "StopID": "219236",
+          "StopName": {
+            "Zh_tw": "新益里",
+            "En": "Xinyi Village"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 2,
+          "StopPosition": {
+            "PositionLon": 121.566155,
+            "PositionLat": 25.062286,
+            "GeoHash": "wsqqw63y2"
+          },
+          "StationID": "1503",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE219235",
+          "StopID": "219235",
+          "StopName": {
+            "Zh_tw": "民生國中",
+            "En": "Minsheng Junior High School"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.5679233,
+            "PositionLat": 25.05966141,
+            "GeoHash": "wsqqw3gp1"
+          },
+          "StationID": "1507",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE219234",
+          "StopID": "219234",
+          "StopName": {
+            "Zh_tw": "新東街口",
+            "En": "Xindong St. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.5663295,
+            "PositionLat": 25.0591755,
+            "GeoHash": "wsqqw3cuk"
+          },
+          "StationID": "60133",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE219233",
+          "StopID": "219233",
+          "StopName": {
+            "Zh_tw": "三民路",
+            "En": "Sanmin Rd."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.5634,
+            "PositionLat": 25.0575,
+            "GeoHash": "wsqqw1xf8"
+          },
+          "StationID": "1492",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE219240",
+          "StopID": "219240",
+          "StopName": {
+            "Zh_tw": "三民健康路口(西松高中)",
+            "En": "Sanmin and Jiankang Intersection (Xisong High School)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 6,
+          "StopPosition": {
+            "PositionLon": 121.5635808,
+            "PositionLat": 25.05524502,
+            "GeoHash": "wsqqw1pvk"
+          },
+          "StationID": "1489",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE219242",
+          "StopID": "219242",
+          "StopName": {
+            "Zh_tw": "西松國小",
+            "En": "Xisong Elementary School"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.56375921983846,
+            "PositionLat": 25.05282745475233,
+            "GeoHash": "wsqqw28p2"
+          },
+          "StationID": "1521",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE219244",
+          "StopID": "219244",
+          "StopName": {
+            "Zh_tw": "南京公寓(捷運南京三民)",
+            "En": "Nanjing Apartment (MRT Nanjing Sanmin Sta.)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.566535683299,
+            "PositionLat": 25.0512559293088,
+            "GeoHash": "wsqqw26n1"
+          },
+          "StationID": "1165603387",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE219246",
+          "StopID": "219246",
+          "StopName": {
+            "Zh_tw": "南松山(南京)",
+            "En": "Nansongshan (Nanjing)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.5688141,
+            "PositionLat": 25.05111499,
+            "GeoHash": "wsqqw27tq"
+          },
+          "StationID": "1557",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE219248",
+          "StopID": "219248",
+          "StopName": {
+            "Zh_tw": "饒河街觀光夜市(塔悠)",
+            "En": "Raohe St. Night Market (Tayou)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.57131845679393,
+            "PositionLat": 25.050545938983998,
+            "GeoHash": "wsqqw2md1"
+          },
+          "StationID": "1603",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE219250",
+          "StopID": "219250",
+          "StopName": {
+            "Zh_tw": "松山農會",
+            "En": "Songshan Farmers Assn."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 11,
+          "StopPosition": {
+            "PositionLon": 121.573848311551,
+            "PositionLat": 25.0499024516685,
+            "GeoHash": "wsqqw2pq7"
+          },
+          "StationID": "1534",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE219253",
+          "StopID": "219253",
+          "StopName": {
+            "Zh_tw": "松山車站(八德)",
+            "En": "Songshan Rail Sta. (Bade)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 12,
+          "StopPosition": {
+            "PositionLon": 121.577246475627,
+            "PositionLat": 25.0499755097464,
+            "GeoHash": "wsqqw81ye"
+          },
+          "StationID": "1530",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE219252",
+          "StopID": "219252",
+          "StopName": {
+            "Zh_tw": "松山車站",
+            "En": "Songshan Rail Sta."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 13,
+          "StopPosition": {
+            "PositionLon": 121.578206062017,
+            "PositionLat": 25.0498061943222,
+            "GeoHash": "wsqqw84t9"
+          },
+          "StationID": "15102",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    },
+    {
+      "RouteUID": "TPE19618",
+      "RouteID": "19618",
+      "RouteName": {
+        "Zh_tw": "市民小巴18",
+        "En": "M18"
+      },
+      "Operators": [
+        {
+          "OperatorID": "800",
+          "OperatorName": {
+            "Zh_tw": "大都會客運",
+            "En": "Metropolitan Bus Co., Ltd."
+          },
+          "OperatorCode": "MetropolitanBus",
+          "OperatorNo": "0303"
+        }
+      ],
+      "SubRouteUID": "TPE162177",
+      "SubRouteID": "162177",
+      "SubRouteName": {
+        "Zh_tw": "市民小巴18",
+        "En": "M18"
+      },
+      "Direction": 1,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE219255",
+          "StopID": "219255",
+          "StopName": {
+            "Zh_tw": "八德中坡路口",
+            "En": "Bade and Zhongpo Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.580172,
+            "PositionLat": 25.051204,
+            "GeoHash": "wsqqw87vz"
+          },
+          "StationID": "1165603349",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE219254",
+          "StopID": "219254",
+          "StopName": {
+            "Zh_tw": "松山車站(八德)",
+            "En": "Songshan Rail Sta. (Bade)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 2,
+          "StopPosition": {
+            "PositionLon": 121.576598,
+            "PositionLat": 25.050168,
+            "GeoHash": "wsqqw81ru"
+          },
+          "StationID": "15104",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE219251",
+          "StopID": "219251",
+          "StopName": {
+            "Zh_tw": "松山農會",
+            "En": "Songshan Farmers Association"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.57491400582,
+            "PositionLat": 25.0500731024231,
+            "GeoHash": "wsqqw80pk"
+          },
+          "StationID": "16001",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE219249",
+          "StopID": "219249",
+          "StopName": {
+            "Zh_tw": "饒河街觀光夜市(塔悠)",
+            "En": "Raohe St. Night Market (Tayou)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.571871,
+            "PositionLat": 25.050387,
+            "GeoHash": "wsqqw2mcj"
+          },
+          "StationID": "4147",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE219247",
+          "StopID": "219247",
+          "StopName": {
+            "Zh_tw": "南松山(南京)",
+            "En": "Nansongshan (Nanjing)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.569058,
+            "PositionLat": 25.051515,
+            "GeoHash": "wsqqw27zs"
+          },
+          "StationID": "1000206",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE219245",
+          "StopID": "219245",
+          "StopName": {
+            "Zh_tw": "南京公寓(捷運南京三民)",
+            "En": "Nanjing Apartment (MRT Nanjing Sanmin Sta.)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 6,
+          "StopPosition": {
+            "PositionLon": 121.56665364964157,
+            "PositionLat": 25.051513187536237,
+            "GeoHash": "wsqqw26ps"
+          },
+          "StationID": "1165603388",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE219243",
+          "StopID": "219243",
+          "StopName": {
+            "Zh_tw": "西松國小",
+            "En": "Xisong Elementary School"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.5638994,
+            "PositionLat": 25.053597,
+            "GeoHash": "wsqqw2b5u"
+          },
+          "StationID": "50003",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE219241",
+          "StopID": "219241",
+          "StopName": {
+            "Zh_tw": "三民健康路口(西松高中)",
+            "En": "Sanmin and Jiankang Intersection (Xisong High School)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.5638473,
+            "PositionLat": 25.05481494,
+            "GeoHash": "wsqqw304f"
+          },
+          "StationID": "50006",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE219239",
+          "StopID": "219239",
+          "StopName": {
+            "Zh_tw": "三民路",
+            "En": "Sanmin Rd."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.56368,
+            "PositionLat": 25.05753,
+            "GeoHash": "wsqqw1xfx"
+          },
+          "StationID": "10404",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE219256",
+          "StopID": "219256",
+          "StopName": {
+            "Zh_tw": "廣合新村",
+            "En": "Guanghe New Village"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.56339,
+            "PositionLat": 25.06067,
+            "GeoHash": "wsqqw4pub"
+          },
+          "StationID": "1594",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE219257",
+          "StopID": "219257",
+          "StopName": {
+            "Zh_tw": "三民國小",
+            "En": "Sanmin Elementary School"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 11,
+          "StopPosition": {
+            "PositionLon": 121.56364748952177,
+            "PositionLat": 25.06279839209022,
+            "GeoHash": "wsqqw4xcq"
+          },
+          "StationID": "8671",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE219238",
+          "StopID": "219238",
+          "StopName": {
+            "Zh_tw": "莊敬里",
+            "En": "Zhuangjing Village"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 12,
+          "StopPosition": {
+            "PositionLon": 121.5657277,
+            "PositionLat": 25.06530387,
+            "GeoHash": "wsqqw6cry"
+          },
+          "StationID": "1000810",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    }
+  ],
+  "shapeCount": 2,
+  "stopOfRouteCount": 2
+}

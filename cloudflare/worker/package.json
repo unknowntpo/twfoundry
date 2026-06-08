@@ -8,7 +8,9 @@
     "deploy": "wrangler deploy",
     "test": "node test/worker.test.mjs",
     "upload:bus-projections": "node ../scripts/upload-bus-projections.mjs",
-    "upload:bus-projections:local": "node ../scripts/upload-bus-projections.mjs --local --persist-to ../.wrangler-local"
+    "upload:bus-projections:local": "node ../scripts/upload-bus-projections.mjs --local --persist-to ../.wrangler-local",
+    "upload:route-context": "node ../scripts/upload-route-context.mjs",
+    "upload:route-context:local": "node ../scripts/upload-route-context.mjs --local --persist-to ../.wrangler-local"
   },
   "devDependencies": {
     "wrangler": "^4.21.0"

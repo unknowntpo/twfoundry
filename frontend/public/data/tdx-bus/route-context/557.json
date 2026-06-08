@@ -1,0 +1,536 @@
+{
+  "schema": "twfoundry.tdx.citybus.route-context.v1",
+  "source": {
+    "provider": "TDX",
+    "city": "Taipei",
+    "datasets": [
+      "Bus.Shape.City",
+      "Bus.StopOfRoute.City"
+    ]
+  },
+  "routeName": "557",
+  "generatedAt": "2026-06-08T03:20:52.859Z",
+  "shapes": [
+    {
+      "RouteUID": "TPE17333",
+      "RouteID": "17333",
+      "RouteName": {
+        "Zh_tw": "557",
+        "En": "557"
+      },
+      "SubRouteName": {},
+      "Direction": 0,
+      "Geometry": "LINESTRING (121.518247871664 25.095401657712, 121.517975151868 25.0956948913577, 121.517418999985 25.0953479999909, 121.51666776309 25.0948318731081, 121.516699053256 25.094753530731, 121.518077661169 25.0930933272837, 121.518668493132 25.0923648975763, 121.520006607889 25.0932250109098, 121.52114593806 25.0939917735125, 121.521477245703 25.0942251350899, 121.523466932157 25.0947218603941, 121.52458601575 25.0949585542926, 121.525951739477 25.0952569213011, 121.527750924037 25.0956778008998, 121.529182909292 25.0959444961336, 121.53189226957 25.0964395476202, 121.532389231034 25.0965512256248, 121.533018715556 25.0969687671118, 121.534454382007 25.0978830196425, 121.535562422012 25.0986330849844, 121.535860598891 25.0988447692598, 121.536121963809 25.0989531114638, 121.536633650057 25.0989364434386, 121.537434310193 25.0982513856407, 121.5377067187 25.0980280326339, 121.537916546873 25.0978030124012, 121.539856537181 25.0972879645328, 121.542278764169 25.0971096141183, 121.542374475266 25.0970462746561, 121.543243237529 25.0962078571065, 121.543500921251 25.0959903343184, 121.544075187831 25.0956636326992, 121.545589999998 25.094818538239, 121.545646598387 25.0947256108292, 121.54569031259 25.0946080971426, 121.545748000001 25.0945659999983)",
+      "EncodedPolyline": "gmdxCa`udVy@t@bAnBfBtCNEjIsGpCuBmDkGwCcFo@aAaBmKo@_F{@oGsAgJs@}GcB}OUcBsA}BuD}GuC}Ei@{@Us@@eBhC_Dj@w@l@i@dBcKb@cNJQfDmDj@s@`AsBfDmHPKVGFK",
+      "UpdateTime": "2026-06-08T08:05:02+08:00",
+      "VersionID": 0
+    },
+    {
+      "RouteUID": "TPE17333",
+      "RouteID": "17333",
+      "RouteName": {
+        "Zh_tw": "557",
+        "En": "557"
+      },
+      "SubRouteName": {},
+      "Direction": 1,
+      "Geometry": "LINESTRING (121.545748000001 25.0945659999983, 121.545954438405 25.0945626751555, 121.54599585186 25.0946535191128, 121.545070951358 25.0951635775107, 121.543716037277 25.0959047955126, 121.543514951944 25.096030642165, 121.54329592078 25.096213577962, 121.54289697116 25.0966015342936, 121.542525170361 25.0969890726877, 121.542465350926 25.0973182710042, 121.540089138889 25.0974916206478, 121.539879310715 25.0975099556918, 121.5380387127 25.097994999951, 121.537447880737 25.0984533733424, 121.536603046248 25.0992384379607, 121.536318673855 25.0992417715577, 121.536220201861 25.0991342630094, 121.535966199335 25.0989792505176, 121.535809748504 25.0988967437886, 121.535297141957 25.0985575488736, 121.533798895172 25.0975666276289, 121.532508635964 25.0967482156366, 121.532315373172 25.0966232031395, 121.532169965929 25.0965831991134, 121.530334889708 25.0962548322383, 121.528142737472 25.095859790718, 121.52590088909 25.0953680705879, 121.523290921105 25.0947763369636, 121.522019067877 25.0945029717312, 121.521442960698 25.0943412859099, 121.520165585675 25.0935645242432, 121.518650773509 25.0925893980022, 121.518573468393 25.0926010662254, 121.518181421015 25.0930877968297, 121.51682305968 25.0947596683693, 121.516819378484 25.094833010167, 121.517896128323 25.0955514240878, 121.518024970184 25.0954897506685, 121.518580830785 25.0948971842039)",
+      "EncodedPolyline": "ahdxC}kzdV@g@QIeBxDsClGYh@c@h@mAnAmAhAaAJa@zMCh@_BnJ{AtB}ChD?v@TR\\p@N^bAdBdEjHbD`GXd@F\\`AnJlAtL`B~LtBhOv@|F^rBzC|F`EnHANaBlAmInGM?oCwEJWtBoB",
+      "UpdateTime": "2026-06-08T08:05:02+08:00",
+      "VersionID": 0
+    }
+  ],
+  "stopOfRoutes": [
+    {
+      "RouteUID": "TPE17333",
+      "RouteID": "17333",
+      "RouteName": {
+        "Zh_tw": "557",
+        "En": "557"
+      },
+      "Operators": [
+        {
+          "OperatorID": "5500",
+          "OperatorName": {
+            "Zh_tw": "中興巴士",
+            "En": "Zhongxing Bus"
+          },
+          "OperatorCode": "ZhongxingBus",
+          "OperatorNo": "0410"
+        }
+      ],
+      "SubRouteUID": "TPE158480",
+      "SubRouteID": "158480",
+      "SubRouteName": {
+        "Zh_tw": "557",
+        "En": "557"
+      },
+      "Direction": 0,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE212023",
+          "StopID": "212023",
+          "StopName": {
+            "Zh_tw": "天文科學館",
+            "En": "Astronomical Museum"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.51822,
+            "PositionLat": 25.09549,
+            "GeoHash": "wsqqv0qzg"
+          },
+          "StationID": "572",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE212024",
+          "StopID": "212024",
+          "StopName": {
+            "Zh_tw": "國立科教館",
+            "En": "Nat'l Taiwan Science Education Center"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 2,
+          "StopPosition": {
+            "PositionLon": 121.517419129378,
+            "PositionLat": 25.0953476878965,
+            "GeoHash": "wsqqv0qqc"
+          },
+          "StationID": "790",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE171175",
+          "StopID": "171175",
+          "StopName": {
+            "Zh_tw": "士林高商",
+            "En": "Shilin High School of Commerce"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.51711224794106,
+            "PositionLat": 25.09415239272792,
+            "GeoHash": "wsqqv0q01"
+          },
+          "StationID": "580",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE187538",
+          "StopID": "187538",
+          "StopName": {
+            "Zh_tw": "士林區行政中心(中正)",
+            "En": "Shilin Admin. Center"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.519189,
+            "PositionLat": 25.092636,
+            "GeoHash": "wsqqtpzx4"
+          },
+          "StationID": "581",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE171188",
+          "StopID": "171188",
+          "StopName": {
+            "Zh_tw": "士林國中",
+            "En": "Shilin Jr. High School"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.522781,
+            "PositionLat": 25.094485,
+            "GeoHash": "wsqqv261y"
+          },
+          "StationID": "1165604807",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE171189",
+          "StopID": "171189",
+          "StopName": {
+            "Zh_tw": "捷運士林站(中正)",
+            "En": "MRT Shilin Sta. (Zhongzheng)"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 6,
+          "StopPosition": {
+            "PositionLon": 121.5267653,
+            "PositionLat": 25.09543483,
+            "GeoHash": "wsqqv2mpd"
+          },
+          "StationID": "10210",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE171190",
+          "StopID": "171190",
+          "StopName": {
+            "Zh_tw": "福林國小",
+            "En": "Fulin Elementary School"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.5290055,
+            "PositionLat": 25.09583325,
+            "GeoHash": "wsqqv2w9z"
+          },
+          "StationID": "896",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE171191",
+          "StopID": "171191",
+          "StopName": {
+            "Zh_tw": "士林官邸(中正)",
+            "En": "Chiang Kai-Shek Shilin Residence (Zhongzheng)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.531395,
+            "PositionLat": 25.096324,
+            "GeoHash": "wsqqv88kw"
+          },
+          "StationID": "1000618",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE171192",
+          "StopID": "171192",
+          "StopName": {
+            "Zh_tw": "泰北中學",
+            "En": "Taibei High School"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.533481875716,
+            "PositionLat": 25.0972847950979,
+            "GeoHash": "wsqqv8cfr"
+          },
+          "StationID": "777",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE171193",
+          "StopID": "171193",
+          "StopName": {
+            "Zh_tw": "雙溪公園",
+            "En": "Shuangxi Park"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.53792,
+            "PositionLat": 25.097779,
+            "GeoHash": "wsqqv8vjn"
+          },
+          "StationID": "950",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE171194",
+          "StopID": "171194",
+          "StopName": {
+            "Zh_tw": "梅林新村",
+            "En": "Meilin New Village"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 11,
+          "StopPosition": {
+            "PositionLon": 121.540175948519,
+            "PositionLat": 25.0972328685249,
+            "GeoHash": "wsqqv8ycg"
+          },
+          "StationID": "805",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE171195",
+          "StopID": "171195",
+          "StopName": {
+            "Zh_tw": "東吳大學(錢穆故居)",
+            "En": "Soochow U. (Chien Mu House)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 12,
+          "StopPosition": {
+            "PositionLon": 121.541888,
+            "PositionLat": 25.097131,
+            "GeoHash": "wsqqvbb17"
+          },
+          "StationID": "729",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE171196",
+          "StopID": "171196",
+          "StopName": {
+            "Zh_tw": "東吳大學",
+            "En": "Soochow University"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 13,
+          "StopPosition": {
+            "PositionLon": 121.545748,
+            "PositionLat": 25.094566,
+            "GeoHash": "wsqqvb6fm"
+          },
+          "StationID": "1165603282",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    },
+    {
+      "RouteUID": "TPE17333",
+      "RouteID": "17333",
+      "RouteName": {
+        "Zh_tw": "557",
+        "En": "557"
+      },
+      "Operators": [
+        {
+          "OperatorID": "5500",
+          "OperatorName": {
+            "Zh_tw": "中興巴士",
+            "En": "Zhongxing Bus"
+          },
+          "OperatorCode": "ZhongxingBus",
+          "OperatorNo": "0410"
+        }
+      ],
+      "SubRouteUID": "TPE158480",
+      "SubRouteID": "158480",
+      "SubRouteName": {
+        "Zh_tw": "557",
+        "En": "557"
+      },
+      "Direction": 1,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE171164",
+          "StopID": "171164",
+          "StopName": {
+            "Zh_tw": "東吳大學(錢穆故居)",
+            "En": "Soochow U. (Chien Mu House)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.541307,
+            "PositionLat": 25.097411,
+            "GeoHash": "wsqqv8zej"
+          },
+          "StationID": "728",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE171165",
+          "StopID": "171165",
+          "StopName": {
+            "Zh_tw": "梅林新村",
+            "En": "Meilin New Village"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 2,
+          "StopPosition": {
+            "PositionLon": 121.539849,
+            "PositionLat": 25.097585,
+            "GeoHash": "wsqqv8ys5"
+          },
+          "StationID": "807",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE171166",
+          "StopID": "171166",
+          "StopName": {
+            "Zh_tw": "雙溪公園",
+            "En": "Shuangxi Park"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.53824562909286,
+            "PositionLat": 25.098005332485762,
+            "GeoHash": "wsqqv8vqq"
+          },
+          "StationID": "9446",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE171167",
+          "StopID": "171167",
+          "StopName": {
+            "Zh_tw": "泰北中學",
+            "En": "Taibei High School"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.534030294965,
+            "PositionLat": 25.0977513146504,
+            "GeoHash": "wsqqv8fku"
+          },
+          "StationID": "778",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE171168",
+          "StopID": "171168",
+          "StopName": {
+            "Zh_tw": "士林官邸(中正)",
+            "En": "Chiang Kai-Shek Shilin Residence (Zhongzheng)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.53144,
+            "PositionLat": 25.0965,
+            "GeoHash": "wsqqv88mx"
+          },
+          "StationID": "3953",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE171169",
+          "StopID": "171169",
+          "StopName": {
+            "Zh_tw": "福林國小",
+            "En": "Fulin Elementary School"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 6,
+          "StopPosition": {
+            "PositionLon": 121.52976,
+            "PositionLat": 25.0962,
+            "GeoHash": "wsqqv2x7b"
+          },
+          "StationID": "3954",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE171170",
+          "StopID": "171170",
+          "StopName": {
+            "Zh_tw": "捷運士林站(中正)",
+            "En": "MRT Shilin Sta. (Zhongzheng)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.525882,
+            "PositionLat": 25.095428,
+            "GeoHash": "wsqqv2krq"
+          },
+          "StationID": "1165605299",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE171171",
+          "StopID": "171171",
+          "StopName": {
+            "Zh_tw": "士林國中",
+            "En": "Shilin Jr. High School"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.522929,
+            "PositionLat": 25.094772,
+            "GeoHash": "wsqqv2679"
+          },
+          "StationID": "1165604814",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE171172",
+          "StopID": "171172",
+          "StopName": {
+            "Zh_tw": "士林區行政中心(中正)",
+            "En": "Shilin Admin. Center"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.519396,
+            "PositionLat": 25.093132,
+            "GeoHash": "wsqqv0pdp"
+          },
+          "StationID": "575",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE199583",
+          "StopID": "199583",
+          "StopName": {
+            "Zh_tw": "士林高商",
+            "En": "Shilin High School of Commerce"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.517616379607,
+            "PositionLat": 25.0939491036857,
+            "GeoHash": "wsqqv0nqv"
+          },
+          "StationID": "7255",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE199584",
+          "StopID": "199584",
+          "StopName": {
+            "Zh_tw": "國立科教館",
+            "En": "Nat'l Taiwan Science Education Center"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 11,
+          "StopPosition": {
+            "PositionLon": 121.517199,
+            "PositionLat": 25.095042,
+            "GeoHash": "wsqqv0qj5"
+          },
+          "StationID": "50651",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE199585",
+          "StopID": "199585",
+          "StopName": {
+            "Zh_tw": "天文科學館",
+            "En": "Astronomical Museum"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 12,
+          "StopPosition": {
+            "PositionLon": 121.518581144123,
+            "PositionLat": 25.0948969338159,
+            "GeoHash": "wsqqv0rhk"
+          },
+          "StationID": "632",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    }
+  ],
+  "shapeCount": 2,
+  "stopOfRouteCount": 2
+}

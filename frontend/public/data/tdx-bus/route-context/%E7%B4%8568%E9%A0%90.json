@@ -1,0 +1,439 @@
+{
+  "schema": "twfoundry.tdx.citybus.route-context.v1",
+  "source": {
+    "provider": "TDX",
+    "city": "Taipei",
+    "datasets": [
+      "Bus.Shape.City",
+      "Bus.StopOfRoute.City"
+    ]
+  },
+  "routeName": "紅68預",
+  "generatedAt": "2026-06-08T03:21:42.145Z",
+  "shapes": [],
+  "stopOfRoutes": [
+    {
+      "RouteUID": "TPE19719",
+      "RouteID": "19719",
+      "RouteName": {
+        "Zh_tw": "紅68預",
+        "En": "R68B"
+      },
+      "Operators": [
+        {
+          "OperatorID": "200",
+          "OperatorName": {
+            "Zh_tw": "首都客運",
+            "En": "Capital Bus Co., Ltd."
+          },
+          "OperatorCode": "CapitalBus",
+          "OperatorNo": "0913"
+        }
+      ],
+      "SubRouteUID": "TPE162403",
+      "SubRouteID": "162403",
+      "SubRouteName": {
+        "Zh_tw": "紅68預",
+        "En": "R68B"
+      },
+      "Direction": 0,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE220933",
+          "StopID": "220933",
+          "StopName": {
+            "Zh_tw": "洲美里",
+            "En": "Zhoumei Village"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.500102,
+            "PositionLat": 25.102928,
+            "GeoHash": "wsqquccej"
+          },
+          "StationID": "1001350",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE220934",
+          "StopID": "220934",
+          "StopName": {
+            "Zh_tw": "洲美街219號",
+            "En": "No.219 Zhoumei St."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 2,
+          "StopPosition": {
+            "PositionLon": 121.501442,
+            "PositionLat": 25.10163,
+            "GeoHash": "wsqqucdes"
+          },
+          "StationID": "1165604796",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE220935",
+          "StopID": "220935",
+          "StopName": {
+            "Zh_tw": "洲美國小",
+            "En": "Zhoumei Elementary School"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.502682,
+            "PositionLat": 25.101263,
+            "GeoHash": "wsqquce93"
+          },
+          "StationID": "1165609896",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE220936",
+          "StopID": "220936",
+          "StopName": {
+            "Zh_tw": "福美站",
+            "En": "Fu Mei Stop"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.504476019722,
+            "PositionLat": 25.1003822071101,
+            "GeoHash": "wsqqucku7"
+          },
+          "StationID": "1165604734",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE220937",
+          "StopID": "220937",
+          "StopName": {
+            "Zh_tw": "三王宮",
+            "En": "Sanwang Temple"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.50562988182526,
+            "PositionLat": 25.10041172252245,
+            "GeoHash": "wsqqucmsq"
+          },
+          "StationID": "1165604736",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE220938",
+          "StopID": "220938",
+          "StopName": {
+            "Zh_tw": "福美承平路口",
+            "En": "FuMei ChengPing Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 6,
+          "StopPosition": {
+            "PositionLon": 121.507447,
+            "PositionLat": 25.100501,
+            "GeoHash": "wsqqucrj0"
+          },
+          "StationID": "1165606676",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE223305",
+          "StopID": "223305",
+          "StopName": {
+            "Zh_tw": "遠雄商舟大樓",
+            "En": "Farglory Ark Building"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.50899838312725,
+            "PositionLat": 25.100517081943632,
+            "GeoHash": "wsqqv12jh"
+          },
+          "StationID": "1165610470",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE220939",
+          "StopID": "220939",
+          "StopName": {
+            "Zh_tw": "中鼎第二總部大樓",
+            "En": "CTCI Second Headquarters"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.509867,
+            "PositionLat": 25.10044,
+            "GeoHash": "wsqqv12u9"
+          },
+          "StationID": "1165608576",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE220941",
+          "StopID": "220941",
+          "StopName": {
+            "Zh_tw": "捷運芝山站(福華)",
+            "En": "MRT Zhishan Sta. (Fuhua)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.522856,
+            "PositionLat": 25.1027,
+            "GeoHash": "wsqqv3f1z"
+          },
+          "StationID": "1165604714",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    },
+    {
+      "RouteUID": "TPE19719",
+      "RouteID": "19719",
+      "RouteName": {
+        "Zh_tw": "紅68預",
+        "En": "R68B"
+      },
+      "Operators": [
+        {
+          "OperatorID": "200",
+          "OperatorName": {
+            "Zh_tw": "首都客運",
+            "En": "Capital Bus Co., Ltd."
+          },
+          "OperatorCode": "CapitalBus",
+          "OperatorNo": "0913"
+        }
+      ],
+      "SubRouteUID": "TPE162403",
+      "SubRouteID": "162403",
+      "SubRouteName": {
+        "Zh_tw": "紅68預",
+        "En": "R68B"
+      },
+      "Direction": 1,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE220942",
+          "StopID": "220942",
+          "StopName": {
+            "Zh_tw": "中山北路口(德行)",
+            "En": "Zhongshan N. Rd. Entrance (Dexing)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.523591,
+            "PositionLat": 25.105781,
+            "GeoHash": "wsqqv66gb"
+          },
+          "StationID": "610",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE220943",
+          "StopID": "220943",
+          "StopName": {
+            "Zh_tw": "士林電機(中山德行路口)",
+            "En": "Shilin Electric and Engineering Corp. (Zhongshan & Dexing Rd. Intersection)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 2,
+          "StopPosition": {
+            "PositionLon": 121.524661,
+            "PositionLat": 25.105356,
+            "GeoHash": "wsqqv6793"
+          },
+          "StationID": "50633",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE220944",
+          "StopID": "220944",
+          "StopName": {
+            "Zh_tw": "德行(中山忠誠路口)",
+            "En": "Dexing (Zhongshan & Zhongcheng Rd. Intersection)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.524957,
+            "PositionLat": 25.103354,
+            "GeoHash": "wsqqv3gv8"
+          },
+          "StationID": "922",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE220945",
+          "StopID": "220945",
+          "StopName": {
+            "Zh_tw": "捷運芝山站(福國)",
+            "En": "MRT Zhishan Sta. (Fuguo)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.52415752169912,
+            "PositionLat": 25.102215676833303,
+            "GeoHash": "wsqqv3epn"
+          },
+          "StationID": "50667",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE220947",
+          "StopID": "220947",
+          "StopName": {
+            "Zh_tw": "福國承信路口",
+            "En": "Fuguo ChengXin Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 6,
+          "StopPosition": {
+            "PositionLon": 121.513267,
+            "PositionLat": 25.101757,
+            "GeoHash": "wsqqv1ek2"
+          },
+          "StationID": "1165608875",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE220948",
+          "StopID": "220948",
+          "StopName": {
+            "Zh_tw": "中鼎第二總部大樓",
+            "En": "CTCI Second Headquarters"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.509985,
+            "PositionLat": 25.100425,
+            "GeoHash": "wsqqv12ue"
+          },
+          "StationID": "1165608577",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE220949",
+          "StopID": "220949",
+          "StopName": {
+            "Zh_tw": "福美承平路口",
+            "En": "FuMei ChengPing Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.50703302755403,
+            "PositionLat": 25.10059120420348,
+            "GeoHash": "wsqqucqtx"
+          },
+          "StationID": "1165606675",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE220950",
+          "StopID": "220950",
+          "StopName": {
+            "Zh_tw": "三王宮",
+            "En": "Sanwang Temple"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.5059969206,
+            "PositionLat": 25.1005585521,
+            "GeoHash": "wsqqucmvq"
+          },
+          "StationID": "1165604737",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE220951",
+          "StopID": "220951",
+          "StopName": {
+            "Zh_tw": "福美站",
+            "En": "Fu Mei Stop"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.504482054692,
+            "PositionLat": 25.1004994023069,
+            "GeoHash": "wsqquckv5"
+          },
+          "StationID": "1165604735",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE220952",
+          "StopID": "220952",
+          "StopName": {
+            "Zh_tw": "洲美國小",
+            "En": "Zhoumei Elementary School"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 11,
+          "StopPosition": {
+            "PositionLon": 121.502767,
+            "PositionLat": 25.101347,
+            "GeoHash": "wsqquce9g"
+          },
+          "StationID": "1165609895",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE221866",
+          "StopID": "221866",
+          "StopName": {
+            "Zh_tw": "洲美街219號",
+            "En": "No.219 Zhoumei St."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 12,
+          "StopPosition": {
+            "PositionLon": 121.5015276,
+            "PositionLat": 25.10170019,
+            "GeoHash": "wsqqucdsn"
+          },
+          "StationID": "1165610359",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE220953",
+          "StopID": "220953",
+          "StopName": {
+            "Zh_tw": "洲美里",
+            "En": "Zhoumei Village"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 13,
+          "StopPosition": {
+            "PositionLon": 121.500102,
+            "PositionLat": 25.102928,
+            "GeoHash": "wsqquccej"
+          },
+          "StationID": "1001350",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    }
+  ],
+  "shapeCount": 0,
+  "stopOfRouteCount": 2
+}

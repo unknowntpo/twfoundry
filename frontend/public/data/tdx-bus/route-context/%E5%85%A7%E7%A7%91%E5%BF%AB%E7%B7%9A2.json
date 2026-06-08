@@ -1,0 +1,1715 @@
+{
+  "schema": "twfoundry.tdx.citybus.route-context.v1",
+  "source": {
+    "provider": "TDX",
+    "city": "Taipei",
+    "datasets": [
+      "Bus.Shape.City",
+      "Bus.StopOfRoute.City"
+    ]
+  },
+  "routeName": "內科快線2",
+  "generatedAt": "2026-06-08T03:20:01.315Z",
+  "shapes": [
+    {
+      "RouteUID": "TPE15693",
+      "RouteID": "15693",
+      "RouteName": {
+        "Zh_tw": "內科快線2",
+        "En": "NH Express 2"
+      },
+      "SubRouteName": {},
+      "Direction": 0,
+      "Geometry": "LINESTRING (121.565313825397 25.0410869914874, 121.566047007631 25.0410533941938, 121.566097864203 25.0409487625635, 121.566066078846 25.0392045689375, 121.565981317894 25.0391508124383, 121.563807199476 25.0391968894391, 121.563697010238 25.0392660049077, 121.563730914619 25.0395693445595, 121.56446197783 25.0407826956643, 121.56526508785 25.0422475323488, 121.565877485728 25.0432477580926, 121.566066078846 25.0437526674136, 121.566841641556 25.045008212378, 121.567242137054 25.0456916534688, 121.5676023711 25.0462867816529, 121.568208038672 25.0473075347695, 121.569615443709 25.0497096725084, 121.569972297132 25.0504253001114, 121.570110132719 25.0506589279126, 121.570289467192 25.0509852004761, 121.570382839686 25.0512309113395, 121.570424338573 25.0515115313407, 121.570421374367 25.0517397863703, 121.570247968306 25.0528139219797, 121.570084936966 25.0536248881288, 121.570021206534 25.0540625927944, 121.570064187523 25.0544841841539, 121.570247968306 25.0547876216235, 121.570895647354 25.0554388012679, 121.572478533449 25.0569210612068, 121.572777918272 25.057241946641, 121.573163265074 25.0577266297414, 121.573277387012 25.0580394574282, 121.573335189032 25.058399275411, 121.573278869115 25.0588745557538, 121.573194389239 25.0594908063351, 121.57298837691 25.0607340388157, 121.573027282116 25.0611811160947, 121.572945766446 25.0617705037689, 121.572859804467 25.0621893834903, 121.572683248937 25.0637850067475, 121.572601733268 25.0646710822071, 121.572671392113 25.0647838549877, 121.574332829671 25.0653396621755, 121.575130201131 25.0656256199423, 121.57517762843 25.0657034862879, 121.574861940472 25.0665157096511, 121.574737443813 25.0669251755858, 121.574737443813 25.0673843128093, 121.574832298411 25.069697425336, 121.574813031071 25.0708640337127, 121.574688534412 25.071327183554, 121.574484004186 25.0717487155103, 121.574169798332 25.0721917252383, 121.573910430292 25.0725501592091, 121.573455424645 25.0732186961717, 121.572659535288 25.074273849494, 121.572512807083 25.0745436773189, 121.57230975896 25.0748269287741, 121.571722846138 25.0757008426417, 121.571198181646 25.0764472218976, 121.570907689441 25.0767089905231, 121.570391917568 25.0770217697366, 121.56962418817 25.0772754827606, 121.568236939682 25.0776835703312, 121.566649607278 25.0781372976781, 121.565139344234 25.0785816266751, 121.564598376608 25.0787547937328, 121.564476844155 25.0788581568985, 121.564776228978 25.0798313772319, 121.564859223803 25.0801063834579, 121.565029668606 25.0806931741581, 121.565157129471 25.0807535802572, 121.566777068143 25.0800340745624, 121.567823432921 25.0795602186889, 121.569452264212 25.0788259398172, 121.57111370177 25.0780755479013, 121.572711408896 25.0773654232302, 121.573988981755 25.0767855074002, 121.575011632884 25.0763049269229, 121.575764541251 25.0758619320748, 121.57720514545 25.0749356649407, 121.579211913027 25.0737194252813, 121.57991442989 25.0730374666328, 121.580350168197 25.072613254219, 121.581612920025 25.0714157859328, 121.583349944841 25.069697425336, 121.584120638445 25.0689187852536, 121.584090996383 25.0688194411629, 121.583919072426 25.0687294944167, 121.583142450409 25.0685214084073, 121.581654418912 25.0680971803514, 121.581151985966 25.0678649282933, 121.579829950014 25.0672017321312, 121.579425335872 25.0670366037836, 121.578998490183 25.0669224905677)",
+      "EncodedPolyline": "yyywCef~dVFsCRI|IDHPIpLMT{@EqFqCeHaDgEyBcBe@{FyCgCoAwBgAkEyB_NyGoCeAm@[aAc@o@Qw@Gm@?uE`@aD`@wAJsAG}@e@aCaCgH{H_A{@aBkA}@WgAK}AJ{BPwFf@yAGuBNsAP_Ib@oDNUMoBkIy@_DMIcD~@qAVyA?oMQgFB}AVsAh@wA|@gAr@eCxAqE~Cu@\\y@f@mDtBuCfBs@x@}@fBs@xCoArG{A|HwAlHa@jBUVaE{@w@OsBa@KYnCcI|AoEpCeItCkIlC_IrB_G`BkEvAuCvDaHrFoKfCkCtAwAlF{FvI{IzCyCRDP`@h@zCrAhHn@bBbCfG^nAVtA",
+      "UpdateTime": "2026-06-08T08:05:02+08:00",
+      "VersionID": 0
+    },
+    {
+      "RouteUID": "TPE15693",
+      "RouteID": "15693",
+      "RouteName": {
+        "Zh_tw": "內科快線2",
+        "En": "NH Express 2"
+      },
+      "SubRouteName": {},
+      "Direction": 1,
+      "Geometry": "LINESTRING (121.564859223803 25.0801063834579, 121.565029668606 25.0806931741581, 121.565157129471 25.0807535802572, 121.566777068143 25.0800340745624, 121.567823432921 25.0795602186889, 121.569452264212 25.0788259398172, 121.57111370177 25.0780755479013, 121.572711408896 25.0773654232302, 121.573988981755 25.0767855074002, 121.575011632884 25.0763049269229, 121.575764541251 25.0758619320748, 121.57720514545 25.0749356649407, 121.579211913027 25.0737194252813, 121.57991442989 25.0730374666328, 121.580350168197 25.072613254219, 121.581612920025 25.0714157859328, 121.583349944841 25.069697425336, 121.584120638445 25.0689187852536, 121.584090996383 25.0688194411629, 121.583919072426 25.0687294944167, 121.583142450409 25.0685214084073, 121.581654418912 25.0680971803514, 121.581151985966 25.0678649282933, 121.579829950014 25.0672017321312, 121.579425335872 25.0670366037836, 121.578998490183 25.0669224905677, 121.578039569487 25.066762731887, 121.575287304058 25.0660149510902, 121.574443987402 25.0657786675196, 121.572718819411 25.0652067519904, 121.572337918919 25.0650711566025, 121.572241582218 25.0648778322256, 121.572306794754 25.0644213706807, 121.5723290263 25.0638360233872, 121.572896671782 25.0606219335963, 121.573033025266 25.0598512913495, 121.573212359739 25.0588792548439, 121.573252376522 25.0585127252646, 121.573197538708 25.0580817495218, 121.573073042049 25.0577111897274, 121.572361632568 25.0569083063289, 121.571419015006 25.0559953221599, 121.570178494724 25.0547936635121, 121.570043623343 25.0545774979687, 121.569914680374 25.0541491936853, 121.570024356003 25.0531596573761, 121.570264456703 25.0516746665959, 121.570255564084 25.0513658507021, 121.570197762064 25.0509845291338, 121.57000360656 25.0505562122958, 121.569481906274 25.0496807763604, 121.568635254886 25.0482685856616, 121.568587827588 25.0481148448794, 121.568385520517 25.0477509685482, 121.567967567447 25.0470742362633, 121.567499222872 25.0462887387487, 121.567133884461 25.0456677221944, 121.566914533205 25.045332036261, 121.566623299948 25.0448822156693, 121.566063064982 25.04396578503, 121.56557693517 25.0432071229821, 121.565342762883 25.0428674019949, 121.564810687875 25.0419704266444, 121.564377913774 25.0412721778183, 121.564335673837 25.0411959744606, 121.564331968579 25.0411180925659, 121.565313825394 25.0410869914879)",
+      "EncodedPolyline": "umaxCkc~dVsBa@KYnCcI|AoEpCeItCkIlC_IrB_G`BkEvAuCvDaHrFoKfCkCtAwAlF{FvI{IzCyCRDP`@h@zCrAhHn@bBbCfG^nAVtA^~DtCdPl@hDpBvIZjAd@RzAMrBCbSqBxCY`Ec@hAGtAHhAX~ClCtDzDpFvFh@ZtAXdEUhHo@z@?lAJrAf@nDfBxGfD^HfAf@fCrAzC|AzBhAbAj@xAx@tDnBvC~AbAn@rDhBjCtALFN@DcE",
+      "UpdateTime": "2026-06-08T08:05:02+08:00",
+      "VersionID": 0
+    }
+  ],
+  "stopOfRoutes": [
+    {
+      "RouteUID": "TPE15693",
+      "RouteID": "15693",
+      "RouteName": {
+        "Zh_tw": "內科快線2",
+        "En": "NH Express 2"
+      },
+      "Operators": [
+        {
+          "OperatorID": "400",
+          "OperatorName": {
+            "Zh_tw": "三重客運",
+            "En": "San Chung Bus Co., Ltd."
+          },
+          "OperatorCode": "SanChungBus",
+          "OperatorNo": "0301"
+        }
+      ],
+      "SubRouteUID": "TPE155824",
+      "SubRouteID": "155824",
+      "SubRouteName": {
+        "Zh_tw": "內快2(上午)(三重)",
+        "En": "NH Exp.2-Neihu Science-Based Park"
+      },
+      "Direction": 0,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE55213",
+          "StopID": "55213",
+          "StopName": {
+            "Zh_tw": "捷運市政府站",
+            "En": "MRT Taipei City Hall Sta."
+          },
+          "StopBoarding": -1,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.565249,
+            "PositionLat": 25.040991,
+            "GeoHash": "wsqqqq947"
+          },
+          "StationID": "2150",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE59898",
+          "StopID": "59898",
+          "StopName": {
+            "Zh_tw": "陽光抽水站",
+            "En": "Yangguang Pumping Sta."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.57446,
+            "PositionLat": 25.07204,
+            "GeoHash": "wsqqwkpz4"
+          },
+          "StationID": "8661",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE59184",
+          "StopID": "59184",
+          "StopName": {
+            "Zh_tw": "金泰公園",
+            "En": "Jintai Park"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.5674816,
+            "PositionLat": 25.07803318,
+            "GeoHash": "wsqqwm6dp"
+          },
+          "StationID": "1000864",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55215",
+          "StopID": "55215",
+          "StopName": {
+            "Zh_tw": "基湖站",
+            "En": "Jihu Stop"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.56489,
+            "PositionLat": 25.0801,
+            "GeoHash": "wsqqwm8y5"
+          },
+          "StationID": "8405",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55216",
+          "StopID": "55216",
+          "StopName": {
+            "Zh_tw": "基湖路口",
+            "En": "Jihu Rd. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.5662362,
+            "PositionLat": 25.08025003,
+            "GeoHash": "wsqqwm9z4"
+          },
+          "StationID": "8404",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55217",
+          "StopID": "55217",
+          "StopName": {
+            "Zh_tw": "仁寶大樓",
+            "En": "Renbao Bldg."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.5684974,
+            "PositionLat": 25.07921316,
+            "GeoHash": "wsqqwme3p"
+          },
+          "StationID": "1007",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55218",
+          "StopID": "55218",
+          "StopName": {
+            "Zh_tw": "瑞光港墘路口",
+            "En": "Ruiguang & Gangqian Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.572469,
+            "PositionLat": 25.077397,
+            "GeoHash": "wsqqwmnq7"
+          },
+          "StationID": "1013",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55219",
+          "StopID": "55219",
+          "StopName": {
+            "Zh_tw": "瑞光路",
+            "En": "Ruiguang Rd."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.577343,
+            "PositionLat": 25.074821,
+            "GeoHash": "wsqqws9zm"
+          },
+          "StationID": "1132",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55220",
+          "StopID": "55220",
+          "StopName": {
+            "Zh_tw": "公館山",
+            "En": "Gongguanshan"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 11,
+          "StopPosition": {
+            "PositionLon": 121.5809507,
+            "PositionLat": 25.07198833,
+            "GeoHash": "wsqqwshwc"
+          },
+          "StationID": "1006",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55221",
+          "StopID": "55221",
+          "StopName": {
+            "Zh_tw": "麗寶大樓",
+            "En": "Libao Building"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 12,
+          "StopPosition": {
+            "PositionLon": 121.5820136022182,
+            "PositionLat": 25.070960172287336,
+            "GeoHash": "wsqqwsj2f"
+          },
+          "StationID": "1165610352",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE59185",
+          "StopID": "59185",
+          "StopName": {
+            "Zh_tw": "時報廣場",
+            "En": "China Times Daily News Square"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 13,
+          "StopPosition": {
+            "PositionLon": 121.583129808238,
+            "PositionLat": 25.0685609459737,
+            "GeoHash": "wsqqwew4u"
+          },
+          "StationID": "8601",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE59186",
+          "StopID": "59186",
+          "StopName": {
+            "Zh_tw": "民權大橋",
+            "En": "Minquan Bridge"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 14,
+          "StopPosition": {
+            "PositionLon": 121.57895384595646,
+            "PositionLat": 25.066982973174284,
+            "GeoHash": "wsqqwe71f"
+          },
+          "StationID": "8602",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    },
+    {
+      "RouteUID": "TPE15693",
+      "RouteID": "15693",
+      "RouteName": {
+        "Zh_tw": "內科快線2",
+        "En": "NH Express 2"
+      },
+      "Operators": [
+        {
+          "OperatorID": "1000",
+          "OperatorName": {
+            "Zh_tw": "東南客運",
+            "En": "Southeast Bus Co., Ltd."
+          },
+          "OperatorCode": "SoutheastBus",
+          "OperatorNo": "0804"
+        }
+      ],
+      "SubRouteUID": "TPE157818",
+      "SubRouteID": "157818",
+      "SubRouteName": {
+        "Zh_tw": "內快2(上午)(東南)",
+        "En": "NH Exp.2-Neihu Science-Based Park"
+      },
+      "Direction": 0,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE55213",
+          "StopID": "55213",
+          "StopName": {
+            "Zh_tw": "捷運市政府站",
+            "En": "MRT Taipei City Hall Sta."
+          },
+          "StopBoarding": -1,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.565249,
+            "PositionLat": 25.040991,
+            "GeoHash": "wsqqqq947"
+          },
+          "StationID": "2150",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE59898",
+          "StopID": "59898",
+          "StopName": {
+            "Zh_tw": "陽光抽水站",
+            "En": "Yangguang Pumping Sta."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.57446,
+            "PositionLat": 25.07204,
+            "GeoHash": "wsqqwkpz4"
+          },
+          "StationID": "8661",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE59184",
+          "StopID": "59184",
+          "StopName": {
+            "Zh_tw": "金泰公園",
+            "En": "Jintai Park"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.5674816,
+            "PositionLat": 25.07803318,
+            "GeoHash": "wsqqwm6dp"
+          },
+          "StationID": "1000864",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55215",
+          "StopID": "55215",
+          "StopName": {
+            "Zh_tw": "基湖站",
+            "En": "Jihu Stop"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.56489,
+            "PositionLat": 25.0801,
+            "GeoHash": "wsqqwm8y5"
+          },
+          "StationID": "8405",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55216",
+          "StopID": "55216",
+          "StopName": {
+            "Zh_tw": "基湖路口",
+            "En": "Jihu Rd. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.5662362,
+            "PositionLat": 25.08025003,
+            "GeoHash": "wsqqwm9z4"
+          },
+          "StationID": "8404",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55217",
+          "StopID": "55217",
+          "StopName": {
+            "Zh_tw": "仁寶大樓",
+            "En": "Renbao Bldg."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.5684974,
+            "PositionLat": 25.07921316,
+            "GeoHash": "wsqqwme3p"
+          },
+          "StationID": "1007",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55218",
+          "StopID": "55218",
+          "StopName": {
+            "Zh_tw": "瑞光港墘路口",
+            "En": "Ruiguang & Gangqian Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.572469,
+            "PositionLat": 25.077397,
+            "GeoHash": "wsqqwmnq7"
+          },
+          "StationID": "1013",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55219",
+          "StopID": "55219",
+          "StopName": {
+            "Zh_tw": "瑞光路",
+            "En": "Ruiguang Rd."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.577343,
+            "PositionLat": 25.074821,
+            "GeoHash": "wsqqws9zm"
+          },
+          "StationID": "1132",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55220",
+          "StopID": "55220",
+          "StopName": {
+            "Zh_tw": "公館山",
+            "En": "Gongguanshan"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 11,
+          "StopPosition": {
+            "PositionLon": 121.5809507,
+            "PositionLat": 25.07198833,
+            "GeoHash": "wsqqwshwc"
+          },
+          "StationID": "1006",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55221",
+          "StopID": "55221",
+          "StopName": {
+            "Zh_tw": "麗寶大樓",
+            "En": "Libao Building"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 12,
+          "StopPosition": {
+            "PositionLon": 121.5820136022182,
+            "PositionLat": 25.070960172287336,
+            "GeoHash": "wsqqwsj2f"
+          },
+          "StationID": "1165610352",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    },
+    {
+      "RouteUID": "TPE15693",
+      "RouteID": "15693",
+      "RouteName": {
+        "Zh_tw": "內科快線2",
+        "En": "NH Express 2"
+      },
+      "Operators": [
+        {
+          "OperatorID": "1100",
+          "OperatorName": {
+            "Zh_tw": "大南汽車",
+            "En": "Danan Bus Co., Ltd."
+          },
+          "OperatorCode": "DananBus",
+          "OperatorNo": "0307"
+        }
+      ],
+      "SubRouteUID": "TPE157819",
+      "SubRouteID": "157819",
+      "SubRouteName": {
+        "Zh_tw": "內快2(上午)(大南)",
+        "En": "NH Exp.2-Neihu Science-Based Park"
+      },
+      "Direction": 0,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE55213",
+          "StopID": "55213",
+          "StopName": {
+            "Zh_tw": "捷運市政府站",
+            "En": "MRT Taipei City Hall Sta."
+          },
+          "StopBoarding": -1,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.565249,
+            "PositionLat": 25.040991,
+            "GeoHash": "wsqqqq947"
+          },
+          "StationID": "2150",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE59898",
+          "StopID": "59898",
+          "StopName": {
+            "Zh_tw": "陽光抽水站",
+            "En": "Yangguang Pumping Sta."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.57446,
+            "PositionLat": 25.07204,
+            "GeoHash": "wsqqwkpz4"
+          },
+          "StationID": "8661",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE59184",
+          "StopID": "59184",
+          "StopName": {
+            "Zh_tw": "金泰公園",
+            "En": "Jintai Park"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.5674816,
+            "PositionLat": 25.07803318,
+            "GeoHash": "wsqqwm6dp"
+          },
+          "StationID": "1000864",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55215",
+          "StopID": "55215",
+          "StopName": {
+            "Zh_tw": "基湖站",
+            "En": "Jihu Stop"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.56489,
+            "PositionLat": 25.0801,
+            "GeoHash": "wsqqwm8y5"
+          },
+          "StationID": "8405",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55216",
+          "StopID": "55216",
+          "StopName": {
+            "Zh_tw": "基湖路口",
+            "En": "Jihu Rd. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.5662362,
+            "PositionLat": 25.08025003,
+            "GeoHash": "wsqqwm9z4"
+          },
+          "StationID": "8404",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55217",
+          "StopID": "55217",
+          "StopName": {
+            "Zh_tw": "仁寶大樓",
+            "En": "Renbao Bldg."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.5684974,
+            "PositionLat": 25.07921316,
+            "GeoHash": "wsqqwme3p"
+          },
+          "StationID": "1007",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55218",
+          "StopID": "55218",
+          "StopName": {
+            "Zh_tw": "瑞光港墘路口",
+            "En": "Ruiguang & Gangqian Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.572469,
+            "PositionLat": 25.077397,
+            "GeoHash": "wsqqwmnq7"
+          },
+          "StationID": "1013",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55219",
+          "StopID": "55219",
+          "StopName": {
+            "Zh_tw": "瑞光路",
+            "En": "Ruiguang Rd."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.577343,
+            "PositionLat": 25.074821,
+            "GeoHash": "wsqqws9zm"
+          },
+          "StationID": "1132",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55220",
+          "StopID": "55220",
+          "StopName": {
+            "Zh_tw": "公館山",
+            "En": "Gongguanshan"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 11,
+          "StopPosition": {
+            "PositionLon": 121.5809507,
+            "PositionLat": 25.07198833,
+            "GeoHash": "wsqqwshwc"
+          },
+          "StationID": "1006",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55221",
+          "StopID": "55221",
+          "StopName": {
+            "Zh_tw": "麗寶大樓",
+            "En": "Libao Building"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 12,
+          "StopPosition": {
+            "PositionLon": 121.5820136022182,
+            "PositionLat": 25.070960172287336,
+            "GeoHash": "wsqqwsj2f"
+          },
+          "StationID": "1165610352",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    },
+    {
+      "RouteUID": "TPE15693",
+      "RouteID": "15693",
+      "RouteName": {
+        "Zh_tw": "內科快線2",
+        "En": "NH Express 2"
+      },
+      "Operators": [
+        {
+          "OperatorID": "5300",
+          "OperatorName": {
+            "Zh_tw": "光華巴士",
+            "En": "Kuang-Hua Bus Co., Ltd."
+          },
+          "OperatorCode": "KuangHuaBus.",
+          "OperatorNo": "0601"
+        },
+        {
+          "OperatorID": "5500",
+          "OperatorName": {
+            "Zh_tw": "中興巴士",
+            "En": "Zhongxing Bus"
+          },
+          "OperatorCode": "ZhongxingBus",
+          "OperatorNo": "0410"
+        }
+      ],
+      "SubRouteUID": "TPE157820",
+      "SubRouteID": "157820",
+      "SubRouteName": {
+        "Zh_tw": "內快2(上午)(光華、中興)",
+        "En": "NH Exp.2-Neihu Science-Based Park"
+      },
+      "Direction": 0,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE55213",
+          "StopID": "55213",
+          "StopName": {
+            "Zh_tw": "捷運市政府站",
+            "En": "MRT Taipei City Hall Sta."
+          },
+          "StopBoarding": -1,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.565249,
+            "PositionLat": 25.040991,
+            "GeoHash": "wsqqqq947"
+          },
+          "StationID": "2150",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE59898",
+          "StopID": "59898",
+          "StopName": {
+            "Zh_tw": "陽光抽水站",
+            "En": "Yangguang Pumping Sta."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.57446,
+            "PositionLat": 25.07204,
+            "GeoHash": "wsqqwkpz4"
+          },
+          "StationID": "8661",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE59184",
+          "StopID": "59184",
+          "StopName": {
+            "Zh_tw": "金泰公園",
+            "En": "Jintai Park"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.5674816,
+            "PositionLat": 25.07803318,
+            "GeoHash": "wsqqwm6dp"
+          },
+          "StationID": "1000864",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55215",
+          "StopID": "55215",
+          "StopName": {
+            "Zh_tw": "基湖站",
+            "En": "Jihu Stop"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.56489,
+            "PositionLat": 25.0801,
+            "GeoHash": "wsqqwm8y5"
+          },
+          "StationID": "8405",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55216",
+          "StopID": "55216",
+          "StopName": {
+            "Zh_tw": "基湖路口",
+            "En": "Jihu Rd. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.5662362,
+            "PositionLat": 25.08025003,
+            "GeoHash": "wsqqwm9z4"
+          },
+          "StationID": "8404",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55217",
+          "StopID": "55217",
+          "StopName": {
+            "Zh_tw": "仁寶大樓",
+            "En": "Renbao Bldg."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.5684974,
+            "PositionLat": 25.07921316,
+            "GeoHash": "wsqqwme3p"
+          },
+          "StationID": "1007",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55218",
+          "StopID": "55218",
+          "StopName": {
+            "Zh_tw": "瑞光港墘路口",
+            "En": "Ruiguang & Gangqian Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.572469,
+            "PositionLat": 25.077397,
+            "GeoHash": "wsqqwmnq7"
+          },
+          "StationID": "1013",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55219",
+          "StopID": "55219",
+          "StopName": {
+            "Zh_tw": "瑞光路",
+            "En": "Ruiguang Rd."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.577343,
+            "PositionLat": 25.074821,
+            "GeoHash": "wsqqws9zm"
+          },
+          "StationID": "1132",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55220",
+          "StopID": "55220",
+          "StopName": {
+            "Zh_tw": "公館山",
+            "En": "Gongguanshan"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 11,
+          "StopPosition": {
+            "PositionLon": 121.5809507,
+            "PositionLat": 25.07198833,
+            "GeoHash": "wsqqwshwc"
+          },
+          "StationID": "1006",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55221",
+          "StopID": "55221",
+          "StopName": {
+            "Zh_tw": "麗寶大樓",
+            "En": "Libao Building"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 12,
+          "StopPosition": {
+            "PositionLon": 121.5820136022182,
+            "PositionLat": 25.070960172287336,
+            "GeoHash": "wsqqwsj2f"
+          },
+          "StationID": "1165610352",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    },
+    {
+      "RouteUID": "TPE15693",
+      "RouteID": "15693",
+      "RouteName": {
+        "Zh_tw": "內科快線2",
+        "En": "NH Express 2"
+      },
+      "Operators": [
+        {
+          "OperatorID": "1100",
+          "OperatorName": {
+            "Zh_tw": "大南汽車",
+            "En": "Danan Bus Co., Ltd."
+          },
+          "OperatorCode": "DananBus",
+          "OperatorNo": "0307"
+        }
+      ],
+      "SubRouteUID": "TPE158466",
+      "SubRouteID": "158466",
+      "SubRouteName": {
+        "Zh_tw": "內快2(下午)(大南)",
+        "En": "NH Exp.2-Neihu Science-Based Park"
+      },
+      "Direction": 1,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE170279",
+          "StopID": "170279",
+          "StopName": {
+            "Zh_tw": "基湖站",
+            "En": "Jihu Stop"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.5649,
+            "PositionLat": 25.0801,
+            "GeoHash": "wsqqwm8y5"
+          },
+          "StationID": "8405",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE170281",
+          "StopID": "170281",
+          "StopName": {
+            "Zh_tw": "基湖路口",
+            "En": "Jihu Rd. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.5662362,
+            "PositionLat": 25.08025003,
+            "GeoHash": "wsqqwm9z4"
+          },
+          "StationID": "8404",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE170282",
+          "StopID": "170282",
+          "StopName": {
+            "Zh_tw": "仁寶大樓",
+            "En": "Renbao Bldg."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.5684974,
+            "PositionLat": 25.07921316,
+            "GeoHash": "wsqqwme3p"
+          },
+          "StationID": "1007",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE170283",
+          "StopID": "170283",
+          "StopName": {
+            "Zh_tw": "瑞光港墘路口",
+            "En": "Ruiguang & Gangqian Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.572469,
+            "PositionLat": 25.077397,
+            "GeoHash": "wsqqwmnq7"
+          },
+          "StationID": "1013",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE170284",
+          "StopID": "170284",
+          "StopName": {
+            "Zh_tw": "瑞光路",
+            "En": "Ruiguang Rd."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.577343,
+            "PositionLat": 25.074821,
+            "GeoHash": "wsqqws9zm"
+          },
+          "StationID": "1132",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE170285",
+          "StopID": "170285",
+          "StopName": {
+            "Zh_tw": "公館山",
+            "En": "Gongguanshan"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.581,
+            "PositionLat": 25.07199,
+            "GeoHash": "wsqqwshwf"
+          },
+          "StationID": "1006",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE170286",
+          "StopID": "170286",
+          "StopName": {
+            "Zh_tw": "麗寶大樓",
+            "En": "Libao Building"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.5820136022182,
+            "PositionLat": 25.070960172287336,
+            "GeoHash": "wsqqwsj2f"
+          },
+          "StationID": "1165610352",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55231",
+          "StopID": "55231",
+          "StopName": {
+            "Zh_tw": "捷運市政府站",
+            "En": "MRT Taipei City Hall Sta."
+          },
+          "StopBoarding": -1,
+          "StopSequence": 12,
+          "StopPosition": {
+            "PositionLon": 121.565249,
+            "PositionLat": 25.040991,
+            "GeoHash": "wsqqqq947"
+          },
+          "StationID": "2150",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    },
+    {
+      "RouteUID": "TPE15693",
+      "RouteID": "15693",
+      "RouteName": {
+        "Zh_tw": "內科快線2",
+        "En": "NH Express 2"
+      },
+      "Operators": [
+        {
+          "OperatorID": "5300",
+          "OperatorName": {
+            "Zh_tw": "光華巴士",
+            "En": "Kuang-Hua Bus Co., Ltd."
+          },
+          "OperatorCode": "KuangHuaBus.",
+          "OperatorNo": "0601"
+        },
+        {
+          "OperatorID": "5500",
+          "OperatorName": {
+            "Zh_tw": "中興巴士",
+            "En": "Zhongxing Bus"
+          },
+          "OperatorCode": "ZhongxingBus",
+          "OperatorNo": "0410"
+        }
+      ],
+      "SubRouteUID": "TPE158518",
+      "SubRouteID": "158518",
+      "SubRouteName": {
+        "Zh_tw": "內快2(下午)(光華、中興)",
+        "En": "NH Exp.2-Neihu Science-Based Park"
+      },
+      "Direction": 1,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE170279",
+          "StopID": "170279",
+          "StopName": {
+            "Zh_tw": "基湖站",
+            "En": "Jihu Stop"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.5649,
+            "PositionLat": 25.0801,
+            "GeoHash": "wsqqwm8y5"
+          },
+          "StationID": "8405",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE170281",
+          "StopID": "170281",
+          "StopName": {
+            "Zh_tw": "基湖路口",
+            "En": "Jihu Rd. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.5662362,
+            "PositionLat": 25.08025003,
+            "GeoHash": "wsqqwm9z4"
+          },
+          "StationID": "8404",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE170282",
+          "StopID": "170282",
+          "StopName": {
+            "Zh_tw": "仁寶大樓",
+            "En": "Renbao Bldg."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.5684974,
+            "PositionLat": 25.07921316,
+            "GeoHash": "wsqqwme3p"
+          },
+          "StationID": "1007",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE170283",
+          "StopID": "170283",
+          "StopName": {
+            "Zh_tw": "瑞光港墘路口",
+            "En": "Ruiguang & Gangqian Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.572469,
+            "PositionLat": 25.077397,
+            "GeoHash": "wsqqwmnq7"
+          },
+          "StationID": "1013",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE170284",
+          "StopID": "170284",
+          "StopName": {
+            "Zh_tw": "瑞光路",
+            "En": "Ruiguang Rd."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.577343,
+            "PositionLat": 25.074821,
+            "GeoHash": "wsqqws9zm"
+          },
+          "StationID": "1132",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE170285",
+          "StopID": "170285",
+          "StopName": {
+            "Zh_tw": "公館山",
+            "En": "Gongguanshan"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.581,
+            "PositionLat": 25.07199,
+            "GeoHash": "wsqqwshwf"
+          },
+          "StationID": "1006",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE170286",
+          "StopID": "170286",
+          "StopName": {
+            "Zh_tw": "麗寶大樓",
+            "En": "Libao Building"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.5820136022182,
+            "PositionLat": 25.070960172287336,
+            "GeoHash": "wsqqwsj2f"
+          },
+          "StationID": "1165610352",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE170287",
+          "StopID": "170287",
+          "StopName": {
+            "Zh_tw": "時報廣場",
+            "En": "China Times Daily News Square"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 11,
+          "StopPosition": {
+            "PositionLon": 121.583129808238,
+            "PositionLat": 25.0685609459737,
+            "GeoHash": "wsqqwew4u"
+          },
+          "StationID": "8601",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE170288",
+          "StopID": "170288",
+          "StopName": {
+            "Zh_tw": "民權大橋",
+            "En": "Minquan Bridge"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 12,
+          "StopPosition": {
+            "PositionLon": 121.57895384595646,
+            "PositionLat": 25.066982973174284,
+            "GeoHash": "wsqqwe71f"
+          },
+          "StationID": "8602",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55231",
+          "StopID": "55231",
+          "StopName": {
+            "Zh_tw": "捷運市政府站",
+            "En": "MRT Taipei City Hall Sta."
+          },
+          "StopBoarding": -1,
+          "StopSequence": 14,
+          "StopPosition": {
+            "PositionLon": 121.565249,
+            "PositionLat": 25.040991,
+            "GeoHash": "wsqqqq947"
+          },
+          "StationID": "2150",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    },
+    {
+      "RouteUID": "TPE15693",
+      "RouteID": "15693",
+      "RouteName": {
+        "Zh_tw": "內科快線2",
+        "En": "NH Express 2"
+      },
+      "Operators": [
+        {
+          "OperatorID": "400",
+          "OperatorName": {
+            "Zh_tw": "三重客運",
+            "En": "San Chung Bus Co., Ltd."
+          },
+          "OperatorCode": "SanChungBus",
+          "OperatorNo": "0301"
+        }
+      ],
+      "SubRouteUID": "TPE158519",
+      "SubRouteID": "158519",
+      "SubRouteName": {
+        "Zh_tw": "內快2(下午)(三重)",
+        "En": "NH Exp.2-Neihu Science-Based Park"
+      },
+      "Direction": 1,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE170279",
+          "StopID": "170279",
+          "StopName": {
+            "Zh_tw": "基湖站",
+            "En": "Jihu Stop"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.5649,
+            "PositionLat": 25.0801,
+            "GeoHash": "wsqqwm8y5"
+          },
+          "StationID": "8405",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE170281",
+          "StopID": "170281",
+          "StopName": {
+            "Zh_tw": "基湖路口",
+            "En": "Jihu Rd. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.5662362,
+            "PositionLat": 25.08025003,
+            "GeoHash": "wsqqwm9z4"
+          },
+          "StationID": "8404",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE170282",
+          "StopID": "170282",
+          "StopName": {
+            "Zh_tw": "仁寶大樓",
+            "En": "Renbao Bldg."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.5684974,
+            "PositionLat": 25.07921316,
+            "GeoHash": "wsqqwme3p"
+          },
+          "StationID": "1007",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE170283",
+          "StopID": "170283",
+          "StopName": {
+            "Zh_tw": "瑞光港墘路口",
+            "En": "Ruiguang & Gangqian Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.572469,
+            "PositionLat": 25.077397,
+            "GeoHash": "wsqqwmnq7"
+          },
+          "StationID": "1013",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE170284",
+          "StopID": "170284",
+          "StopName": {
+            "Zh_tw": "瑞光路",
+            "En": "Ruiguang Rd."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.577343,
+            "PositionLat": 25.074821,
+            "GeoHash": "wsqqws9zm"
+          },
+          "StationID": "1132",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE170285",
+          "StopID": "170285",
+          "StopName": {
+            "Zh_tw": "公館山",
+            "En": "Gongguanshan"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.581,
+            "PositionLat": 25.07199,
+            "GeoHash": "wsqqwshwf"
+          },
+          "StationID": "1006",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE170286",
+          "StopID": "170286",
+          "StopName": {
+            "Zh_tw": "麗寶大樓",
+            "En": "Libao Building"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.5820136022182,
+            "PositionLat": 25.070960172287336,
+            "GeoHash": "wsqqwsj2f"
+          },
+          "StationID": "1165610352",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE170287",
+          "StopID": "170287",
+          "StopName": {
+            "Zh_tw": "時報廣場",
+            "En": "China Times Daily News Square"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 11,
+          "StopPosition": {
+            "PositionLon": 121.583129808238,
+            "PositionLat": 25.0685609459737,
+            "GeoHash": "wsqqwew4u"
+          },
+          "StationID": "8601",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE170288",
+          "StopID": "170288",
+          "StopName": {
+            "Zh_tw": "民權大橋",
+            "En": "Minquan Bridge"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 12,
+          "StopPosition": {
+            "PositionLon": 121.57895384595646,
+            "PositionLat": 25.066982973174284,
+            "GeoHash": "wsqqwe71f"
+          },
+          "StationID": "8602",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55231",
+          "StopID": "55231",
+          "StopName": {
+            "Zh_tw": "捷運市政府站",
+            "En": "MRT Taipei City Hall Sta."
+          },
+          "StopBoarding": -1,
+          "StopSequence": 14,
+          "StopPosition": {
+            "PositionLon": 121.565249,
+            "PositionLat": 25.040991,
+            "GeoHash": "wsqqqq947"
+          },
+          "StationID": "2150",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    },
+    {
+      "RouteUID": "TPE15693",
+      "RouteID": "15693",
+      "RouteName": {
+        "Zh_tw": "內科快線2",
+        "En": "NH Express 2"
+      },
+      "Operators": [
+        {
+          "OperatorID": "100",
+          "OperatorName": {
+            "Zh_tw": "臺北客運",
+            "En": "Taipei Bus Co., Ltd."
+          },
+          "OperatorCode": "TaipeiBus",
+          "OperatorNo": "1407"
+        }
+      ],
+      "SubRouteUID": "TPE161727",
+      "SubRouteID": "161727",
+      "SubRouteName": {
+        "Zh_tw": "內快2(上午)(北客)",
+        "En": "NH Exp.2-Neihu Science-Based Park"
+      },
+      "Direction": 0,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE55213",
+          "StopID": "55213",
+          "StopName": {
+            "Zh_tw": "捷運市政府站",
+            "En": "MRT Taipei City Hall Sta."
+          },
+          "StopBoarding": -1,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.565249,
+            "PositionLat": 25.040991,
+            "GeoHash": "wsqqqq947"
+          },
+          "StationID": "2150",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE59898",
+          "StopID": "59898",
+          "StopName": {
+            "Zh_tw": "陽光抽水站",
+            "En": "Yangguang Pumping Sta."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.57446,
+            "PositionLat": 25.07204,
+            "GeoHash": "wsqqwkpz4"
+          },
+          "StationID": "8661",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE59184",
+          "StopID": "59184",
+          "StopName": {
+            "Zh_tw": "金泰公園",
+            "En": "Jintai Park"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.5674816,
+            "PositionLat": 25.07803318,
+            "GeoHash": "wsqqwm6dp"
+          },
+          "StationID": "1000864",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55215",
+          "StopID": "55215",
+          "StopName": {
+            "Zh_tw": "基湖站",
+            "En": "Jihu Stop"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.56489,
+            "PositionLat": 25.0801,
+            "GeoHash": "wsqqwm8y5"
+          },
+          "StationID": "8405",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55216",
+          "StopID": "55216",
+          "StopName": {
+            "Zh_tw": "基湖路口",
+            "En": "Jihu Rd. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.5662362,
+            "PositionLat": 25.08025003,
+            "GeoHash": "wsqqwm9z4"
+          },
+          "StationID": "8404",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55217",
+          "StopID": "55217",
+          "StopName": {
+            "Zh_tw": "仁寶大樓",
+            "En": "Renbao Bldg."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.5684974,
+            "PositionLat": 25.07921316,
+            "GeoHash": "wsqqwme3p"
+          },
+          "StationID": "1007",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55218",
+          "StopID": "55218",
+          "StopName": {
+            "Zh_tw": "瑞光港墘路口",
+            "En": "Ruiguang & Gangqian Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.572469,
+            "PositionLat": 25.077397,
+            "GeoHash": "wsqqwmnq7"
+          },
+          "StationID": "1013",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55219",
+          "StopID": "55219",
+          "StopName": {
+            "Zh_tw": "瑞光路",
+            "En": "Ruiguang Rd."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.577343,
+            "PositionLat": 25.074821,
+            "GeoHash": "wsqqws9zm"
+          },
+          "StationID": "1132",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55220",
+          "StopID": "55220",
+          "StopName": {
+            "Zh_tw": "公館山",
+            "En": "Gongguanshan"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 11,
+          "StopPosition": {
+            "PositionLon": 121.5809507,
+            "PositionLat": 25.07198833,
+            "GeoHash": "wsqqwshwc"
+          },
+          "StationID": "1006",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55221",
+          "StopID": "55221",
+          "StopName": {
+            "Zh_tw": "麗寶大樓",
+            "En": "Libao Building"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 12,
+          "StopPosition": {
+            "PositionLon": 121.5820136022182,
+            "PositionLat": 25.070960172287336,
+            "GeoHash": "wsqqwsj2f"
+          },
+          "StationID": "1165610352",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE59185",
+          "StopID": "59185",
+          "StopName": {
+            "Zh_tw": "時報廣場",
+            "En": "China Times Daily News Square"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 13,
+          "StopPosition": {
+            "PositionLon": 121.583129808238,
+            "PositionLat": 25.0685609459737,
+            "GeoHash": "wsqqwew4u"
+          },
+          "StationID": "8601",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE59186",
+          "StopID": "59186",
+          "StopName": {
+            "Zh_tw": "民權大橋",
+            "En": "Minquan Bridge"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 14,
+          "StopPosition": {
+            "PositionLon": 121.57895384595646,
+            "PositionLat": 25.066982973174284,
+            "GeoHash": "wsqqwe71f"
+          },
+          "StationID": "8602",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    }
+  ],
+  "shapeCount": 2,
+  "stopOfRouteCount": 8
+}

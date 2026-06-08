@@ -1,0 +1,315 @@
+{
+  "schema": "twfoundry.tdx.citybus.route-context.v1",
+  "source": {
+    "provider": "TDX",
+    "city": "Taipei",
+    "datasets": [
+      "Bus.Shape.City",
+      "Bus.StopOfRoute.City"
+    ]
+  },
+  "routeName": "內科通勤專車5",
+  "generatedAt": "2026-06-08T03:19:57.524Z",
+  "shapes": [
+    {
+      "RouteUID": "TPE15688",
+      "RouteID": "15688",
+      "RouteName": {
+        "Zh_tw": "內科通勤專車5",
+        "En": "NH5"
+      },
+      "SubRouteName": {},
+      "Direction": 0,
+      "Geometry": "LINESTRING (121.565313825397 25.0410869914874, 121.566047007631 25.0410533941938, 121.566097864203 25.0409487625635, 121.566066078846 25.0392045689375, 121.565981317894 25.0391508124383, 121.563807199476 25.0391968894391, 121.563697010238 25.0392660049077, 121.563730914619 25.0395693445595, 121.56446197783 25.0407826956643, 121.56526508785 25.0422475323488, 121.565877485728 25.0432477580926, 121.566066078846 25.0437526674136, 121.566841641556 25.045008212378, 121.567242137054 25.0456916534688, 121.5676023711 25.0462867816529, 121.568189340692 25.0473138509183, 121.569615443709 25.0497096725084, 121.570115533325 25.0504890723236, 121.5705139098 25.0510323456186, 121.570783025822 25.0512876640387, 121.571628516318 25.0517944599287, 121.574461651137 25.0533071564123, 121.575083396711 25.0536406619913, 121.575282588065 25.053818552075, 121.575918305151 25.0541807303055, 121.579019191826 25.0558073200369, 121.580276498952 25.0564855925926, 121.581437742163 25.0571011536815, 121.581389799448 25.0573556392931, 121.580737747016 25.0584653591297, 121.579683869357 25.059747647215, 121.578223977892 25.0616698426257, 121.578187954488 25.0618598752309, 121.581477105599 25.063707810476)",
+      "EncodedPolyline": "yyywCef~dVFsCRI|IDHPIpLMT{@EqFqCeHaDgEyBcBe@{FyCgCoAwBgAkEuB_N}G{CcBkBmAs@u@cBiDoHuPaA{Bc@g@gA_CeIkRgC{FyBgFs@H}E`C_GrE_KbHe@DqJqS",
+      "UpdateTime": "2026-06-08T08:05:02+08:00",
+      "VersionID": 0
+    },
+    {
+      "RouteUID": "TPE15688",
+      "RouteID": "15688",
+      "RouteName": {
+        "Zh_tw": "內科通勤專車5",
+        "En": "NH5"
+      },
+      "SubRouteName": {},
+      "Direction": 1,
+      "Geometry": "LINESTRING (121.582372979512 25.0643798490568, 121.581966800049 25.0641037432391, 121.580589413029 25.0633205787573, 121.578108703689 25.0618809251062, 121.578083275005 25.0616761729908, 121.578737357251 25.0607995741282, 121.579117374799 25.0603158424357, 121.581034414989 25.0576642421986, 121.581260447731 25.057285437481, 121.581298590756 25.0571843373753, 121.581271043016 25.0570416453121, 121.577261080907 25.0549050837445, 121.575413263244 25.0539273336537, 121.575187230502 25.0538735827681, 121.574105098751 25.0532925597857, 121.572864744081 25.0526117099669, 121.571457690264 25.051857907542, 121.571068490136 25.0516499391641, 121.57093852131 25.0515584329661, 121.570740742661 25.0514163742575, 121.570232168992 25.0507559910726, 121.569777278099 25.0501391182947, 121.567782539154 25.0468320129669, 121.567144703011 25.0455790267726, 121.566012420245 25.0437328005957, 121.565686085474 25.0433565126131, 121.565323020383 25.0428522337102, 121.564719795503 25.0418219112309, 121.564492350057 25.0414212990353, 121.564464095964 25.0411749154856, 121.564529080377 25.0411032401782, 121.565313825393 25.0410869914888)",
+      "EncodedPolyline": "kk~wCypaeVv@nAzCrG~GnNf@DnDcC~AkArO}JhAm@TGZDhL`XbEpJJj@rBvEfCxFtCvGh@lAPXZf@bCdBzBxAtSnKxF~BpJ`FhA~@dBhAlEvBnAl@p@DLM@{C",
+      "UpdateTime": "2026-06-08T08:05:02+08:00",
+      "VersionID": 0
+    }
+  ],
+  "stopOfRoutes": [
+    {
+      "RouteUID": "TPE15688",
+      "RouteID": "15688",
+      "RouteName": {
+        "Zh_tw": "內科通勤專車5",
+        "En": "NH5"
+      },
+      "Operators": [
+        {
+          "OperatorID": "1000",
+          "OperatorName": {
+            "Zh_tw": "東南客運",
+            "En": "Southeast Bus Co., Ltd."
+          },
+          "OperatorCode": "SoutheastBus",
+          "OperatorNo": "0804"
+        }
+      ],
+      "SubRouteUID": "TPE155848",
+      "SubRouteID": "155848",
+      "SubRouteName": {
+        "Zh_tw": "內科5往內科",
+        "En": "NH5"
+      },
+      "Direction": 0,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE55050",
+          "StopID": "55050",
+          "StopName": {
+            "Zh_tw": "捷運市政府站",
+            "En": "MRT Taipei City Hall Sta."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.565249,
+            "PositionLat": 25.040991,
+            "GeoHash": "wsqqqq947"
+          },
+          "StationID": "2150",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE183706",
+          "StopID": "183706",
+          "StopName": {
+            "Zh_tw": "潭美國小(舊宗)",
+            "En": "Tanmei Elementary School (Jiuzong)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.581074,
+            "PositionLat": 25.057957,
+            "GeoHash": "wsqqw9sth"
+          },
+          "StationID": "1000222",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55052",
+          "StopID": "55052",
+          "StopName": {
+            "Zh_tw": "新湖一路口",
+            "En": "Xinhu 1st. Rd. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.5791317,
+            "PositionLat": 25.06054231,
+            "GeoHash": "wsqqwd5hp"
+          },
+          "StationID": "1000223",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE178491",
+          "StopID": "178491",
+          "StopName": {
+            "Zh_tw": "新湖舊宗路口",
+            "En": "Xinhu and Jiuzong Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.57861,
+            "PositionLat": 25.062,
+            "GeoHash": "wsqqwd6ud"
+          },
+          "StationID": "1124",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55053",
+          "StopID": "55053",
+          "StopName": {
+            "Zh_tw": "精技大樓",
+            "En": "Unitech Building"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 6,
+          "StopPosition": {
+            "PositionLon": 121.58149990509064,
+            "PositionLat": 25.063647810032915,
+            "GeoHash": "wsqqwdsyq"
+          },
+          "StationID": "1001443",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    },
+    {
+      "RouteUID": "TPE15688",
+      "RouteID": "15688",
+      "RouteName": {
+        "Zh_tw": "內科通勤專車5",
+        "En": "NH5"
+      },
+      "Operators": [
+        {
+          "OperatorID": "1000",
+          "OperatorName": {
+            "Zh_tw": "東南客運",
+            "En": "Southeast Bus Co., Ltd."
+          },
+          "OperatorCode": "SoutheastBus",
+          "OperatorNo": "0804"
+        }
+      ],
+      "SubRouteUID": "TPE155910",
+      "SubRouteID": "155910",
+      "SubRouteName": {
+        "Zh_tw": "內科5往市政府",
+        "En": "NH5"
+      },
+      "Direction": 1,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE55069",
+          "StopID": "55069",
+          "StopName": {
+            "Zh_tw": "精技大樓",
+            "En": "Unitech Building"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.58235002103366,
+            "PositionLat": 25.064394618249743,
+            "GeoHash": "wsqqwdvdd"
+          },
+          "StationID": "1139",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE156235",
+          "StopID": "156235",
+          "StopName": {
+            "Zh_tw": "東南客運停車場",
+            "En": "SoutheastBusParkingLot"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 2,
+          "StopPosition": {
+            "PositionLon": 121.580999258182,
+            "PositionLat": 25.0635997659263,
+            "GeoHash": "wsqqwdsw4"
+          },
+          "StationID": "4820",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE219375",
+          "StopID": "219375",
+          "StopName": {
+            "Zh_tw": "新湖舊宗路口",
+            "En": "Xinhu and Jiuzong Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.578721077514,
+            "PositionLat": 25.0623176113037,
+            "GeoHash": "wsqqwd6yt"
+          },
+          "StationID": "4020",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55068",
+          "StopID": "55068",
+          "StopName": {
+            "Zh_tw": "新湖一路口",
+            "En": "Xinhu 1st. Rd. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.578858331191,
+            "PositionLat": 25.0605916742291,
+            "GeoHash": "wsqqwd5h8"
+          },
+          "StationID": "1000213",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE183707",
+          "StopID": "183707",
+          "StopName": {
+            "Zh_tw": "潭美國小(舊宗)",
+            "En": "Tanmei Elementary School (Jiuzong)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.580495,
+            "PositionLat": 25.058297,
+            "GeoHash": "wsqqw9spn"
+          },
+          "StationID": "1000215",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE153885",
+          "StopID": "153885",
+          "StopName": {
+            "Zh_tw": "松山高中(基隆路)",
+            "En": "Songshan High School (Keelung Rd.)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.56628044728,
+            "PositionLat": 25.0444493988665,
+            "GeoHash": "wsqqqr1y7"
+          },
+          "StationID": "2095",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE55071",
+          "StopID": "55071",
+          "StopName": {
+            "Zh_tw": "捷運市政府站",
+            "En": "MRT Taipei City Hall Sta."
+          },
+          "StopBoarding": -1,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.565249,
+            "PositionLat": 25.040991,
+            "GeoHash": "wsqqqq947"
+          },
+          "StationID": "2150",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    }
+  ],
+  "shapeCount": 2,
+  "stopOfRouteCount": 2
+}

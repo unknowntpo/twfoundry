@@ -1,0 +1,621 @@
+{
+  "schema": "twfoundry.tdx.citybus.route-context.v1",
+  "source": {
+    "provider": "TDX",
+    "city": "Taipei",
+    "datasets": [
+      "Bus.Shape.City",
+      "Bus.StopOfRoute.City"
+    ]
+  },
+  "routeName": "224",
+  "generatedAt": "2026-06-08T03:19:21.915Z",
+  "shapes": [
+    {
+      "RouteUID": "TPE15375",
+      "RouteID": "15375",
+      "RouteName": {
+        "Zh_tw": "224",
+        "En": "224"
+      },
+      "SubRouteName": {},
+      "Direction": 0,
+      "Geometry": "LINESTRING (121.532510755646 25.1241935116763, 121.532272341459 25.1235273321679, 121.531717444014 25.1221433277704, 121.531431892388 25.1213226569816, 121.531150667302 25.120547029881, 121.530605523288 25.1191818358796, 121.530296175693 25.1186451557259, 121.530049562925 25.1183689799838, 121.528502824951 25.1184532038578, 121.526696494588 25.1184747494907, 121.526344310558 25.1185569422951, 121.526249701526 25.1188259506877, 121.526804077257 25.1215265216824, 121.526799097835 25.1224477378689, 121.526621498424 25.1229414046963, 121.52637750671 25.1234801529761, 121.52627459864 25.1236417018579, 121.526141814034 25.1237348741391, 121.525995750967 25.1237799574754, 121.525683707142 25.1236927963435, 121.525419797737 25.1235906073509, 121.52489695835 25.12312624747, 121.523877836497 25.1220727901939, 121.523240470387 25.1216354750193, 121.522979880597 25.1214491271841, 121.522913488294 25.1213379194696, 121.522712651577 25.1202588988229, 121.52265621812 25.1197689782254, 121.522500196207 25.1195390454887, 121.521871321088 25.1192572451285, 121.521375932282 25.1190476660622, 121.520460869117 25.1186990197163, 121.52017964403 25.1186715980515, 121.519721030812 25.118732317444, 121.519286213564 25.1188498387633, 121.518979029239 25.1188302518846, 121.518624252976 25.1187636564735, 121.517605352855 25.118156461346, 121.516612411974 25.1175943134902, 121.516413391143 25.1172574152782, 121.516184084534 25.116752066219, 121.515954777926 25.116309394396, 121.5154464095 25.1158157938356, 121.515305796957 25.1156963108606, 121.515221429431 25.1155689928078, 121.515108939397 25.1153437374666, 121.514806081611 25.1151694091349, 121.515057020919 25.1147463191162)",
+      "EncodedPolyline": "eajxCeywdVbCn@tGlBbDx@xCv@pGjBhB|@v@p@OtHCfJQfAu@P{OmBwD?aBb@kBn@_@TQXIZP~@Rr@zAfBrEjEtA~Bd@r@TLvEf@`BHl@^v@|Bh@`BdAvDDv@KzAWtAB|@LfAvBhEpBfE`Af@dBl@vAl@`BbBVZXPl@T`@z@rAq@",
+      "UpdateTime": "2026-06-08T08:05:02+08:00",
+      "VersionID": 0
+    },
+    {
+      "RouteUID": "TPE15375",
+      "RouteID": "15375",
+      "RouteName": {
+        "Zh_tw": "224",
+        "En": "224"
+      },
+      "SubRouteName": {},
+      "Direction": 1,
+      "Geometry": "LINESTRING (121.515057020919 25.1147463191162, 121.516867677821 25.1120412506341, 121.517084004811 25.1121176436864, 121.517460413772 25.1123487813485, 121.516928249378 25.1129657992383, 121.516318207268 25.1138198252106, 121.515364205244 25.1152536352138, 121.515409633912 25.1153398199787, 121.515677879379 25.1156179613053, 121.515883390019 25.1160195022449, 121.516166778375 25.1165953684119, 121.516582126195 25.1174434928938, 121.516846045122 25.1176589508316, 121.517695128556 25.118130018909, 121.518201333711 25.1184199060541, 121.518627497881 25.118677474123, 121.518943335285 25.1187499456491, 121.519297029913 25.1187205653059, 121.519808643243 25.1186314448882, 121.520010908978 25.1186089199372, 121.520309440224 25.1185893330198, 121.52058850204 25.1186392796528, 121.520861074047 25.1187332967888, 121.521289401486 25.118925248217, 121.521889708882 25.1191808565384, 121.522377370446 25.1193827510938, 121.522579866971 25.1195134973801, 121.522734229076 25.1197704810524, 121.522790662533 25.1203851357138, 121.522968676896 25.1213101175252, 121.523062456024 25.1214491271841, 121.523769534053 25.1219029738343, 121.523960411924 25.1220863153805, 121.524883264938 25.1230233066102, 121.525253402027 25.1233832235445, 121.525425192112 25.1234974349597, 121.525897407368 25.123710078297, 121.526036831204 25.1237130838539, 121.526175425137 25.1236477129749, 121.526260905227 25.1235673142598, 121.526330617146 25.1234673793345, 121.52663602174 25.1227445393208, 121.526733950387 25.1224379697076, 121.526758847501 25.1217692245, 121.526418586947 25.1199688540438, 121.526167852265 25.1187827440724, 121.526139739274 25.1185591965578, 121.526280407966 25.1184122936828, 121.527711068169 25.1183787734605, 121.529037152615 25.1183572278107, 121.529764011299 25.1183523310716, 121.530223937478 25.1182261625037, 121.530302665503 25.1183219712847, 121.530298338963 25.1184257821378, 121.53057523751 25.1187274207199, 121.530739646022 25.1191994640199, 121.532700785386 25.1243016019796)",
+      "EncodedPolyline": "efhxCcltdV|OiJOi@m@kA{BhBiDxB}G~DQIw@u@oAg@sBy@gDqAk@u@}AiDy@cBs@uAM}@DgAPeBBg@B{@Iw@Qu@g@uAq@wBg@aBYg@s@]{BKwDc@[QyAmCe@e@yDwDgAiAWc@i@}A?[J[NORMpC}@z@QdCEfJbAlFp@j@D\\[D}GBiG@oCV{AQOU?{@w@}A_@{^gK",
+      "UpdateTime": "2026-06-08T08:05:02+08:00",
+      "VersionID": 0
+    }
+  ],
+  "stopOfRoutes": [
+    {
+      "RouteUID": "TPE15375",
+      "RouteID": "15375",
+      "RouteName": {
+        "Zh_tw": "224",
+        "En": "224"
+      },
+      "Operators": [
+        {
+          "OperatorID": "5300",
+          "OperatorName": {
+            "Zh_tw": "光華巴士",
+            "En": "Kuang-Hua Bus Co., Ltd."
+          },
+          "OperatorCode": "KuangHuaBus.",
+          "OperatorNo": "0601"
+        }
+      ],
+      "SubRouteUID": "TPE15375",
+      "SubRouteID": "15375",
+      "SubRouteName": {
+        "Zh_tw": "224",
+        "En": "224"
+      },
+      "Direction": 0,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE16809",
+          "StopID": "16809",
+          "StopName": {
+            "Zh_tw": "天母",
+            "En": "Tianmu"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.53245,
+            "PositionLat": 25.12420428,
+            "GeoHash": "wsqqvt9pp"
+          },
+          "StationID": "50634",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE152744",
+          "StopID": "152744",
+          "StopName": {
+            "Zh_tw": "農訓協會",
+            "En": "National Training Institute of Farmers' Organizations"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 2,
+          "StopPosition": {
+            "PositionLon": 121.53187,
+            "PositionLat": 25.12262,
+            "GeoHash": "wsqqvt2vc"
+          },
+          "StationID": "1000328",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE16810",
+          "StopID": "16810",
+          "StopName": {
+            "Zh_tw": "天母新村",
+            "En": "Tianmu New Village"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.53134848347,
+            "PositionLat": 25.12124699952,
+            "GeoHash": "wsqqvt0mv"
+          },
+          "StationID": "644",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE16811",
+          "StopID": "16811",
+          "StopName": {
+            "Zh_tw": "天母廣場",
+            "En": "Tianmu Square"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.53060908611,
+            "PositionLat": 25.1193246795518,
+            "GeoHash": "wsqqvkzfs"
+          },
+          "StationID": "645",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE196411",
+          "StopID": "196411",
+          "StopName": {
+            "Zh_tw": "齊福華廈",
+            "En": "Qifu Mansion"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.527774517293,
+            "PositionLat": 25.1184953761364,
+            "GeoHash": "wsqqvktvf"
+          },
+          "StationID": "4981",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE16812",
+          "StopID": "16812",
+          "StopName": {
+            "Zh_tw": "天母國小",
+            "En": "Tianmu Elementary School"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 6,
+          "StopPosition": {
+            "PositionLon": 121.5262529,
+            "PositionLat": 25.11878529,
+            "GeoHash": "wsqqvksxw"
+          },
+          "StationID": "638",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE16813",
+          "StopID": "16813",
+          "StopName": {
+            "Zh_tw": "天玉里",
+            "En": "Tianyu Village"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.5267177,
+            "PositionLat": 25.12118051,
+            "GeoHash": "wsqqvmjj3"
+          },
+          "StationID": "646",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE57662",
+          "StopID": "57662",
+          "StopName": {
+            "Zh_tw": "天北站",
+            "En": "Tianbei Stop"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.5266532,
+            "PositionLat": 25.12292985,
+            "GeoHash": "wsqqvmmp8"
+          },
+          "StationID": "50646",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE16814",
+          "StopID": "16814",
+          "StopName": {
+            "Zh_tw": "福德廟(石牌)",
+            "En": "Fude Temple (Shipai)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.525261,
+            "PositionLat": 25.12357001,
+            "GeoHash": "wsqqvmegr"
+          },
+          "StationID": "55001",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE16815",
+          "StopID": "16815",
+          "StopName": {
+            "Zh_tw": "永欣里",
+            "En": "Yongxin Village"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.5238999,
+            "PositionLat": 25.12221658,
+            "GeoHash": "wsqqvm758"
+          },
+          "StationID": "14620",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE16816",
+          "StopID": "16816",
+          "StopName": {
+            "Zh_tw": "榮光新村(榮總東院)",
+            "En": "Rongguan New Village (Eastern District of V.G.H.)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 11,
+          "StopPosition": {
+            "PositionLon": 121.5226771,
+            "PositionLat": 25.12028036,
+            "GeoHash": "wsqqvm405"
+          },
+          "StationID": "482",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE16817",
+          "StopID": "16817",
+          "StopName": {
+            "Zh_tw": "榮總一",
+            "En": "Taipei Veterans General Hospital I"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 12,
+          "StopPosition": {
+            "PositionLon": 121.520551599272,
+            "PositionLat": 25.1188249158648,
+            "GeoHash": "wsqqvk8xf"
+          },
+          "StationID": "55004",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE16818",
+          "StopID": "16818",
+          "StopName": {
+            "Zh_tw": "榮總",
+            "En": "Veterans General Hospital"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 13,
+          "StopPosition": {
+            "PositionLon": 121.518052504684,
+            "PositionLat": 25.1184508084325,
+            "GeoHash": "wsqqvhwtx"
+          },
+          "StationID": "14624",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE16819",
+          "StopID": "16819",
+          "StopName": {
+            "Zh_tw": "永明派出所",
+            "En": "Yongming Police Substation"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 14,
+          "StopPosition": {
+            "PositionLon": 121.516366480061,
+            "PositionLat": 25.1172201622833,
+            "GeoHash": "wsqqvhmw2"
+          },
+          "StationID": "14625",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE16820",
+          "StopID": "16820",
+          "StopName": {
+            "Zh_tw": "綜合市場(捷運石牌站)",
+            "En": "General Market (MRT Shipai Sta.)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 15,
+          "StopPosition": {
+            "PositionLon": 121.515502,
+            "PositionLat": 25.115911,
+            "GeoHash": "wsqqvhhyu"
+          },
+          "StationID": "14626",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE16821",
+          "StopID": "16821",
+          "StopName": {
+            "Zh_tw": "捷運石牌站(西安)",
+            "En": "MRT Shipai Sta. (Xian)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 16,
+          "StopPosition": {
+            "PositionLon": 121.51501,
+            "PositionLat": 25.114729,
+            "GeoHash": "wsqqv5uxb"
+          },
+          "StationID": "1001371",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    },
+    {
+      "RouteUID": "TPE15375",
+      "RouteID": "15375",
+      "RouteName": {
+        "Zh_tw": "224",
+        "En": "224"
+      },
+      "Operators": [
+        {
+          "OperatorID": "5300",
+          "OperatorName": {
+            "Zh_tw": "光華巴士",
+            "En": "Kuang-Hua Bus Co., Ltd."
+          },
+          "OperatorCode": "KuangHuaBus.",
+          "OperatorNo": "0601"
+        }
+      ],
+      "SubRouteUID": "TPE15375",
+      "SubRouteID": "15375",
+      "SubRouteName": {
+        "Zh_tw": "224",
+        "En": "224"
+      },
+      "Direction": 1,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE16822",
+          "StopID": "16822",
+          "StopName": {
+            "Zh_tw": "捷運石牌站(東華)",
+            "En": "MRT Shipai Sta. (Donghua)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.5154878,
+            "PositionLat": 25.11515658,
+            "GeoHash": "wsqqvhhfk"
+          },
+          "StationID": "364",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE16824",
+          "StopID": "16824",
+          "StopName": {
+            "Zh_tw": "綜合市場(捷運石牌站)",
+            "En": "General Market (MRT Shipai Sta.)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 2,
+          "StopPosition": {
+            "PositionLon": 121.515801262638,
+            "PositionLat": 25.1157212492135,
+            "GeoHash": "wsqqvhjje"
+          },
+          "StationID": "500",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE16826",
+          "StopID": "16826",
+          "StopName": {
+            "Zh_tw": "永明派出所",
+            "En": "Yongming Police Substation"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.516564,
+            "PositionLat": 25.117369,
+            "GeoHash": "wsqqvhmxm"
+          },
+          "StationID": "3977",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE16828",
+          "StopID": "16828",
+          "StopName": {
+            "Zh_tw": "榮總",
+            "En": "Veterans General Hospital"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.51968525315,
+            "PositionLat": 25.1185668257628,
+            "GeoHash": "wsqqvhxym"
+          },
+          "StationID": "483",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE16830",
+          "StopID": "16830",
+          "StopName": {
+            "Zh_tw": "榮光新村(榮總東院)",
+            "En": "Rongguan New Village (Eastern District of V.G.H.)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.5227594,
+            "PositionLat": 25.12021257,
+            "GeoHash": "wsqqvkfpv"
+          },
+          "StationID": "14629",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE16832",
+          "StopID": "16832",
+          "StopName": {
+            "Zh_tw": "永欣里",
+            "En": "Yongxin Village"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 6,
+          "StopPosition": {
+            "PositionLon": 121.5236475,
+            "PositionLat": 25.1218225,
+            "GeoHash": "wsqqvm6c4"
+          },
+          "StationID": "14630",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE16834",
+          "StopID": "16834",
+          "StopName": {
+            "Zh_tw": "福德廟(石牌)",
+            "En": "Fude Temple (Shipai)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.5256724,
+            "PositionLat": 25.12356742,
+            "GeoHash": "wsqqvms73"
+          },
+          "StationID": "14619",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE57727",
+          "StopID": "57727",
+          "StopName": {
+            "Zh_tw": "天北站",
+            "En": "Tianbei Stop"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.5265466,
+            "PositionLat": 25.12288432,
+            "GeoHash": "wsqqvmkzm"
+          },
+          "StationID": "634",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE16836",
+          "StopID": "16836",
+          "StopName": {
+            "Zh_tw": "天玉里",
+            "En": "Tianyu Village"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.52664417791,
+            "PositionLat": 25.1214083603177,
+            "GeoHash": "wsqqvmjnb"
+          },
+          "StationID": "50648",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE16838",
+          "StopID": "16838",
+          "StopName": {
+            "Zh_tw": "天母國小",
+            "En": "Tianmu Elementary School"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.52615807606,
+            "PositionLat": 25.118950713724,
+            "GeoHash": "wsqqvku8k"
+          },
+          "StationID": "50655",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE180790",
+          "StopID": "180790",
+          "StopName": {
+            "Zh_tw": "齊福華廈",
+            "En": "Qifu Mansion"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 11,
+          "StopPosition": {
+            "PositionLon": 121.5275693,
+            "PositionLat": 25.11838172,
+            "GeoHash": "wsqqvkttj"
+          },
+          "StationID": "3890",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE16840",
+          "StopID": "16840",
+          "StopName": {
+            "Zh_tw": "天母廣場",
+            "En": "Tianmu Square"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 12,
+          "StopPosition": {
+            "PositionLon": 121.53084,
+            "PositionLat": 25.11927,
+            "GeoHash": "wsqqvsb43"
+          },
+          "StationID": "50635",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE16842",
+          "StopID": "16842",
+          "StopName": {
+            "Zh_tw": "天母新村",
+            "En": "Tianmu New Village"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 13,
+          "StopPosition": {
+            "PositionLon": 121.5315658,
+            "PositionLat": 25.121299,
+            "GeoHash": "wsqqvt0w4"
+          },
+          "StationID": "50638",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE16844",
+          "StopID": "16844",
+          "StopName": {
+            "Zh_tw": "天母",
+            "En": "Tianmu"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 14,
+          "StopPosition": {
+            "PositionLon": 121.53273,
+            "PositionLat": 25.12424,
+            "GeoHash": "wsqqvt9rm"
+          },
+          "StationID": "635",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    }
+  ],
+  "shapeCount": 2,
+  "stopOfRouteCount": 2
+}

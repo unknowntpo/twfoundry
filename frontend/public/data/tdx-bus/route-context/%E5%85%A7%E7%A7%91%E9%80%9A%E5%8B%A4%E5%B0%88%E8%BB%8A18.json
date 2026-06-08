@@ -1,0 +1,944 @@
+{
+  "schema": "twfoundry.tdx.citybus.route-context.v1",
+  "source": {
+    "provider": "TDX",
+    "city": "Taipei",
+    "datasets": [
+      "Bus.Shape.City",
+      "Bus.StopOfRoute.City"
+    ]
+  },
+  "routeName": "內科通勤專車18",
+  "generatedAt": "2026-06-08T03:19:53.434Z",
+  "shapes": [
+    {
+      "RouteUID": "TPE15683",
+      "RouteID": "15683",
+      "RouteName": {
+        "Zh_tw": "內科通勤專車18",
+        "En": "NH18"
+      },
+      "SubRouteName": {},
+      "Direction": 0,
+      "Geometry": "LINESTRING (121.517866030736 25.0628794210503, 121.51801033351 25.0628760736566, 121.521841696095 25.0627912554698, 121.522351029843 25.0627724237554, 121.524795237861 25.0626863358816, 121.52491774525 25.0626991145542, 121.525121924231 25.0626964243074, 121.525508750591 25.0626836456346, 121.526755356077 25.0626358937399, 121.527508219665 25.0626123540667, 121.528071011183 25.0626036107583, 121.528888469576 25.0625814162036, 121.529754188454 25.0625733454554, 121.530133590124 25.0625639295818, 121.530871604331 25.0625262660804, 121.531558388176 25.0625101245762, 121.532167955243 25.0624960007583, 121.532509490992 25.0624980184467, 121.533006202768 25.0624852397531, 121.533447229366 25.0624690982436, 121.534291416643 25.0624374877812, 121.534839358781 25.0624200011389, 121.535858026278 25.0623964614242, 121.536040673658 25.0624011693675, 121.536639103689 25.0623930986074, 121.537420181099 25.0623581253077, 121.539970562187 25.0623419837814, 121.540185878203 25.062363505816, 121.54064398159 25.0623601429984, 121.541111737073 25.0623312227627, 121.542360569967 25.0623278599441, 121.543208469589 25.0623238245618, 121.543400769066 25.0623359307085, 121.54369330186 25.0623379483995, 121.543868524549 25.0623157537966, 121.543997714159 25.0622774176549, 121.54456570296 25.0620991880665, 121.545003017214 25.0620695952041, 121.546556262406 25.0620460554221, 121.547121281331 25.0620379846386, 121.547361098825 25.0620554713354, 121.547802125424 25.0620474005526, 121.548468862605 25.0619027989368, 121.549638251313 25.0616889227457, 121.549839460418 25.0616747988332, 121.55038443268 25.061569878289, 121.550902676057 25.0614306566589, 121.551282820196 25.0614185504228, 121.553404796658 25.0616741262659, 121.554528894757 25.0618046042539, 121.555519348431 25.0618705157621, 121.557314638524 25.0619781263115, 121.559455919182 25.062261948682, 121.562993041599 25.0627206365261, 121.564804666011 25.0629869706152, 121.566481161061 25.0632304371296, 121.568456128658 25.0635156017136, 121.569568347252 25.0638693662892, 121.57230805794 25.0647907635255, 121.574144926299 25.0654095081452, 121.575785782836 25.0659461993171, 121.577333088276 25.066375281545, 121.578409668357 25.0666295019679, 121.579126893432 25.0668003270351, 121.579804025179 25.067028990138, 121.580399485334 25.0672939697881, 121.581308267416 25.0677674345377, 121.582001733482 25.0680512434961, 121.583511915471 25.0684924238888, 121.584209836351 25.0686995629153, 121.584181622529 25.0689658840061, 121.581845814988 25.0712591805471, 121.579657016313 25.0733547183731, 121.578963550247 25.0739451747384, 121.577440003815 25.0748759111097, 121.576059011436 25.0757219066739, 121.574844332117 25.0764898880468, 121.573001524006 25.0773062832786, 121.569612895393 25.0788422213324, 121.567666141619 25.0797285375888, 121.565196689654 25.0808354151928, 121.565123185221 25.0809019889216, 121.565515208864 25.0822348008257, 121.565608017492 25.0825589233969, 121.565601866433 25.085622936821)",
+      "EncodedPolyline": "_b~wCu}tdV?[P}VBeBNiNAW?g@BmAFyFDuC@oBBcD@kD@kADsCBiC@yB?cA@cBBwADgDBmBBkE?c@@wBD{CB}NCk@?yAD}A?yF@iDCe@?y@Bc@FYb@qBDuABwH@oBCo@@wA\\eCh@iFBg@RkBZgB@kAq@gLYaFMeEUeJw@mL{AaUu@iJo@oIy@kKeA}EwDcP{BmJkBiIuAsHq@wEa@oCm@eCs@wB_BuDw@iCwAmHi@kCu@DiMpMaLtLwBjCyDnHgDrGyCrFcDnJqHdTqDbK}ElNKNiGoAaAQcR@",
+      "UpdateTime": "2026-06-08T08:05:02+08:00",
+      "VersionID": 0
+    },
+    {
+      "RouteUID": "TPE15683",
+      "RouteID": "15683",
+      "RouteName": {
+        "Zh_tw": "內科通勤專車18",
+        "En": "NH18"
+      },
+      "SubRouteName": {},
+      "Direction": 1,
+      "Geometry": "LINESTRING (121.565474553658 25.0851803751611, 121.565483247974 25.0846405937976, 121.565490203427 25.0838169403316, 121.565491072858 25.082572787876, 121.565251109739 25.0816310033044, 121.565004191167 25.0808467022623, 121.565165905443 25.0807537827296, 121.567462943708 25.0797253635307, 121.56937569321 25.0788497042334, 121.571272792944 25.0780008127128, 121.574849634513 25.0764179844192, 121.576701523803 25.0752635305806, 121.57893944072 25.073879116605, 121.579316774031 25.0735704169292, 121.581073025847 25.0719087803069, 121.581664239329 25.0713543714131, 121.583274426637 25.0697478314686, 121.584110819829 25.0689398284145, 121.584058653933 25.0688059482514, 121.58386564012 25.0687193198326, 121.583135317583 25.0685208617695, 121.581775526573 25.0681223696082, 121.580980866098 25.0677632530321, 121.579892337745 25.0672135506199, 121.579455883086 25.0670513170584, 121.5789911719 25.0669434237455, 121.578556021388 25.0668311988485, 121.577234485369 25.0664610528453, 121.575139155233 25.065883780357, 121.574407093832 25.0656585409676, 121.572424789803 25.0649749447606, 121.568682756232 25.0637479272541, 121.568110670244 25.0635982901321, 121.566291819354 25.0633478444347, 121.564457318696 25.0630674706568, 121.562487186708 25.0628296249826, 121.560122332779 25.062506721176, 121.557374928949 25.0621460129907, 121.556663733906 25.0620908828251, 121.554278013619 25.0619333679298, 121.552768680375 25.0617616764631, 121.551621030674 25.0616262133013, 121.550944612895 25.061560056819, 121.550387307245 25.0615970729504, 121.548788422548 25.0618963519, 121.548498901828 25.0619325803548, 121.548076358074 25.0620144881262, 121.547775534743 25.0620861573812, 121.546844373508 25.062093245547, 121.545302871296 25.0621152976158, 121.545084643967 25.0621050591558, 121.544838594826 25.062103484008, 121.544503863663 25.0621381372543, 121.54398307414 25.0623216417813, 121.543640518093 25.0623696836936, 121.542632846878 25.0623830724199, 121.541732115749 25.0623854351361, 121.541466069681 25.062363383116, 121.541074825465 25.062367320977, 121.540586204911 25.062383859992, 121.53823178416 25.0624035492926, 121.538008340241 25.0623862227082, 121.537702300321 25.0623814972757, 121.536575516978 25.0624224510182, 121.535063575439 25.0624665550332, 121.534334991765 25.062490969749, 121.53395505016 25.0624649798901, 121.533440346657 25.0624925448918, 121.532387465 25.0625374364528, 121.53184146196 25.0625500375897, 121.531222426667 25.0625673641509, 121.530966813779 25.0625618511544, 121.529085363814 25.0626106805432, 121.526913523698 25.0626736861774, 121.526683124326 25.0626595099125, 121.525890202714 25.062690225151, 121.524343483912 25.0627351166395, 121.523418408699 25.062765831859, 121.523274083054 25.0627587437321, 121.522276845019 25.0628028476261, 121.518569588711 25.0628997186233, 121.518336581044 25.0629075943107, 121.518181822221 25.0627296036505, 121.518115165799 25.0603007141123, 121.518069955356 25.0602566093177, 121.517723341962 25.0602597596607, 121.516035485431 25.0598743670989, 121.514850739982 25.0595782335712, 121.514762637581 25.0596044865725, 121.514400954039 25.0607344104143, 121.51411230275 25.0615860468699, 121.514387043133 25.062153101153, 121.514715108654 25.0628346129209, 121.514802051813 25.0628839672468, 121.515999548926 25.0628409134742, 121.516868980517 25.0628338253517, 121.517488305621 25.0628947306876, 121.517866030735 25.0628794210503)",
+      "EncodedPolyline": "kmbxCeg~dVjBAbDAxF?zDn@zCp@Ra@jEiMnD_KhDyJzHkUfFqJrG_M|@kAjI}InBuB~HaI`DgDXHPd@f@pCnAnGfA~ClBxE^tAT|ATtAhAhGrB`Lj@pChClKrFjV\\pBp@jJv@lJn@hK~@xMfAdPJlC^zM`@lHXdFLfCGlB{@~HEx@OrAOz@?zDErH@j@@n@GbAc@fBIbAAhEArDDr@AnAA~ACvM@j@@|@G~EInHCpCDhAEfBIpEAlBCzB@p@IvJKrL@l@E|CItHEvD@\\GdESdVAl@b@^dNJFH?dAlAnIx@lFCPaFfAkDx@oBw@gCaAIOFoF@mDK{B@kA",
+      "UpdateTime": "2026-06-08T08:05:02+08:00",
+      "VersionID": 0
+    }
+  ],
+  "stopOfRoutes": [
+    {
+      "RouteUID": "TPE15683",
+      "RouteID": "15683",
+      "RouteName": {
+        "Zh_tw": "內科通勤專車18",
+        "En": "NH18"
+      },
+      "Operators": [
+        {
+          "OperatorID": "400",
+          "OperatorName": {
+            "Zh_tw": "三重客運",
+            "En": "San Chung Bus Co., Ltd."
+          },
+          "OperatorCode": "SanChungBus",
+          "OperatorNo": "0301"
+        }
+      ],
+      "SubRouteUID": "TPE155843",
+      "SubRouteID": "155843",
+      "SubRouteName": {
+        "Zh_tw": "內科18(捷民權西-內科)",
+        "En": "NH18"
+      },
+      "Direction": 0,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE54803",
+          "StopID": "54803",
+          "StopName": {
+            "Zh_tw": "捷運民權西路站",
+            "En": "MRT Minquan W. Rd. Station"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.5178677888,
+            "PositionLat": 25.0628480067,
+            "GeoHash": "wsqqt4w9e"
+          },
+          "StationID": "1000398",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54804",
+          "StopID": "54804",
+          "StopName": {
+            "Zh_tw": "民權中山路口",
+            "En": "Minquan and Zhongshan Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 2,
+          "StopPosition": {
+            "PositionLon": 121.5223009,
+            "PositionLat": 25.06271419,
+            "GeoHash": "wsqqt69bf"
+          },
+          "StationID": "1235",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54805",
+          "StopID": "54805",
+          "StopName": {
+            "Zh_tw": "捷運中山國小站",
+            "En": "MRT Zhongshan Elementary School Sta."
+          },
+          "StopBoarding": -1,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.5253813,
+            "PositionLat": 25.06266873,
+            "GeoHash": "wsqqt6s0d"
+          },
+          "StationID": "4098",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54806",
+          "StopID": "54806",
+          "StopName": {
+            "Zh_tw": "民權吉林路口",
+            "En": "Minquan and Jilin Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.5300637,
+            "PositionLat": 25.06254664,
+            "GeoHash": "wsqqt6rrz"
+          },
+          "StationID": "1000112",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54807",
+          "StopID": "54807",
+          "StopName": {
+            "Zh_tw": "民權松江路口",
+            "En": "Minquan and Songjiang Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.5328589,
+            "PositionLat": 25.0624771,
+            "GeoHash": "wsqqtd3x8"
+          },
+          "StationID": "1239",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54808",
+          "StopID": "54808",
+          "StopName": {
+            "Zh_tw": "民權建國路口",
+            "En": "Minquan & Jianguo Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 6,
+          "StopPosition": {
+            "PositionLon": 121.5364984,
+            "PositionLat": 25.06236889,
+            "GeoHash": "wsqqtdknv"
+          },
+          "StationID": "1242",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54809",
+          "StopID": "54809",
+          "StopName": {
+            "Zh_tw": "民權龍江路口",
+            "En": "Minquan and Longjiang Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.540554014847,
+            "PositionLat": 25.0623255291835,
+            "GeoHash": "wsqqtdrns"
+          },
+          "StationID": "1000186",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54810",
+          "StopID": "54810",
+          "StopName": {
+            "Zh_tw": "民權復興路口",
+            "En": "Minquan and Fuxing Intersection"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.5438692,
+            "PositionLat": 25.06227185,
+            "GeoHash": "wsqqtf3w3"
+          },
+          "StationID": "1000326",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54811",
+          "StopID": "54811",
+          "StopName": {
+            "Zh_tw": "民權敦化路口",
+            "En": "Minquan and Dunhua Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.54762539917303,
+            "PositionLat": 25.062020643130538,
+            "GeoHash": "wsqqtfkkb"
+          },
+          "StationID": "1244",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE58327",
+          "StopID": "58327",
+          "StopName": {
+            "Zh_tw": "民權東路口",
+            "En": "Minquan E. Rd. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.552,
+            "PositionLat": 25.06145,
+            "GeoHash": "wsqqtfr3w"
+          },
+          "StationID": "4158",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE58328",
+          "StopID": "58328",
+          "StopName": {
+            "Zh_tw": "中華航空",
+            "En": "China Airlines"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 11,
+          "StopPosition": {
+            "PositionLon": 121.55578,
+            "PositionLat": 25.06188,
+            "GeoHash": "wsqqw46hn"
+          },
+          "StationID": "1496",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE58329",
+          "StopID": "58329",
+          "StopName": {
+            "Zh_tw": "民權公園",
+            "En": "Minquan Park"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 12,
+          "StopPosition": {
+            "PositionLon": 121.5573,
+            "PositionLat": 25.06199574,
+            "GeoHash": "wsqqw47kd"
+          },
+          "StationID": "1511",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE58330",
+          "StopID": "58330",
+          "StopName": {
+            "Zh_tw": "民權國小",
+            "En": "Minquan Elementary School"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 13,
+          "StopPosition": {
+            "PositionLon": 121.5611,
+            "PositionLat": 25.06247253,
+            "GeoHash": "wsqqw4qp6"
+          },
+          "StationID": "1514",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE58331",
+          "StopID": "58331",
+          "StopName": {
+            "Zh_tw": "三民國小",
+            "En": "Sanmin Elementary School"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 14,
+          "StopPosition": {
+            "PositionLon": 121.56364748952177,
+            "PositionLat": 25.06279839209022,
+            "GeoHash": "wsqqw4xcq"
+          },
+          "StationID": "8671",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE58332",
+          "StopID": "58332",
+          "StopName": {
+            "Zh_tw": "民權大橋",
+            "En": "MinQuan Bridge"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 15,
+          "StopPosition": {
+            "PositionLon": 121.579477870198,
+            "PositionLat": 25.066876801458,
+            "GeoHash": "wsqqwe73p"
+          },
+          "StationID": "1017",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54812",
+          "StopID": "54812",
+          "StopName": {
+            "Zh_tw": "時報廣場",
+            "En": "China Times Daily News Square"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 16,
+          "StopPosition": {
+            "PositionLon": 121.58212115754,
+            "PositionLat": 25.0680848776157,
+            "GeoHash": "wsqqwet2h"
+          },
+          "StationID": "1077",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54813",
+          "StopID": "54813",
+          "StopName": {
+            "Zh_tw": "麗寶大樓",
+            "En": "Libao Building"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 17,
+          "StopPosition": {
+            "PositionLon": 121.582711,
+            "PositionLat": 25.070517,
+            "GeoHash": "wsqqwevy6"
+          },
+          "StationID": "8603",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54814",
+          "StopID": "54814",
+          "StopName": {
+            "Zh_tw": "公館山",
+            "En": "Gongguanshan"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 18,
+          "StopPosition": {
+            "PositionLon": 121.581177,
+            "PositionLat": 25.071952,
+            "GeoHash": "wsqqwshww"
+          },
+          "StationID": "8621",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54815",
+          "StopID": "54815",
+          "StopName": {
+            "Zh_tw": "瑞光路",
+            "En": "Ruiguang Rd."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 19,
+          "StopPosition": {
+            "PositionLon": 121.57766690657958,
+            "PositionLat": 25.07478024553194,
+            "GeoHash": "wsqqwsdph"
+          },
+          "StationID": "1000897",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54816",
+          "StopID": "54816",
+          "StopName": {
+            "Zh_tw": "瑞光港墘路口",
+            "En": "Ruiguang &Gangqian Roads"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 20,
+          "StopPosition": {
+            "PositionLon": 121.5731066,
+            "PositionLat": 25.07729684,
+            "GeoHash": "wsqqwmnvf"
+          },
+          "StationID": "1000895",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54817",
+          "StopID": "54817",
+          "StopName": {
+            "Zh_tw": "仁寶大樓",
+            "En": "Renbao Bldg."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 21,
+          "StopPosition": {
+            "PositionLon": 121.568256,
+            "PositionLat": 25.079478,
+            "GeoHash": "wsqqwme69"
+          },
+          "StationID": "1000896",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54818",
+          "StopID": "54818",
+          "StopName": {
+            "Zh_tw": "基湖路口",
+            "En": "Jihu Rd. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 22,
+          "StopPosition": {
+            "PositionLon": 121.565903409458,
+            "PositionLat": 25.0805158061818,
+            "GeoHash": "wsqqwmc8d"
+          },
+          "StationID": "8403",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54819",
+          "StopID": "54819",
+          "StopName": {
+            "Zh_tw": "內湖基湖路口",
+            "En": "Neihu and Jihu Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 23,
+          "StopPosition": {
+            "PositionLon": 121.5653587,
+            "PositionLat": 25.08167506,
+            "GeoHash": "wsqqwmcpq"
+          },
+          "StationID": "8402",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE58333",
+          "StopID": "58333",
+          "StopName": {
+            "Zh_tw": "西湖國中",
+            "En": "Xihu Junior High School"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 24,
+          "StopPosition": {
+            "PositionLon": 121.5656019,
+            "PositionLat": 25.08562294,
+            "GeoHash": "wsqqwq9q7"
+          },
+          "StationID": "1039",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    },
+    {
+      "RouteUID": "TPE15683",
+      "RouteID": "15683",
+      "RouteName": {
+        "Zh_tw": "內科通勤專車18",
+        "En": "NH18"
+      },
+      "Operators": [
+        {
+          "OperatorID": "400",
+          "OperatorName": {
+            "Zh_tw": "三重客運",
+            "En": "San Chung Bus Co., Ltd."
+          },
+          "OperatorCode": "SanChungBus",
+          "OperatorNo": "0301"
+        }
+      ],
+      "SubRouteUID": "TPE157753",
+      "SubRouteID": "157753",
+      "SubRouteName": {
+        "Zh_tw": "內科18(內科-捷民權西)",
+        "En": "MH18"
+      },
+      "Direction": 1,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE58334",
+          "StopID": "58334",
+          "StopName": {
+            "Zh_tw": "西湖國中",
+            "En": "Xihu Junior High School"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.56545,
+            "PositionLat": 25.08514,
+            "GeoHash": "wsqqwq978"
+          },
+          "StationID": "50511",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54820",
+          "StopID": "54820",
+          "StopName": {
+            "Zh_tw": "內湖基湖路口",
+            "En": "Neihu and Jihu Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 2,
+          "StopPosition": {
+            "PositionLon": 121.5652273,
+            "PositionLat": 25.08198997,
+            "GeoHash": "wsqqwq115"
+          },
+          "StationID": "1001",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54821",
+          "StopID": "54821",
+          "StopName": {
+            "Zh_tw": "基湖路口",
+            "En": "Jihu Rd. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.5662362,
+            "PositionLat": 25.08025003,
+            "GeoHash": "wsqqwm9z4"
+          },
+          "StationID": "8404",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54822",
+          "StopID": "54822",
+          "StopName": {
+            "Zh_tw": "仁寶大樓",
+            "En": "Renbao Bldg."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.5684974,
+            "PositionLat": 25.07921316,
+            "GeoHash": "wsqqwme3p"
+          },
+          "StationID": "1007",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54823",
+          "StopID": "54823",
+          "StopName": {
+            "Zh_tw": "瑞光港墘路口",
+            "En": "Ruiguang & Gangqian Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.572469,
+            "PositionLat": 25.077397,
+            "GeoHash": "wsqqwmnq7"
+          },
+          "StationID": "1013",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54824",
+          "StopID": "54824",
+          "StopName": {
+            "Zh_tw": "瑞光路",
+            "En": "Ruiguang Rd."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 6,
+          "StopPosition": {
+            "PositionLon": 121.577343,
+            "PositionLat": 25.074821,
+            "GeoHash": "wsqqws9zm"
+          },
+          "StationID": "1132",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54825",
+          "StopID": "54825",
+          "StopName": {
+            "Zh_tw": "公館山",
+            "En": "Gongguanshan"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.5809507,
+            "PositionLat": 25.07198833,
+            "GeoHash": "wsqqwshwc"
+          },
+          "StationID": "1006",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54826",
+          "StopID": "54826",
+          "StopName": {
+            "Zh_tw": "麗寶大樓",
+            "En": "Libao Building"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.5820136022182,
+            "PositionLat": 25.070960172287336,
+            "GeoHash": "wsqqwsj2f"
+          },
+          "StationID": "1165610352",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54827",
+          "StopID": "54827",
+          "StopName": {
+            "Zh_tw": "時報廣場",
+            "En": "China Times Daily News Square"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.583129808238,
+            "PositionLat": 25.0685609459737,
+            "GeoHash": "wsqqwew4u"
+          },
+          "StationID": "8601",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE58335",
+          "StopID": "58335",
+          "StopName": {
+            "Zh_tw": "民權大橋",
+            "En": "Minquan Bridge"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.57895384595646,
+            "PositionLat": 25.066982973174284,
+            "GeoHash": "wsqqwe71f"
+          },
+          "StationID": "8602",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE58336",
+          "StopID": "58336",
+          "StopName": {
+            "Zh_tw": "三民國小",
+            "En": "Sanmin Elementary School"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 11,
+          "StopPosition": {
+            "PositionLon": 121.564002,
+            "PositionLat": 25.063093,
+            "GeoHash": "wsqqw685n"
+          },
+          "StationID": "10403",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE58337",
+          "StopID": "58337",
+          "StopName": {
+            "Zh_tw": "民權國小",
+            "En": "MinQuan Elementary School"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 12,
+          "StopPosition": {
+            "PositionLon": 121.5605346,
+            "PositionLat": 25.06265373,
+            "GeoHash": "wsqqw4t8t"
+          },
+          "StationID": "8650",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE58338",
+          "StopID": "58338",
+          "StopName": {
+            "Zh_tw": "中華航空",
+            "En": "China Airlines"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 13,
+          "StopPosition": {
+            "PositionLon": 121.5555141,
+            "PositionLat": 25.06209189,
+            "GeoHash": "wsqqw46j2"
+          },
+          "StationID": "8604",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54828",
+          "StopID": "54828",
+          "StopName": {
+            "Zh_tw": "民權敦化路口",
+            "En": "Minquan and Dunhua Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 14,
+          "StopPosition": {
+            "PositionLon": 121.5482873,
+            "PositionLat": 25.06203573,
+            "GeoHash": "wsqqtfkub"
+          },
+          "StationID": "60134",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54829",
+          "StopID": "54829",
+          "StopName": {
+            "Zh_tw": "民權復興路口",
+            "En": "Minquan and Fuxing Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 15,
+          "StopPosition": {
+            "PositionLon": 121.5446524,
+            "PositionLat": 25.06222037,
+            "GeoHash": "wsqqtf6n5"
+          },
+          "StationID": "1000329",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54830",
+          "StopID": "54830",
+          "StopName": {
+            "Zh_tw": "民權龍江路口",
+            "En": "Minquan and Longjiang Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 16,
+          "StopPosition": {
+            "PositionLon": 121.541275218891,
+            "PositionLat": 25.0623959365736,
+            "GeoHash": "wsqqtdrxh"
+          },
+          "StationID": "1000184",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54831",
+          "StopID": "54831",
+          "StopName": {
+            "Zh_tw": "民權建國路口",
+            "En": "MinQuan & Jianguo Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 17,
+          "StopPosition": {
+            "PositionLon": 121.53746,
+            "PositionLat": 25.06248317,
+            "GeoHash": "wsqqtdkzs"
+          },
+          "StationID": "4081",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54832",
+          "StopID": "54832",
+          "StopName": {
+            "Zh_tw": "民權松江路口",
+            "En": "Minquan and Songjiang Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 18,
+          "StopPosition": {
+            "PositionLon": 121.5334388,
+            "PositionLat": 25.06252486,
+            "GeoHash": "wsqqtd3zy"
+          },
+          "StationID": "1240",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54833",
+          "StopID": "54833",
+          "StopName": {
+            "Zh_tw": "民權吉林路口",
+            "En": "Minquan and Jilin Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 19,
+          "StopPosition": {
+            "PositionLon": 121.529148,
+            "PositionLat": 25.062636,
+            "GeoHash": "wsqqt6wb6"
+          },
+          "StationID": "1000162",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54834",
+          "StopID": "54834",
+          "StopName": {
+            "Zh_tw": "捷運中山國小站",
+            "En": "MRT Zhongshan Elementary School Sta."
+          },
+          "StopBoarding": -1,
+          "StopSequence": 20,
+          "StopPosition": {
+            "PositionLon": 121.5259472364,
+            "PositionLat": 25.0627519578754,
+            "GeoHash": "wsqqt6s3p"
+          },
+          "StationID": "1165603308",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54835",
+          "StopID": "54835",
+          "StopName": {
+            "Zh_tw": "民權中山路口",
+            "En": "Minquan and Zhongshan Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 21,
+          "StopPosition": {
+            "PositionLon": 121.5230024,
+            "PositionLat": 25.06285356,
+            "GeoHash": "wsqqt6d3e"
+          },
+          "StationID": "1236",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54836",
+          "StopID": "54836",
+          "StopName": {
+            "Zh_tw": "捷運民權西路站",
+            "En": "MRT Minquan W. Rd. Station"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 22,
+          "StopPosition": {
+            "PositionLon": 121.518977516403,
+            "PositionLat": 25.062948670718,
+            "GeoHash": "wsqqt4x6m"
+          },
+          "StationID": "1000393",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54837",
+          "StopID": "54837",
+          "StopName": {
+            "Zh_tw": "成淵高中",
+            "En": "Chengyuan High School"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 23,
+          "StopPosition": {
+            "PositionLon": 121.518101,
+            "PositionLat": 25.061107,
+            "GeoHash": "wsqqt4nz8"
+          },
+          "StationID": "1165604811",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE54838",
+          "StopID": "54838",
+          "StopName": {
+            "Zh_tw": "大同分局",
+            "En": "Datong Police Sta."
+          },
+          "StopBoarding": -1,
+          "StopSequence": 24,
+          "StopPosition": {
+            "PositionLon": 121.51466338277,
+            "PositionLat": 25.060110116537,
+            "GeoHash": "wsqqt4h38"
+          },
+          "StationID": "1000894",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE204273",
+          "StopID": "204273",
+          "StopName": {
+            "Zh_tw": "捷運民權西路站",
+            "En": "MRT Minquan W. Rd. Station"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 25,
+          "StopPosition": {
+            "PositionLon": 121.5178677888,
+            "PositionLat": 25.0628480067,
+            "GeoHash": "wsqqt4w9e"
+          },
+          "StationID": "1000398",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    }
+  ],
+  "shapeCount": 2,
+  "stopOfRouteCount": 2
+}

@@ -1,0 +1,1399 @@
+{
+  "schema": "twfoundry.tdx.citybus.route-context.v1",
+  "source": {
+    "provider": "TDX",
+    "city": "Taipei",
+    "datasets": [
+      "Bus.Shape.City",
+      "Bus.StopOfRoute.City"
+    ]
+  },
+  "routeName": "539",
+  "generatedAt": "2026-06-08T03:18:30.639Z",
+  "shapes": [
+    {
+      "RouteUID": "TPE11242",
+      "RouteID": "11242",
+      "RouteName": {
+        "Zh_tw": "539",
+        "En": "539"
+      },
+      "SubRouteName": {},
+      "Direction": 0,
+      "Geometry": "LINESTRING (121.486666219884 25.088349381691, 121.487130586261 25.0878999439577, 121.487523136596 25.0875710815343, 121.488514667744 25.086653653679, 121.489204895017 25.0859912875456, 121.489174496406 25.085905454997, 121.488441353448 25.0852471335428, 121.488220516484 25.0850017803607, 121.487886131768 25.0845831402974, 121.487764537326 25.0843766538588, 121.487589298278 25.0839620604283, 121.487541912209 25.083758811964, 121.487475750527 25.0834397678773, 121.487439987456 25.0831255815173, 121.487473962373 25.0826283880523, 121.487507937291 25.0824065127925, 121.487518666212 25.0821741101718, 121.488039018897 25.0813465265305, 121.488443141601 25.0807683483373, 121.4885933465 25.0805497088132, 121.488767691472 25.080310014664, 121.489035020429 25.0799367062875, 121.489233505474 25.0796289891994, 121.489410532676 25.0792645863842, 121.489643886715 25.0786556263702, 121.489726141779 25.0784693746972, 121.489830748762 25.0783389983575, 121.490129370406 25.0780669081579, 121.490516505651 25.0777114084443, 121.490731978155 25.0774652303613, 121.490870560056 25.077270069095, 121.490942086198 25.077006074522, 121.490992154497 25.0766902520457, 121.491067256947 25.0764286856346, 121.491282729451 25.0755670511519, 121.491428463965 25.0749418764722, 121.491538435409 25.074558024116, 121.491628737164 25.0740688940535, 121.491668076542 25.073829997038, 121.49266228992 25.0731821383792, 121.493561731159 25.0725529023758, 121.494913575249 25.0716199750926, 121.496846569244 25.0703031750099, 121.498293185472 25.0692811469833, 121.498842148614 25.0689021360071, 121.499067455963 25.0687353060176, 121.499773776618 25.068157068276, 121.50024763731 25.0677100254619, 121.500914618587 25.0670977685258, 121.501603057707 25.0664628321746, 121.501749686299 25.0662571250489, 121.501937442422 25.0657533840933, 121.502118045931 25.0651330185912, 121.502472100336 25.0639862250055, 121.502540050171 25.0638388256164, 121.502679526148 25.0639003770312, 121.502827942894 25.0639700272791, 121.503190938066 25.0640445368028, 121.503607577845 25.0640769322338, 121.504764513196 25.0639003770312, 121.506593794286 25.0636379734161, 121.507621982581 25.0634727560367, 121.510683301471 25.0629803421335, 121.51112331298 25.0628552642308, 121.511910100544 25.0628625532743, 121.513426329028 25.0629349881218, 121.5138894608 25.062960904702, 121.514071852463 25.0629673838462, 121.516233730113 25.0629236496163, 121.517501530986 25.0628961132413, 121.51786664959 25.0628824462882, 121.522381737323 25.062769061137, 121.52254356522 25.0626791628353, 121.522658901124 25.0621357221478, 121.522818940867 25.0613161021257, 121.522849339478 25.0610083382509, 121.522860068399 25.060815580483, 121.522854703938 25.060386328902, 121.522783177796 25.0589624987407, 121.522755461416 25.0580035503327, 121.522611515055 25.0579654838137, 121.521867643175 25.0578715323544, 121.521422392939 25.0578196970357)",
+      "EncodedPolyline": "eacxCuzndVxA{A`AmAvDeEbCiCNDbCpCp@j@rA`Af@XrA`@f@H~@J|@FbBEj@Gn@AbDgBrBoAj@]n@c@hAu@|@e@hAc@vBm@d@QXSt@{@fAmAn@i@f@[r@M~@Ir@OjDi@|B]jAU`BQn@G`CeE|BsDxDmGfGcKjE_HjAmB^m@rBkCxA_BxBcC~BiCf@]dBe@zBc@bFeA\\MK[M]MgAGsAb@eFr@mJ`@mE`BcRVwA?}CMoHE{AAc@HoLB}FBiATe[P_@jBWbD_@|@Ed@AtA@|GL~DBD\\RrCHxA",
+      "UpdateTime": "2026-06-08T08:05:02+08:00",
+      "VersionID": 0
+    },
+    {
+      "RouteUID": "TPE11242",
+      "RouteID": "11242",
+      "RouteName": {
+        "Zh_tw": "539",
+        "En": "539"
+      },
+      "SubRouteName": {},
+      "Direction": 1,
+      "Geometry": "LINESTRING (121.521422392939 25.0578196970357, 121.519925498863 25.0576082552792, 121.518401097956 25.0574219716003, 121.518320631045 25.0574916255308, 121.518281291667 25.0575709985661, 121.518349241502 25.0612949940019, 121.518361758577 25.0628516197089, 121.518255363441 25.062913981513, 121.516376014053 25.062953666281, 121.515123412486 25.0629957807145, 121.514106847189 25.0630176478185, 121.513499769056 25.0630549028756, 121.513334364852 25.0630589523376, 121.511507765994 25.0630030697496, 121.510905158246 25.0630342506171, 121.510586866912 25.0630593572838, 121.508240809446 25.0634764511563, 121.507540747329 25.0635712082071, 121.50674948938 25.0636829728394, 121.504648408951 25.0639777718152, 121.504067259045 25.0640790075637, 121.503551376743 25.0641332698904, 121.503331433856 25.0641308402345, 121.502896912542 25.0640587604207, 121.502717203109 25.0639988288578, 121.502624219124 25.0640239353269, 121.50253391737 25.0642280264331, 121.502450768229 25.0644110602313, 121.502135159126 25.0654444671646, 121.501926839237 25.0661328603625, 121.501830278945 25.0663604342042, 121.501739083114 25.0664519495445, 121.50109624191 25.067030195335, 121.500566948457 25.0675274521373, 121.500009044548 25.0680255167805, 121.499511937859 25.0684830865784, 121.499054170548 25.0688604791431, 121.498862838118 25.0690062527838, 121.497824814978 25.0697124426318, 121.49701656957 25.0702817647397, 121.496393398056 25.0707150308579, 121.495778273232 25.071130478986, 121.495125597184 25.0715872273485, 121.49429678801 25.0721468227542, 121.493881936385 25.072454558646, 121.493023622678 25.0730465431475, 121.492382569628 25.0734919468366, 121.492032091531 25.073728415046, 121.491762974421 25.0738911891302, 121.491583264988 25.0746564673727, 121.491113874679 25.0765736910702, 121.491030725539 25.0769194764784, 121.49095830532 25.0772709294991, 121.490897508099 25.0773891600121, 121.490682929672 25.077659632126, 121.490064228542 25.0782394445846, 121.489897930261 25.0784078812087, 121.489797793662 25.0785414966351, 121.489669046605 25.078828161967, 121.489480396405 25.0793197023722, 121.489233631214 25.0797731810618, 121.488919810265 25.0802080331561, 121.488489759335 25.0808445177941, 121.488177726539 25.0812947517483, 121.487779862373 25.0818696883832, 121.487611775938 25.0821101892449, 121.487596576633 25.0822883377267, 121.487506274879 25.0830349389987, 121.487612670015 25.0837710088968, 121.487669890929 25.0839434866817, 121.487800426139 25.0842860122662, 121.487980135571 25.0845588983935, 121.488445055496 25.085099810343, 121.489213514487 25.0858293898895, 121.489365507539 25.0859512559715, 121.488749935677 25.0865302194207, 121.488542509865 25.0867298194715, 121.48795483225 25.0872729641739)",
+      "EncodedPolyline": "kb}wC{sudVh@hHd@pHMNOFgVMwHAKRGvJIzFChEExBA`@JjJEvBE~@sAtMQjCU|C{@bLSrBIfB?j@LtAJb@CRi@Pc@NmE|@iCh@m@RQPsB~BcBhBcBnByAbBkAzA]d@kCnEqB~CwA|BqAxB{A`CoBdD{@rAwBjDwA~Bo@dA_@t@yCb@}J|AeANeALWJu@j@sBzBa@^YRy@XaBd@yAp@wA|@}BtAyA|@sBnAo@`@c@@sCPsCSa@KeAYu@c@kB}AqCwCW_@sBzBg@h@kBtB",
+      "UpdateTime": "2026-06-08T08:05:02+08:00",
+      "VersionID": 0
+    }
+  ],
+  "stopOfRoutes": [
+    {
+      "RouteUID": "TPE11242",
+      "RouteID": "11242",
+      "RouteName": {
+        "Zh_tw": "539",
+        "En": "539"
+      },
+      "Operators": [
+        {
+          "OperatorID": "200",
+          "OperatorName": {
+            "Zh_tw": "首都客運",
+            "En": "Capital Bus Co., Ltd."
+          },
+          "OperatorCode": "CapitalBus",
+          "OperatorNo": "0913"
+        }
+      ],
+      "SubRouteUID": "TPE112420",
+      "SubRouteID": "112420",
+      "SubRouteName": {
+        "Zh_tw": "539",
+        "En": "539"
+      },
+      "Direction": 0,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE57645",
+          "StopID": "57645",
+          "StopName": {
+            "Zh_tw": "家樂福",
+            "En": "Carerefour"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.486786,
+            "PositionLat": 25.088196,
+            "GeoHash": "wsqqsrpvr"
+          },
+          "StationID": "4670",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42733",
+          "StopID": "42733",
+          "StopName": {
+            "Zh_tw": "分子尾",
+            "En": "Fenziwei"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 2,
+          "StopPosition": {
+            "PositionLon": 121.488934,
+            "PositionLat": 25.086181,
+            "GeoHash": "wsqqswc99"
+          },
+          "StationID": "73509",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42734",
+          "StopID": "42734",
+          "StopName": {
+            "Zh_tw": "碧華寺",
+            "En": "Bihua Temple"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.487314,
+            "PositionLat": 25.083457,
+            "GeoHash": "wsqqsw23e"
+          },
+          "StationID": "1000832",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42735",
+          "StopID": "42735",
+          "StopName": {
+            "Zh_tw": "慈化里",
+            "En": "Cihua Li"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.48842,
+            "PositionLat": 25.08074,
+            "GeoHash": "wsqqstc1v"
+          },
+          "StationID": "3467",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42736",
+          "StopID": "42736",
+          "StopName": {
+            "Zh_tw": "福樂里",
+            "En": "Fule Li"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.48942,
+            "PositionLat": 25.07906,
+            "GeoHash": "wsqqst9bh"
+          },
+          "StationID": "3483",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42737",
+          "StopID": "42737",
+          "StopName": {
+            "Zh_tw": "福隆里",
+            "En": "Fulong Li"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 6,
+          "StopPosition": {
+            "PositionLon": 121.4908066,
+            "PositionLat": 25.07726723,
+            "GeoHash": "wsqqst4vs"
+          },
+          "StationID": "3481",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42738",
+          "StopID": "42738",
+          "StopName": {
+            "Zh_tw": "歌林公司",
+            "En": "Kolin Company"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.49118,
+            "PositionLat": 25.07575,
+            "GeoHash": "wsqqssghv"
+          },
+          "StationID": "3475",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42739",
+          "StopID": "42739",
+          "StopName": {
+            "Zh_tw": "溪尾街5巷",
+            "En": "Xiwei St. Ln. 5"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.49157,
+            "PositionLat": 25.07433,
+            "GeoHash": "wsqqssekw"
+          },
+          "StationID": "3484",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42740",
+          "StopID": "42740",
+          "StopName": {
+            "Zh_tw": "厚德派出所",
+            "En": "Houde Police Station"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.492963,
+            "PositionLat": 25.07293,
+            "GeoHash": "wsqqsskkr"
+          },
+          "StationID": "3438",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42741",
+          "StopID": "42741",
+          "StopName": {
+            "Zh_tw": "德林寺(三和路)",
+            "En": "Delin Temple(Sanhe Rd.)"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.49431,
+            "PositionLat": 25.071998,
+            "GeoHash": "wsqqssjqy"
+          },
+          "StationID": "10424",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42742",
+          "StopID": "42742",
+          "StopName": {
+            "Zh_tw": "捷運三重國小站",
+            "En": "MRT Sanchong Elementary School"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 11,
+          "StopPosition": {
+            "PositionLon": 121.496763,
+            "PositionLat": 25.07022903,
+            "GeoHash": "wsqqsezhx"
+          },
+          "StationID": "3402",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE125209",
+          "StopID": "125209",
+          "StopName": {
+            "Zh_tw": "三重國小",
+            "En": "SanchongElementarySchool"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 12,
+          "StopPosition": {
+            "PositionLon": 121.49806,
+            "PositionLat": 25.06934,
+            "GeoHash": "wsqqsg8pm"
+          },
+          "StationID": "4803",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42743",
+          "StopID": "42743",
+          "StopName": {
+            "Zh_tw": "三和長榮路口",
+            "En": "Sanhe & Changrong  Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 13,
+          "StopPosition": {
+            "PositionLon": 121.499510882057,
+            "PositionLat": 25.0683597687088,
+            "GeoHash": "wsqqsg91z"
+          },
+          "StationID": "3434",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42744",
+          "StopID": "42744",
+          "StopName": {
+            "Zh_tw": "長生街口",
+            "En": "Changsheng St. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 14,
+          "StopPosition": {
+            "PositionLon": 121.500788879211,
+            "PositionLat": 25.0671811216025,
+            "GeoHash": "wsqqsg64v"
+          },
+          "StationID": "3433",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42745",
+          "StopID": "42745",
+          "StopName": {
+            "Zh_tw": "三重派出所(福德北路)",
+            "En": "Sanchong Police Station(Fude N. Rd.)"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 15,
+          "StopPosition": {
+            "PositionLon": 121.502278,
+            "PositionLat": 25.064639,
+            "GeoHash": "wsqqsfgk0"
+          },
+          "StationID": "3398",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE208024",
+          "StopID": "208024",
+          "StopName": {
+            "Zh_tw": "捷運民權西路站",
+            "En": "MRT Minquan W. Rd. Station"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 16,
+          "StopPosition": {
+            "PositionLon": 121.5178677888,
+            "PositionLat": 25.0628480067,
+            "GeoHash": "wsqqt4w9e"
+          },
+          "StationID": "1000398",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE208025",
+          "StopID": "208025",
+          "StopName": {
+            "Zh_tw": "台泥大樓(馬偕醫院)",
+            "En": "Taini Building (Mackay Memorial Hospital)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 17,
+          "StopPosition": {
+            "PositionLon": 121.522776776113,
+            "PositionLat": 25.0608309862107,
+            "GeoHash": "wsqqt64jv"
+          },
+          "StationID": "1000155",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE208026",
+          "StopID": "208026",
+          "StopName": {
+            "Zh_tw": "馬偕醫院",
+            "En": "Mackay Memorial Hospital"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 18,
+          "StopPosition": {
+            "PositionLon": 121.52136241205059,
+            "PositionLat": 25.05785889251285,
+            "GeoHash": "wsqqt39hs"
+          },
+          "StationID": "10413",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    },
+    {
+      "RouteUID": "TPE11242",
+      "RouteID": "11242",
+      "RouteName": {
+        "Zh_tw": "539",
+        "En": "539"
+      },
+      "Operators": [
+        {
+          "OperatorID": "200",
+          "OperatorName": {
+            "Zh_tw": "首都客運",
+            "En": "Capital Bus Co., Ltd."
+          },
+          "OperatorCode": "CapitalBus",
+          "OperatorNo": "0913"
+        }
+      ],
+      "SubRouteUID": "TPE112420",
+      "SubRouteID": "112420",
+      "SubRouteName": {
+        "Zh_tw": "539",
+        "En": "539"
+      },
+      "Direction": 1,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE208027",
+          "StopID": "208027",
+          "StopName": {
+            "Zh_tw": "捷運雙連站",
+            "En": "MRT Shuanglian Sta."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.519034332355,
+            "PositionLat": 25.0575481163977,
+            "GeoHash": "wsqqt1x6y"
+          },
+          "StationID": "1342",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE208028",
+          "StopID": "208028",
+          "StopName": {
+            "Zh_tw": "民生西路口",
+            "En": "Minsheng W. Rd. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 2,
+          "StopPosition": {
+            "PositionLon": 121.51829,
+            "PositionLat": 25.05801,
+            "GeoHash": "wsqqt1wvm"
+          },
+          "StationID": "10203",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE42758",
+          "StopID": "42758",
+          "StopName": {
+            "Zh_tw": "成淵高中",
+            "En": "Chengyuan High School"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.51836569309,
+            "PositionLat": 25.0593635889387,
+            "GeoHash": "wsqqt1yvr"
+          },
+          "StationID": "4888",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE42759",
+          "StopID": "42759",
+          "StopName": {
+            "Zh_tw": "民權大龍街口",
+            "En": "Minquan & Dalong Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.516467,
+            "PositionLat": 25.062976,
+            "GeoHash": "wsqqt4td6"
+          },
+          "StationID": "1427",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE42760",
+          "StopID": "42760",
+          "StopName": {
+            "Zh_tw": "三重派出所(福德北路)",
+            "En": "Sanchong Police Station(Fude N. Rd.)"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.502140176662,
+            "PositionLat": 25.0654421476294,
+            "GeoHash": "wsqqsg50v"
+          },
+          "StationID": "10433",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42761",
+          "StopID": "42761",
+          "StopName": {
+            "Zh_tw": "長生街口",
+            "En": "Changsheng St. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 6,
+          "StopPosition": {
+            "PositionLon": 121.50123787463,
+            "PositionLat": 25.0669346622284,
+            "GeoHash": "wsqqsg692"
+          },
+          "StationID": "58041",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42762",
+          "StopID": "42762",
+          "StopName": {
+            "Zh_tw": "三和長榮路口",
+            "En": "Sanhe & Changrong  Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.49949705522,
+            "PositionLat": 25.0685145593238,
+            "GeoHash": "wsqqsg94x"
+          },
+          "StationID": "10426",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE125210",
+          "StopID": "125210",
+          "StopName": {
+            "Zh_tw": "三重國小",
+            "En": "SanchongElementarySchool"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.49817,
+            "PositionLat": 25.06949,
+            "GeoHash": "wsqqsgb22"
+          },
+          "StationID": "4804",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42763",
+          "StopID": "42763",
+          "StopName": {
+            "Zh_tw": "捷運三重國小站",
+            "En": "MRT Sanchong Elementary School"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.496767,
+            "PositionLat": 25.070556,
+            "GeoHash": "wsqqseznx"
+          },
+          "StationID": "10434",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42764",
+          "StopID": "42764",
+          "StopName": {
+            "Zh_tw": "德林寺(三和路)",
+            "En": "Delin Temple(Sanhe Rd.)"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.4944102,
+            "PositionLat": 25.07212332,
+            "GeoHash": "wsqqssjx8"
+          },
+          "StationID": "10423",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42765",
+          "StopID": "42765",
+          "StopName": {
+            "Zh_tw": "厚德派出所",
+            "En": "Houde Police Station"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 11,
+          "StopPosition": {
+            "PositionLon": 121.4924535,
+            "PositionLat": 25.07349256,
+            "GeoHash": "wsqqsskpe"
+          },
+          "StationID": "10422",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42766",
+          "StopID": "42766",
+          "StopName": {
+            "Zh_tw": "歌林公司",
+            "En": "Kolin Company"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 12,
+          "StopPosition": {
+            "PositionLon": 121.49137,
+            "PositionLat": 25.07567,
+            "GeoHash": "wsqqssgk6"
+          },
+          "StationID": "20374",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42767",
+          "StopID": "42767",
+          "StopName": {
+            "Zh_tw": "福隆里",
+            "En": "Fulong Li"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 13,
+          "StopPosition": {
+            "PositionLon": 121.49096,
+            "PositionLat": 25.07715,
+            "GeoHash": "wsqqst5hb"
+          },
+          "StationID": "20373",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42768",
+          "StopID": "42768",
+          "StopName": {
+            "Zh_tw": "福樂里",
+            "En": "Fule Li"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 14,
+          "StopPosition": {
+            "PositionLon": 121.489534,
+            "PositionLat": 25.079332,
+            "GeoHash": "wsqqst9cx"
+          },
+          "StationID": "10492",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42769",
+          "StopID": "42769",
+          "StopName": {
+            "Zh_tw": "慈化里",
+            "En": "Cihua Li"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 15,
+          "StopPosition": {
+            "PositionLon": 121.4882971,
+            "PositionLat": 25.08106118,
+            "GeoHash": "wsqqstc5f"
+          },
+          "StationID": "10490",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42770",
+          "StopID": "42770",
+          "StopName": {
+            "Zh_tw": "碧華寺",
+            "En": "Bihua Temple"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 16,
+          "StopPosition": {
+            "PositionLon": 121.4875434,
+            "PositionLat": 25.0833122,
+            "GeoHash": "wsqqsw28b"
+          },
+          "StationID": "10479",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42771",
+          "StopID": "42771",
+          "StopName": {
+            "Zh_tw": "慈化公園",
+            "En": "Cihua Park"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 17,
+          "StopPosition": {
+            "PositionLon": 121.488483238014,
+            "PositionLat": 25.0851042085456,
+            "GeoHash": "wsqqsw95q"
+          },
+          "StationID": "3468",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42772",
+          "StopID": "42772",
+          "StopName": {
+            "Zh_tw": "分子尾",
+            "En": "Fenziwei"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 18,
+          "StopPosition": {
+            "PositionLon": 121.4879548,
+            "PositionLat": 25.08727296,
+            "GeoHash": "wsqqswbzf"
+          },
+          "StationID": "10493",
+          "LocationCityCode": "NWT"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    },
+    {
+      "RouteUID": "TPE11242",
+      "RouteID": "11242",
+      "RouteName": {
+        "Zh_tw": "539",
+        "En": "539"
+      },
+      "Operators": [
+        {
+          "OperatorID": "200",
+          "OperatorName": {
+            "Zh_tw": "首都客運",
+            "En": "Capital Bus Co., Ltd."
+          },
+          "OperatorCode": "CapitalBus",
+          "OperatorNo": "0913"
+        }
+      ],
+      "SubRouteUID": "TPE161888",
+      "SubRouteID": "161888",
+      "SubRouteName": {
+        "Zh_tw": "539預約公車",
+        "En": "539"
+      },
+      "Direction": 0,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE57645",
+          "StopID": "57645",
+          "StopName": {
+            "Zh_tw": "家樂福",
+            "En": "Carerefour"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.486786,
+            "PositionLat": 25.088196,
+            "GeoHash": "wsqqsrpvr"
+          },
+          "StationID": "4670",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42733",
+          "StopID": "42733",
+          "StopName": {
+            "Zh_tw": "分子尾",
+            "En": "Fenziwei"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 2,
+          "StopPosition": {
+            "PositionLon": 121.488934,
+            "PositionLat": 25.086181,
+            "GeoHash": "wsqqswc99"
+          },
+          "StationID": "73509",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42734",
+          "StopID": "42734",
+          "StopName": {
+            "Zh_tw": "碧華寺",
+            "En": "Bihua Temple"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.487314,
+            "PositionLat": 25.083457,
+            "GeoHash": "wsqqsw23e"
+          },
+          "StationID": "1000832",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42735",
+          "StopID": "42735",
+          "StopName": {
+            "Zh_tw": "慈化里",
+            "En": "Cihua Li"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.48842,
+            "PositionLat": 25.08074,
+            "GeoHash": "wsqqstc1v"
+          },
+          "StationID": "3467",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42736",
+          "StopID": "42736",
+          "StopName": {
+            "Zh_tw": "福樂里",
+            "En": "Fule Li"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.48942,
+            "PositionLat": 25.07906,
+            "GeoHash": "wsqqst9bh"
+          },
+          "StationID": "3483",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42737",
+          "StopID": "42737",
+          "StopName": {
+            "Zh_tw": "福隆里",
+            "En": "Fulong Li"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 6,
+          "StopPosition": {
+            "PositionLon": 121.4908066,
+            "PositionLat": 25.07726723,
+            "GeoHash": "wsqqst4vs"
+          },
+          "StationID": "3481",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42738",
+          "StopID": "42738",
+          "StopName": {
+            "Zh_tw": "歌林公司",
+            "En": "Kolin Company"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.49118,
+            "PositionLat": 25.07575,
+            "GeoHash": "wsqqssghv"
+          },
+          "StationID": "3475",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42739",
+          "StopID": "42739",
+          "StopName": {
+            "Zh_tw": "溪尾街5巷",
+            "En": "Xiwei St. Ln. 5"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.49157,
+            "PositionLat": 25.07433,
+            "GeoHash": "wsqqssekw"
+          },
+          "StationID": "3484",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42740",
+          "StopID": "42740",
+          "StopName": {
+            "Zh_tw": "厚德派出所",
+            "En": "Houde Police Station"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.492963,
+            "PositionLat": 25.07293,
+            "GeoHash": "wsqqsskkr"
+          },
+          "StationID": "3438",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42741",
+          "StopID": "42741",
+          "StopName": {
+            "Zh_tw": "德林寺(三和路)",
+            "En": "Delin Temple(Sanhe Rd.)"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.49431,
+            "PositionLat": 25.071998,
+            "GeoHash": "wsqqssjqy"
+          },
+          "StationID": "10424",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42742",
+          "StopID": "42742",
+          "StopName": {
+            "Zh_tw": "捷運三重國小站",
+            "En": "MRT Sanchong Elementary School"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 11,
+          "StopPosition": {
+            "PositionLon": 121.496763,
+            "PositionLat": 25.07022903,
+            "GeoHash": "wsqqsezhx"
+          },
+          "StationID": "3402",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE125209",
+          "StopID": "125209",
+          "StopName": {
+            "Zh_tw": "三重國小",
+            "En": "SanchongElementarySchool"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 12,
+          "StopPosition": {
+            "PositionLon": 121.49806,
+            "PositionLat": 25.06934,
+            "GeoHash": "wsqqsg8pm"
+          },
+          "StationID": "4803",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42743",
+          "StopID": "42743",
+          "StopName": {
+            "Zh_tw": "三和長榮路口",
+            "En": "Sanhe & Changrong  Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 13,
+          "StopPosition": {
+            "PositionLon": 121.499510882057,
+            "PositionLat": 25.0683597687088,
+            "GeoHash": "wsqqsg91z"
+          },
+          "StationID": "3434",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42744",
+          "StopID": "42744",
+          "StopName": {
+            "Zh_tw": "長生街口",
+            "En": "Changsheng St. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 14,
+          "StopPosition": {
+            "PositionLon": 121.500788879211,
+            "PositionLat": 25.0671811216025,
+            "GeoHash": "wsqqsg64v"
+          },
+          "StationID": "3433",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42745",
+          "StopID": "42745",
+          "StopName": {
+            "Zh_tw": "三重派出所(福德北路)",
+            "En": "Sanchong Police Station(Fude N. Rd.)"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 15,
+          "StopPosition": {
+            "PositionLon": 121.502278,
+            "PositionLat": 25.064639,
+            "GeoHash": "wsqqsfgk0"
+          },
+          "StationID": "3398",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE208024",
+          "StopID": "208024",
+          "StopName": {
+            "Zh_tw": "捷運民權西路站",
+            "En": "MRT Minquan W. Rd. Station"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 16,
+          "StopPosition": {
+            "PositionLon": 121.5178677888,
+            "PositionLat": 25.0628480067,
+            "GeoHash": "wsqqt4w9e"
+          },
+          "StationID": "1000398",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE208025",
+          "StopID": "208025",
+          "StopName": {
+            "Zh_tw": "台泥大樓(馬偕醫院)",
+            "En": "Taini Building (Mackay Memorial Hospital)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 17,
+          "StopPosition": {
+            "PositionLon": 121.522776776113,
+            "PositionLat": 25.0608309862107,
+            "GeoHash": "wsqqt64jv"
+          },
+          "StationID": "1000155",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE208026",
+          "StopID": "208026",
+          "StopName": {
+            "Zh_tw": "馬偕醫院",
+            "En": "Mackay Memorial Hospital"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 18,
+          "StopPosition": {
+            "PositionLon": 121.52136241205059,
+            "PositionLat": 25.05785889251285,
+            "GeoHash": "wsqqt39hs"
+          },
+          "StationID": "10413",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    },
+    {
+      "RouteUID": "TPE11242",
+      "RouteID": "11242",
+      "RouteName": {
+        "Zh_tw": "539",
+        "En": "539"
+      },
+      "Operators": [
+        {
+          "OperatorID": "200",
+          "OperatorName": {
+            "Zh_tw": "首都客運",
+            "En": "Capital Bus Co., Ltd."
+          },
+          "OperatorCode": "CapitalBus",
+          "OperatorNo": "0913"
+        }
+      ],
+      "SubRouteUID": "TPE161888",
+      "SubRouteID": "161888",
+      "SubRouteName": {
+        "Zh_tw": "539預約公車",
+        "En": "539"
+      },
+      "Direction": 1,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE208027",
+          "StopID": "208027",
+          "StopName": {
+            "Zh_tw": "捷運雙連站",
+            "En": "MRT Shuanglian Sta."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.519034332355,
+            "PositionLat": 25.0575481163977,
+            "GeoHash": "wsqqt1x6y"
+          },
+          "StationID": "1342",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE208028",
+          "StopID": "208028",
+          "StopName": {
+            "Zh_tw": "民生西路口",
+            "En": "Minsheng W. Rd. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 2,
+          "StopPosition": {
+            "PositionLon": 121.51829,
+            "PositionLat": 25.05801,
+            "GeoHash": "wsqqt1wvm"
+          },
+          "StationID": "10203",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE42758",
+          "StopID": "42758",
+          "StopName": {
+            "Zh_tw": "成淵高中",
+            "En": "Chengyuan High School"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.51836569309,
+            "PositionLat": 25.0593635889387,
+            "GeoHash": "wsqqt1yvr"
+          },
+          "StationID": "4888",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE42759",
+          "StopID": "42759",
+          "StopName": {
+            "Zh_tw": "民權大龍街口",
+            "En": "Minquan & Dalong Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.516467,
+            "PositionLat": 25.062976,
+            "GeoHash": "wsqqt4td6"
+          },
+          "StationID": "1427",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE42760",
+          "StopID": "42760",
+          "StopName": {
+            "Zh_tw": "三重派出所(福德北路)",
+            "En": "Sanchong Police Station(Fude N. Rd.)"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.502140176662,
+            "PositionLat": 25.0654421476294,
+            "GeoHash": "wsqqsg50v"
+          },
+          "StationID": "10433",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42761",
+          "StopID": "42761",
+          "StopName": {
+            "Zh_tw": "長生街口",
+            "En": "Changsheng St. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 6,
+          "StopPosition": {
+            "PositionLon": 121.50123787463,
+            "PositionLat": 25.0669346622284,
+            "GeoHash": "wsqqsg692"
+          },
+          "StationID": "58041",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42762",
+          "StopID": "42762",
+          "StopName": {
+            "Zh_tw": "三和長榮路口",
+            "En": "Sanhe & Changrong  Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.49949705522,
+            "PositionLat": 25.0685145593238,
+            "GeoHash": "wsqqsg94x"
+          },
+          "StationID": "10426",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE125210",
+          "StopID": "125210",
+          "StopName": {
+            "Zh_tw": "三重國小",
+            "En": "SanchongElementarySchool"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.49817,
+            "PositionLat": 25.06949,
+            "GeoHash": "wsqqsgb22"
+          },
+          "StationID": "4804",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42763",
+          "StopID": "42763",
+          "StopName": {
+            "Zh_tw": "捷運三重國小站",
+            "En": "MRT Sanchong Elementary School"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.496767,
+            "PositionLat": 25.070556,
+            "GeoHash": "wsqqseznx"
+          },
+          "StationID": "10434",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42764",
+          "StopID": "42764",
+          "StopName": {
+            "Zh_tw": "德林寺(三和路)",
+            "En": "Delin Temple(Sanhe Rd.)"
+          },
+          "StopBoarding": -1,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.4944102,
+            "PositionLat": 25.07212332,
+            "GeoHash": "wsqqssjx8"
+          },
+          "StationID": "10423",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42765",
+          "StopID": "42765",
+          "StopName": {
+            "Zh_tw": "厚德派出所",
+            "En": "Houde Police Station"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 11,
+          "StopPosition": {
+            "PositionLon": 121.4924535,
+            "PositionLat": 25.07349256,
+            "GeoHash": "wsqqsskpe"
+          },
+          "StationID": "10422",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42766",
+          "StopID": "42766",
+          "StopName": {
+            "Zh_tw": "歌林公司",
+            "En": "Kolin Company"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 12,
+          "StopPosition": {
+            "PositionLon": 121.49137,
+            "PositionLat": 25.07567,
+            "GeoHash": "wsqqssgk6"
+          },
+          "StationID": "20374",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42767",
+          "StopID": "42767",
+          "StopName": {
+            "Zh_tw": "福隆里",
+            "En": "Fulong Li"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 13,
+          "StopPosition": {
+            "PositionLon": 121.49096,
+            "PositionLat": 25.07715,
+            "GeoHash": "wsqqst5hb"
+          },
+          "StationID": "20373",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42768",
+          "StopID": "42768",
+          "StopName": {
+            "Zh_tw": "福樂里",
+            "En": "Fule Li"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 14,
+          "StopPosition": {
+            "PositionLon": 121.489534,
+            "PositionLat": 25.079332,
+            "GeoHash": "wsqqst9cx"
+          },
+          "StationID": "10492",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42769",
+          "StopID": "42769",
+          "StopName": {
+            "Zh_tw": "慈化里",
+            "En": "Cihua Li"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 15,
+          "StopPosition": {
+            "PositionLon": 121.4882971,
+            "PositionLat": 25.08106118,
+            "GeoHash": "wsqqstc5f"
+          },
+          "StationID": "10490",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42770",
+          "StopID": "42770",
+          "StopName": {
+            "Zh_tw": "碧華寺",
+            "En": "Bihua Temple"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 16,
+          "StopPosition": {
+            "PositionLon": 121.4875434,
+            "PositionLat": 25.0833122,
+            "GeoHash": "wsqqsw28b"
+          },
+          "StationID": "10479",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42771",
+          "StopID": "42771",
+          "StopName": {
+            "Zh_tw": "慈化公園",
+            "En": "Cihua Park"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 17,
+          "StopPosition": {
+            "PositionLon": 121.488483238014,
+            "PositionLat": 25.0851042085456,
+            "GeoHash": "wsqqsw95q"
+          },
+          "StationID": "3468",
+          "LocationCityCode": "NWT"
+        },
+        {
+          "StopUID": "TPE42772",
+          "StopID": "42772",
+          "StopName": {
+            "Zh_tw": "分子尾",
+            "En": "Fenziwei"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 18,
+          "StopPosition": {
+            "PositionLon": 121.4879548,
+            "PositionLat": 25.08727296,
+            "GeoHash": "wsqqswbzf"
+          },
+          "StationID": "10493",
+          "LocationCityCode": "NWT"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    }
+  ],
+  "shapeCount": 2,
+  "stopOfRouteCount": 4
+}

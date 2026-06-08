@@ -1,0 +1,490 @@
+{
+  "schema": "twfoundry.tdx.citybus.route-context.v1",
+  "source": {
+    "provider": "TDX",
+    "city": "Taipei",
+    "datasets": [
+      "Bus.Shape.City",
+      "Bus.StopOfRoute.City"
+    ]
+  },
+  "routeName": "542預",
+  "generatedAt": "2026-06-08T03:21:19.476Z",
+  "shapes": [],
+  "stopOfRoutes": [
+    {
+      "RouteUID": "TPE18348",
+      "RouteID": "18348",
+      "RouteName": {
+        "Zh_tw": "542預",
+        "En": "542B"
+      },
+      "Operators": [
+        {
+          "OperatorID": "200",
+          "OperatorName": {
+            "Zh_tw": "首都客運",
+            "En": "Capital Bus Co., Ltd."
+          },
+          "OperatorCode": "CapitalBus",
+          "OperatorNo": "0913"
+        }
+      ],
+      "SubRouteUID": "TPE160269",
+      "SubRouteID": "160269",
+      "SubRouteName": {
+        "Zh_tw": "542預",
+        "En": "542B"
+      },
+      "Direction": 0,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE206143",
+          "StopID": "206143",
+          "StopName": {
+            "Zh_tw": "捷運圓山站",
+            "En": "MRT Yuanshan Sta."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.520216,
+            "PositionLat": 25.069744,
+            "GeoHash": "wsqqt7b3f"
+          },
+          "StationID": "1462",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE206144",
+          "StopID": "206144",
+          "StopName": {
+            "Zh_tw": "花博公園",
+            "En": "Taipei Expo Park"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 2,
+          "StopPosition": {
+            "PositionLon": 121.5219958317649,
+            "PositionLat": 25.06836964371407,
+            "GeoHash": "wsqqt799g"
+          },
+          "StationID": "1406",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE206145",
+          "StopID": "206145",
+          "StopName": {
+            "Zh_tw": "大同大學",
+            "En": "Tatung U."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.5242636,
+            "PositionLat": 25.06834316,
+            "GeoHash": "wsqqt7e38"
+          },
+          "StationID": "1000901",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE206146",
+          "StopID": "206146",
+          "StopName": {
+            "Zh_tw": "吉林路底",
+            "En": "Jilin Rd. End"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.530399427523,
+            "PositionLat": 25.0671439681624,
+            "GeoHash": "wsqqt7rdx"
+          },
+          "StationID": "1251",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE206147",
+          "StopID": "206147",
+          "StopName": {
+            "Zh_tw": "農安街吉林路口",
+            "En": "Nongan and Jilin Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.5306207,
+            "PositionLat": 25.06478877,
+            "GeoHash": "wsqqt6zuu"
+          },
+          "StationID": "1378",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE206148",
+          "StopID": "206148",
+          "StopName": {
+            "Zh_tw": "中山區公所",
+            "En": "Zhongshan Dist. Office"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 6,
+          "StopPosition": {
+            "PositionLon": 121.53409,
+            "PositionLat": 25.06471,
+            "GeoHash": "wsqqtdfkt"
+          },
+          "StationID": "1192",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE206149",
+          "StopID": "206149",
+          "StopName": {
+            "Zh_tw": "臺北漁市",
+            "En": "Taipei Fish Market"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.5368048,
+            "PositionLat": 25.06585474,
+            "GeoHash": "wsqqteh7h"
+          },
+          "StationID": "1208",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE206150",
+          "StopID": "206150",
+          "StopName": {
+            "Zh_tw": "濱江商圈",
+            "En": "Binjiang Shopping Circle"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.53905,
+            "PositionLat": 25.06605,
+            "GeoHash": "wsqqtenh3"
+          },
+          "StationID": "1396",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE206151",
+          "StopID": "206151",
+          "StopName": {
+            "Zh_tw": "復興北村",
+            "En": "Fuxing N. Village"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.5441547,
+            "PositionLat": 25.06497867,
+            "GeoHash": "wsqqtfcy0"
+          },
+          "StationID": "1348",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE206152",
+          "StopID": "206152",
+          "StopName": {
+            "Zh_tw": "五常街口",
+            "En": "Wuchang St. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.5440531,
+            "PositionLat": 25.06369319,
+            "GeoHash": "wsqqtf9wt"
+          },
+          "StationID": "6989",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE206153",
+          "StopID": "206153",
+          "StopName": {
+            "Zh_tw": "捷運中山國中站",
+            "En": "MRT Zhongshan Junior High School Sta."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 11,
+          "StopPosition": {
+            "PositionLon": 121.5440343,
+            "PositionLat": 25.06148096,
+            "GeoHash": "wsqqtf39t"
+          },
+          "StationID": "1574",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    },
+    {
+      "RouteUID": "TPE18348",
+      "RouteID": "18348",
+      "RouteName": {
+        "Zh_tw": "542預",
+        "En": "542B"
+      },
+      "Operators": [
+        {
+          "OperatorID": "200",
+          "OperatorName": {
+            "Zh_tw": "首都客運",
+            "En": "Capital Bus Co., Ltd."
+          },
+          "OperatorCode": "CapitalBus",
+          "OperatorNo": "0913"
+        }
+      ],
+      "SubRouteUID": "TPE160269",
+      "SubRouteID": "160269",
+      "SubRouteName": {
+        "Zh_tw": "542預",
+        "En": "542B"
+      },
+      "Direction": 1,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE206154",
+          "StopID": "206154",
+          "StopName": {
+            "Zh_tw": "龍江路口",
+            "En": "Longjiang Rd. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.5408185,
+            "PositionLat": 25.06090008,
+            "GeoHash": "wsqqtdpq6"
+          },
+          "StationID": "1395",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE206155",
+          "StopID": "206155",
+          "StopName": {
+            "Zh_tw": "五常國小",
+            "En": "Wuchang Elementary School"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 2,
+          "StopPosition": {
+            "PositionLon": 121.54096,
+            "PositionLat": 25.06401,
+            "GeoHash": "wsqqtdz2m"
+          },
+          "StationID": "1197",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE206156",
+          "StopID": "206156",
+          "StopName": {
+            "Zh_tw": "行仁里",
+            "En": "Xingren Li"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 3,
+          "StopPosition": {
+            "PositionLon": 121.5410055,
+            "PositionLat": 25.06578312,
+            "GeoHash": "wsqqtep6y"
+          },
+          "StationID": "1000862",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE206157",
+          "StopID": "206157",
+          "StopName": {
+            "Zh_tw": "濱江商圈",
+            "En": "Binjiang Shopping Circle"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 4,
+          "StopPosition": {
+            "PositionLon": 121.5394645,
+            "PositionLat": 25.06611465,
+            "GeoHash": "wsqqtenkd"
+          },
+          "StationID": "3986",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE206158",
+          "StopID": "206158",
+          "StopName": {
+            "Zh_tw": "臺北漁市",
+            "En": "Taipei Fish Market"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 5,
+          "StopPosition": {
+            "PositionLon": 121.5370488,
+            "PositionLat": 25.06614272,
+            "GeoHash": "wsqqtehsf"
+          },
+          "StationID": "1210",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE206160",
+          "StopID": "206160",
+          "StopName": {
+            "Zh_tw": "中山區公所",
+            "En": "Zhongshan Dist. Office"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 6,
+          "StopPosition": {
+            "PositionLon": 121.5336228,
+            "PositionLat": 25.06481353,
+            "GeoHash": "wsqqtdfj4"
+          },
+          "StationID": "16266",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE206161",
+          "StopID": "206161",
+          "StopName": {
+            "Zh_tw": "農安街吉林路口",
+            "En": "Nongan and Jilin Intersection"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 7,
+          "StopPosition": {
+            "PositionLon": 121.5306212,
+            "PositionLat": 25.06487895,
+            "GeoHash": "wsqqt6zvs"
+          },
+          "StationID": "16260",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE206162",
+          "StopID": "206162",
+          "StopName": {
+            "Zh_tw": "農安街",
+            "En": "Nongan St."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 8,
+          "StopPosition": {
+            "PositionLon": 121.5286595,
+            "PositionLat": 25.06493634,
+            "GeoHash": "wsqqt6ymz"
+          },
+          "StationID": "1377",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE206163",
+          "StopID": "206163",
+          "StopName": {
+            "Zh_tw": "稻江護校",
+            "En": "Daojiang High School of Nursing and Home Economics"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 9,
+          "StopPosition": {
+            "PositionLon": 121.528089,
+            "PositionLat": 25.066076,
+            "GeoHash": "wsqqt7nh3"
+          },
+          "StationID": "1387",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE206164",
+          "StopID": "206164",
+          "StopName": {
+            "Zh_tw": "民族東路口",
+            "En": "Minzu E. Rd. Entrance"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 10,
+          "StopPosition": {
+            "PositionLon": 121.52804750361558,
+            "PositionLat": 25.06761882553957,
+            "GeoHash": "wsqqt7qj2"
+          },
+          "StationID": "1165608795",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE206165",
+          "StopID": "206165",
+          "StopName": {
+            "Zh_tw": "大同大學",
+            "En": "Tatung U."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 11,
+          "StopPosition": {
+            "PositionLon": 121.5239878,
+            "PositionLat": 25.06857831,
+            "GeoHash": "wsqqt7e54"
+          },
+          "StationID": "16261",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE206166",
+          "StopID": "206166",
+          "StopName": {
+            "Zh_tw": "花博公園",
+            "En": "Taipei Expo Park"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 12,
+          "StopPosition": {
+            "PositionLon": 121.520798366208,
+            "PositionLat": 25.0685957947607,
+            "GeoHash": "wsqqt78ep"
+          },
+          "StationID": "1407",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE206167",
+          "StopID": "206167",
+          "StopName": {
+            "Zh_tw": "捷運圓山站",
+            "En": "MRT Yuanshan Sta."
+          },
+          "StopBoarding": 0,
+          "StopSequence": 13,
+          "StopPosition": {
+            "PositionLon": 121.520216,
+            "PositionLat": 25.069744,
+            "GeoHash": "wsqqt7b3f"
+          },
+          "StationID": "1462",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    }
+  ],
+  "shapeCount": 0,
+  "stopOfRouteCount": 2
+}

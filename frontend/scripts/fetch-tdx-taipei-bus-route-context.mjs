@@ -21,27 +21,49 @@ const outputRoot = resolve(process.cwd(), options['output-root'] ?? DEFAULT_OUTP
 const limitRoutes = Number(options['limit-routes'] ?? Number.POSITIVE_INFINITY);
 const requestDelayMs = Number(options['request-delay-ms'] ?? 650);
 const maxRetries = Number(options['max-retries'] ?? 4);
+const dryRun = Boolean(options['dry-run']);
+const skipExisting = Boolean(options['skip-existing']);
 
 if (!clientId || !clientSecret) {
   throw new Error('TDX_CLIENT_ID and TDX_CLIENT_SECRET must be configured in .env or process env.');
 }
 
-const routeNames = routeNamesFromOptions();
+const accessToken = await fetchAccessToken({ authUrl, clientId, clientSecret });
+const routeNames = await routeNamesFromOptions(accessToken);
 if (routeNames.length === 0) {
-  throw new Error('No routes requested. Use --routes 234,307 or --from-archive.');
+  throw new Error('No routes requested. Use --routes 234,307, --from-route-list, or --from-archive.');
 }
 
-const accessToken = await fetchAccessToken({ authUrl, clientId, clientSecret });
-const routeContexts = [];
+if (dryRun) {
+  console.info(JSON.stringify({
+    ok: true,
+    dryRun,
+    city,
+    requestedRoutes: routeNames.length,
+    routeNames,
+  }, null, 2));
+  process.exit(0);
+}
 
-for (const routeName of routeNames) {
+const routeContexts = [];
+let skippedRoutes = 0;
+
+for (const [routeIndex, routeName] of routeNames.entries()) {
+  const outputPath = join(outputRoot, `${encodeURIComponent(routeName)}.json`);
+  if (skipExisting && existsSync(outputPath)) {
+    skippedRoutes += 1;
+    continue;
+  }
+
+  console.info(`[route-context] ${routeIndex + 1}/${routeNames.length} ${routeName}`);
+  const routeNamePath = encodeURIComponent(routeName);
   const shapes = filterExactRoute(
-    await fetchJson(`/Bus/Shape/City/${city}/${routeName}`, accessToken),
+    await fetchJson(`/Bus/Shape/City/${encodeURIComponent(city)}/${routeNamePath}`, accessToken),
     routeName,
   );
   await delay(requestDelayMs);
   const stopOfRoutes = filterExactRoute(
-    await fetchJson(`/Bus/StopOfRoute/City/${city}/${routeName}`, accessToken),
+    await fetchJson(`/Bus/StopOfRoute/City/${encodeURIComponent(city)}/${routeNamePath}`, accessToken),
     routeName,
   );
   await delay(requestDelayMs);
@@ -61,7 +83,6 @@ for (const routeName of routeNames) {
     stopOfRouteCount: stopOfRoutes.length,
   };
 
-  const outputPath = join(outputRoot, `${encodeURIComponent(routeName)}.json`);
   mkdirSync(dirname(outputPath), { recursive: true });
   writeFileSync(outputPath, `${JSON.stringify(routeContext, null, 2)}\n`);
   routeContexts.push({
@@ -94,6 +115,7 @@ console.info(JSON.stringify({
   city,
   requestedRoutes: routeNames.length,
   writtenRoutes: routeContexts.length,
+  skippedRoutes,
   outputRoot,
   manifest: join(outputRoot, 'manifest.json'),
 }, null, 2));
@@ -142,9 +164,14 @@ async function fetchJson(path, accessToken) {
   return [];
 }
 
-function routeNamesFromOptions() {
+async function routeNamesFromOptions(accessToken) {
   if (options.routes) {
     return uniqueRouteNames(String(options.routes).split(',').map((route) => route.trim()));
+  }
+
+  if (options['from-route-list']) {
+    const routes = await fetchJson(`/Bus/Route/City/${encodeURIComponent(city)}`, accessToken);
+    return uniqueRouteNames(routes.map((route) => routeNameFromRecord(route)));
   }
 
   if (!options['from-archive']) return [];

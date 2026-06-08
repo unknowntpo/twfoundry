@@ -1,0 +1,179 @@
+{
+  "schema": "twfoundry.tdx.citybus.route-context.v1",
+  "source": {
+    "provider": "TDX",
+    "city": "Taipei",
+    "datasets": [
+      "Bus.Shape.City",
+      "Bus.StopOfRoute.City"
+    ]
+  },
+  "routeName": "通勤29",
+  "generatedAt": "2026-06-08T03:21:34.588Z",
+  "shapes": [
+    {
+      "RouteUID": "TPE19539",
+      "RouteID": "19539",
+      "RouteName": {
+        "Zh_tw": "通勤29",
+        "En": "CB29"
+      },
+      "SubRouteName": {},
+      "Direction": 0,
+      "Geometry": "LINESTRING (121.566535683299 25.0512559293085, 121.567622528561 25.0512794940894, 121.569732578056 25.0512469651141, 121.570342992775 25.0512431381753, 121.570767537268 25.0513445520142, 121.571346269561 25.0516449661012, 121.573135270485 25.0526112611974, 121.574818663325 25.0535354531428, 121.576111306259 25.0541018281997, 121.577498996467 25.0548059665129, 121.579361923048 25.0558162448529, 121.581486757674 25.0569566247916, 121.582927251924 25.057741108186, 121.585382873394 25.0590577208123, 121.585738658897 25.0591847971662)",
+      "EncodedPolyline": "ky{wC{m~dVCwEDeL@yBSuA{@sBaEeJyDoIoBaGmCuGiEsJcFiL{C_HgGiNWgA",
+      "UpdateTime": "2026-06-08T08:05:02+08:00",
+      "VersionID": 0
+    },
+    {
+      "RouteUID": "TPE19539",
+      "RouteID": "19539",
+      "RouteName": {
+        "Zh_tw": "通勤29",
+        "En": "CB29"
+      },
+      "SubRouteName": {},
+      "Direction": 1,
+      "Geometry": "LINESTRING (121.585662187663 25.0595604526613, 121.585228388537 25.0593133423524, 121.584514107522 25.0589321661475, 121.583143403306 25.0582126928297, 121.579949651962 25.0564840337109, 121.578705182977 25.0558160062073, 121.575877513804 25.0542493197192, 121.573647358057 25.0530304542762, 121.571064795623 25.0516305070808, 121.570662946805 25.0514284711756, 121.570373657734 25.0513474661201, 121.569569960097 25.0513179230865, 121.567661704189 25.0513684321396, 121.567433428813 25.0514456251805, 121.566649718421 25.0514561081823, 121.564885830056 25.0515022445324)",
+      "EncodedPolyline": "gm}wCkebeVp@tAjAnCnCpGxI|RbCvFxHtPrF|LvGdOf@nANx@D~CI|JOl@AzCG~I",
+      "UpdateTime": "2026-06-08T08:05:02+08:00",
+      "VersionID": 0
+    }
+  ],
+  "stopOfRoutes": [
+    {
+      "RouteUID": "TPE19539",
+      "RouteID": "19539",
+      "RouteName": {
+        "Zh_tw": "通勤29",
+        "En": "CB29"
+      },
+      "Operators": [
+        {
+          "OperatorID": "200",
+          "OperatorName": {
+            "Zh_tw": "首都客運",
+            "En": "Capital Bus Co., Ltd."
+          },
+          "OperatorCode": "CapitalBus",
+          "OperatorNo": "0913"
+        }
+      ],
+      "SubRouteUID": "TPE162058",
+      "SubRouteID": "162058",
+      "SubRouteName": {
+        "Zh_tw": "通勤29去程半",
+        "En": "CB29"
+      },
+      "Direction": 0,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE218522",
+          "StopID": "218522",
+          "StopName": {
+            "Zh_tw": "南京公寓(捷運南京三民)",
+            "En": "Nanjing Apartment (MRT Nanjing Sanmin Sta.)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.566535683299,
+            "PositionLat": 25.0512559293088,
+            "GeoHash": "wsqqw26n1"
+          },
+          "StationID": "1165603387",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE218521",
+          "StopID": "218521",
+          "StopName": {
+            "Zh_tw": "潭美公園",
+            "En": "Tan-mei Park"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 2,
+          "StopPosition": {
+            "PositionLon": 121.5857387,
+            "PositionLat": 25.0591848,
+            "GeoHash": "wsqqwcbh3"
+          },
+          "StationID": "5048",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    },
+    {
+      "RouteUID": "TPE19539",
+      "RouteID": "19539",
+      "RouteName": {
+        "Zh_tw": "通勤29",
+        "En": "CB29"
+      },
+      "Operators": [
+        {
+          "OperatorID": "200",
+          "OperatorName": {
+            "Zh_tw": "首都客運",
+            "En": "Capital Bus Co., Ltd."
+          },
+          "OperatorCode": "CapitalBus",
+          "OperatorNo": "0913"
+        }
+      ],
+      "SubRouteUID": "TPE162059",
+      "SubRouteID": "162059",
+      "SubRouteName": {
+        "Zh_tw": "通勤29返程半",
+        "En": "CB29"
+      },
+      "Direction": 1,
+      "City": "Taipei",
+      "CityCode": "TPE",
+      "Stops": [
+        {
+          "StopUID": "TPE218524",
+          "StopID": "218524",
+          "StopName": {
+            "Zh_tw": "潭美公園",
+            "En": "Tan-mei Park"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 1,
+          "StopPosition": {
+            "PositionLon": 121.58567426682049,
+            "PositionLat": 25.059637621521563,
+            "GeoHash": "wsqqw9zyz"
+          },
+          "StationID": "5047",
+          "LocationCityCode": "TPE"
+        },
+        {
+          "StopUID": "TPE218523",
+          "StopID": "218523",
+          "StopName": {
+            "Zh_tw": "南京公寓(捷運南京三民)",
+            "En": "Nanjing Apartment (MRT Nanjing Sanmin Sta.)"
+          },
+          "StopBoarding": 0,
+          "StopSequence": 2,
+          "StopPosition": {
+            "PositionLon": 121.564777,
+            "PositionLat": 25.051492,
+            "GeoHash": "wsqqw22z8"
+          },
+          "StationID": "50160",
+          "LocationCityCode": "TPE"
+        }
+      ],
+      "UpdateTime": "2026-06-08T07:25:16+08:00",
+      "VersionID": 7475
+    }
+  ],
+  "shapeCount": 2,
+  "stopOfRouteCount": 2
+}
