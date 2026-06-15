@@ -1,0 +1,10 @@
+{
+  "name": "twfoundry-analytics-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "bun src/server.mjs",
+    "check": "bun --check src/server.mjs"
+  }
+}

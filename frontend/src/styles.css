@@ -27,6 +27,16 @@ body {
   perspective: 1400px;
 }
 
+body.document-scroll-page {
+  overflow: auto;
+  perspective: none;
+}
+
+body.document-scroll-page #app {
+  height: auto;
+  min-height: 100%;
+}
+
 button,
 input {
   font: inherit;

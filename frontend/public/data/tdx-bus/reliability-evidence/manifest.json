@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-12T12:31:30.376Z",
+  "city": "Taipei",
+  "routes": [
+    {
+      "route": "1",
+      "path": "/data/tdx-bus/reliability-evidence/route-1.json",
+      "rowCounts": {
+        "eta": 69,
+        "schedule": 2,
+        "stopOfRoute": 4,
+        "etaEvidence": 69,
+        "delayCandidates": 0
+      },
+      "joinQuality": {
+        "etaStopJoinRate": 1,
+        "scheduledEtaRows": 33,
+        "timetableEtaRows": 0,
+        "frequencyEtaRows": 33
+      },
+      "signalPolicy": {
+        "userFacingSignal": "候車超時（ETA）",
+        "confidence": "reference",
+        "reason": "ETA is compared with exact stop timetables when available, otherwise with the active frequency schedule window. Rows outside normal operation or without schedule evidence are not promoted to alert candidates."
+      }
+    },
+    {
+      "route": "279",
+      "path": "/data/tdx-bus/reliability-evidence/route-279.json",
+      "rowCounts": {
+        "eta": 95,
+        "schedule": 4,
+        "stopOfRoute": 6,
+        "etaEvidence": 95,
+        "delayCandidates": 0
+      },
+      "joinQuality": {
+        "etaStopJoinRate": 1,
+        "scheduledEtaRows": 0,
+        "timetableEtaRows": 0,
+        "frequencyEtaRows": 0
+      },
+      "signalPolicy": {
+        "userFacingSignal": "候車超時（ETA）",
+        "confidence": "reference",
+        "reason": "ETA is compared with exact stop timetables when available, otherwise with the active frequency schedule window. Rows outside normal operation or without schedule evidence are not promoted to alert candidates."
+      }
+    },
+    {
+      "route": "307",
+      "path": "/data/tdx-bus/reliability-evidence/route-307.json",
+      "rowCounts": {
+        "eta": 128,
+        "schedule": 2,
+        "stopOfRoute": 2,
+        "etaEvidence": 128,
+        "delayCandidates": 3
+      },
+      "joinQuality": {
+        "etaStopJoinRate": 1,
+        "scheduledEtaRows": 128,
+        "timetableEtaRows": 0,
+        "frequencyEtaRows": 128
+      },
+      "signalPolicy": {
+        "userFacingSignal": "候車超時（ETA）",
+        "confidence": "candidate",
+        "reason": "ETA is compared with exact stop timetables when available, otherwise with the active frequency schedule window. Rows outside normal operation or without schedule evidence are not promoted to alert candidates."
+      }
+    },
+    {
+      "route": "南京幹線",
+      "path": "/data/tdx-bus/reliability-evidence/route-%E5%8D%97%E4%BA%AC%E5%B9%B9%E7%B7%9A.json",
+      "rowCounts": {
+        "eta": 81,
+        "schedule": 1,
+        "stopOfRoute": 4,
+        "etaEvidence": 81,
+        "delayCandidates": 0
+      },
+      "joinQuality": {
+        "etaStopJoinRate": 1,
+        "scheduledEtaRows": 41,
+        "timetableEtaRows": 0,
+        "frequencyEtaRows": 41
+      },
+      "signalPolicy": {
+        "userFacingSignal": "候車超時（ETA）",
+        "confidence": "reference",
+        "reason": "ETA is compared with exact stop timetables when available, otherwise with the active frequency schedule window. Rows outside normal operation or without schedule evidence are not promoted to alert candidates."
+      }
+    },
+    {
+      "route": "藍36",
+      "path": "/data/tdx-bus/reliability-evidence/route-%E8%97%8D36.json",
+      "rowCounts": {
+        "eta": 70,
+        "schedule": 3,
+        "stopOfRoute": 4,
+        "etaEvidence": 70,
+        "delayCandidates": 0
+      },
+      "joinQuality": {
+        "etaStopJoinRate": 1,
+        "scheduledEtaRows": 36,
+        "timetableEtaRows": 0,
+        "frequencyEtaRows": 36
+      },
+      "signalPolicy": {
+        "userFacingSignal": "候車超時（ETA）",
+        "confidence": "reference",
+        "reason": "ETA is compared with exact stop timetables when available, otherwise with the active frequency schedule window. Rows outside normal operation or without schedule evidence are not promoted to alert candidates."
+      }
+    }
+  ]
+}

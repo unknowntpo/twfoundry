@@ -27,6 +27,13 @@ Pages Functions serve the same projection contract that the Java backend exposes
 
 The standalone Worker under `cloudflare/worker/` is a fallback deployment shape. Prefer the Pages Function path for the first customer-facing POC because the frontend and `/api/*` stay on the same hostname.
 
+Long-term direction: Cloudflare is the public edge serving layer, not the primary ingestion
+orchestration layer. Homelab Airflow / Kafka / ClickHouse should generate and publish materialized
+artifacts to R2. Pages Functions / Workers should serve only the artifacts that exist in R2.
+
+If an R2 artifact is missing, the edge API should return a product-level `no_data` response. It
+must not synchronously proxy the request to homelab.
+
 ## One-Time Cloudflare Setup
 
 ```bash
@@ -153,9 +160,12 @@ bun run backfill:tdx-bus-projections -- --from 2026-05-20 --to 2026-05-21 --forc
 
 Backfill uses TDX historical data. It should not be used to pretend a failed live slot succeeded unless the source data actually covers that slot.
 
-## Live Bus Ingestor Cron
+## Existing Live Bus Ingestor Cron
 
 The live ingestor is a Cloudflare Worker under `cloudflare/ingestor-worker/`. It runs every 5 minutes, fetches TDX `Bus.RealTimeByFrequency.City`, writes a raw snapshot to R2, writes the matching bus projection JSON, and updates `bus/projections/manifest.json`.
+
+This is an existing POC implementation path, not the final resume architecture. The intended final
+ingestion path is homelab Airflow / Kafka publishing artifacts to R2.
 
 Configure secrets once:
 
@@ -257,6 +267,79 @@ After deploying Pages to the demo hostname:
 ```bash
 cd frontend
 bun run verify:cloudflare-poc -- --url https://<demo-host>
+BUS_OVERSIGHT_URL=https://<demo-host>/bus-oversight bun run verify:bus-oversight
+```
+
+For the ClickHouse analytics e2e milestone, verify with analytics row checks:
+
+```bash
+cd frontend
+bun run verify:cloudflare-poc -- \
+  --url https://twfoundry-poc.pages.dev \
+  --min-features 50 \
+  --min-analytics-rows 1
+BUS_OVERSIGHT_URL=https://twfoundry-poc.pages.dev/bus-oversight bun run verify:bus-oversight
+```
+
+Expected public checks:
+
+- site root returns HTTP 200
+- `/api/projections/bus_vehicles/timeline` returns non-fixture live/archived projection manifest
+- `/api/projections/bus_vehicles?slot=latest` returns vehicle features
+- `/data/analytics/bus/manifest.json` reports `clickhouse-static-snapshot`
+- every analytics JSON listed by the manifest has at least one row
+- `/data/tdx-bus/reliability-evidence/route-307.json` has a `frequency_wait_excess` candidate
+- timetable/departure-delay candidates are verified only when a current safe fixture exists; do not keep stale large-delay candidates just for demo value
+- `/bus-oversight` renders the bus route service control page, keeps product copy free of implementation wording, switches route schematics from real route context, syncs the timeline with KPI/problem cards, and shows GPS-estimate vehicle notes only for the latest slot
+
+For a local static-data smoke check against Vite, skip the Pages Function checks:
+
+```bash
+cd frontend
+bun run dev
+bun run verify:cloudflare-poc -- \
+  --url http://127.0.0.1:5173 \
+  --skip-projections \
+  --skip-analytics
+BUS_OVERSIGHT_URL=http://127.0.0.1:5173/bus-oversight bun run verify:bus-oversight
+```
+
+## ClickHouse Analytics Static Publish
+
+The minimum-resistance public e2e path is:
+
+```text
+ClickHouse -> static analytics JSON -> Cloudflare Pages public assets
+```
+
+This avoids exposing the homelab directly and avoids adding a Worker proxy before
+the analytics contract is stable.
+
+Run from repo root:
+
+```bash
+docker compose -f infra/homelab/docker-compose.yml up -d clickhouse analytics-api
+bun infra/homelab/scripts/import-bus-observations.mjs
+```
+
+Then publish analytics JSON from ClickHouse into the frontend public data folder:
+
+```bash
+cd frontend
+bun run publish:clickhouse-bus-analytics -- --service-date 2026-05-20 --limit 50
+bun run build
+bun run deploy:cloudflare-pages -- --project-name twfoundry-poc --commit-dirty=true
+bun run verify:cloudflare-poc -- --url https://twfoundry-poc.pages.dev --min-features 50 --min-analytics-rows 1
+```
+
+Generated public assets:
+
+```text
+frontend/public/data/analytics/bus/manifest.json
+frontend/public/data/analytics/bus/route-density.json
+frontend/public/data/analytics/bus/data-freshness.json
+frontend/public/data/analytics/bus/bunching.json
+frontend/public/data/tdx-bus/reliability-evidence/route-307.json
 ```
 
 The current public POC host is:
@@ -286,6 +369,16 @@ twfoundry-customer-b-archive   customer B
 
 Do not put TDX credentials or customer secrets in the frontend. When scheduled ingestion is added later, store credentials as Worker secrets.
 
+For public demos, prefer these cost and bot controls:
+
+- Cloudflare Access for private demos.
+- Turnstile before issuing an anonymous public-demo session.
+- Bot Fight Mode for low-effort bot mitigation.
+- WAF rate limiting on browser-facing `/api/*` routes.
+- A Worker-side global budget limiter before R2 reads.
+- Cache long-lived projection artifacts aggressively.
+- Return `no_data` on R2 miss; do not fallback to homelab.
+
 ## Standalone Worker Fallback
 
 If Pages Functions routing is not desirable, deploy the standalone Worker:
@@ -300,9 +393,12 @@ Then route `/api/*` on the demo hostname to that Worker.
 
 ## Later Upgrade Path
 
-This POC intentionally skips D1 and Cron. Add them after the public archive demo works:
+This POC intentionally keeps the public edge path simple. Add only the pieces that preserve the
+Cloudflare / homelab boundary:
 
-- Cron Worker: scheduled TDX fetch
-- D1: source/job metadata and latest pointer
+- D1: source/job metadata, latest pointer, session/admission state, or feature flags when needed
 - R2: raw snapshots plus projection artifacts
-- Queues: async projection rebuilds if Cron work becomes too large
+- Durable Object: global usage budget or anonymous session admission control
+- Queues / Pipelines: future options only after they are implemented and needed
+
+Do not use public edge requests as a homelab fallback path.

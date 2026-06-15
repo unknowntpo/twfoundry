@@ -1,11 +1,23 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import BusDeckMap from './BusDeckMap.vue';
-import { detectHeadwayGapSignals } from './busHeadwaySignals.js';
+import {
+  buildRouteServiceSummary,
+  detectHeadwayGapSignals,
+} from './busHeadwaySignals.js';
+import {
+  headwaySeverity,
+  headwaySeverityRank,
+} from './busReliabilitySignals.js';
 import { buildRouteProgressObservation } from './busRouteGeometry.js';
+import {
+  formatRouteOperatorNames,
+  routeOperatorsFromContext,
+} from './busRouteOperators.js';
 import { SUPPORTED_LOCALES, locale, setLocale, t } from './i18n.js';
 import { OPERATIONS_LAYER_IDS, getOperationsLayer, operationsLayerRegistry } from './layerRegistry.js';
 import {
+  OPERATIONS_ARCHIVE_MANIFEST_URL,
   BUS_VEHICLE_PROJECTION_TIMELINE_URL,
   BUS_VEHICLE_PROJECTION_URL,
   OPERATIONS_BASELINE_ARCHIVE_MANIFEST_URL,
@@ -31,6 +43,13 @@ import {
 
 const PLAYBACK_SPEED_OPTIONS = [1, 1.5, 2, 4];
 const LIVE_FOLLOW_POLL_MS = 60_000;
+const ANALYTICS_API_BASE_URL = (
+  import.meta.env.VITE_TWFOUNDRY_ANALYTICS_API_URL ?? ''
+).replace(/\/+$/, '');
+const ANALYTICS_STATIC_BASE_URL = '/data/analytics';
+const ANALYTICS_SERVICE_DATE = import.meta.env.VITE_TWFOUNDRY_ANALYTICS_SERVICE_DATE ?? '';
+const ANALYTICS_ROW_LIMIT = 5;
+const USE_PROJECTION_API = import.meta.env.VITE_TWFOUNDRY_USE_PROJECTION_API === '1';
 
 const observations = ref(createOperationsFixture());
 const ghostObservations = ref([]);
@@ -49,6 +68,7 @@ const timelineSnapshots = ref([]);
 const baselineSnapshots = ref([]);
 const routeContextManifest = ref(null);
 const routeQualityManifest = ref(null);
+const routeOperatorIndex = ref(new Map());
 const baselineArchiveError = ref('');
 const routeQualityError = ref('');
 const routeProgressError = ref('');
@@ -83,6 +103,16 @@ const mapState = ref({ zoom: 11, pitch: 34, bearing: -8, center: [121.56, 25.05]
 const mapFitKey = ref('initial');
 const pollStatusKey = ref('status.loadingArchive');
 const pollStatusParams = ref({});
+const analyticsLoading = ref(false);
+const analyticsError = ref('');
+const analyticsExpanded = ref(false);
+const analyticsLoadedAt = ref(null);
+const analyticsData = ref({
+  routeDensity: [],
+  dataFreshness: [],
+  bunching: [],
+  serviceDate: '',
+});
 
 let intervalId = 0;
 let liveFollowTimerId = 0;
@@ -99,10 +129,38 @@ let routeProgressEncodingRequestId = 0;
 const ghostSnapshotCache = new Map();
 const routeContextCache = new Map();
 const routeQualityRetryRoutes = new Set();
+const routeOperatorPendingRoutes = new Set();
 
 const operationsDataSource = computed(() => activeDataSource.value);
 const routeQualityIndex = computed(() => createRouteQualityIndex(routeQualityManifest.value));
-const routeOptions = computed(() => listRouteOptions(observations.value));
+const observedRouteOptions = computed(() => listRouteOptions(observations.value));
+const routeOptions = computed(() => {
+  const routes = new Set(observedRouteOptions.value);
+  for (const row of routeContextManifest.value?.routes ?? []) {
+    if (row.routeName) routes.add(String(row.routeName));
+  }
+  for (const row of routeQualityManifest.value?.routes ?? []) {
+    if (row.routeName) routes.add(String(row.routeName));
+  }
+  for (const row of analyticsData.value.bunching) {
+    if (row.route_name) routes.add(String(row.route_name));
+  }
+  for (const row of analyticsData.value.dataFreshness) {
+    if (row.route_name) routes.add(String(row.route_name));
+  }
+  return [...routes].sort((left, right) => left.localeCompare(right, 'zh-Hant-u-kn-true'));
+});
+const routeVehicleCounts = computed(() => observations.value.reduce((counts, observation) => {
+  const route = observation.route?.name;
+  if (!route) return counts;
+  counts.set(route, (counts.get(route) ?? 0) + 1);
+  return counts;
+}, new Map()));
+const routeDirectoryItems = computed(() => routeOptions.value.map((route) => ({
+  route,
+  count: routeVehicleCounts.value.get(route) ?? 0,
+  href: routeMonitorHref(route),
+})));
 const routeQualitySummary = computed(() => {
   const summary = routeQualityManifest.value?.summary;
   if (!summary) return null;
@@ -211,6 +269,15 @@ const transitSignalEntries = computed(() => (
       .filter(Boolean)
 ));
 const transitSignals = computed(() => detectHeadwayGapSignals(transitSignalEntries.value));
+const routeServiceSummary = computed(() => buildRouteServiceSummary(transitSignalEntries.value).primaryRoute);
+const routeServiceSignalRows = computed(() => routeServiceSummary.value?.signals ?? []);
+const routeServiceHeadwayRows = computed(() => routeServiceSummary.value?.headways ?? []);
+const routeServiceStatusLabel = computed(() => {
+  if (routeFilter.value === 'all') return t('routeService.selectRoute');
+  if (!selectedRouteGeometryReady.value) return t('routeService.geometryPending');
+  if (routeServiceSummary.value && routeServiceSummary.value.sampleCount >= 2) return t('routeService.ready');
+  return t('routeService.insufficientVehicles');
+});
 const primaryTransitSignal = computed(() => transitSignals.value[0] ?? null);
 const selectedTransitSignal = computed(() => (
   transitSignals.value.find((signal) => signal.id === selectedTransitSignalId.value) ?? null
@@ -255,7 +322,9 @@ const mapStatusLabel = computed(() => (
   mapRendererStatus.value.toLowerCase().includes('ready') ? t('map.ready') : t('map.loading')
 ));
 const activeLayer = computed(() => getOperationsLayer(activeLayerId.value));
-const layerOptions = computed(() => operationsLayerRegistry);
+const layerOptions = computed(() => operationsLayerRegistry.filter(
+  (layer) => layer.id === OPERATIONS_LAYER_IDS.BUS_VEHICLES && layer.status === 'active',
+));
 const activeLayerFilterLabel = computed(() => t(activeLayer.value.primaryFilter.labelKey));
 const timelineMax = computed(() => Math.max(0, timelineSnapshots.value.length - 1));
 const timelineDisabled = computed(() => timelineSnapshots.value.length <= 1);
@@ -406,10 +475,188 @@ const vehicleTelemetrySummary = computed(() => [
   `${selectedObservation.value?.motion?.speedKph ?? 0} km/h`,
   selectedFreshnessLabel.value,
 ].join(' · '));
+const analyticsRouteDensityRows = computed(() => analyticsData.value.routeDensity.slice(0, 3));
+const analyticsFreshnessRows = computed(() => analyticsData.value.dataFreshness.slice(0, 3));
+const analyticsBunchingRows = computed(() => analyticsData.value.bunching.slice(0, 3));
+const routeHealthWatchlist = computed(() => {
+  const items = [];
+
+  for (const row of analyticsData.value.bunching) {
+    const route = String(row.route_name ?? '');
+    if (!route) continue;
+    const minutes = Number(row.estimated_headway_minutes);
+    const severity = headwaySeverity(minutes);
+    items.push({
+      id: `gap-${route}-${row.direction}-${row.slot_start}-${row.trailing_vehicle_id}-${row.leading_vehicle_id}`,
+      route,
+      direction: row.direction,
+      severity,
+      type: 'service-gap',
+      sortRank: headwaySeverityRank(severity),
+      sortValue: Number.isFinite(minutes) ? minutes : 0,
+      typeLabel: t('routeHealth.serviceGap'),
+      operatorLabel: routeOperatorLabelForRoute(route),
+      metricLabel: t('analytics.headway', { minutes: formatAnalyticsNumber(minutes) }),
+      detailLabel: formatAnalyticsTime(row.slot_start),
+      href: routeMonitorHref(route),
+    });
+  }
+
+  for (const row of analyticsData.value.dataFreshness) {
+    const route = String(row.route_name ?? '');
+    if (!route) continue;
+    const rate = Number(row.off_route_rate);
+    items.push({
+      id: `quality-${route}-${row.direction}`,
+      route,
+      direction: row.direction,
+      severity: 'watch',
+      type: 'data-quality',
+      sortRank: headwaySeverityRank('watch'),
+      sortValue: Number.isFinite(rate) ? rate : 0,
+      typeLabel: t('routeHealth.telemetryQuality'),
+      operatorLabel: routeOperatorLabelForRoute(route),
+      metricLabel: t('analytics.offRouteRate', { rate: formatAnalyticsPercent(row.off_route_rate) }),
+      detailLabel: t('analytics.reports', { count: formatAnalyticsNumber(row.reports) }),
+      href: routeMonitorHref(route),
+    });
+  }
+
+  return items
+    .sort((left, right) => (
+      left.sortRank - right.sortRank
+      || right.sortValue - left.sortValue
+      || left.route.localeCompare(right.route)
+    ))
+    .slice(0, 4);
+});
+const routeHealthRouteNames = computed(() => (
+  [...new Set(routeHealthWatchlist.value.map((item) => item.route).filter(Boolean))]
+));
+const routeHealthHasOverflow = computed(() => (
+  analyticsData.value.bunching.length + analyticsData.value.dataFreshness.length > routeHealthWatchlist.value.length
+));
+const analyticsStatusLabel = computed(() => {
+  if (analyticsLoading.value) return t('analytics.loading');
+  if (analyticsLoadedAt.value) {
+    return t('analytics.loadedAt', { time: formatTaipeiDateTime(analyticsLoadedAt.value) });
+  }
+  return t('analytics.localApi');
+});
+const analyticsServiceDateLabel = computed(() => (
+  analyticsData.value.serviceDate || analyticsQueryServiceDate() || t('data.current')
+));
+const analyticsSummaryLabel = computed(() => {
+  if (analyticsLoading.value) return t('analytics.loading');
+  if (analyticsLoadedAt.value) return t('analytics.serviceDate', { date: analyticsServiceDateLabel.value });
+  return t('analytics.summaryCollapsed');
+});
 
 function setPollStatusKey(key, params = {}) {
   pollStatusKey.value = key;
   pollStatusParams.value = params;
+}
+
+function toggleAnalyticsSection() {
+  analyticsExpanded.value = !analyticsExpanded.value;
+  if (analyticsExpanded.value && !analyticsLoadedAt.value && !analyticsLoading.value) {
+    void loadAnalytics();
+  }
+}
+
+function refreshAnalytics() {
+  analyticsExpanded.value = true;
+  void loadAnalytics();
+}
+
+async function loadAnalytics() {
+  analyticsLoading.value = true;
+  analyticsError.value = '';
+  try {
+    const [routeDensity, dataFreshness, bunching] = await Promise.all([
+      fetchAnalytics('/analytics/bus/route-density'),
+      fetchAnalytics('/analytics/bus/data-freshness'),
+      fetchAnalytics('/analytics/bus/bunching', { min_headway_minutes: '14' }),
+    ]);
+    analyticsData.value = {
+      routeDensity: routeDensity.rows ?? [],
+      dataFreshness: dataFreshness.rows ?? [],
+      bunching: bunching.rows ?? [],
+      serviceDate: routeDensity.serviceDate ?? dataFreshness.serviceDate ?? bunching.serviceDate ?? '',
+    };
+    void ensureRouteOperatorsForWatchlist();
+    analyticsLoadedAt.value = new Date();
+  } catch (error) {
+    analyticsError.value = t('analytics.unavailable', {
+      message: error instanceof Error ? error.message : String(error),
+    });
+  } finally {
+    analyticsLoading.value = false;
+  }
+}
+
+async function fetchAnalytics(path, params = {}) {
+  const url = new URL(analyticsUrl(path), window.location.origin);
+  const serviceDate = analyticsQueryServiceDate();
+  if (serviceDate) url.searchParams.set('service_date', serviceDate);
+  url.searchParams.set('limit', String(ANALYTICS_ROW_LIMIT));
+  Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, value));
+
+  const response = await fetch(url);
+  if (!response.ok) {
+    const body = await response.text();
+    throw new Error(`${response.status} ${body.slice(0, 120)}`);
+  }
+  return response.json();
+}
+
+function analyticsUrl(path) {
+  if (ANALYTICS_API_BASE_URL) return `${ANALYTICS_API_BASE_URL}${path}`;
+  return `${ANALYTICS_STATIC_BASE_URL}${path.replace(/^\/analytics/, '')}.json`;
+}
+
+function analyticsQueryServiceDate() {
+  return ANALYTICS_SERVICE_DATE;
+}
+
+function routeMonitorHref(route) {
+  return `/route-geometry?route=${encodeURIComponent(route)}`;
+}
+
+function routeOperatorLabelForRoute(route) {
+  const operators = routeOperatorIndex.value.get(route) ?? [];
+  return formatRouteOperatorNames(operators, { fallback: t('routeOperators.pending') });
+}
+
+async function ensureRouteOperatorsForWatchlist() {
+  if (!routeContextManifest.value || routeHealthRouteNames.value.length === 0) return;
+
+  const routeEntries = routeContextManifest.value.routes ?? [];
+  const routesToLoad = routeHealthRouteNames.value
+    .filter((route) => !routeOperatorIndex.value.has(route) && !routeOperatorPendingRoutes.has(route))
+    .slice(0, 6);
+  if (routesToLoad.length === 0) return;
+
+  const nextIndex = new Map(routeOperatorIndex.value);
+
+  await Promise.all(routesToLoad.map(async (route) => {
+    routeOperatorPendingRoutes.add(route);
+    try {
+      const routeContextEntry = routeEntries.find((entry) => entry.routeName === route);
+      if (!routeContextEntry?.path) {
+        nextIndex.set(route, []);
+        return;
+      }
+      const routeContext = await loadRouteContextFromPath(routeContextEntry.path);
+      nextIndex.set(route, routeOperatorsFromContext(routeContext));
+    } catch {
+      nextIndex.set(route, []);
+    } finally {
+      routeOperatorPendingRoutes.delete(route);
+    }
+  }));
+
+  routeOperatorIndex.value = nextIndex;
 }
 
 function selectObservation(id) {
@@ -798,6 +1045,13 @@ watch(
 );
 
 watch(
+  () => routeHealthRouteNames.value.join('|'),
+  () => {
+    void ensureRouteOperatorsForWatchlist();
+  },
+);
+
+watch(
   () => [
     routeProgressEncoding.value,
     activeSnapshotIndex.value,
@@ -1003,20 +1257,18 @@ async function loadArchiveManifest({ preserveSelection = false, preferLatest = f
   archiveLoading.value = true;
   archiveError.value = '';
   try {
-    const response = await fetch(cacheBustedUrl(BUS_VEHICLE_PROJECTION_TIMELINE_URL), {
-      cache: 'no-store',
-    });
-    if (!response.ok) throw new Error(`manifest HTTP ${response.status}`);
-
-    const manifest = await response.json();
+    const { manifest, sourceKind } = await fetchArchiveManifest();
     const snapshots = Array.isArray(manifest.snapshots)
       ? manifest.snapshots
         .filter((snapshot) => snapshot.capturedAt)
         .map((snapshot) => ({
           ...snapshot,
           source: manifest.source,
-          path: `${BUS_VEHICLE_PROJECTION_URL}?slot=${encodeURIComponent(snapshot.slotKey ?? snapshot.timeLabel)}`,
+          path: sourceKind === 'projection-api'
+            ? `${BUS_VEHICLE_PROJECTION_URL}?slot=${encodeURIComponent(snapshot.slotKey ?? snapshot.timeLabel)}`
+            : snapshot.path,
         }))
+        .filter((snapshot) => snapshot.path)
         .sort((left, right) => left.capturedAt.localeCompare(right.capturedAt))
       : [];
     timelineSnapshots.value = snapshots;
@@ -1047,6 +1299,38 @@ async function loadArchiveManifest({ preserveSelection = false, preferLatest = f
   }
 }
 
+async function fetchArchiveManifest() {
+  if (!USE_PROJECTION_API) return fetchStaticArchiveManifest();
+
+  try {
+    const response = await fetch(cacheBustedUrl(BUS_VEHICLE_PROJECTION_TIMELINE_URL), {
+      cache: 'no-store',
+    });
+    if (!response.ok) throw new Error(`projection manifest HTTP ${response.status}`);
+    return {
+      manifest: await response.json(),
+      sourceKind: 'projection-api',
+    };
+  } catch (projectionError) {
+    return fetchStaticArchiveManifest(`projection fallback failed: ${projectionError.message}`);
+  }
+}
+
+async function fetchStaticArchiveManifest(fallbackReason = '') {
+  const response = await fetch(cacheBustedUrl(OPERATIONS_ARCHIVE_MANIFEST_URL), {
+    cache: 'no-store',
+  });
+  if (!response.ok) {
+    throw new Error(fallbackReason
+      ? `archive manifest HTTP ${response.status}; ${fallbackReason}`
+      : `archive manifest HTTP ${response.status}`);
+  }
+  return {
+    manifest: await response.json(),
+    sourceKind: 'static-archive',
+  };
+}
+
 async function loadBaselineManifest() {
   baselineArchiveError.value = '';
   try {
@@ -1074,6 +1358,7 @@ async function loadRouteContextManifest() {
     if (!response.ok) throw new Error(`route context manifest HTTP ${response.status}`);
     routeContextManifest.value = await response.json();
     void refreshRouteStopLocations();
+    void ensureRouteOperatorsForWatchlist();
   } catch {
     routeContextManifest.value = null;
   }
@@ -1276,6 +1561,45 @@ function formatHourDuration(minutes) {
   return `${minutes}m`;
 }
 
+function formatAnalyticsTime(value) {
+  if (!value) return '--';
+  return String(value).slice(5, 16).replace('T', ' ');
+}
+
+function formatAnalyticsNumber(value) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number.toLocaleString('en-US') : '--';
+}
+
+function formatAnalyticsPercent(rate) {
+  const number = Number(rate);
+  if (!Number.isFinite(number)) return '--';
+  return `${(number * 100).toFixed(number >= 0.1 ? 1 : 2)}%`;
+}
+
+function formatAnalyticsDirection(direction) {
+  return Number(direction) === 0 ? t('direction.outbound') : t('direction.inbound');
+}
+
+function formatRouteServiceSignalType(signalType) {
+  if (signalType === 'vehicle_bunching') return t('routeService.vehicleBunching');
+  if (signalType === 'headway_gap') return t('routeService.serviceGap');
+  return t('routeService.spacing');
+}
+
+function routeServiceHeadwayClass(headway) {
+  const ratio = Number(headway?.ratioToTarget);
+  if (Number.isFinite(ratio) && ratio >= 1.8) return 'gap';
+  if (Number.isFinite(ratio) && ratio <= 0.5) return 'bunching';
+  return 'normal';
+}
+
+function routeServiceHeadwayStyle(headway) {
+  const ratio = Number(headway?.ratioToTarget);
+  const width = Number.isFinite(ratio) ? clamp((ratio / 2.4) * 100, 18, 100) : 24;
+  return { '--route-service-width': `${width}%` };
+}
+
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
@@ -1285,6 +1609,7 @@ onMounted(() => {
   void loadRouteQualityManifest();
   void loadBaselineManifest();
   void loadArchiveManifest();
+  void loadAnalytics();
   intervalId = window.setInterval(tickFixtureClock, 1000);
   playbackFrameId = window.requestAnimationFrame(runPlaybackFrame);
 });
@@ -1373,7 +1698,6 @@ onBeforeUnmount(() => {
               <strong>{{ t('signal.headwayGap') }}</strong>
               <small>{{ transitSignalSummaryLabel }}</small>
             </span>
-            <em>{{ Math.round(primaryTransitSignal.confidence * 100) }}%</em>
           </button>
         </div>
         <div class="zoom-controls" :aria-label="t('map.zoomControls')">
@@ -1391,12 +1715,105 @@ onBeforeUnmount(() => {
         <h1 class="panel-title">{{ t(activeLayer.labelKey) }}</h1>
         <p class="panel-copy">{{ t(activeLayer.descriptionKey) }}</p>
         <div class="badge-row">
-          <span class="badge source">TDX API</span>
+          <span class="badge source">交通部 TDX</span>
           <span class="badge sample">{{ sourceModeLabel }}</span>
           <span class="badge">{{ t(activeLayer.shortLabelKey) }}</span>
         </div>
       </div>
       <div class="panel-body">
+        <section class="section route-service-section">
+          <div class="section-title">
+            <span>{{ t('routeService.title') }}</span>
+            <span>{{ routeFilter === 'all' ? t('filters.allRoutes') : t('filters.route', { route: routeFilter }) }}</span>
+          </div>
+          <p class="route-health-copy">{{ t('routeService.copy') }}</p>
+          <div v-if="!routeServiceSummary" class="analytics-empty">{{ routeServiceStatusLabel }}</div>
+          <div v-else class="route-service-panel">
+            <div class="route-service-kpis">
+              <div>
+                <strong>{{ formatAnalyticsNumber(routeServiceSummary.sampleCount) }}</strong>
+                <span>{{ t('routeService.vehicleSample') }}</span>
+              </div>
+              <div>
+                <strong>{{ formatAnalyticsNumber(routeServiceSummary.maxHeadwayMinutes) }}</strong>
+                <span>{{ t('routeService.maxGapMinutes') }}</span>
+              </div>
+              <div>
+                <strong>{{ formatAnalyticsNumber(routeServiceSummary.minHeadwayMinutes) }}</strong>
+                <span>{{ t('routeService.minGapMinutes') }}</span>
+              </div>
+            </div>
+            <div class="route-service-headways" :aria-label="t('routeService.headwayDistribution')">
+              <div
+                v-for="(headway, index) in routeServiceHeadwayRows"
+                :key="`${headway.trailing.observation.id}-${headway.leading.observation.id}`"
+                class="route-service-headway"
+                :class="routeServiceHeadwayClass(headway)"
+              >
+                <span>{{ t('routeService.segmentLabel', { from: index + 1, to: index + 2 }) }}</span>
+                <div class="route-service-bar-track">
+                  <div class="route-service-bar" :style="routeServiceHeadwayStyle(headway)"></div>
+                </div>
+                <b>{{ t('analytics.headway', { minutes: formatAnalyticsNumber(headway.observedHeadwayMinutes) }) }}</b>
+              </div>
+            </div>
+            <div class="route-service-signals">
+              <div
+                v-for="signal in routeServiceSignalRows"
+                :key="signal.id"
+                class="route-service-signal"
+                :class="signal.signalType"
+              >
+                <strong>{{ formatRouteServiceSignalType(signal.signalType) }}</strong>
+                <span>{{ t('routeService.signalDetail', {
+                  observed: formatAnalyticsNumber(signal.observedHeadwayMinutes),
+                  expected: formatAnalyticsNumber(signal.expectedHeadwayMinutes),
+                }) }}</span>
+              </div>
+              <div v-if="routeServiceSignalRows.length === 0" class="route-service-signal stable">
+                <strong>{{ t('routeService.stable') }}</strong>
+                <span>{{ t('routeService.stableDetail') }}</span>
+              </div>
+            </div>
+            <p class="route-service-note">{{ t('routeService.note') }}</p>
+          </div>
+        </section>
+
+        <section class="section route-health-section">
+          <div class="section-title">
+            <span>{{ t('routeHealth.title') }}</span>
+            <span>{{ analyticsLoading ? t('analytics.loading') : t('routeHealth.source') }}</span>
+          </div>
+          <p class="route-health-copy">{{ t('routeHealth.copy') }}</p>
+          <div v-if="analyticsError" class="inline-warning">{{ analyticsError }}</div>
+          <div v-else-if="analyticsLoading && routeHealthWatchlist.length === 0" class="analytics-empty">{{ t('routeHealth.loading') }}</div>
+          <div v-else-if="routeHealthWatchlist.length === 0" class="analytics-empty">{{ t('routeHealth.noRows') }}</div>
+          <div v-else class="route-health-list">
+            <a
+              v-for="item in routeHealthWatchlist"
+              :key="item.id"
+              class="route-health-row"
+              :class="[item.severity, item.type]"
+              :href="item.href"
+            >
+              <span class="route-health-status">{{ t(`routeHealth.severity.${item.severity}`) }}</span>
+              <span class="route-health-main">
+                <strong>{{ t('filters.route', { route: item.route }) }}</strong>
+                <small><b class="route-health-type">{{ item.typeLabel }}</b> · {{ formatAnalyticsDirection(item.direction) }}</small>
+                <small>{{ t('routeOperators.label') }}：{{ item.operatorLabel }}</small>
+              </span>
+              <span class="route-health-metric">
+                <b>{{ item.metricLabel }}</b>
+                <small>{{ item.detailLabel }}</small>
+              </span>
+              <span class="route-health-open">{{ t('routeHealth.detail') }}</span>
+            </a>
+            <div v-if="routeHealthHasOverflow" class="route-health-overflow">
+              {{ t('routeHealth.more') }}
+            </div>
+          </div>
+        </section>
+
         <section class="section">
           <div class="section-title"><span>{{ t('health.title') }}</span><span class="badge sample">{{ sourceModeLabel }}</span></div>
           <div class="health-grid">
@@ -1407,6 +1824,81 @@ onBeforeUnmount(() => {
             <div class="health-card"><strong>{{ timelineSnapshots.length }}</strong><span>{{ t('health.timelineSlots') }}</span></div>
             <div class="health-card"><strong>{{ mapStatusLabel }}</strong><span>{{ t('health.mapStatus') }}</span></div>
           </div>
+        </section>
+
+        <section class="section analytics-section" :class="{ 'is-collapsed': !analyticsExpanded }">
+          <div class="section-title analytics-heading">
+            <span>{{ t('analytics.title') }}</span>
+            <div class="analytics-actions">
+              <button
+                class="section-action"
+                type="button"
+                :aria-expanded="analyticsExpanded"
+                @click="toggleAnalyticsSection"
+              >
+                {{ analyticsExpanded ? t('analytics.collapse') : t('analytics.expand') }}
+              </button>
+              <button
+                v-if="analyticsExpanded"
+                class="section-action"
+                type="button"
+                :disabled="analyticsLoading"
+                @click="refreshAnalytics"
+              >
+                {{ analyticsLoading ? t('analytics.loading') : t('analytics.refresh') }}
+              </button>
+            </div>
+          </div>
+          <div v-if="!analyticsExpanded" class="analytics-collapsed">
+            <span class="badge source">{{ t('routeHealth.source') }}</span>
+            <span>{{ analyticsSummaryLabel }}</span>
+          </div>
+          <template v-else>
+            <div class="analytics-meta">
+              <span class="badge source">{{ t('routeHealth.source') }}</span>
+              <span>{{ t('analytics.serviceDate', { date: analyticsServiceDateLabel }) }}</span>
+            </div>
+            <p class="analytics-copy">{{ t('analytics.copy') }}</p>
+            <p v-if="analyticsError" class="inline-warning">{{ analyticsError }}</p>
+            <div v-else class="analytics-stack" :aria-busy="analyticsLoading">
+              <div class="analytics-group">
+                <div class="analytics-group-title"><strong>{{ t('analytics.density') }}</strong><span>{{ analyticsStatusLabel }}</span></div>
+                <div v-if="analyticsRouteDensityRows.length === 0" class="analytics-empty">{{ t('analytics.noRows') }}</div>
+                <div
+                  v-for="row in analyticsRouteDensityRows"
+                  :key="`${row.bucket_start}-${row.route_name}-${row.direction}`"
+                  class="analytics-row"
+                >
+                  <strong>{{ t('filters.route', { route: row.route_name }) }}</strong>
+                  <span>{{ formatAnalyticsTime(row.bucket_start) }} · {{ formatAnalyticsDirection(row.direction) }} · {{ t('analytics.vehicleCount', { count: formatAnalyticsNumber(row.active_vehicles) }) }}</span>
+                </div>
+              </div>
+              <div class="analytics-group">
+                <div class="analytics-group-title"><strong>{{ t('analytics.freshness') }}</strong></div>
+                <div v-if="analyticsFreshnessRows.length === 0" class="analytics-empty">{{ t('analytics.noRows') }}</div>
+                <div
+                  v-for="row in analyticsFreshnessRows"
+                  :key="`${row.route_name}-${row.direction}`"
+                  class="analytics-row"
+                >
+                  <strong>{{ t('filters.route', { route: row.route_name }) }}</strong>
+                  <span>{{ t('analytics.reports', { count: formatAnalyticsNumber(row.reports) }) }} · {{ t('analytics.offRouteRate', { rate: formatAnalyticsPercent(row.off_route_rate) }) }}</span>
+                </div>
+              </div>
+              <div class="analytics-group">
+                <div class="analytics-group-title"><strong>{{ t('analytics.bunching') }}</strong></div>
+                <div v-if="analyticsBunchingRows.length === 0" class="analytics-empty">{{ t('analytics.noRows') }}</div>
+                <div
+                  v-for="row in analyticsBunchingRows"
+                  :key="`${row.slot_start}-${row.route_name}-${row.trailing_vehicle_id}`"
+                  class="analytics-row"
+                >
+                  <strong>{{ t('filters.route', { route: row.route_name }) }}</strong>
+                  <span>{{ formatAnalyticsTime(row.slot_start) }} · {{ t('analytics.headway', { minutes: formatAnalyticsNumber(row.estimated_headway_minutes) }) }}</span>
+                </div>
+              </div>
+            </div>
+          </template>
         </section>
 
         <section class="section">
@@ -1435,6 +1927,31 @@ onBeforeUnmount(() => {
                 <option value="all">{{ t('filters.allRoutes') }}</option>
                 <option v-for="route in routeOptions" :key="route" :value="route">{{ t('filters.route', { route }) }}</option>
               </select>
+              <a
+                v-if="routeFilter !== 'all'"
+                class="route-detail-link"
+                :href="routeMonitorHref(routeFilter)"
+              >
+                {{ t('routeHealth.selectedDetail', { route: routeFilter }) }}
+              </a>
+              <div class="route-directory" :aria-label="t('routeDirectory.aria')">
+                <div class="route-directory-head">
+                  <span>{{ t('routeDirectory.title') }}</span>
+                  <b>{{ t('routeDirectory.count', { count: formatAnalyticsNumber(routeDirectoryItems.length) }) }}</b>
+                </div>
+                <div class="route-directory-list">
+                  <a
+                    v-for="item in routeDirectoryItems"
+                    :key="item.route"
+                    class="route-directory-row"
+                    :class="{ active: routeFilter === item.route }"
+                    :href="item.href"
+                  >
+                    <span>{{ t('filters.route', { route: item.route }) }}</span>
+                    <small>{{ t('routeDirectory.vehicles', { count: formatAnalyticsNumber(item.count) }) }}</small>
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
           <label class="checkbox">
@@ -1495,10 +2012,7 @@ onBeforeUnmount(() => {
               <strong>{{ t('signal.headwayGap') }}</strong>
               <p>{{ t('signal.statusCopy') }}</p>
             </div>
-            <span class="badge sample">{{ Math.round(selectedTransitSignal.confidence * 100) }}%</span>
-          </div>
-          <div class="signal-meter" :style="{ '--signal-confidence': `${Math.round(selectedTransitSignal.confidence * 100)}%` }">
-            <span></span>
+            <span class="badge sample">{{ t('signal.evidenceStrength') }}</span>
           </div>
           <div class="route-progress-grid">
             <div>
@@ -1513,17 +2027,20 @@ onBeforeUnmount(() => {
               <span>{{ t('routeQuality.title') }}</span>
               <strong>{{ selectedTransitSignal.geometryQuality }}</strong>
             </div>
-            <div>
-              <span>{{ t('signal.sampleCount') }}</span>
-              <strong>{{ selectedTransitSignal.sampleCount }}</strong>
-            </div>
           </div>
         </section>
         <div class="evidence-list">
           <div class="evidence-item"><strong>{{ t('signal.baseline') }}:</strong> {{ t('signal.prototypeBaseline', { minutes: Math.round(selectedTransitSignal.expectedHeadwayMinutes) }) }}.</div>
-          <div class="evidence-item"><strong>{{ t('signal.gapVehicles') }}:</strong> {{ selectedTransitSignal.trailingVehicleId }} -> {{ selectedTransitSignal.leadingVehicleId }}.</div>
+          <div class="evidence-item"><strong>{{ t('signal.gapVehicles') }}:</strong> {{ selectedTransitSignal.trailingVehicleId }} {{ t('signal.followsVehicle') }} {{ selectedTransitSignal.leadingVehicleId }}.</div>
           <div class="evidence-item"><strong>{{ t('signal.note') }}:</strong> {{ t('signal.noteCopy') }}</div>
         </div>
+        <details class="technical-details">
+          <summary>{{ t('signal.technicalDetails') }}</summary>
+          <div class="evidence-list">
+            <div class="evidence-item"><strong>{{ t('signal.confidence') }}:</strong> {{ Math.round(selectedTransitSignal.confidence * 100) }}%</div>
+            <div class="evidence-item"><strong>{{ t('signal.sampleCount') }}:</strong> {{ selectedTransitSignal.sampleCount }}</div>
+          </div>
+        </details>
       </div>
     </aside>
 
@@ -2272,7 +2789,7 @@ onBeforeUnmount(() => {
 
 .signal-alert-pill {
   display: grid;
-  grid-template-columns: 24px minmax(0, 1fr) max-content;
+  grid-template-columns: 24px minmax(0, 1fr);
   align-items: center;
   gap: 9px;
   width: 100%;
@@ -2319,11 +2836,9 @@ onBeforeUnmount(() => {
   font-size: 12px;
 }
 
-.signal-alert-pill small,
-.signal-alert-pill em {
+.signal-alert-pill small {
   color: var(--muted);
   font: 10px/1.2 var(--font-mono);
-  font-style: normal;
 }
 
 .zoom-controls {
@@ -2717,6 +3232,448 @@ select {
   font: 11px/1.45 var(--font-mono);
 }
 
+.route-health-section {
+  --route-health-tone: var(--accent);
+}
+
+.route-health-copy {
+  margin: 0 0 10px;
+  color: color-mix(in oklch, var(--muted) 84%, white);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.route-health-list {
+  display: grid;
+  gap: 8px;
+}
+
+.route-health-row {
+  --route-health-tone: var(--accent);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(88px, auto);
+  grid-template-areas:
+    "status main metric"
+    "open main metric";
+  gap: 5px 8px;
+  padding: 9px 10px;
+  border: 1px solid color-mix(in oklch, var(--route-health-tone) 36%, var(--border));
+  border-left-width: 3px;
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, color-mix(in oklch, var(--route-health-tone) 13%, transparent), transparent 76%),
+    color-mix(in oklch, var(--surface) 44%, transparent);
+  color: var(--fg);
+  text-decoration: none;
+}
+
+.route-health-row:hover,
+.route-health-row:focus-visible {
+  border-color: color-mix(in oklch, var(--route-health-tone) 66%, var(--border));
+  outline: none;
+}
+
+.route-health-row.critical {
+  --route-health-tone: var(--critical);
+}
+
+.route-health-row.warning {
+  --route-health-tone: var(--warn);
+}
+
+.route-health-row.watch {
+  --route-health-tone: #5f8ee8;
+}
+
+.route-health-row.data-quality {
+  --route-health-tone: #8fa7ba;
+}
+
+.route-health-status {
+  grid-area: status;
+  align-self: start;
+  min-width: 52px;
+  padding: 3px 7px;
+  border: 1px solid color-mix(in oklch, var(--route-health-tone) 54%, transparent);
+  border-radius: 999px;
+  color: color-mix(in oklch, var(--route-health-tone) 34%, white);
+  font: 10px/1 var(--font-mono);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.route-health-main {
+  grid-area: main;
+  min-width: 0;
+}
+
+.route-health-main strong,
+.route-health-main small,
+.route-health-metric b,
+.route-health-metric small {
+  display: block;
+}
+
+.route-health-main strong {
+  overflow: hidden;
+  color: var(--fg);
+  font-size: 12px;
+  font-weight: 680;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.route-health-main small {
+  margin-top: 3px;
+  color: color-mix(in oklch, var(--muted) 83%, white);
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+.route-health-type {
+  color: color-mix(in oklch, var(--route-health-tone) 34%, white);
+  font-weight: 720;
+}
+
+.route-health-metric {
+  grid-area: metric;
+  min-width: 0;
+  text-align: right;
+}
+
+.route-health-metric b {
+  color: color-mix(in oklch, var(--route-health-tone) 30%, white);
+  font: 11px/1.2 var(--font-mono);
+}
+
+.route-health-metric small {
+  margin-top: 4px;
+  color: color-mix(in oklch, var(--muted) 74%, white);
+  font: 10px/1.2 var(--font-mono);
+}
+
+.route-health-open {
+  grid-area: open;
+  align-self: end;
+  color: color-mix(in oklch, var(--accent) 50%, white);
+  font: 10px/1 var(--font-mono);
+}
+
+.route-health-overflow {
+  padding: 2px 4px 0;
+  color: color-mix(in oklch, var(--muted) 78%, white);
+  font: 10px/1.3 var(--font-mono);
+  text-align: right;
+}
+
+.route-service-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.route-service-kpis {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.route-service-kpis div {
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid color-mix(in oklch, var(--border) 36%, transparent);
+  border-radius: 8px;
+  background: color-mix(in oklch, var(--surface) 34%, transparent);
+}
+
+.route-service-kpis strong,
+.route-service-kpis span {
+  display: block;
+}
+
+.route-service-kpis strong {
+  color: var(--fg);
+  font: 13px/1.1 var(--font-mono);
+}
+
+.route-service-kpis span {
+  margin-top: 5px;
+  color: color-mix(in oklch, var(--muted) 78%, white);
+  font-size: 10px;
+  line-height: 1.25;
+}
+
+.route-service-headways {
+  display: grid;
+  gap: 6px;
+}
+
+.route-service-headway {
+  --route-service-tone: var(--accent);
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) 74px;
+  align-items: center;
+  gap: 7px;
+  color: color-mix(in oklch, var(--muted) 80%, white);
+  font: 10px/1.2 var(--font-mono);
+}
+
+.route-service-headway.gap {
+  --route-service-tone: var(--warn);
+}
+
+.route-service-headway.bunching {
+  --route-service-tone: #5f8ee8;
+}
+
+.route-service-headway b {
+  color: color-mix(in oklch, var(--route-service-tone) 36%, white);
+  font-weight: 680;
+  text-align: right;
+}
+
+.route-service-bar-track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--border) 36%, transparent);
+}
+
+.route-service-bar {
+  width: var(--route-service-width, 24%);
+  height: 100%;
+  border-radius: inherit;
+  background: color-mix(in oklch, var(--route-service-tone) 58%, white);
+}
+
+.route-service-signals {
+  display: grid;
+  gap: 7px;
+}
+
+.route-service-signal {
+  --route-service-signal: var(--warn);
+  display: grid;
+  gap: 3px;
+  padding: 8px 9px;
+  border: 1px solid color-mix(in oklch, var(--route-service-signal) 38%, var(--border));
+  border-left-width: 3px;
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, color-mix(in oklch, var(--route-service-signal) 12%, transparent), transparent 76%),
+    color-mix(in oklch, var(--surface) 34%, transparent);
+}
+
+.route-service-signal.vehicle_bunching {
+  --route-service-signal: #5f8ee8;
+}
+
+.route-service-signal.stable {
+  --route-service-signal: var(--ok);
+}
+
+.route-service-signal strong {
+  color: color-mix(in oklch, var(--route-service-signal) 32%, white);
+  font-size: 11px;
+}
+
+.route-service-signal span,
+.route-service-note {
+  color: color-mix(in oklch, var(--muted) 80%, white);
+  font: 10.5px/1.35 var(--font-mono);
+}
+
+.route-service-note {
+  margin: 0;
+}
+
+.route-detail-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  margin-top: 7px;
+  padding: 0 9px;
+  border: 1px solid color-mix(in oklch, var(--accent) 36%, transparent);
+  border-radius: 7px;
+  background: color-mix(in oklch, var(--accent) 9%, transparent);
+  color: color-mix(in oklch, var(--accent) 42%, white);
+  font: 10.5px/1 var(--font-mono);
+  text-decoration: none;
+}
+
+.route-detail-link:hover,
+.route-detail-link:focus-visible {
+  border-color: color-mix(in oklch, var(--accent) 62%, var(--border));
+  outline: none;
+}
+
+.route-directory {
+  display: grid;
+  gap: 7px;
+  margin-top: 10px;
+  padding: 9px;
+  border: 1px solid color-mix(in oklch, var(--border) 42%, transparent);
+  border-radius: 8px;
+  background: color-mix(in oklch, var(--surface) 30%, transparent);
+}
+
+.route-directory-head,
+.route-directory-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.route-directory-head {
+  color: var(--muted);
+  font: 10.5px/1.2 var(--font-mono);
+}
+
+.route-directory-head b {
+  color: color-mix(in oklch, var(--accent) 38%, white);
+  font-weight: 650;
+}
+
+.route-directory-list {
+  display: grid;
+  max-height: 170px;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.route-directory-row {
+  min-height: 28px;
+  padding: 5px 6px;
+  border-radius: 6px;
+  color: var(--fg);
+  text-decoration: none;
+}
+
+.route-directory-row:hover,
+.route-directory-row:focus-visible,
+.route-directory-row.active {
+  background: color-mix(in oklch, var(--accent) 10%, transparent);
+  outline: none;
+}
+
+.route-directory-row span {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 11px;
+  font-weight: 620;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.route-directory-row small {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font: 10px/1 var(--font-mono);
+}
+
+.analytics-heading {
+  align-items: center;
+}
+
+.analytics-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.section-action {
+  min-height: 24px;
+  padding: 0 8px;
+  border: 1px solid color-mix(in oklch, var(--accent) 42%, transparent);
+  border-radius: 7px;
+  background: color-mix(in oklch, var(--accent) 12%, var(--surface));
+  color: color-mix(in oklch, var(--accent) 76%, white);
+  font: 10.5px/1 var(--font-mono);
+}
+
+.section-action:disabled {
+  opacity: 0.58;
+}
+
+.analytics-collapsed {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: color-mix(in oklch, var(--muted) 78%, white);
+  font: 10.5px/1.3 var(--font-mono);
+}
+
+.analytics-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  color: color-mix(in oklch, var(--muted) 78%, white);
+  font: 10.5px/1.3 var(--font-mono);
+}
+
+.analytics-copy {
+  margin: 0 0 10px;
+  color: color-mix(in oklch, var(--muted) 82%, white);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.analytics-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.analytics-group {
+  display: grid;
+  gap: 6px;
+}
+
+.analytics-group-title,
+.analytics-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.analytics-group-title {
+  align-items: baseline;
+  color: color-mix(in oklch, var(--fg) 92%, white);
+  font-size: 11px;
+}
+
+.analytics-group-title span {
+  color: color-mix(in oklch, var(--muted) 74%, white);
+  font: 10px/1 var(--font-mono);
+}
+
+.analytics-row {
+  align-items: flex-start;
+  padding: 7px 0;
+  border-top: 1px solid color-mix(in oklch, var(--border) 34%, transparent);
+  color: color-mix(in oklch, var(--muted) 82%, white);
+  font: 10.5px/1.35 var(--font-mono);
+}
+
+.analytics-row strong {
+  color: var(--fg);
+  font-weight: 660;
+}
+
+.analytics-row span {
+  text-align: right;
+}
+
+.analytics-empty {
+  padding: 7px 0;
+  border-top: 1px solid color-mix(in oklch, var(--border) 30%, transparent);
+  color: color-mix(in oklch, var(--muted) 70%, white);
+  font: 10.5px/1.35 var(--font-mono);
+}
+
 .record-title {
   display: flex;
   align-items: baseline;
@@ -2863,22 +3820,6 @@ select {
   line-height: 1.35;
 }
 
-.signal-meter {
-  height: 6px;
-  margin-top: 12px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: color-mix(in oklch, var(--border) 50%, transparent);
-}
-
-.signal-meter span {
-  display: block;
-  width: var(--signal-confidence);
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, color-mix(in oklch, var(--warn) 72%, transparent), color-mix(in oklch, var(--warn) 42%, white));
-}
-
 .plate {
   font: 22px/1.05 var(--font-mono);
 }
@@ -2937,6 +3878,20 @@ select {
 .evidence-item strong {
   color: var(--fg);
   font-weight: 590;
+}
+
+.technical-details {
+  margin-top: 10px;
+}
+
+.technical-details summary {
+  cursor: pointer;
+  color: var(--muted);
+  font: 11px/1.3 var(--font-mono);
+}
+
+.technical-details[open] summary {
+  color: var(--fg);
 }
 
 pre {
@@ -3579,7 +4534,7 @@ pre {
     padding: 8px;
   }
 
-  .left-panel .section:first-child,
+  .left-panel .section:nth-child(2),
   .left-panel .section:nth-child(3) {
     display: none;
   }

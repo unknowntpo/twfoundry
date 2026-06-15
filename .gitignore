@@ -31,6 +31,9 @@ experiments/**/dist/
 screenshots/
 notebooks/.venv/
 notebooks/.ipynb_checkpoints/
+.wrangler/
+infra/clickhouse/out/
+infra/homelab/staging/
 .gradle/
 build/
 backend/**/build/

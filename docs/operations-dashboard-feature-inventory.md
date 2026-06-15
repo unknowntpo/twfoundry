@@ -17,6 +17,11 @@ The dashboard is map-first:
 - The inspector answers: what is this selected object?
 - Derived signals must name their source and confidence.
 
+For route operations, the dashboard should diagnose route-level service design
+and control problems before individual vehicle delay. The first useful question
+is not "which bus is late?", but "is this route delivering stable service at
+this time?".
+
 ## Current Implemented Features
 
 ### TDX Bus Archive Timeline
@@ -149,6 +154,150 @@ Migration note:
 
 - Ghost should eventually compare against multi-day baseline.
 - Single-day ghost is not reliable if the whole day is abnormal.
+
+## Route-Level Service Design Metrics
+
+Status: product direction for the bus route dashboard.
+
+These metrics are route-level signals. They are meant to help a manager find
+dispatch, service-frequency, and headway-design problems. They should not be
+presented as single-vehicle fault, driver fault, or passenger-facing arrival
+delay.
+
+### Vehicle Spacing / Headway Distribution
+
+Product label: `車班間距分布`.
+
+Meaning:
+
+- Measure the time or route-progress distance between consecutive vehicles on
+  the same route and same direction.
+- Show whether spacing stays close to the planned or expected service interval.
+- Help the user see whether service is stable across a selected time window.
+
+Useful views:
+
+- timeline histogram of observed headways
+- route strip showing vehicle spacing along the route
+- comparison against scheduled or target headway when available
+
+### Service Gap
+
+Product label: `大空窗`.
+
+Meaning:
+
+- A route segment or time window has no vehicle for much longer than the
+  expected service interval.
+- The signal belongs to the route and time window, not to one vehicle.
+- It indicates that passengers may experience long waits and that dispatch or
+  service frequency may need review.
+
+Initial conservative rule:
+
+- Flag only when observed headway is clearly larger than the baseline, such as
+  `>= 2x` target headway, or when no baseline exists, larger than a documented
+  product threshold.
+- Mark the baseline source: schedule, headway table, historical baseline, or
+  review threshold.
+
+### Vehicle Bunching
+
+Product label: `車輛群聚`.
+
+Meaning:
+
+- Two or more vehicles on the same route and direction are too close together.
+- This often appears after a service gap: one long empty interval, followed by
+  several vehicles arriving close together.
+- The issue is unstable service spacing, not necessarily that one specific bus
+  is delayed.
+
+Initial conservative rule:
+
+- Detect only among vehicles with reliable route progress.
+- Flag when consecutive vehicles are much closer than the expected interval,
+  such as `<= 0.5x` target headway, or within a documented small time/progress
+  threshold when no baseline exists.
+- Prefer showing it as `車輛群聚` in product UI. Keep `bunching` as an internal
+  analytics term only.
+
+### Out of Scope for This Dashboard Step
+
+Do not claim:
+
+- individual vehicle delay
+- driver fault
+- exact passenger waiting time
+- schedule violation without timetable or ETA evidence
+- root cause of the spacing problem
+
+The dashboard can still show vehicle positions and selected-vehicle facts as
+evidence, but the primary signal should stay route-level.
+
+## Bus Route Service Control Page
+
+Status: implemented in `frontend/src/BusOversightDashboard.vue` as the primary
+dashboard route for `/` and `/bus-oversight`.
+
+This page is the formal version of `frontend/public/oversight-demo.html`. It
+keeps the demo's information architecture and interaction model, but replaces
+mock values with the current analytics exports:
+
+- `bunching.json` becomes route-level large service-gap or vehicle-bunching
+  events through the shared signal taxonomy.
+- `route-density.json` becomes low-capacity observations when vehicle count,
+  speed, and stopped reports jointly indicate route pressure.
+- `data-freshness.json` becomes latest-slot route quality observations when a
+  route has enough location observations needing review.
+- `route-context/<route>.json` provides stop locations for the route schematic.
+
+### Reliability Index
+
+The current score is intentionally simple and documented so it can be replaced
+later by a historical baseline model:
+
+```text
+score = clamp(60, 100,
+  100
+  - service_gap_events * 0.7
+  - bunching_events * 0.5
+  - low_capacity_events * 0.5
+)
+```
+
+The weights live in `RELIABILITY_WEIGHTS` inside
+`frontend/src/busOversightData.js`. They are not a public product promise; they
+are the first review formula for ranking route-service health.
+
+### Timeline Data Policy
+
+The UI always renders a seven-day, hourly timeline. Current local analytics only
+contains one service day, so missing days and hours stay neutral instead of
+being filled with mock severity. Once archive snapshots or daily hourly
+aggregates exist, the same model can accept additional dates without changing
+the page interaction.
+
+### Route Schematic Decision
+
+The first production implementation uses strategy A: true stop longitude and
+latitude projected into the SVG canvas. It keeps each route's distinct shape and
+only simplifies labels by showing terminals, affected stops, and a regular
+sample of intermediate stops. A future straightened schematic can be introduced
+behind the same `buildRouteSchematic` output if dense downtown routes require
+more label control.
+
+### Product-Copy Boundary
+
+The page must remain user-facing:
+
+- No raw provider field names, endpoint names, debug terms, or implementation
+  notes in the primary UI.
+- Chinese UI uses `預估到站` instead of `ETA` when arrival estimates are shown.
+- Severity labels are fixed as `嚴重`, `注意`, `觀察`, `正常`.
+- Problem labels are fixed as `大空窗`, `車輛群聚`, `運能不足`.
+- Route-service observations must not imply single-vehicle fault, driver fault,
+  or confirmed delay.
 
 ## Experimental Feature Backlog
 
