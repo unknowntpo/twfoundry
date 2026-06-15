@@ -47,6 +47,7 @@ Important boundary:
   to voxel chunks or terrain.
 - Expose freshness, completeness, fallback, and diagnostic state in a controlled observability
   surface.
+- Keep all product surfaces, including POCs, written for target users rather than developers.
 - Keep provider choices, fallback policy, and visual styles documented as implementation-defined
   decisions.
 
@@ -59,6 +60,8 @@ Important boundary:
   framework in this language-agnostic specification.
 - Do not let source-specific facts bypass adapters and directly control renderer logic.
 - Do not expose internal geometry-alignment diagnostics as primary product UI.
+- Do not mix developer-facing explanations, raw source fields, internal IDs, or debug terminology
+  into primary product UI copy.
 
 ## 3. System Overview
 
@@ -371,6 +374,44 @@ Voxel modules SHOULD be reusable across object instances. Renderer selection SHO
 kind, capability, or declared detail module. Renderer selection MUST NOT depend on a specific place
 name such as one station, shop, or district.
 
+### 5.5 User-Facing Product Copy Boundary
+
+All product surfaces, including prototypes and POCs, are user-facing product artifacts. They are not
+developer notes.
+
+Primary product UI copy MUST use domain language that target users can understand and act on. It
+MUST NOT expose implementation codes, raw source fields, API names, renderer names, internal enum
+values, debug state, or developer-facing explanations as primary UI copy.
+
+Developer-facing context MAY exist in documentation, diagnostics, hidden inspector panels,
+implementation notes, or clearly separated advanced/debug surfaces. It MUST NOT be mixed into the
+primary product flow, map, timeline, watchlist, or selected-object detail copy.
+
+When a source field has engineering semantics, implementations MUST translate it at the product
+boundary before rendering. Examples:
+
+- `route.direction = 0/1` SHOULD render as route-headsign or terminal-based copy, such as
+  `往撫遠街` or `往板橋前站`. If endpoint labels are unavailable, use neutral user copy such as
+  `去程` or `返程`.
+- Source/API names such as `StopOfRoute`, `RouteUID`, `EstimatedTimeOfArrival`, and renderer/debug
+  terms SHOULD appear only in evidence, diagnostics, or documentation, not as headline product
+  labels.
+- Prototype limitations SHOULD be stated as product-facing scope, such as `目前只呈現位置，不判斷延遲`,
+  rather than developer workflow notes.
+
+### 5.6 Product Flow Artifact Boundary
+
+Figma, FigJam, and similar planning artifacts SHOULD be used to describe product flows, interaction
+sequence, information hierarchy, and decision boundaries.
+
+They SHOULD NOT be treated as a parallel screen-design source of truth unless a task explicitly asks
+for new visual design. Product screen changes SHOULD be made by evolving the existing product UI and
+design system directly.
+
+Flow artifacts MAY reference existing product screens, screenshots, or simplified state diagrams.
+They SHOULD avoid inventing polished replacement screens when the intended work is flow analysis,
+scope definition, or dashboard behavior planning.
+
 ## 6. Configuration Specification
 
 ### 6.1 Implementation-defined Decisions
@@ -439,6 +480,23 @@ Diagnostics such as map feature extraction, geometry alignment, projection check
 coverage MAY exist.
 
 Diagnostics MUST NOT become primary product UI unless explicitly promoted through product policy.
+
+### 7.4 Public Edge Serving Boundary
+
+Public product traffic MAY be served through an edge layer such as Cloudflare Pages, Workers, and
+R2-backed artifacts.
+
+The public edge layer MUST serve materialized product artifacts and lightweight API contracts. It
+MUST NOT use public user requests as a synchronous fallback path into private ingestion,
+orchestration, streaming, or OLAP infrastructure.
+
+When a requested edge artifact is unavailable, the product API SHOULD return a user-facing
+`no_data`, `unavailable`, or equivalent response. It SHOULD NOT trigger private backfill, OLAP query,
+or homelab proxy work in the user request path.
+
+Public edge routes SHOULD enforce cost and abuse controls before expensive reads or private
+integrations. Controls MAY include access allowlists, bot mitigation, rate limiting, global usage
+budgets, session admission, and cache policy.
 
 ## 8. Legacy Compatibility
 
