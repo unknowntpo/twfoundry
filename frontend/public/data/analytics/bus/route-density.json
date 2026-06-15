@@ -1,0 +1,413 @@
+{
+  "metric": "route_vehicle_density",
+  "serviceDate": "2026-05-20",
+  "source": "clickhouse-static-snapshot",
+  "publishedAt": "2026-06-11T08:53:13.273Z",
+  "rows": [
+    {
+      "bucket_start": "2026-05-20 00:00:00",
+      "route_name": "南京幹線",
+      "direction": 1,
+      "active_vehicles": "8",
+      "avg_speed_kph": 4.7,
+      "stopped_reports": "19"
+    },
+    {
+      "bucket_start": "2026-05-20 00:15:00",
+      "route_name": "南京幹線",
+      "direction": 1,
+      "active_vehicles": "8",
+      "avg_speed_kph": 7.3,
+      "stopped_reports": "18"
+    },
+    {
+      "bucket_start": "2026-05-20 00:15:00",
+      "route_name": "民權幹線",
+      "direction": 1,
+      "active_vehicles": "3",
+      "avg_speed_kph": 0,
+      "stopped_reports": "7"
+    },
+    {
+      "bucket_start": "2026-05-20 00:30:00",
+      "route_name": "南京幹線",
+      "direction": 1,
+      "active_vehicles": "8",
+      "avg_speed_kph": 6.6,
+      "stopped_reports": "19"
+    },
+    {
+      "bucket_start": "2026-05-20 00:30:00",
+      "route_name": "民權幹線",
+      "direction": 1,
+      "active_vehicles": "3",
+      "avg_speed_kph": 5.4,
+      "stopped_reports": "6"
+    },
+    {
+      "bucket_start": "2026-05-20 00:45:00",
+      "route_name": "南京幹線",
+      "direction": 1,
+      "active_vehicles": "8",
+      "avg_speed_kph": 0.2,
+      "stopped_reports": "23"
+    },
+    {
+      "bucket_start": "2026-05-20 01:00:00",
+      "route_name": "南京幹線",
+      "direction": 1,
+      "active_vehicles": "8",
+      "avg_speed_kph": 1,
+      "stopped_reports": "22"
+    },
+    {
+      "bucket_start": "2026-05-20 01:15:00",
+      "route_name": "南京幹線",
+      "direction": 1,
+      "active_vehicles": "8",
+      "avg_speed_kph": 0,
+      "stopped_reports": "23"
+    },
+    {
+      "bucket_start": "2026-05-20 01:30:00",
+      "route_name": "南京幹線",
+      "direction": 1,
+      "active_vehicles": "8",
+      "avg_speed_kph": 0,
+      "stopped_reports": "24"
+    },
+    {
+      "bucket_start": "2026-05-20 01:45:00",
+      "route_name": "南京幹線",
+      "direction": 1,
+      "active_vehicles": "8",
+      "avg_speed_kph": 0,
+      "stopped_reports": "24"
+    },
+    {
+      "bucket_start": "2026-05-20 02:00:00",
+      "route_name": "南京幹線",
+      "direction": 1,
+      "active_vehicles": "8",
+      "avg_speed_kph": 0,
+      "stopped_reports": "24"
+    },
+    {
+      "bucket_start": "2026-05-20 02:15:00",
+      "route_name": "南京幹線",
+      "direction": 1,
+      "active_vehicles": "8",
+      "avg_speed_kph": 0,
+      "stopped_reports": "24"
+    },
+    {
+      "bucket_start": "2026-05-20 02:30:00",
+      "route_name": "南京幹線",
+      "direction": 1,
+      "active_vehicles": "8",
+      "avg_speed_kph": 0,
+      "stopped_reports": "24"
+    },
+    {
+      "bucket_start": "2026-05-20 02:45:00",
+      "route_name": "南京幹線",
+      "direction": 1,
+      "active_vehicles": "8",
+      "avg_speed_kph": 0,
+      "stopped_reports": "24"
+    },
+    {
+      "bucket_start": "2026-05-20 03:00:00",
+      "route_name": "南京幹線",
+      "direction": 1,
+      "active_vehicles": "8",
+      "avg_speed_kph": 0,
+      "stopped_reports": "24"
+    },
+    {
+      "bucket_start": "2026-05-20 03:15:00",
+      "route_name": "南京幹線",
+      "direction": 1,
+      "active_vehicles": "8",
+      "avg_speed_kph": 0,
+      "stopped_reports": "24"
+    },
+    {
+      "bucket_start": "2026-05-20 03:30:00",
+      "route_name": "南京幹線",
+      "direction": 1,
+      "active_vehicles": "8",
+      "avg_speed_kph": 0,
+      "stopped_reports": "24"
+    },
+    {
+      "bucket_start": "2026-05-20 03:45:00",
+      "route_name": "南京幹線",
+      "direction": 1,
+      "active_vehicles": "8",
+      "avg_speed_kph": 0,
+      "stopped_reports": "24"
+    },
+    {
+      "bucket_start": "2026-05-20 04:00:00",
+      "route_name": "南京幹線",
+      "direction": 1,
+      "active_vehicles": "8",
+      "avg_speed_kph": 0,
+      "stopped_reports": "24"
+    },
+    {
+      "bucket_start": "2026-05-20 04:15:00",
+      "route_name": "南京幹線",
+      "direction": 1,
+      "active_vehicles": "8",
+      "avg_speed_kph": 0,
+      "stopped_reports": "24"
+    },
+    {
+      "bucket_start": "2026-05-20 04:30:00",
+      "route_name": "南京幹線",
+      "direction": 1,
+      "active_vehicles": "8",
+      "avg_speed_kph": 0,
+      "stopped_reports": "24"
+    },
+    {
+      "bucket_start": "2026-05-20 04:45:00",
+      "route_name": "南京幹線",
+      "direction": 1,
+      "active_vehicles": "8",
+      "avg_speed_kph": 0,
+      "stopped_reports": "24"
+    },
+    {
+      "bucket_start": "2026-05-20 05:00:00",
+      "route_name": "南京幹線",
+      "direction": 1,
+      "active_vehicles": "9",
+      "avg_speed_kph": 0.1,
+      "stopped_reports": "25"
+    },
+    {
+      "bucket_start": "2026-05-20 05:15:00",
+      "route_name": "南京幹線",
+      "direction": 1,
+      "active_vehicles": "10",
+      "avg_speed_kph": 0.7,
+      "stopped_reports": "27"
+    },
+    {
+      "bucket_start": "2026-05-20 05:15:00",
+      "route_name": "234",
+      "direction": 0,
+      "active_vehicles": "3",
+      "avg_speed_kph": 19.7,
+      "stopped_reports": "2"
+    },
+    {
+      "bucket_start": "2026-05-20 05:30:00",
+      "route_name": "南京幹線",
+      "direction": 1,
+      "active_vehicles": "8",
+      "avg_speed_kph": 0,
+      "stopped_reports": "23"
+    },
+    {
+      "bucket_start": "2026-05-20 05:30:00",
+      "route_name": "南環幹線",
+      "direction": 0,
+      "active_vehicles": "5",
+      "avg_speed_kph": 23.3,
+      "stopped_reports": "3"
+    },
+    {
+      "bucket_start": "2026-05-20 05:30:00",
+      "route_name": "南京幹線",
+      "direction": 0,
+      "active_vehicles": "4",
+      "avg_speed_kph": 7.7,
+      "stopped_reports": "7"
+    },
+    {
+      "bucket_start": "2026-05-20 05:30:00",
+      "route_name": "235",
+      "direction": 0,
+      "active_vehicles": "4",
+      "avg_speed_kph": 24.3,
+      "stopped_reports": "2"
+    },
+    {
+      "bucket_start": "2026-05-20 05:30:00",
+      "route_name": "234",
+      "direction": 0,
+      "active_vehicles": "4",
+      "avg_speed_kph": 24.2,
+      "stopped_reports": "4"
+    },
+    {
+      "bucket_start": "2026-05-20 05:30:00",
+      "route_name": "藍36",
+      "direction": 0,
+      "active_vehicles": "4",
+      "avg_speed_kph": 5.5,
+      "stopped_reports": "8"
+    },
+    {
+      "bucket_start": "2026-05-20 05:30:00",
+      "route_name": "南環幹線",
+      "direction": 1,
+      "active_vehicles": "3",
+      "avg_speed_kph": 0.2,
+      "stopped_reports": "3"
+    },
+    {
+      "bucket_start": "2026-05-20 05:45:00",
+      "route_name": "235",
+      "direction": 0,
+      "active_vehicles": "10",
+      "avg_speed_kph": 18.6,
+      "stopped_reports": "7"
+    },
+    {
+      "bucket_start": "2026-05-20 05:45:00",
+      "route_name": "藍36",
+      "direction": 0,
+      "active_vehicles": "8",
+      "avg_speed_kph": 14.9,
+      "stopped_reports": "6"
+    },
+    {
+      "bucket_start": "2026-05-20 05:45:00",
+      "route_name": "南環幹線",
+      "direction": 0,
+      "active_vehicles": "7",
+      "avg_speed_kph": 18,
+      "stopped_reports": "5"
+    },
+    {
+      "bucket_start": "2026-05-20 05:45:00",
+      "route_name": "南京幹線",
+      "direction": 1,
+      "active_vehicles": "7",
+      "avg_speed_kph": 0,
+      "stopped_reports": "21"
+    },
+    {
+      "bucket_start": "2026-05-20 05:45:00",
+      "route_name": "234",
+      "direction": 0,
+      "active_vehicles": "7",
+      "avg_speed_kph": 25.4,
+      "stopped_reports": "5"
+    },
+    {
+      "bucket_start": "2026-05-20 05:45:00",
+      "route_name": "南京幹線",
+      "direction": 0,
+      "active_vehicles": "6",
+      "avg_speed_kph": 12.2,
+      "stopped_reports": "10"
+    },
+    {
+      "bucket_start": "2026-05-20 05:45:00",
+      "route_name": "民權幹線",
+      "direction": 0,
+      "active_vehicles": "5",
+      "avg_speed_kph": 20.8,
+      "stopped_reports": "2"
+    },
+    {
+      "bucket_start": "2026-05-20 05:45:00",
+      "route_name": "民權幹線",
+      "direction": 1,
+      "active_vehicles": "3",
+      "avg_speed_kph": 3.1,
+      "stopped_reports": "6"
+    },
+    {
+      "bucket_start": "2026-05-20 05:45:00",
+      "route_name": "235",
+      "direction": 1,
+      "active_vehicles": "3",
+      "avg_speed_kph": 22.4,
+      "stopped_reports": "2"
+    },
+    {
+      "bucket_start": "2026-05-20 05:45:00",
+      "route_name": "南環幹線",
+      "direction": 1,
+      "active_vehicles": "3",
+      "avg_speed_kph": 0,
+      "stopped_reports": "3"
+    },
+    {
+      "bucket_start": "2026-05-20 06:00:00",
+      "route_name": "235",
+      "direction": 0,
+      "active_vehicles": "13",
+      "avg_speed_kph": 18.2,
+      "stopped_reports": "12"
+    },
+    {
+      "bucket_start": "2026-05-20 06:00:00",
+      "route_name": "民權幹線",
+      "direction": 0,
+      "active_vehicles": "10",
+      "avg_speed_kph": 12,
+      "stopped_reports": "12"
+    },
+    {
+      "bucket_start": "2026-05-20 06:00:00",
+      "route_name": "藍36",
+      "direction": 0,
+      "active_vehicles": "10",
+      "avg_speed_kph": 14.3,
+      "stopped_reports": "7"
+    },
+    {
+      "bucket_start": "2026-05-20 06:00:00",
+      "route_name": "南環幹線",
+      "direction": 0,
+      "active_vehicles": "9",
+      "avg_speed_kph": 14.6,
+      "stopped_reports": "12"
+    },
+    {
+      "bucket_start": "2026-05-20 06:00:00",
+      "route_name": "南京幹線",
+      "direction": 0,
+      "active_vehicles": "9",
+      "avg_speed_kph": 12.4,
+      "stopped_reports": "15"
+    },
+    {
+      "bucket_start": "2026-05-20 06:00:00",
+      "route_name": "南京幹線",
+      "direction": 1,
+      "active_vehicles": "8",
+      "avg_speed_kph": 0.6,
+      "stopped_reports": "19"
+    },
+    {
+      "bucket_start": "2026-05-20 06:00:00",
+      "route_name": "234",
+      "direction": 0,
+      "active_vehicles": "7",
+      "avg_speed_kph": 14.8,
+      "stopped_reports": "8"
+    },
+    {
+      "bucket_start": "2026-05-20 06:00:00",
+      "route_name": "藍36",
+      "direction": 1,
+      "active_vehicles": "4",
+      "avg_speed_kph": 6.6,
+      "stopped_reports": "5"
+    }
+  ],
+  "statistics": {
+    "elapsed": 0.024325133,
+    "rows_read": 36487,
+    "bytes_read": 1359214
+  }
+}

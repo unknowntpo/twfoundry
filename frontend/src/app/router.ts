@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import BusOversightDashboard from "@/BusOversightDashboard.vue";
 import DesignSystemPage from "@/features/design-system/components/DesignSystemPage.vue";
 import MrtDashboard from "@/features/mrt/components/MrtDashboard.vue";
 
@@ -14,6 +15,11 @@ export const router = createRouter({
       path: "/design-system",
       name: "design-system",
       component: DesignSystemPage,
+    },
+    {
+      path: "/bus-oversight",
+      name: "bus-oversight",
+      component: BusOversightDashboard,
     },
   ],
 });

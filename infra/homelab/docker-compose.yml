@@ -1,0 +1,54 @@
+name: twfoundry-homelab
+
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:25.5
+    container_name: twfoundry-clickhouse
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    environment:
+      CLICKHOUSE_DB: twfoundry
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-default}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-twfoundry_dev}
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8123/ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 30
+
+  analytics-api:
+    build:
+      context: ../../services/analytics-api
+    container_name: twfoundry-analytics-api
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    environment:
+      CLICKHOUSE_URL: http://clickhouse:8123
+      CLICKHOUSE_DATABASE: twfoundry
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-default}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-twfoundry_dev}
+      DEFAULT_SERVICE_DATE: "2026-05-20"
+      PORT: "8080"
+    ports:
+      - "8080:8080"
+
+  cloudflared:
+    image: cloudflare/cloudflared:2026.6.1
+    container_name: twfoundry-cloudflared
+    profiles:
+      - tunnel
+    depends_on:
+      - analytics-api
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN:-}
+    restart: unless-stopped
+
+volumes:
+  clickhouse-data:

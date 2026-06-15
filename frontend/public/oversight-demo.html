@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TWFoundry · 公車路線服務控制台</title>
+<style>
+  :root {
+    --bg: #060a12; --panel: rgba(9,17,27,0.84); --panel-soft: rgba(6,13,22,0.72);
+    --border: rgba(128,154,180,0.22); --border-soft: rgba(128,154,180,0.16);
+    --fg: #e5f2fb; --fg-soft: #dcecf7; --muted: #aebfcc; --mono-muted: #8fa7ba;
+    --accent: #2ec7e8; --critical: #ff6b61; --warning: #ffd052; --watch: #6c9eff; --ok: #4fd5a7;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+    --sans: Geist, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Noto Sans TC", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { min-height: 100vh; padding: 26px; color: var(--fg); font-family: var(--sans); -webkit-font-smoothing: antialiased;
+    background: radial-gradient(circle at 18% 6%, rgba(17,100,129,.22), transparent 30%),
+      radial-gradient(circle at 88% 14%, rgba(108,158,255,.12), transparent 28%),
+      linear-gradient(180deg, rgba(7,16,26,0), rgba(2,5,10,.5) 64%), var(--bg); }
+  h1, h2, p { margin: 0; }
+  .shell { max-width: 1340px; margin: 0 auto; }
+  .eyebrow { color: var(--mono-muted); font: 12px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 22px; }
+  .brand-kicker { color: var(--mono-muted); font: 12px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+  .brand-title { margin-top: 6px; font-size: 26px; }
+  .brand-title span { color: var(--accent); }
+  .topbar-actions { display: flex; align-items: center; gap: 10px; }
+  .day-pill { padding: 8px 12px; border: 1px solid rgba(108,158,255,.34); border-radius: 999px;
+    background: rgba(38,68,114,.28); color: #bad1ff; font: 12px/1.1 var(--mono); }
+  .btn { padding: 10px 14px; border: 1px solid rgba(128,154,180,.32); border-radius: 8px;
+    background: rgba(12,22,34,.78); color: var(--fg-soft); font-size: 13px; text-decoration: none; cursor: pointer; }
+  .btn.primary { border-color: rgba(46,199,232,.6); background: rgba(17,101,126,.5); color: #d8fbff; }
+  .locale-switch { display: inline-flex; gap: 4px; padding: 4px; border: 1px solid var(--border-soft); border-radius: 8px; background: rgba(0,0,0,.22); }
+  .locale-switch button { border: 0; background: transparent; color: var(--muted); font: 12px/1 var(--mono); padding: 6px 9px; border-radius: 6px; cursor: pointer; }
+  .locale-switch button.active { background: rgba(17,101,126,.6); color: #d8fbff; }
+
+  /* kpi */
+  .kpi-band { display: grid; grid-template-columns: repeat(12, minmax(0,1fr)); gap: 12px; margin-bottom: 16px; }
+  .kpi { position: relative; grid-column: span 2; display: grid; gap: 8px; min-height: 118px; padding: 16px;
+    border: 1px solid var(--border); border-radius: 8px; background: var(--panel); box-shadow: 0 18px 60px rgba(0,0,0,.22); }
+  .kpi.primary { grid-column: span 4; }
+  .kpi-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .kpi span.kpi-label { color: var(--mono-muted); font: 11px/1.2 var(--mono); letter-spacing: .04em; text-transform: uppercase; }
+  .kpi .kpi-value { display: flex; align-items: baseline; gap: 10px; }
+  .kpi strong { font-size: clamp(24px,2.6vw,38px); line-height: 1; }
+  .kpi.primary strong { font-size: clamp(40px,4.4vw,58px); }
+  .kpi-delta { font: 12px/1 var(--mono); }
+  .kpi-delta.bad { color: var(--critical); } .kpi-delta.good { color: var(--ok); } .kpi-delta.flat { color: var(--mono-muted); }
+  .kpi.tone-critical { border-color: rgba(255,105,97,.4); }
+  .kpi.tone-warning { border-color: rgba(255,208,82,.34); }
+  .kpi.tone-watch { border-color: rgba(108,158,255,.34); }
+  .ring { --p:0; width: 64px; height: 64px; border-radius: 50%;
+    background: radial-gradient(closest-side, var(--bg) 70%, transparent 71%), conic-gradient(var(--accent) calc(var(--p)*1%), rgba(128,154,180,.18) 0);
+    display: grid; place-items: center; font: 700 15px/1 var(--mono); color: #d8fbff; }
+  .kpi-i { position: relative; flex: 0 0 auto; width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--border);
+    background: transparent; color: var(--mono-muted); display: grid; place-items: center; font: 700 11px/1 var(--mono); cursor: help; }
+  .kpi-i:hover, .kpi-i:focus-visible { color: var(--fg); border-color: var(--accent); outline: none; }
+  .kpi-pop { position: absolute; top: 25px; right: 0; width: 210px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;
+    background: #0b1726; box-shadow: 0 14px 44px rgba(0,0,0,.55); color: #cdddec; font: 11.5px/1.55 var(--mono); text-align: left;
+    opacity: 0; transform: translateY(-4px); pointer-events: none; transition: opacity .14s ease, transform .14s ease; z-index: 5; }
+  .kpi-i:hover .kpi-pop, .kpi-i:focus-visible .kpi-pop { opacity: 1; transform: none; }
+
+  .panel { padding: 18px; border: 1px solid var(--border); border-radius: 8px; background: var(--panel); box-shadow: 0 18px 60px rgba(0,0,0,.26); }
+  .panel + .panel { margin-top: 16px; }
+  .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 12px; }
+  .panel-head h2 { margin-top: 6px; font-size: 18px; }
+  .mode-badge { flex: 0 0 auto; padding: 7px 10px; border: 1px solid rgba(108,158,255,.34); border-radius: 999px;
+    background: rgba(38,68,114,.28); color: #bad1ff; font: 11px/1.1 var(--mono); }
+  .seg-toggle { display: inline-flex; gap: 4px; padding: 4px; border: 1px solid var(--border-soft); border-radius: 8px; background: rgba(0,0,0,.22); }
+  .seg-toggle button { border: 0; background: transparent; color: var(--muted); font: 12px/1 var(--mono); padding: 6px 10px; border-radius: 6px; cursor: pointer; }
+  .seg-toggle button.active { background: rgba(17,101,126,.6); color: #d8fbff; }
+
+  /* ---- main-dashboard style timeline (multi-day) ---- */
+  .tl-statusrow { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .tl-bigtime { color: var(--fg); font: 590 18px/1.05 var(--mono); }
+  .live-pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: 999px;
+    border: 1px solid var(--border); color: var(--mono-muted); font: 10px/1 var(--mono); text-transform: uppercase; }
+  .live-pill.live { border-color: rgba(79,213,167,.5); color: #aef0d4; }
+  .live-pill.history { border-color: rgba(108,158,255,.45); color: #bad1ff; }
+  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--mono-muted); }
+  .live-pill.live .live-dot { background: var(--ok); box-shadow: 0 0 9px var(--ok); animation: lp 1.4s ease-in-out infinite; }
+  .live-pill.history .live-dot { background: var(--watch); }
+  @keyframes lp { 50% { opacity: .4; } }
+
+  .tl-strip { display: flex; gap: 2px; align-items: flex-end; height: 84px; }
+  .tl-cell { flex: 1 1 0; min-width: 0; border-radius: 3px 3px 2px 2px; background: rgba(128,154,180,.16); cursor: pointer; }
+  .tl-cell:hover { filter: brightness(1.2); }
+  .tl-cell.sev-ok { background: linear-gradient(180deg, rgba(79,213,167,.85), rgba(79,213,167,.3)); }
+  .tl-cell.sev-watch { background: linear-gradient(180deg, rgba(108,158,255,.9), rgba(108,158,255,.32)); }
+  .tl-cell.sev-warning { background: linear-gradient(180deg, rgba(255,208,82,.92), rgba(255,208,82,.34)); }
+  .tl-cell.sev-critical { background: linear-gradient(180deg, rgba(255,107,97,.95), rgba(255,107,97,.38)); }
+  .tl-cell.day-sep { margin-left: 7px; }
+  .tl-cell.active { outline: 2px solid #d8fbff; outline-offset: 1px; }
+
+  .tl-track { position: relative; height: 26px; margin-top: 6px; }
+  .tl-track .rail { position: absolute; top: 11px; left: 0; right: 0; height: 4px; border-radius: 999px; background: rgba(128,154,180,.18); }
+  .tl-fill { position: absolute; top: 11px; left: 0; height: 4px; border-radius: 999px; background: linear-gradient(90deg, rgba(46,199,232,.5), rgba(46,199,232,.85)); }
+  .tl-now { position: absolute; top: 3px; width: 2px; height: 20px; background: rgba(79,213,167,.8); box-shadow: 0 0 8px rgba(79,213,167,.6); }
+  .tl-slider { -webkit-appearance: none; appearance: none; position: absolute; top: 4px; left: 0; width: 100%; height: 18px; background: transparent; cursor: pointer; margin: 0; }
+  .tl-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent);
+    border: 2px solid #d8fbff; box-shadow: 0 0 10px rgba(46,199,232,.6); cursor: grab; }
+  .tl-slider::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: var(--accent); border: 2px solid #d8fbff; box-shadow: 0 0 10px rgba(46,199,232,.6); cursor: grab; }
+  .tl-slider:active::-webkit-slider-thumb { cursor: grabbing; }
+  .tl-hover { position: absolute; top: -34px; transform: translateX(-50%); padding: 4px 8px; border: 1px solid var(--border);
+    border-radius: 6px; background: #0b1726; color: #cdddec; font: 10.5px/1.1 var(--mono); white-space: nowrap; pointer-events: none; opacity: 0; z-index: 6; }
+  .tl-days { display: flex; gap: 7px; margin-top: 6px; }
+  .tl-days span { flex: 1 1 0; text-align: center; color: var(--mono-muted); font: 10.5px/1.2 var(--mono); }
+  .tl-days span.today { color: #aef0d4; }
+  .tl-actions { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+  .tl-btn { width: 34px; height: 30px; display: grid; place-items: center; border: 1px solid var(--border-soft); border-radius: 8px;
+    background: rgba(12,22,34,.78); color: var(--fg-soft); cursor: pointer; font-size: 13px; }
+  .tl-btn.primary { border-color: rgba(46,199,232,.55); background: rgba(17,101,126,.5); color: #d8fbff; }
+  .tl-btn:disabled { opacity: .4; cursor: default; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; color: var(--muted); font-size: 12px; }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .legend b { width: 11px; height: 11px; border-radius: 3px; }
+
+  .grid { display: grid; grid-template-columns: minmax(0,1.6fr) minmax(0,1fr); gap: 16px; }
+
+  .map-wrap { border-radius: 10px; overflow: hidden; margin-top: 4px;
+    background: linear-gradient(90deg, rgba(255,255,255,.026) 1px, transparent 1px), linear-gradient(0deg, rgba(255,255,255,.026) 1px, transparent 1px),
+      radial-gradient(circle at 50% 42%, rgba(23,52,74,.42), transparent 46%), #07101a; background-size: 44px 44px, 44px 44px, auto, auto; }
+  svg.routemap { display: block; width: 100%; height: auto; }
+  .seg { stroke-linecap: round; fill: none; }
+  .seg.base { stroke: #cfe0f5; stroke-width: 5; filter: drop-shadow(0 0 5px rgba(188,220,255,.25)); }
+  .seg.sev-critical { stroke: var(--critical); stroke-width: 8; stroke-dasharray: 3 7; }
+  .seg.sev-warning { stroke: var(--warning); stroke-width: 8; }
+  .seg.sev-watch { stroke: var(--watch); stroke-width: 8; }
+  .seg.pulse { animation: pulse 1s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+  .stop-dot { fill: #07101a; stroke: #d9e7f8; stroke-width: 2.5; }
+  .stop-dot.ring-critical { stroke: var(--critical); stroke-width: 3.5; }
+  .stop-dot.ring-warning { stroke: var(--warning); stroke-width: 3.5; }
+  .stop-dot.ring-watch { stroke: var(--watch); stroke-width: 3.5; }
+  .stop-dot.terminal { fill: var(--accent); stroke: #d8fbff; }
+  .stop-label { fill: #cdddec; font: 12px/1 var(--sans); }
+  .veh { stroke: #07101a; stroke-width: 2; }
+  .veh.normal { fill: var(--accent); } .veh.bunch { fill: var(--warning); }
+  .pin circle { stroke: #07101a; stroke-width: 2; }
+  .pin.critical circle { fill: var(--critical); } .pin.warning circle { fill: var(--warning); } .pin.watch circle { fill: var(--watch); }
+  .pin text { fill: #0a0f16; font: 800 13px/1 var(--sans); text-anchor: middle; }
+  .pin.focus circle { animation: pinpulse .9s ease-in-out infinite; }
+  @keyframes pinpulse { 0%,100% { r: 13; } 50% { r: 16; } }
+  .map-empty { fill: #6f8597; font: 13px/1 var(--sans); text-anchor: middle; }
+
+  .watch-list { display: grid; gap: 8px; }
+  .watch-row { display: grid; grid-template-columns: 56px minmax(0,1.4fr) auto; align-items: center; gap: 10px; padding: 11px 13px;
+    border: 1px solid var(--border-soft); border-left-width: 4px; border-radius: 8px; background: var(--panel-soft); cursor: pointer; text-align: left; color: inherit; width: 100%; font-family: inherit; }
+  .watch-row.critical { border-left-color: var(--critical); } .watch-row.warning { border-left-color: var(--warning); } .watch-row.watch { border-left-color: var(--watch); }
+  .watch-row.active { background: rgba(18,31,46,.7); border-color: rgba(46,199,232,.45); }
+  .sev-chip { justify-self: start; padding: 4px 8px; border-radius: 999px; font: 11px/1.1 var(--mono); }
+  .sev-chip.critical { color: #ffb3ad; background: rgba(255,105,97,.16); } .sev-chip.warning { color: #ffe19a; background: rgba(255,208,82,.16); } .sev-chip.watch { color: #bad1ff; background: rgba(108,158,255,.16); }
+  .watch-main strong { display: block; font-size: 15px; } .watch-main small { color: var(--mono-muted); font: 11.5px/1.3 var(--mono); }
+  .open-arrow { color: var(--accent); font-size: 18px; }
+
+  .prob-card { display: grid; gap: 8px; padding: 13px; margin-bottom: 9px; border: 1px solid var(--border-soft); border-left-width: 4px; border-radius: 8px; background: var(--panel-soft); cursor: pointer; }
+  .prob-card.critical { border-left-color: var(--critical); } .prob-card.warning { border-left-color: var(--warning); } .prob-card.watch { border-left-color: var(--watch); }
+  .prob-card.active { background: rgba(18,31,46,.7); border-color: rgba(46,199,232,.4); }
+  .prob-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .prob-title { display: flex; align-items: center; gap: 9px; } .prob-title strong { font-size: 14.5px; }
+  .pin-num { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font: 800 12px/1 var(--sans); color: #0a0f16; }
+  .prob-card.critical .pin-num { background: var(--critical); } .prob-card.warning .pin-num { background: var(--warning); } .prob-card.watch .pin-num { background: var(--watch); }
+  .prob-where { color: var(--accent); font: 12px/1.3 var(--mono); } .prob-metric { font: 13px/1 var(--mono); color: var(--fg-soft); }
+  .prob-card p { color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+  .prob-empty { padding: 22px 14px; text-align: center; color: var(--mono-muted); font: 13px/1.6 var(--mono); border: 1px dashed var(--border-soft); border-radius: 8px; }
+
+  .foot-note { margin-top: 16px; padding: 12px 14px; border: 1px solid var(--border-soft); border-radius: 8px; background: rgba(18,31,46,.42); color: var(--muted); font-size: 12px; line-height: 1.6; }
+  .foot-note b { color: var(--fg-soft); }
+
+  @media (max-width: 1080px) { .grid { grid-template-columns: 1fr; } .kpi { grid-column: span 4; } .kpi.primary { grid-column: span 12; } }
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="topbar">
+    <div>
+      <div class="brand-kicker" id="brandKicker"></div>
+      <h1 class="brand-title" id="brandTitle"></h1>
+    </div>
+    <div class="topbar-actions">
+      <span class="day-pill" id="dayPill"></span>
+      <div class="locale-switch" id="localeSwitch">
+        <button data-loc="zh-Hant" class="active">中</button>
+        <button data-loc="en">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="kpi-band" id="kpiBand"></section>
+
+  <!-- timeline -->
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <div class="eyebrow" id="tlEyebrow"></div>
+        <h2 id="tlTitle"></h2>
+      </div>
+      <div class="seg-toggle" id="tlToggle">
+        <button data-mode="network" class="active"></button>
+        <button data-mode="route"></button>
+      </div>
+    </div>
+    <div class="tl-statusrow">
+      <span class="tl-bigtime" id="tlBigTime"></span>
+      <span class="live-pill" id="tlLive"></span>
+    </div>
+    <div class="tl-strip" id="timeline"></div>
+    <div class="tl-track">
+      <div class="rail"></div><div class="tl-fill" id="tlFill"></div><div class="tl-now" id="tlNow"></div>
+      <input class="tl-slider" id="tlSlider" type="range" min="0" value="0" />
+      <div class="tl-hover" id="tlHover"></div>
+    </div>
+    <div class="tl-days" id="tlDays"></div>
+    <div class="tl-actions">
+      <button class="tl-btn" id="tlBack" aria-label="prev">‹</button>
+      <button class="tl-btn primary" id="tlPlay" aria-label="play">▶</button>
+      <button class="tl-btn" id="tlFwd" aria-label="next">›</button>
+      <button class="btn" id="tlLiveBtn" style="height:30px;padding:0 12px"></button>
+    </div>
+    <div class="legend" id="tlLegend"></div>
+  </section>
+
+  <div class="grid">
+    <section class="panel">
+      <div class="panel-head">
+        <div><div class="eyebrow" id="diaEyebrow"></div><h2 id="diaTitle"></h2></div>
+        <span class="live-pill" id="diaTime"></span>
+      </div>
+      <div class="map-wrap">
+        <svg class="routemap" viewBox="0 0 940 600" role="img" aria-label="route diagram">
+          <g id="segLayer"></g><g id="vehLayer"></g><g id="stopLayer"></g><g id="pinLayer"></g>
+        </svg>
+      </div>
+      <div class="legend" id="diaLegend"></div>
+    </section>
+
+    <div>
+      <section class="panel">
+        <div class="panel-head"><div><div class="eyebrow" id="wlEyebrow"></div></div><span class="mode-badge" id="wlBadge"></span></div>
+        <div class="watch-list" id="watchList"></div>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><div><div class="eyebrow" id="probEyebrow"></div><h2 id="probTitle"></h2></div></div>
+        <div id="probList"></div>
+      </section>
+    </div>
+  </div>
+
+  <div class="foot-note" id="footNote"></div>
+</div>
+
+<script>
+  // ---------------- i18n ----------------
+  const I18N = {
+    'zh-Hant': {
+      brandKicker:'TWFoundry Transit Operations · 公車 Bus', brandPre:'公車路線服務', brandAccent:'儀表板',
+      btnExport:'匯出當日報表', btnReport:'產生署期摘要',
+      vsYesterday:'較昨日', live:'即時', history:'回溯', backToLive:'回到即時',
+      sev_critical:'嚴重', sev_warning:'注意', sev_watch:'觀察', sev_ok:'正常',
+      kind_gap:'大空窗', kind_bunch:'車輛群聚', kind_cap:'運能不足',
+      desc_gap:'同方向前後車距過大，這一段乘客久候、等不到車。',
+      desc_bunch:'兩車相隔過近一起到站，後方留下空檔，部分站點久候。',
+      desc_cap:'車輛數偏少且長時間低速，推估車到站已滿、乘客上不去（未確認）。',
+      kpi_rel:'服務可靠度指數', kpi_rel_pop:'綜合大空窗、車距均勻度與資料涵蓋率計算；滿分 100。',
+      kpi_routes:'監測公車路線', kpi_routes_pop:'今日納入監測的公車路線數；在營運車輛 612 台。',
+      kpi_gap:'大空窗事件', kpi_gap_pop:'乘客在站等不到車的時段數；車距過大形成的服務空窗。',
+      kpi_bunch:'車輛群聚事件', kpi_bunch_pop:'多車相隔過近一起到站，車距不均、部分站點久候。',
+      kpi_cap:'運能不足熱點', kpi_cap_pop:'車輛偏少且長時間低速，推估車到站已滿、乘客上不去（未確認）。',
+      tl_eyebrow:'服務健康時間軸', tl_network:'近七日問題集中在哪些時段', tl_route:'{name} 的近七日服務',
+      tg_network:'全路網', tg_route:'焦點路線',
+      lg_veh:'路線車輛', lg_bunch:'群聚車輛', lg_gapseg:'大空窗路段', lg_bunchseg:'車輛群聚路段', lg_capseg:'運能不足路段',
+      lg_ok:'正常', lg_watch:'觀察', lg_warn:'注意', lg_crit:'嚴重',
+      dia_eyebrow:'焦點路線',
+      wl_eyebrow:'待檢討路線', wl_title:'先看最該檢討的路線', wl_badge:'12 條有訊號', routePrefix:'路線 ',
+      prob_eyebrow:'本路線問題', prob_title:'{time} 的問題', prob_empty:'此時段無服務問題',
+      map_empty:'此時段無服務問題', toward:'往 {dest}',
+      foot:'<b>訊號定義</b>：本台呈現公車路線層級的服務觀察，非已確認的單車延誤或駕駛責任判定。大空窗與車輛群聚為路線車距觀察；運能不足為推估訊號，需運能或現場資料佐證後方可作為正式檢討依據。所有訊號可回溯至原始觀測時間點。',
+      wd:['週日','週一','週二','週三','週四','週五','週六'],
+    },
+    'en': {
+      brandKicker:'TWFoundry Transit Operations · Bus', brandPre:'Bus Route Service ', brandAccent:'Dashboard',
+      btnExport:'Export daily report', btnReport:'Generate term summary',
+      vsYesterday:'vs yesterday', live:'Live', history:'History', backToLive:'Back to live',
+      sev_critical:'Critical', sev_warning:'Warning', sev_watch:'Watch', sev_ok:'Normal',
+      kind_gap:'Service gap', kind_bunch:'Bunching', kind_cap:'Low capacity',
+      desc_gap:'Spacing between vehicles is too large here; riders wait long and cannot catch a bus.',
+      desc_bunch:'Two buses arrive too close together, leaving a gap behind; uneven spacing means long waits at some stops.',
+      desc_cap:'Few vehicles running slowly for a long time; buses likely arrive full and riders cannot board (unverified).',
+      kpi_rel:'Service reliability index', kpi_rel_pop:'Composite of service gaps, spacing evenness and data coverage; out of 100.',
+      kpi_routes:'Monitored bus routes', kpi_routes_pop:'Bus routes under monitoring today; 612 vehicles in service.',
+      kpi_gap:'Service-gap events', kpi_gap_pop:'Periods where riders cannot catch a bus; gaps from excessive spacing.',
+      kpi_bunch:'Bunching events', kpi_bunch_pop:'Buses arriving too close together; uneven spacing, long waits at some stops.',
+      kpi_cap:'Low-capacity hotspots', kpi_cap_pop:'Few vehicles running slowly; buses likely arrive full and riders cannot board (unverified).',
+      tl_eyebrow:'Service health timeline', tl_network:'When problems cluster over the last 7 days', tl_route:'{name} service over the last 7 days',
+      tg_network:'Network', tg_route:'Focus route',
+      lg_veh:'Vehicle', lg_bunch:'Bunched', lg_gapseg:'Service-gap segment', lg_bunchseg:'Bunching segment', lg_capseg:'Low-capacity segment',
+      lg_ok:'Normal', lg_watch:'Watch', lg_warn:'Warning', lg_crit:'Critical',
+      dia_eyebrow:'Focus route',
+      wl_eyebrow:'Routes to review', wl_title:'Most in need of review first', wl_badge:'12 with signals', routePrefix:'Route ',
+      prob_eyebrow:'Route problems', prob_title:'Problems at {time}', prob_empty:'No service problems in this period',
+      map_empty:'No service problems in this period', toward:'Toward {dest}',
+      foot:'<b>Signal definition</b>: This console shows route-level service observations for buses, not confirmed single-vehicle delays or driver-fault judgments. Service gaps and bunching are spacing observations; low capacity is an estimated signal requiring capacity or field data before formal review. Every signal is traceable to its original observation time.',
+      wd:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+    },
+  };
+  let locale = 'zh-Hant';
+  function t(key, params) {
+    let s = I18N[locale][key] ?? key;
+    if (params) for (const k in params) s = s.replaceAll('{'+k+'}', params[k]);
+    return s;
+  }
+
+  // ---------------- data ----------------
+  const HOUR_LABELS = Array.from({length:19},(_,i)=>String(i+5).padStart(2,'0')+':00');
+  const HPD = 19; // hours per day
+  // 近七日：06-09(二)..06-15(一)；wd=JS getDay
+  const DAYS = [
+    {date:'06-09', wd:2, factor:1.0}, {date:'06-10', wd:3, factor:0.95}, {date:'06-11', wd:4, factor:1.0},
+    {date:'06-12', wd:5, factor:1.1}, {date:'06-13', wd:6, factor:0.5}, {date:'06-14', wd:0, factor:0.45},
+    {date:'06-15', wd:1, factor:1.0},
+  ];
+  const TOTAL = DAYS.length * HPD;
+  const NOW = (DAYS.length-1)*HPD + 12; // 06-15 17:00
+
+  const SEV_RANK = { critical:3, warning:2, watch:1, ok:0 };
+  const RANK_SEV = ['ok','watch','warning','critical'];
+
+  function P(kind, sev, segs, metricZh, metricEn) { return { kind, sev, segs, metric:{ 'zh-Hant':metricZh, en:metricEn } }; }
+  const STATE = {
+    clear: [],
+    bunchMid: [ P('bunch','warning',[4],'2 台相距 0.5 km','2 buses 0.5 km apart') ],
+    amPeak: [ P('gap','critical',[2,3],'約 16 分鐘無車','~16 min no bus'), P('bunch','warning',[6],'2 台相距 0.5 km','2 buses 0.5 km apart') ],
+    pmPeak: [ P('gap','critical',[5,6],'約 24 分鐘無車','~24 min no bus'), P('bunch','warning',[2,3],'2 台相距 0.4 km','2 buses 0.4 km apart'), P('cap','watch',[8],'車到站已滿載','arrives full') ],
+    qualityAll: [ P('cap','watch',[7],'位置回報偏離，僅供觀察','off-route reports, observe only') ],
+    capPeak: [ P('cap','watch',[5],'4 台 · 均速 4.7 km/h，推估滿載','4 buses · 4.7 km/h, likely full') ],
+  };
+  const KIND_KEY = { gap:'kind_gap', bunch:'kind_bunch', cap:'kind_cap' };
+  const DESC_KEY = { gap:'desc_gap', bunch:'desc_bunch', cap:'desc_cap' };
+
+  function buildHours(peak, mid, base) {
+    const morning=[2,3], evening=[12,13], midday=[4,5,6,7,8,9,10,11];
+    return Array.from({length:HPD},(_,i)=> evening.includes(i)?peak : morning.includes(i)?peak : midday.includes(i)?mid : base);
+  }
+
+  const ROUTES = [
+    { name:'南環幹線', sev:'critical', od:'動物園 → 捷運市政府站', dest:'動物園',
+      metric:{'zh-Hant':'47.8 分鐘間距', en:'47.8 min gap'},
+      names:['動物園','木柵','萬芳社區','辛亥','六張犁','信義行政中心','市府轉運站','國父紀念館','光復南路','延吉街','永春','捷運市政府站'],
+      shape:[[150,520],[228,535],[300,500],[360,520],[420,470],[486,432],[540,392],[600,372],[656,322],[712,268],[772,224],[846,176]],
+      hours:['clear','clear','amPeak','amPeak','bunchMid','bunchMid','clear','clear','bunchMid','bunchMid','clear','bunchMid','pmPeak','pmPeak','bunchMid','clear','clear','clear','clear'] },
+    { name:'南京幹線', sev:'warning', od:'西藏路 → 三民國小', dest:'三民國小',
+      metric:{'zh-Hant':'2 台車距 0.4 km', en:'2 buses 0.4 km apart'},
+      names:['西藏路','艋舺大道','龍山寺','西門','北門','台北車站','南京西路','中山國小','行天宮','南京復興','三民國小','終點'],
+      shape:[[150,470],[236,452],[326,440],[416,422],[500,408],[566,400],[626,386],[684,372],[740,360],[792,350],[840,344],[886,338]],
+      hours: buildHours('bunchMid','bunchMid','clear') },
+    { name:'307', sev:'warning', od:'撫遠街 → 板橋', dest:'撫遠街',
+      metric:{'zh-Hant':'21 分鐘間距', en:'21 min gap'},
+      names:['撫遠街','饒河街','八德路','市民大道','忠孝東路','總統府','西門','艋舺','華江橋','江子翠','板橋','終點'],
+      shape:[[166,540],[224,476],[280,414],[340,360],[404,326],[462,332],[522,300],[566,250],[626,238],[696,210],[766,190],[840,164]],
+      hours: buildHours('amPeak','bunchMid','clear') },
+    { name:'內科通勤專車22', sev:'watch', od:'港墘 → 內湖科技園區', dest:'港墘',
+      metric:{'zh-Hant':'52.8% 偏離路線', en:'52.8% off-route'},
+      names:['港墘','瑞光路','洲子','文德','內湖','大湖公園','成功路','東湖','五分','康寧','內科園區','終點'],
+      shape:[[150,560],[248,522],[198,470],[262,440],[330,412],[392,378],[450,346],[508,314],[566,282],[624,250],[682,216],[770,182]],
+      hours: buildHours('qualityAll','qualityAll','qualityAll') },
+    { name:'棕12', sev:'watch', od:'捷運大安站 → 民生社區', dest:'捷運大安站',
+      metric:{'zh-Hant':'4 台 · 均速 4.7 km/h', en:'4 buses · 4.7 km/h'},
+      names:['捷運大安站','信義安和','六張犁','和平東路','富陽街','臥龍街','樂業街','辛亥路','興隆','景美','民生社區','終點'],
+      shape:[[168,540],[222,494],[206,436],[270,414],[316,452],[382,404],[428,350],[406,300],[470,282],[538,300],[600,246],[676,210]],
+      hours: buildHours('capPeak','clear','clear') },
+  ];
+  const NETWORK = ['ok','watch','warning','critical','warning','watch','ok','warning','watch','ok','watch','warning','critical','critical','warning','watch','ok','watch','warning'];
+
+  const NS='http://www.w3.org/2000/svg';
+  const el=(n,a)=>{const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);return e;};
+  let state = { routeIdx:0, slot:NOW, tlMode:'network', playing:false };
+  let playTimer=null;
+
+  function routeHourSev(route,h){ const ps=STATE[route.hours[h]]||[]; return ps.reduce((w,p)=>SEV_RANK[p.sev]>SEV_RANK[w]?p.sev:w,'ok'); }
+  function slotSev(slot){
+    const d=Math.floor(slot/HPD), h=slot%HPD;
+    const base = state.tlMode==='network' ? SEV_RANK[NETWORK[h]] : SEV_RANK[routeHourSev(ROUTES[state.routeIdx],h)];
+    const eff = Math.max(0, Math.min(3, Math.round(base*DAYS[d].factor)));
+    return RANK_SEV[eff];
+  }
+
+  // ---------------- timeline ----------------
+  const tl=document.getElementById('timeline');
+  function renderTimeline(){
+    tl.innerHTML='';
+    for(let s=0;s<TOTAL;s++){
+      const d=Math.floor(s/HPD), h=s%HPD, sev=slotSev(s);
+      const c=document.createElement('div');
+      const hgt=24+SEV_RANK[sev]*20+(s%3)*3;
+      c.className='tl-cell sev-'+sev+(h===0&&d>0?' day-sep':'')+(s===state.slot?' active':'');
+      c.style.height=hgt+'%';
+      c.title=DAYS[d].date+' '+t('wd')[DAYS[d].wd]+' '+HOUR_LABELS[h]+' · '+t('sev_'+sev);
+      c.addEventListener('mouseenter',()=>setSlot(s));
+      c.addEventListener('click',()=>setSlot(s,true));
+      tl.appendChild(c);
+    }
+    document.getElementById('tlTitle').textContent =
+      state.tlMode==='network' ? t('tl_network') : t('tl_route',{name:ROUTES[state.routeIdx].name});
+    document.getElementById('tlFill').style.width = (state.slot/(TOTAL-1)*100)+'%';
+    document.getElementById('tlNow').style.left = (NOW/(TOTAL-1)*100)+'%';
+  }
+  function renderDays(){
+    const box=document.getElementById('tlDays'); box.innerHTML='';
+    DAYS.forEach((d,i)=>{ const s=document.createElement('span'); if(i===DAYS.length-1) s.className='today';
+      s.textContent=d.date+' '+t('wd')[d.wd]; box.appendChild(s); });
+  }
+
+  const slider=document.getElementById('tlSlider');
+  slider.max=TOTAL-1;
+  slider.addEventListener('input',e=>setSlot(Number(e.target.value),true));
+  // hover tooltip on track
+  const hover=document.getElementById('tlHover'), track=document.querySelector('.tl-track');
+  track.addEventListener('mousemove',e=>{
+    const r=track.getBoundingClientRect(); const ratio=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));
+    const s=Math.round(ratio*(TOTAL-1)); const d=Math.floor(s/HPD), h=s%HPD;
+    hover.style.left=(ratio*100)+'%'; hover.style.opacity='1';
+    hover.textContent=DAYS[d].date+' '+HOUR_LABELS[h];
+  });
+  track.addEventListener('mouseleave',()=>hover.style.opacity='0');
+
+  function setSlot(slot, fromUser){
+    state.slot=Math.max(0,Math.min(TOTAL-1,slot));
+    if(Number(slider.value)!==state.slot) slider.value=state.slot;
+    renderTimeline(); renderDiagram(); renderProblems(); renderKpi();
+    const d=Math.floor(state.slot/HPD), h=state.slot%HPD, isLive=state.slot===NOW;
+    document.getElementById('dayPill').textContent = '2026-'+DAYS[d].date+' · '+t('wd')[DAYS[d].wd];
+    document.getElementById('tlBigTime').textContent = DAYS[d].date+' '+t('wd')[DAYS[d].wd]+' '+HOUR_LABELS[h];
+    const pillHtml='<span class="live-dot"></span>'+(isLive?t('live'):t('history'));
+    const lp=document.getElementById('tlLive'); lp.className='live-pill '+(isLive?'live':'history'); lp.innerHTML=pillHtml;
+    const dt=document.getElementById('diaTime'); dt.className='live-pill '+(isLive?'live':'history'); dt.innerHTML='<span class="live-dot"></span>'+(isLive?t('live'):t('history'))+' '+DAYS[d].date+' '+HOUR_LABELS[h];
+    document.getElementById('tlBack').disabled=state.slot<=0;
+    document.getElementById('tlFwd').disabled=state.slot>=TOTAL-1;
+  }
+
+  document.getElementById('tlToggle').addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b) return; state.tlMode=b.dataset.mode;
+    [...e.currentTarget.children].forEach(x=>x.classList.toggle('active',x===b)); renderTimeline();
+  });
+  document.getElementById('tlBack').addEventListener('click',()=>setSlot(state.slot-1,true));
+  document.getElementById('tlFwd').addEventListener('click',()=>setSlot(state.slot+1,true));
+  document.getElementById('tlLiveBtn').addEventListener('click',()=>setSlot(NOW,true));
+  document.getElementById('tlPlay').addEventListener('click',e=>{
+    state.playing=!state.playing; e.currentTarget.textContent=state.playing?'⏸':'▶';
+    if(state.playing){ playTimer=setInterval(()=>{ if(state.slot>=TOTAL-1){clearInterval(playTimer);state.playing=false;e.currentTarget.textContent='▶';return;} setSlot(state.slot+1,true); },220); }
+    else clearInterval(playTimer);
+  });
+
+  // ---------------- diagram ----------------
+  function segMid(sh,i){ const a=sh[i],b=sh[i+1]; return [(a[0]+b[0])/2,(a[1]+b[1])/2]; }
+  function renderDiagram(){
+    const route=ROUTES[state.routeIdx], SH=route.shape, h=state.slot%HPD, probs=STATE[route.hours[h]]||[];
+    const segL=document.getElementById('segLayer'),vehL=document.getElementById('vehLayer'),stL=document.getElementById('stopLayer'),pinL=document.getElementById('pinLayer');
+    [segL,vehL,stL,pinL].forEach(l=>l.innerHTML='');
+    document.getElementById('diaTitle').textContent=route.name+' · '+route.od;
+    const segSev={},stopRing={};
+    probs.forEach(p=>p.segs.forEach(s=>{segSev[s]=p.sev;stopRing[s]=p.sev;stopRing[s+1]=p.sev;}));
+    for(let i=0;i<SH.length-1;i++){ const a=SH[i],b=SH[i+1];
+      segL.appendChild(el('line',{class:'seg base',x1:a[0],y1:a[1],x2:b[0],y2:b[1]}));
+      if(segSev[i]) segL.appendChild(el('line',{class:'seg sev-'+segSev[i],'data-seg':i,x1:a[0],y1:a[1],x2:b[0],y2:b[1]})); }
+    const placeVeh=(x,y,cls)=>vehL.appendChild(el('rect',{class:'veh '+cls,x:x-7,y:y-7,width:14,height:14,rx:4,transform:`rotate(8 ${x} ${y})`}));
+    const sm0=segMid(SH,0); placeVeh(sm0[0],sm0[1],'normal');
+    probs.filter(p=>p.kind==='bunch').forEach(p=>{const m=segMid(SH,p.segs[0]);placeVeh(m[0]-10,m[1]+6,'bunch');placeVeh(m[0]+8,m[1]-6,'bunch');});
+    SH.forEach((c,i)=>{ const term=(i===0||i===SH.length-1), ring=stopRing[i]?' ring-'+stopRing[i]:'';
+      stL.appendChild(el('circle',{class:'stop-dot'+(term?' terminal':'')+ring,cx:c[0],cy:c[1],r:term?8:6}));
+      const tx=el('text',{class:'stop-label',x:c[0]-14,y:c[1]+4,'text-anchor':'end'}); tx.textContent=(i+1)+' '+(route.names[i]||''); stL.appendChild(tx); });
+    probs.forEach((p,idx)=>{ const seg=p.segs[Math.floor(p.segs.length/2)], m=segMid(SH,seg), px=m[0]+30, py=m[1]-20;
+      const g=el('g',{class:'pin '+p.sev,'data-pin':idx});
+      g.appendChild(el('line',{x1:m[0],y1:m[1],x2:px,y2:py,stroke:'rgba(207,224,245,.4)','stroke-width':1.5}));
+      g.appendChild(el('circle',{cx:px,cy:py,r:13})); const tx=el('text',{x:px,y:py+4}); tx.textContent=idx+1; g.appendChild(tx); pinL.appendChild(g); });
+    if(probs.length===0){ const tx=el('text',{class:'map-empty',x:470,y:60}); tx.textContent=t('map_empty'); stL.appendChild(tx); }
+  }
+
+  // ---------------- problems ----------------
+  function renderProblems(){
+    const route=ROUTES[state.routeIdx], h=state.slot%HPD, probs=STATE[route.hours[h]]||[];
+    document.getElementById('probTitle').textContent=t('prob_title',{time:HOUR_LABELS[h]});
+    const list=document.getElementById('probList'); list.innerHTML='';
+    if(probs.length===0){ list.innerHTML='<div class="prob-empty">'+t('prob_empty')+'</div>'; return; }
+    probs.forEach((p,idx)=>{
+      const where=(route.names[p.segs[0]]||'')+' → '+(route.names[p.segs[p.segs.length-1]+1]||route.names[p.segs[p.segs.length-1]]||'');
+      const card=document.createElement('div'); card.className='prob-card '+p.sev; card.dataset.idx=idx;
+      card.innerHTML='<div class="prob-head"><div class="prob-title"><span class="pin-num">'+(idx+1)+'</span><strong>'+t(KIND_KEY[p.kind])+'</strong></div>'+
+        '<span class="sev-chip '+p.sev+'">'+t('sev_'+p.sev)+'</span></div>'+
+        '<div class="prob-where">📍 '+where+'</div><div class="prob-metric">'+p.metric[locale]+'</div><p>'+t(DESC_KEY[p.kind])+'</p>';
+      card.addEventListener('mouseenter',()=>focusProblem(idx)); card.addEventListener('mouseleave',()=>focusProblem(null)); list.appendChild(card);
+    });
+  }
+  function focusProblem(idx){
+    document.querySelectorAll('.prob-card').forEach(c=>c.classList.toggle('active',idx!=null&&Number(c.dataset.idx)===idx));
+    document.querySelectorAll('.seg[data-seg]').forEach(s=>s.classList.remove('pulse'));
+    document.querySelectorAll('.pin').forEach(p=>p.classList.remove('focus'));
+    if(idx==null) return;
+    const route=ROUTES[state.routeIdx], p=(STATE[route.hours[state.slot%HPD]]||[])[idx]; if(!p) return;
+    p.segs.forEach(s=>{const e=document.querySelector('.seg[data-seg="'+s+'"]'); if(e) e.classList.add('pulse');});
+    const pin=document.querySelector('.pin[data-pin="'+idx+'"]'); if(pin) pin.classList.add('focus');
+  }
+
+  // ---------------- watchlist ----------------
+  function renderWatchlist(){
+    const wl=document.getElementById('watchList'); wl.innerHTML='';
+    ROUTES.forEach((r,i)=>{
+      const b=document.createElement('button'); b.className='watch-row '+r.sev+(i===state.routeIdx?' active':'');
+      b.innerHTML='<span class="sev-chip '+r.sev+'">'+t('sev_'+r.sev)+'</span>'+
+        '<span class="watch-main"><strong>'+t('routePrefix')+r.name+'</strong><small>'+t('toward',{dest:r.dest})+' · '+r.metric[locale]+'</small></span>'+
+        '<span class="open-arrow">›</span>';
+      b.addEventListener('click',()=>{ state.routeIdx=i; renderWatchlist(); renderTimeline(); renderDiagram(); renderProblems(); });
+      wl.appendChild(b);
+    });
+  }
+
+  // ---------------- KPI ----------------
+  // KPI 隨選定日期計算（事件數依當日負載，可靠度為複合指標；增減對照前一日）
+  function kpiForDay(d){
+    const f=DAYS[d].factor;
+    const gaps=Math.round(14*f), bunch=Math.round(9*f), cap=Math.round(6*f);
+    const rel=Math.max(60,Math.min(99,Math.round(100-(gaps*0.7+bunch*0.5+cap*0.5))));
+    return { rel, gaps, bunch, cap };
+  }
+  function deltaObj(diff, higherIsBad, vs){
+    const n=Math.abs(diff);
+    if(diff===0) return { a:'—', tone:'flat', n, vs };
+    const up=diff>0;
+    return { a: up?'▲':'▼', tone: (up===higherIsBad)?'bad':'good', n, vs };
+  }
+  function buildKpis(){
+    const d=Math.floor(state.slot/HPD);
+    const cur=kpiForDay(d), prev=d>0?kpiForDay(d-1):cur;
+    return [
+      { cls:'primary', label:'kpi_rel', pop:'kpi_rel_pop', value:String(cur.rel), ring:cur.rel, delta:{...deltaObj(cur.rel-prev.rel,false,true)} },
+      { cls:'', label:'kpi_routes', pop:'kpi_routes_pop', value:'86' },
+      { cls:'tone-critical', label:'kpi_gap', pop:'kpi_gap_pop', value:String(cur.gaps), delta:deltaObj(cur.gaps-prev.gaps,true) },
+      { cls:'tone-warning', label:'kpi_bunch', pop:'kpi_bunch_pop', value:String(cur.bunch), delta:deltaObj(cur.bunch-prev.bunch,true) },
+      { cls:'tone-watch', label:'kpi_cap', pop:'kpi_cap_pop', value:String(cur.cap), delta:deltaObj(cur.cap-prev.cap,true) },
+    ];
+  }
+  function renderKpi(){
+    const band=document.getElementById('kpiBand'); band.innerHTML='';
+    buildKpis().forEach(k=>{
+      const art=document.createElement('article'); art.className='kpi '+k.cls;
+      const deltaHtml=k.delta?'<span class="kpi-delta '+k.delta.tone+'">'+k.delta.a+' '+k.delta.n+(k.delta.vs?'　'+t('vsYesterday'):'')+'</span>':'';
+      const valHtml = k.cls==='primary'
+        ? '<div class="ring" style="--p:'+k.ring+'">'+k.value+'</div><div style="display:flex;align-items:baseline;gap:10px"><strong>'+k.value+'</strong>'+deltaHtml+'</div>'
+        : '<strong>'+k.value+'</strong>'+deltaHtml;
+      art.innerHTML='<div class="kpi-top"><span class="kpi-label">'+t(k.label)+'</span>'+
+        '<span class="kpi-i" tabindex="0" role="button" aria-label="info">i<span class="kpi-pop">'+t(k.pop)+'</span></span></div>'+
+        '<div class="kpi-value">'+valHtml+'</div>';
+      band.appendChild(art);
+    });
+  }
+
+  // ---------------- legends & static ----------------
+  function renderLegends(){
+    document.getElementById('tlLegend').innerHTML=
+      '<span><b style="background:#4fd5a7"></b>'+t('lg_ok')+'</span><span><b style="background:#6c9eff"></b>'+t('lg_watch')+'</span>'+
+      '<span><b style="background:#ffd052"></b>'+t('lg_warn')+'</span><span><b style="background:#ff6b61"></b>'+t('lg_crit')+'</span>';
+    document.getElementById('diaLegend').innerHTML=
+      '<span><b style="border-radius:50%;background:var(--accent)"></b>'+t('lg_veh')+'</span>'+
+      '<span><b style="border-radius:50%;background:var(--warning)"></b>'+t('lg_bunch')+'</span>'+
+      '<span><b style="background:repeating-linear-gradient(90deg,var(--critical) 0 3px,transparent 3px 7px)"></b>'+t('lg_gapseg')+'</span>'+
+      '<span><b style="background:var(--warning)"></b>'+t('lg_bunchseg')+'</span>'+
+      '<span><b style="background:var(--watch)"></b>'+t('lg_capseg')+'</span>';
+  }
+  function renderStatic(){
+    document.documentElement.lang = locale==='en'?'en':'zh-Hant';
+    document.getElementById('brandKicker').textContent=t('brandKicker');
+    document.getElementById('brandTitle').innerHTML=t('brandPre')+'<span>'+t('brandAccent')+'</span>';
+    document.getElementById('tlEyebrow').textContent=t('tl_eyebrow');
+    document.querySelector('#tlToggle button[data-mode="network"]').textContent=t('tg_network');
+    document.querySelector('#tlToggle button[data-mode="route"]').textContent=t('tg_route');
+    document.getElementById('tlLiveBtn').textContent=t('backToLive');
+    document.getElementById('diaEyebrow').textContent=t('dia_eyebrow');
+    document.getElementById('wlEyebrow').textContent=t('wl_eyebrow');
+    document.getElementById('wlBadge').textContent=t('wl_badge');
+    document.getElementById('probEyebrow').textContent=t('prob_eyebrow');
+    document.getElementById('footNote').innerHTML=t('foot');
+  }
+
+  function renderAll(){ renderStatic(); renderKpi(); renderLegends(); renderDays(); renderWatchlist(); renderTimeline(); setSlot(state.slot); }
+
+  document.getElementById('localeSwitch').addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b) return; locale=b.dataset.loc;
+    [...e.currentTarget.children].forEach(x=>x.classList.toggle('active',x===b)); renderAll();
+  });
+
+  // init
+  state.slot=NOW; renderAll();
+</script>
+</body>
+</html>

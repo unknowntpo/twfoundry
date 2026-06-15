@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "source": "clickhouse-static-snapshot",
+  "publishedAt": "2026-06-11T08:53:13.273Z",
+  "serviceDate": "2026-05-20",
+  "clickhouse": {
+    "url": "http://127.0.0.1:8123",
+    "database": "twfoundry"
+  },
+  "metrics": [
+    {
+      "metric": "route_vehicle_density",
+      "path": "/data/analytics/bus/route-density.json",
+      "rows": 50
+    },
+    {
+      "metric": "route_data_freshness",
+      "path": "/data/analytics/bus/data-freshness.json",
+      "rows": 41
+    },
+    {
+      "metric": "route_bunching_signal",
+      "path": "/data/analytics/bus/bunching.json",
+      "rows": 50
+    }
+  ]
+}
