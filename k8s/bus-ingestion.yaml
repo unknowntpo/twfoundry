@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bus-ingestion
+  namespace: twfoundry-data
+  labels:
+    app.kubernetes.io/name: bus-ingestion
+    app.kubernetes.io/part-of: twfoundry-track-b
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: bus-ingestion
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: bus-ingestion
+        app.kubernetes.io/part-of: twfoundry-track-b
+    spec:
+      containers:
+        - name: bus-ingestion
+          image: ghcr.io/unknowntpo/twfoundry/bus-ingestion:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8081
+          env:
+            - name: HTTP_PORT
+              value: "8081"
+            - name: KAFKA_BROKERS
+              value: kafka:9092
+            - name: TDX_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: twfoundry-track-b-secrets
+                  key: TDX_CLIENT_ID
+            - name: TDX_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: twfoundry-track-b-secrets
+                  key: TDX_CLIENT_SECRET
+            - name: TDX_CITY
+              value: Taipei
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bus-ingestion
+  namespace: twfoundry-data
+  labels:
+    app.kubernetes.io/name: bus-ingestion
+    app.kubernetes.io/part-of: twfoundry-track-b
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: bus-ingestion
+  ports:
+    - name: http
+      port: 8081
+      targetPort: http

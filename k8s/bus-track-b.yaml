@@ -1,0 +1,98 @@
+# Required out-of-band Secret keys in namespace twfoundry-data:
+# TDX_CLIENT_ID, TDX_CLIENT_SECRET, CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bus-lake
+  namespace: twfoundry-data
+  labels:
+    app.kubernetes.io/name: bus-lake
+    app.kubernetes.io/part-of: twfoundry-track-b
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bus-track-b
+  namespace: twfoundry-data
+  labels:
+    app.kubernetes.io/name: bus-track-b
+    app.kubernetes.io/part-of: twfoundry-track-b
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: bus-track-b
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: bus-track-b
+        app.kubernetes.io/part-of: twfoundry-track-b
+    spec:
+      containers:
+        - name: archiver
+          image: ghcr.io/unknowntpo/twfoundry/bus-lake-archiver:latest
+          imagePullPolicy: Always
+          env:
+            - name: KAFKA_BROKERS
+              value: kafka:9092
+            - name: KAFKA_GROUP_ID
+              value: bus-lake-archiver-homelab
+            - name: START_FROM_BEGINNING
+              value: "false"
+            - name: LAKE_PATH
+              value: /lake
+          volumeMounts:
+            - name: bus-lake
+              mountPath: /lake
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+        - name: scheduler
+          image: ghcr.io/unknowntpo/twfoundry/bus-track-b-scheduler:latest
+          imagePullPolicy: Always
+          env:
+            - name: TRACK_B_INGEST_URL
+              value: http://bus-ingestion:8081
+            - name: TRACK_B_LAKE_PATH
+              value: /lake
+            - name: TRACK_B_INTERVAL_SECONDS
+              value: "300"
+            - name: TRACK_B_ARCHIVER_SETTLE_SECONDS
+              value: "75"
+            - name: CLOUDFLARE_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: twfoundry-track-b-secrets
+                  key: CLOUDFLARE_API_TOKEN
+            - name: CLOUDFLARE_ACCOUNT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: twfoundry-track-b-secrets
+                  key: CLOUDFLARE_ACCOUNT_ID
+          volumeMounts:
+            - name: bus-lake
+              mountPath: /lake
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+      volumes:
+        - name: bus-lake
+          persistentVolumeClaim:
+            claimName: bus-lake
