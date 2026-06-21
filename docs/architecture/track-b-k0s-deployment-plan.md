@@ -11,7 +11,24 @@
 | k0s + ArgoCD running | **YES** — `30-saas-platform` + `40-edge-cloudflare` have applied `terraform.tfstate`; cluster was bootstrapped on `morefine` (Ubuntu host) outside the `20-` layer |
 | — | ArgoCD UI exposed at `argocd-homelab.unknowntpo.com` via Cloudflare Tunnel |
 
-**Proven deployment pattern (from `guessme`):** GitOps. App repo holds a `k8s/` dir (kustomize: Namespace + Deployment + Service); an ArgoCD `Application` CRD points `repoURL`→app repo, `path: k8s`, with `automated` + `prune` + `selfHeal` + `CreateNamespace=true`. Registered via Terraform `modules/argocd-app` (`kubernetes_manifest`). Secrets are **raw k8s Secrets created by Terraform** (e.g. `cloudflared-credentials` via `secret_key_ref`) — no sealed-secrets. Images live in **GHCR**: `ghcr.io/unknowntpo/<repo>/<svc>:latest`.
+### 1b. Live cluster verification (2026-06-21, via SSH `morefinepublic`)
+
+Connected read-only and found the plan's prerequisites are partly **false** — correct before implementing:
+
+| Check | Result |
+|---|---|
+| Cluster | ✅ healthy — single node `morefine-m9`, k0s **v1.34.3**, up 159d, `Ready` |
+| Storage | ✅ `local-path-storage` present (RWO provisioner) → use RWO PVC, co-locate archiver+scheduler (decision D1) |
+| kubeconfig IP | ⚠️ **STALE** — `~/.kube/config-morefine` points to `192.168.1.115`, but morefine's real IP is now `192.168.1.114` (DHCP). API reachable via `127.0.0.1:6443` *on morefine*; the `.115` address times out even locally |
+| **ArgoCD** | ❌ **NOT installed** — no `argocd` namespace. The infra `30-saas-platform` tfstate is stale/aspirational; the GitOps stack is not actually running |
+| guessme | ❌ not deployed (no `guessme` ns) |
+| Workstation access | ❌ currently off-LAN — cannot reach `.114:6443`; needs SSH tunnel (`ssh -L 6443:127.0.0.1:6443 morefinepublic`) or VPN/LAN |
+
+**Implication:** Section 1's "ArgoCD already installed" assumption is wrong. Two paths:
+- **Path P1 (KISS, recommended first):** skip ArgoCD; deploy Track B with `kubectl apply -k k8s/` directly (via SSH tunnel or by running on morefine). Add GitOps later.
+- **Path P2:** install ArgoCD first, then the GitOps flow as originally planned.
+
+**Proven deployment pattern (from `guessme`, ASPIRATIONAL — not currently live):** GitOps. App repo holds a `k8s/` dir (kustomize: Namespace + Deployment + Service); an ArgoCD `Application` CRD points `repoURL`→app repo, `path: k8s`, with `automated` + `prune` + `selfHeal` + `CreateNamespace=true`. Registered via Terraform `modules/argocd-app` (`kubernetes_manifest`). Secrets are **raw k8s Secrets created by Terraform** (e.g. `cloudflared-credentials` via `secret_key_ref`) — no sealed-secrets. Images live in **GHCR**: `ghcr.io/unknowntpo/<repo>/<svc>:latest`.
 
 ## 2. compose → k8s mapping
 
@@ -63,9 +80,10 @@ Track B needs **no Cloudflare Tunnel ingress** — it has no public in-cluster e
 
 ## 6. Risks / open questions
 
-- **kubeconfig access** — how does this workstation reach the k0s API (morefine SSH tunnel? local kubeconfig context)? Needed for steps 3–5. (Not found in repo; likely manual on morefine.)
-- **GHCR auth** — k0s needs an imagePullSecret for GHCR if images are private (guessme images may be public). Confirm visibility.
-- **`20-saas-k0s` is unimplemented** — the cluster exists out-of-band. If it's ever re-provisioned from Terraform, that layer must be built first (this is where Option 2's "provision" truly lives).
+- **kubeconfig access — RESOLVED (with caveats):** access is via SSH to `morefinepublic` then the k0s API on `127.0.0.1:6443` (the `~/.kube/config-morefine` `.115` address is stale → `.114`). Off-LAN deploy needs `ssh -L 6443:127.0.0.1:6443 morefinepublic` + a kubeconfig with `server: https://localhost:6443` + `insecure-skip-tls-verify` (cert SAN won't match localhost). Fixing the stale IP / cert SAN is a separate infra chore.
+- **ArgoCD not installed — DECISION NEEDED:** Path P1 (plain `kubectl -k`, KISS) vs P2 (install ArgoCD first). See §1b.
+- **GHCR auth** — k0s needs an imagePullSecret for GHCR if images are private. Confirm twfoundry image visibility.
+- **`20-saas-k0s` is unimplemented** — the cluster exists out-of-band (bootstrapped manually on morefine-m9). If ever re-provisioned from Terraform, that layer must be built first.
 - **archiver cold-start crash** — see open follow-up: add internal Kafka retry so the pod doesn't rely on restart policy.
 
 ## 7. Effort estimate
