@@ -14,7 +14,27 @@ Mode: **Producer handoff** for the next agent or operator.
   - **Flink = archival layer** (Kafka→Iceberg). Its verification = checkpoint commit / Iceberg snapshot / upsert dedup — *not* gap/bunching.
   - **service_gap / bunching detection = ClickHouse layer** (`publish-clickhouse-bus-analytics.mjs`), downstream and *unrelated* to Flink.
 - **Cleanup done:** orphaned `browser-tools-mcp` MCP servers from killed cursor agents → killed. Pipeline services down. Kafka kept Up (pipeline needs it).
-- **Still running (NOT this workspace's tasks — leave alone):** user's own interactive `codex` CLI sessions in other terminals (PIDs ~9–10 days old, foreground/attached).
+- **Still running:** Kafka `twfoundry-kafka-1` only. (User's 9–10-day-old `codex` CLI sessions were killed this session.)
+- **#1 Track B automation — scripts built (commit `7d594ac`):**
+  - `scripts/track-b-cycle.sh` — one idempotent cycle: ingest current slot → archiver settle (70s) → publish projections → **upload R2**. JSON logs, dry-run, configurable slot/interval.
+  - `scripts/track-b-daemon.sh` — while-loop scheduler: configurable interval, SIGINT/SIGTERM graceful shutdown, per-cycle error isolation + backoff, max-cycles cap.
+  - Defaults: `TRACK_B_UPLOAD_R2=true` (cutover-critical), `TRACK_B_IMPORT_CLICKHOUSE=false` (detection layer, opt-in).
+  - **Verified: dry-run AND local live run — both PASSED (2026-06-21).**
+    - Live single cycle: real TDX ingest 1157 records (2 TDX calls: auth + fetch), archiver→lake `data/lake/2026-06-21.jsonl` (1157 rows), publisher→R2, Track B Pages API now `latestSlotKey: 2026-06-21T13:15+08:00` (count 1157, 250 routes, `bus/projections-track-b/2026-06-21/13-15.json` status success).
+    - Freshness: Track B `13:15` vs Track A `13:05` → **Track B hugs/leads Track A** ✅.
+    - Ran exactly ONE cycle to cap TDX cost; ingest is idempotent (slot `complete` + `force=false` → 0 TDX calls).
+  - Built via codex rescue; the dispatch prompt mislabeled the sink as ClickHouse — cycle defaults were corrected post-review.
+  - **Remaining for full #1:** (a) `scripts/track-b-up.sh` to start daemons not built — bring up Kafka+ingest+archiver manually (commands below). (b) Continuous run not yet exercised: `TRACK_B_INTERVAL_SECONDS=300 scripts/track-b-daemon.sh` for multi-cycle/48h freshness soak before cutover.
+  - **Live-run launch recipe (for next session):**
+    ```bash
+    # archiver (fresh group, new msgs only)
+    ( cd services/bus-lake-archiver && KAFKA_GROUP_ID=bus-lake-archiver-live-$(date +%s) \
+      START_FROM_BEGINNING=false LAKE_PATH=../../data/lake node src/index.js ) &
+    # ingest (TDX creds via --env-file)
+    ( cd services/bus-ingestion && node --env-file=../../backend/ingestion/.env src/index.js ) &
+    # one cycle
+    TRACK_B_ARCHIVER_SETTLE_SECONDS=75 bash scripts/track-b-cycle.sh
+    ```
 
 ## Goal
 
