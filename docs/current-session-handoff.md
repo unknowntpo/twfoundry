@@ -5,6 +5,24 @@ Mode: **Producer handoff** for the next agent or operator.
 
 ---
 
+## ★ NORTH STAR — don't lose this while deep in tactics
+
+**Big goal: make Track B (homelab pipeline) the permanent backbone, then RETIRE Track A (the Cloudflare edge stopgap).**
+
+The ladder (every tactical task must ladder up to this):
+```
+containerize Track B (Option1 ✅) → run 24/7 on homelab k0s (Option2, in progress)
+  → daemon soaks fresh ≥48h hugging Track A → CUTOVER (public map → Track B,
+  or publish Track B to bus/projections/ prefix) → retire Track A edge worker
+  → (later) Flink+Iceberg replaces the KISS Node archiver
+```
+- Track B = long-term source of truth; Track A = disposable stopgap. **Do not invest further in Track A.**
+- The current NEXT TASK (k8s manifests) is a *means* to "run 24/7 on homelab" — not the goal itself. If a simpler path gets Track B running 24/7 + soaked + cut over, prefer it.
+- Beyond the pipeline: this all feeds the TWFoundry island-operations product vision (`docs/twfoundry-island-operations-product-vision.md`).
+- Memory: see `track-a-deprecation`, `pipeline-priority-order`.
+
+---
+
 ## ▶ NEXT TASK (do this first) — k8s manifests + GHCR CI for Track B
 
 **Goal:** create the cluster-independent artifacts to deploy the (already-containerized) Track B pipeline to homelab k0s. Verifiable locally with `kustomize` / `kubectl --dry-run=client` — **no cluster access, no TDX, no R2 needed**. The user wants this delegated to **codex** (orchestrator pattern: dispatch via `codex:rescue`, monitor to completion, review, verify locally).
