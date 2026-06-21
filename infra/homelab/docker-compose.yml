@@ -50,5 +50,91 @@ services:
     command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN:-}
     restart: unless-stopped
 
+  # ---- Track B bus pipeline (homelab) ----------------------------------------
+  # TDX -> ingest -> Kafka -> archiver -> lake -> scheduler(publish + R2 upload).
+  # In-network only: brokers advertise as kafka:9092 so no host-port conflict
+  # with the local-dev infra/kafka broker.
+  kafka:
+    image: confluentinc/cp-kafka:7.6.1
+    container_name: twfoundry-homelab-kafka
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:29093'
+      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:9092,CONTROLLER://kafka:29093'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:9092'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_OFFSETS_TOPIC_MIN_ISR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_LOG_DIRS: '/var/lib/kafka/data'
+      CLUSTER_ID: 'K6JSnOgsTtGTW3DFSys2kw'
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+
+  bus-ingestion:
+    build:
+      context: ../../services/bus-ingestion
+    container_name: twfoundry-bus-ingestion
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      HTTP_PORT: "8081"
+      KAFKA_BROKERS: kafka:9092
+      TDX_CLIENT_ID: ${TDX_CLIENT_ID:-}
+      TDX_CLIENT_SECRET: ${TDX_CLIENT_SECRET:-}
+      TDX_CITY: ${TDX_CITY:-Taipei}
+    restart: unless-stopped
+
+  bus-lake-archiver:
+    build:
+      context: ../../services/bus-lake-archiver
+    container_name: twfoundry-bus-lake-archiver
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      KAFKA_BROKERS: kafka:9092
+      KAFKA_GROUP_ID: bus-lake-archiver-homelab
+      START_FROM_BEGINNING: "false"
+      LAKE_PATH: /lake
+    volumes:
+      - bus-lake:/lake
+    restart: unless-stopped
+
+  bus-track-b-scheduler:
+    build:
+      context: .
+      dockerfile: track-b-scheduler.Dockerfile
+    container_name: twfoundry-bus-track-b-scheduler
+    depends_on:
+      bus-ingestion:
+        condition: service_started
+      bus-lake-archiver:
+        condition: service_started
+    environment:
+      # Cycle defaults (UPLOAD_R2 on, IMPORT_CLICKHOUSE off) live in the scripts.
+      TRACK_B_INGEST_URL: http://bus-ingestion:8081
+      TRACK_B_LAKE_PATH: /lake
+      TRACK_B_INTERVAL_SECONDS: ${TRACK_B_INTERVAL_SECONDS:-300}
+      CLOUDFLARE_API_TOKEN: ${CLOUDFLARE_API_TOKEN:-}
+      CLOUDFLARE_ACCOUNT_ID: ${CLOUDFLARE_ACCOUNT_ID:-}
+    volumes:
+      # Repo mounted so script edits need no rebuild; lake shared with archiver.
+      - ../../:/repo
+      - bus-lake:/lake
+    restart: unless-stopped
+
 volumes:
   clickhouse-data:
+  kafka-data:
+  bus-lake:
