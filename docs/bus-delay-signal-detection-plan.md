@@ -1,6 +1,11 @@
-# Bus Delay Signal Detection Plan
+# Bus Route Service Signal Detection Plan
 
-Status: planned. Route progress exists in the demo inspector, but delay inference is not implemented.
+Status: planned. Route progress exists in the demo inspector, but route-level service signal
+inference is not implemented.
+
+This plan used to be framed as delay detection. The product direction is now more conservative:
+first diagnose route-level service spacing problems, then consider delay only after schedule, ETA, or
+historical baseline evidence is strong enough.
 
 ## Current Data Flow
 
@@ -15,11 +20,11 @@ The current operations dashboard already has the minimum data foundation:
 4. `frontend/src/OperationsExplorer.vue`
    renders map points, timeline playback, freshness, route filtering, and selected-vehicle detail.
 
-The demo now has selected-vehicle route progress in the inspector. It projects a
-bus GPS point onto audited route geometry and shows progress percentage,
-nearest stop, next stop, off-route distance, and geometry quality.
+The demo now has selected-vehicle route progress in the inspector. It projects a bus GPS point onto
+audited route geometry and shows progress percentage, nearest stop, next stop, off-route distance,
+and geometry quality.
 
-There is still no delay inference layer.
+There is still no route-level service signal layer.
 
 ## Target Architecture
 
@@ -36,16 +41,25 @@ TDX archive snapshots
 
 ## Signal Scope
 
-V1 should avoid claiming measured delay. Use conservative labels:
+V1 should avoid claiming measured delay. Use route-level labels:
 
-- `possible_delay`
 - `headway_gap`
 - `bunching_risk`
-- `stopped_too_long`
 - `coverage_gap`
 - `data_missing`
 
-Only promote a signal to `delay` after route geometry, stop sequence, ETA, schedule, or a historical baseline is available.
+Product labels should be user-facing:
+
+- `車班間距分布`
+- `大空窗`
+- `車輛群聚`
+- `資料不足`
+
+Only promote a signal to `delay` after route geometry, stop sequence, ETA, schedule, or a historical
+baseline is available.
+
+These signals should describe the route and time window. They must not imply individual vehicle
+fault, driver fault, or exact passenger waiting time.
 
 ## Minimum Inputs
 
@@ -82,13 +96,66 @@ The UI should consume derived results as data, not compute them in template/comp
 
 ## Open Design Decision
 
-The first decision is the unit of signal ownership:
+Resolved V1 decision: route-level first.
 
-- route-level first, then selected vehicle detail
-- vehicle-level first
-- map-segment-level first
+The primary unit of signal ownership is:
 
-Recommended V1: route-level first, selected vehicle detail second.
+```text
+service date + time window + route + direction
+```
+
+Selected vehicle detail can provide evidence, but it is not the primary owner of a service-quality
+signal.
+
+## Initial Metric Definitions
+
+### Headway Distribution
+
+Product label: `車班間距分布`.
+
+Definition:
+
+- Sort vehicles by route progress for the same route, direction, and time slot.
+- Estimate the spacing between consecutive vehicles.
+- Compare spacing against a baseline when available: schedule headway, TDX frequency table, or
+  historical same-time baseline.
+
+Purpose:
+
+- Show whether service is evenly distributed.
+- Help managers find time windows where planned frequency and observed spacing diverge.
+
+### Service Gap
+
+Product label: `大空窗`.
+
+Definition:
+
+- A route/time window where the spacing between consecutive vehicles is much larger than expected.
+- Initial threshold: `observed headway >= 2x baseline headway` when a baseline exists.
+- Without a baseline, use a clearly labeled prototype threshold.
+
+Purpose:
+
+- Surface likely under-service, missed dispatch, or unstable spacing.
+- Avoid claiming why the gap happened.
+
+### Bunching Risk
+
+Product label: `車輛群聚`.
+
+Definition:
+
+- Two or more vehicles on the same route and direction are much closer than expected.
+- Initial threshold: `observed headway <= 0.5x baseline headway` when a baseline exists.
+- Without a baseline, use a clearly labeled prototype threshold based on small time distance or
+  route-progress distance.
+
+Purpose:
+
+- Surface unstable headway control, especially when a long gap is followed by multiple close
+  vehicles.
+- Keep the signal route-level; do not frame it as one bus being late.
 
 ## Geometry Quality Gate
 

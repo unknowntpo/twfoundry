@@ -126,3 +126,49 @@ const missingResponse = await onRequest({
   env: { BUS_PROJECTION_BUCKET: fakeBucket },
 });
 assert.equal(missingResponse.status, 404);
+
+const trackBManifest = {
+  ...manifest,
+  source: { ...manifest.source, mode: 'homelab-lake-publisher' },
+  latestSlotKey: '2026-06-07T09:55+08:00',
+  snapshots: [{
+    slotKey: '2026-06-07T09:55+08:00',
+    capturedAt: '2026-06-07T01:55:00.000Z',
+    timeLabel: '09:55',
+    projectionPath: 'bus/projections-track-b/2026-06-07/09-55.json',
+  }],
+};
+
+const trackBBucket = {
+  async get(key) {
+    const payloads = {
+      'bus/projections-track-b/manifest.json': trackBManifest,
+      'bus/projections-track-b/2026-06-07/09-55.json': liveProjection,
+    };
+    const payload = payloads[key];
+    if (!payload) return null;
+    return {
+      httpEtag: '"track-b"',
+      body: JSON.stringify(payload),
+      async json() {
+        return payload;
+      },
+    };
+  },
+};
+
+const trackBTimelineResponse = await onRequest({
+  request: new Request('https://demo.example/api/projections/bus_vehicles_track_b/timeline'),
+  params: { path: ['bus_vehicles_track_b', 'timeline'] },
+  env: { BUS_PROJECTION_BUCKET: trackBBucket },
+});
+assert.equal(trackBTimelineResponse.status, 200);
+assert.equal((await trackBTimelineResponse.json()).source.mode, 'homelab-lake-publisher');
+
+const trackBProjectionResponse = await onRequest({
+  request: new Request('https://demo.example/api/projections/bus_vehicles_track_b?slot=latest'),
+  params: { path: ['bus_vehicles_track_b'] },
+  env: { BUS_PROJECTION_BUCKET: trackBBucket },
+});
+assert.equal(trackBProjectionResponse.status, 200);
+assert.deepEqual(await trackBProjectionResponse.json(), liveProjection);

@@ -38,3 +38,11 @@ infra/homelab/staging/
 build/
 backend/**/build/
 backend/**/data/
+
+# bus pipeline runtime artifacts (Track B)
+node_modules/
+data/lake/
+data/bus/
+cloudflare/bus/
+__pycache__/
+*.pyc

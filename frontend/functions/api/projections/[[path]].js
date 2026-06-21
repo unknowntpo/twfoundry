@@ -1,6 +1,7 @@
 import {
   BUS_PROJECTION_MANIFEST_KEY,
   BUS_PROJECTION_R2_PREFIX,
+  BUS_PROJECTION_TRACK_B_MANIFEST_KEY,
   selectSnapshot,
 } from '../../_shared/busProjectionContract.js';
 
@@ -27,12 +28,18 @@ export async function onRequest(context) {
   const store = projectionStore(context);
 
   try {
-    if (path.length === 2 && path[0] === 'bus_vehicles' && path[1] === 'timeline') {
-      return await store.serveJson(BUS_PROJECTION_MANIFEST_KEY);
+    if (path.length === 2 && path[1] === 'timeline') {
+      const manifestKey = manifestKeyForLayer(path[0]);
+      if (manifestKey) {
+        return await store.serveJson(manifestKey);
+      }
     }
 
-    if (path.length === 1 && path[0] === 'bus_vehicles') {
-      return await serveProjection(store, url.searchParams.get('slot'));
+    if (path.length === 1) {
+      const manifestKey = manifestKeyForLayer(path[0]);
+      if (manifestKey) {
+        return await serveProjection(store, url.searchParams.get('slot'), manifestKey);
+      }
     }
   } catch (error) {
     return jsonResponse({ error: 'internal_error', message: error.message }, 500);
@@ -55,8 +62,8 @@ export function projectionStore(context) {
   };
 }
 
-export async function serveProjection(store, slot) {
-  const manifest = await store.readJson(BUS_PROJECTION_MANIFEST_KEY);
+export async function serveProjection(store, slot, manifestKey = BUS_PROJECTION_MANIFEST_KEY) {
+  const manifest = await store.readJson(manifestKey);
   if (!Array.isArray(manifest.snapshots) || manifest.snapshots.length === 0) {
     return jsonResponse({ error: 'empty_projection_manifest' }, 404);
   }
@@ -72,6 +79,16 @@ export async function serveProjection(store, slot) {
   }
 
   return store.serveJson(key);
+}
+
+function manifestKeyForLayer(layerId) {
+  if (layerId === 'bus_vehicles') {
+    return BUS_PROJECTION_MANIFEST_KEY;
+  }
+  if (layerId === 'bus_vehicles_track_b') {
+    return BUS_PROJECTION_TRACK_B_MANIFEST_KEY;
+  }
+  return null;
 }
 
 async function serveR2Json(bucket, key) {

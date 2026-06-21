@@ -1,0 +1,21 @@
+{
+  "name": "bus-ingestion",
+  "version": "0.1.0",
+  "description": "TWFoundry bus ingestion service - Phase 1 skeleton",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test test/**/*.test.js",
+    "lint": "eslint src/ test/"
+  },
+  "dependencies": {
+    "kafkajs": "^2.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

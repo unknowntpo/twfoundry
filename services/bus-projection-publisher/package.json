@@ -1,0 +1,12 @@
+{
+  "name": "bus-projection-publisher",
+  "version": "0.1.0",
+  "description": "Phase 1 interim: lake JSONL (normalized rows) → bus projection artifacts for R2/Pages",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test src/**/*.test.js"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,13 @@
+{
+  "name": "twfoundry-kafka-infra",
+  "version": "1.0.0",
+  "description": "Kafka infrastructure scripts for TWFoundry bus pipeline",
+  "type": "module",
+  "scripts": {
+    "create-topics": "node scripts/create-bus-topics.mjs",
+    "create-topics:prod": "REPLICATION_FACTOR=3 node scripts/create-bus-topics.mjs"
+  },
+  "dependencies": {
+    "kafkajs": "^2.2.4"
+  }
+}

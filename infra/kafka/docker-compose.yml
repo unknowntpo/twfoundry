@@ -1,0 +1,84 @@
+services:
+  # KRaft Controller + Broker (combined)
+  kafka-1:
+    image: confluentinc/cp-kafka:7.6.1
+    container_name: twfoundry-kafka-1
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_OFFSETS_TOPIC_MIN_ISR: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka-1:29093'
+      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:9092,CONTROLLER://kafka-1:29093'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://localhost:9092'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+      CLUSTER_ID: 'MkwNYQ3MR1GEFm594I3g_A'
+      # Default replication.factor=1 for dev (no 3-broker setup)
+    ports:
+      - "9092:9092"
+    volumes:
+      - kafka-data-1:/var/lib/kafka/data
+    networks:
+      - twfoundry
+
+  # Optional: uncomment below to enable 3-broker prod-like setup
+  # To use 3-broker setup:
+  #   1. Uncomment kafka-2, kafka-3 below
+  #   2. Update kafka-1 KAFKA_CONTROLLER_QUORUM_VOTERS and listeners
+  #   3. Set RF=3 in topic creation script via REPLICATION_FACTOR=3 env var
+
+  # kafka-2:
+  #   image: confluentinc/cp-kafka:7.6.1
+  #   container_name: twfoundry-kafka-2
+  #   environment:
+  #     KAFKA_NODE_ID: 2
+  #     KAFKA_PROCESS_ROLES: 'broker,controller'
+  #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+  #     KAFKA_OFFSETS_TOPIC_MIN_ISR: 2
+  #     KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka-1:29093,2@kafka-2:29093,3@kafka-3:29093'
+  #     KAFKA_LISTENERS: 'PLAINTEXT://kafka-2:9092,CONTROLLER://kafka-2:29093'
+  #     KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka-2:9092'
+  #     KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+  #     KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+  #     KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+  #     CLUSTER_ID: 'MkwNYQ3MR1GEFm594I3g_A'
+  #   ports:
+  #     - "9093:9092"
+  #   volumes:
+  #     - kafka-data-2:/var/lib/kafka/data
+  #   networks:
+  #     - twfoundry
+
+  # kafka-3:
+  #   image: confluentinc/cp-kafka:7.6.1
+  #   container_name: twfoundry-kafka-3
+  #   environment:
+  #     KAFKA_NODE_ID: 3
+  #     KAFKA_PROCESS_ROLES: 'broker,controller'
+  #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+  #     KAFKA_OFFSETS_TOPIC_MIN_ISR: 2
+  #     KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka-1:29093,2@kafka-2:29093,3@kafka-3:29093'
+  #     KAFKA_LISTENERS: 'PLAINTEXT://kafka-3:9092,CONTROLLER://kafka-3:29093'
+  #     KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka-3:9092'
+  #     KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+  #     KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+  #     KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+  #     CLUSTER_ID: 'MkwNYQ3MR1GEFm594I3g_A'
+  #   ports:
+  #     - "9094:9092"
+  #   volumes:
+  #     - kafka-data-3:/var/lib/kafka/data
+  #   networks:
+  #     - twfoundry
+
+volumes:
+  kafka-data-1:
+  # kafka-data-2:
+  # kafka-data-3:
+
+networks:
+  twfoundry:
+    driver: bridge

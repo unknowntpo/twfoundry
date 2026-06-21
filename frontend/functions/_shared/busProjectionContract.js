@@ -2,6 +2,8 @@ export const BUS_PROJECTION_LAYER_ID = 'bus_vehicles';
 export const BUS_PROJECTION_TYPE = 'vehicle_position_projection';
 export const BUS_PROJECTION_R2_PREFIX = 'bus/projections';
 export const BUS_PROJECTION_MANIFEST_KEY = `${BUS_PROJECTION_R2_PREFIX}/manifest.json`;
+export const BUS_PROJECTION_TRACK_B_R2_PREFIX = 'bus/projections-track-b';
+export const BUS_PROJECTION_TRACK_B_MANIFEST_KEY = `${BUS_PROJECTION_TRACK_B_R2_PREFIX}/manifest.json`;
 
 export function selectSnapshot(manifest, slot) {
   const requestedSlot = slot && slot.trim() ? slot.trim() : 'latest';
@@ -56,8 +58,8 @@ export function summarizeBusMapFeatures(features) {
   };
 }
 
-export function projectionPathForSnapshot(entry) {
-  return `${BUS_PROJECTION_R2_PREFIX}/${entry.captureDate}/${entry.timeLabel.replace(':', '-')}.json`;
+export function projectionPathForSnapshot(entry, r2Prefix = BUS_PROJECTION_R2_PREFIX) {
+  return `${r2Prefix}/${entry.captureDate}/${entry.timeLabel.replace(':', '-')}.json`;
 }
 
 function text(row, field, fallback) {

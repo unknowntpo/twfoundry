@@ -73,6 +73,10 @@ Expected surfaces:
 
 Transit is the first vertical workflow.
 
+The route dashboard should help managers review the whole route's service health. It should surface
+dispatch, frequency, and headway-design issues before individual vehicle delay. The main product
+question is: `這條路線在這個時段的服務是否穩定？`
+
 User flow:
 
 1. User opens the operations dashboard.
@@ -80,15 +84,27 @@ User flow:
 3. Dashboard enters route detail mode.
 4. Route detail shows a simplified geographic route map with stops, road shape, endpoints, vehicle
    positions, and route operator information.
-5. User moves the timeline to inspect vehicle positions at a specific time.
-6. User replays a time window to understand how the route changed over time.
-7. User selects a vehicle or stop.
-8. Inspector shows user-facing facts: current location, nearest stop, direction, observed time,
+5. User reviews route-level service indicators: `車班間距分布`, `大空窗`, and `車輛群聚`.
+6. User moves the timeline to inspect vehicle positions at a specific time.
+7. User replays a time window to understand how route spacing changed over time.
+8. User selects a vehicle or stop as supporting evidence.
+9. Inspector shows user-facing facts: current location, nearest stop, direction, observed time,
    source freshness, and evidence.
-9. If evidence is insufficient, the UI states the scope clearly, such as `目前只呈現位置，不判斷延遲`.
+10. If evidence is insufficient, the UI states the scope clearly, such as
+    `目前只呈現位置，不判斷延遲`.
 
 The UI must not show engineering labels such as `direction = 0`, `direction = 1`, `StopOfRoute`, or
 `RouteUID` in the primary flow.
+
+Product definitions:
+
+- `車班間距分布`: spacing between consecutive vehicles on the same route and direction.
+- `大空窗`: a route/time window where vehicle spacing is much larger than expected.
+- `車輛群聚`: two or more vehicles on the same route and direction are too close together, often
+  after a service gap.
+
+These are route-level service signals. They should not be presented as individual vehicle fault,
+driver fault, or exact passenger waiting time.
 
 ### 3.3 Island-Level Flow
 

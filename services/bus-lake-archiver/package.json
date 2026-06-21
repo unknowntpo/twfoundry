@@ -1,0 +1,26 @@
+{
+  "name": "bus-lake-archiver",
+  "version": "0.1.0",
+  "description": "Phase 1: Dev archiver for normalized.tdx.bus_vehicle_position → local lake. Replace with Flink + Iceberg for prod.",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test src/**/*.test.js",
+    "test:merge": "node --test src/merge.test.js"
+  },
+  "keywords": [
+    "kafka",
+    "archiver",
+    "iceberg",
+    "dev"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "kafkajs": "^2.2.4"
+  },
+  "devDependencies": {
+    "tape": "^5.7.0"
+  }
+}
