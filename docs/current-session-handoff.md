@@ -23,9 +23,24 @@ containerize Track B (Option1 ✅) → run 24/7 on homelab k0s (Option2, in prog
 
 ---
 
-## ▶ NEXT TASK (do this first) — k8s manifests + GHCR CI for Track B
+## ✅ DONE (2026-06-21 PM) — k8s manifests + GHCR CI for Track B — committed `bb1a436`
 
-**Goal:** create the cluster-independent artifacts to deploy the (already-containerized) Track B pipeline to homelab k0s. Verifiable locally with `kustomize` / `kubectl --dry-run=client` — **no cluster access, no TDX, no R2 needed**. The user wants this delegated to **codex** (orchestrator pattern: dispatch via `codex:rescue`, monitor to completion, review, verify locally).
+Delegated to codex (via direct `codex-companion.mjs task --background --write`, then Claude reviewed + verified locally). All §3.A deliverables created and **committed on `main` as `bb1a436`** (not pushed, not deployed):
+- `k8s/{namespace,kafka,bus-ingestion,bus-track-b,kustomization}.yaml`
+- `services/bus-track-b-scheduler/Dockerfile` (k8s scheduler image, bakes in scripts/services/cloudflare + node/bun/wrangler) + `.dockerignore`
+- `.github/workflows/build-track-b-images.yml` (GHCR CI for the 3 images)
+- Verified: `kustomize build` (291 lines) + `kubectl apply --dry-run=client` (all 7 resources) + all 3 docker images build clean. R2-not-ClickHouse trap clear; no secret values (all via `twfoundry-track-b-secrets` refs).
+
+## ▶ NEXT TASK (do this first) — deploy Track B to homelab k0s
+
+Pick the deploy path (plan §1b / §5) and run it. **Needs cluster access** — off-LAN via `ssh -L 6443:127.0.0.1:6443 morefinepublic` + kubeconfig `server: https://localhost:6443` + `insecure-skip-tls-verify`; also fix the stale kubeconfig IP (`.115` → `.114`).
+- **P1 (recommended, KISS):** `kubectl apply -k k8s/` directly. First: create Secret `twfoundry-track-b-secrets` (TDX_CLIENT_ID/SECRET, CLOUDFLARE_API_TOKEN/ACCOUNT_ID) out-of-band; ensure GHCR images are public or add an imagePullSecret; confirm CI pushed the 3 images. Then apply, watch pods, confirm scheduler logs 5-min cycles and Track B Pages API `latestSlotKey` hugs Track A.
+- **P2:** install ArgoCD first (NOT currently installed — no `argocd` ns), then register the twfoundry Application + Terraform-managed Secret (plan §3.B). More setup; defer unless GitOps is wanted now.
+- After Track B runs 24/7 fresh ≥48h → CUTOVER (#2): stop the Mac daemon, switch public map to Track B / publish to `bus/projections/`, retire Track A.
+
+**Historical reference — the now-completed k8s-artifacts task spec (kept for traceability):**
+
+**Goal:** create the cluster-independent artifacts to deploy the (already-containerized) Track B pipeline to homelab k0s. Verifiable locally with `kustomize` / `kubectl --dry-run=client` — **no cluster access, no TDX, no R2 needed**.
 
 **Why now:** needed for BOTH deploy paths (P1 plain-kubectl / P2 ArgoCD), and it's the only Option-2 work that needs no cluster. Decide P1-vs-P2 later, at deploy time.
 
