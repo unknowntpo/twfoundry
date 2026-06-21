@@ -3,6 +3,57 @@
 Date: 2026-06-21 (updated; lineage from 2026-06-20)  
 Mode: **Producer handoff** for the next agent or operator.
 
+---
+
+## ▶ NEXT TASK (do this first) — k8s manifests + GHCR CI for Track B
+
+**Goal:** create the cluster-independent artifacts to deploy the (already-containerized) Track B pipeline to homelab k0s. Verifiable locally with `kustomize` / `kubectl --dry-run=client` — **no cluster access, no TDX, no R2 needed**. The user wants this delegated to **codex** (orchestrator pattern: dispatch via `codex:rescue`, monitor to completion, review, verify locally).
+
+**Why now:** needed for BOTH deploy paths (P1 plain-kubectl / P2 ArgoCD), and it's the only Option-2 work that needs no cluster. Decide P1-vs-P2 later, at deploy time.
+
+**Authoritative references the implementer MUST read first:**
+- Full plan + decisions: `docs/architecture/track-b-k0s-deployment-plan.md`
+- Source of truth to mirror: `infra/homelab/docker-compose.yml` (the working containerized Track B, commit `d1099d5`)
+- Deploy-pattern exemplar (kustomize + GHCR + ArgoCD): `~/repo/unknowntpo/guessme/k8s/` and its `image: ghcr.io/unknowntpo/guessme/<svc>:latest`
+- Cycle behaviour: `scripts/track-b-cycle.sh` (defaults already correct: `TRACK_B_UPLOAD_R2=true`, `TRACK_B_IMPORT_CLICKHOUSE=false`)
+
+**Deliverables (create, do not implement deploy):**
+1. `k8s/namespace.yaml` — `twfoundry-data`.
+2. `k8s/kafka.yaml` — StatefulSet (KRaft single node, **valid base64 CLUSTER_ID — reuse `K6JSnOgsTtGTW3DFSys2kw`**, advertised `kafka:9092`) + headless Service + `volumeClaimTemplate` (storageClass `local-path`, **RWO**).
+3. `k8s/bus-ingestion.yaml` — Deployment `image: ghcr.io/unknowntpo/twfoundry/bus-ingestion:latest` + ClusterIP Service `:8081`; env `KAFKA_BROKERS=kafka:9092`, `TDX_*` from Secret `twfoundry-track-b-secrets`.
+4. `k8s/bus-track-b.yaml` — single Deployment, **two containers** `archiver` + `scheduler` sharing one RWO PVC mounted at `/lake` (co-locate — decision D1, local-path is RWO-only). Scheduler env `TRACK_B_INGEST_URL=http://bus-ingestion:8081`, `TRACK_B_LAKE_PATH=/lake`, `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ACCOUNT_ID` from the Secret.
+5. `k8s/kustomization.yaml` — lists the above.
+6. `.github/workflows/build-track-b-images.yml` — build + push 3 images to GHCR on push to `main` (mirror guessme CI).
+
+**Hard constraints (these are the traps — get them right):**
+- **Sink for Track B #1 is R2, NOT ClickHouse.** Keep cycle defaults (`UPLOAD_R2=true`, `IMPORT_CLICKHOUSE=false`). Do not wire ClickHouse into the cycle.
+- **Scheduler can't bind-mount the repo on k8s** (compose does; k8s can't). The scheduler needs a NEW image that **bakes in** `scripts/`, `services/bus-projection-publisher/`, `cloudflare/scripts/`, `cloudflare/` + `node`+`bun`+`wrangler`. (The existing `infra/homelab/track-b-scheduler.Dockerfile` is bind-mount based — make a k8s variant, e.g. `services/bus-track-b-scheduler/Dockerfile`, and add it to the CI build.)
+- Service images: reuse `services/bus-ingestion/Dockerfile` + `services/bus-lake-archiver/Dockerfile` (node:22-alpine, already exist).
+- **No secret values in manifests.** Reference `twfoundry-track-b-secrets` via `secretKeyRef`/`envFrom`; the Secret is created out-of-band (Terraform/kubectl) later. Document required keys: `TDX_CLIENT_ID`, `TDX_CLIENT_SECRET`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
+- Don't touch Track A, `infra/homelab/docker-compose.yml`, or the `scripts/`.
+- Run the `twfoundry-extensibility-judge` skill before finishing (project rule).
+
+**Verification (local only, must pass before done):**
+- `kubectl kustomize k8s/ | kubectl apply --dry-run=client -f -` (or `kustomize build k8s/`) → no errors.
+- New scheduler image builds: `docker build -f services/bus-track-b-scheduler/Dockerfile .` (or via compose).
+- Report files created + dry-run output.
+
+**After codex finishes:** reviewer must re-check the R2-vs-ClickHouse trap and confirm no secret values leaked into manifests, then commit.
+
+---
+
+## Current state (2026-06-21 PM) — what's already done
+
+- **#1 Track B automation:** DONE. `scripts/track-b-{cycle,daemon}.sh` (commit `7d594ac`); verified dry-run + live single cycle + a 20-cycle daemon soak (then stopped). ~40 TDX calls total this session.
+- **Option 1 (homelab docker-compose):** DONE + verified (commit `d1099d5`). `infra/homelab/docker-compose.yml` extended with kafka+ingestion+archiver+scheduler; 3 images build; smoke `up` healthy. Run on a homelab host via `docker compose up -d` after filling `infra/homelab/.env`.
+- **Option 2 (k0s) plan:** DONE — `docs/architecture/track-b-k0s-deployment-plan.md` (commits `48da7d4`, `ff8c7db`). Cluster verified live: single node `morefine-m9`, k0s v1.34.3, healthy, `local-path` RWO. **Caveats found:** ArgoCD NOT actually installed (no `argocd` ns); kubeconfig `~/.kube/config-morefine` server IP is STALE (`.115` → real `.114`).
+- **morefinepublic SSH stabilized:** morefine `cloudflared` is systemd active+enabled; tunnel token moved off the cmdline into root-only `/etc/cloudflared/tunnel.env` (verified healthy after restart); client `~/.ssh/config` got keepalive + ControlMaster. Off-LAN cluster access path: `ssh -L 6443:127.0.0.1:6443 morefinepublic` + kubeconfig `server: https://localhost:6443` + `insecure-skip-tls-verify`.
+- **Running now:** only Kafka `twfoundry-kafka-1` (local docker, kept). Track B daemon + ingest + archiver all STOPPED. Repo clean at `ff8c7db`.
+- **Deferred decision (after NEXT TASK):** deploy path **P1 (plain `kubectl -k`, KISS, recommended)** vs **P2 (install ArgoCD first)** — see plan §1b. Needs cluster access (tunnel above).
+- **Open follow-up:** archiver crashes once on cold Kafka start (relies on restart policy) — add internal retry (`services/bus-lake-archiver/src/index.js`).
+
+---
+
 ## ⚡ Session Update 2026-06-21 (read first)
 
 - **Decision: DO NOT build Flink now.** Deferred per KISS. Saved to memory.
