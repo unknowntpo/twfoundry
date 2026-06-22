@@ -52,31 +52,51 @@ public final class BusRouteSentinelJob {
         .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
         .build();
 
-    DataStream<BusRouteSignal> signals = env
-        .fromSource(source, WatermarkStrategy.noWatermarks(), "normalized-bus-positions")
-        .map(value -> MAPPER.readValue(value, NormalizedBusVehiclePosition.class))
-        .filter(NormalizedBusVehiclePosition::hasRequiredPosition)
-        .flatMap((NormalizedBusVehiclePosition position, org.apache.flink.util.Collector<EnrichedBusVehicleObservation> out) -> {
-          Optional<EnrichedBusVehicleObservation> enriched = geometryIndex.enrich(position, config.maxDistanceToRouteMeters());
-          enriched.ifPresent(out::collect);
-        })
-        .returns(EnrichedBusVehicleObservation.class)
-        .keyBy(EnrichedBusVehicleObservation::routeDirectionKey)
-        .process(new BusRouteSentinelFunction(new BusRouteSentinelProcessor(
-            config.routeMinutes(),
-            config.serviceGapMinutes(),
-            config.bunchingProgressGapRatio(),
-            config.bunchingConfirmationSlots(),
-            java.time.Clock.systemUTC()
-        )))
-        .name("bus-route-sentinel");
+    DataStream<String> rawPositions =
+        env.fromSource(source, WatermarkStrategy.noWatermarks(), "normalized-bus-positions");
 
-    signals
-        .map(value -> MAPPER.writeValueAsString(value))
+    BusRouteSentinelProcessor processor = new BusRouteSentinelProcessor(
+        config.routeMinutes(),
+        config.serviceGapMinutes(),
+        config.bunchingProgressGapRatio(),
+        config.bunchingConfirmationSlots(),
+        java.time.Clock.systemUTC());
+
+    buildSignalStream(rawPositions, geometryIndex, config.maxDistanceToRouteMeters(), processor)
         .sinkTo(sink)
         .name("online-bus-route-signal-kafka");
 
     env.execute("twfoundry-bus-route-sentinel");
+  }
+
+  /**
+   * Builds the bus-route-sentinel transform chain from raw normalized-position JSON to
+   * serialized signal JSON. Kept separate from {@link #main} so a local test can exercise
+   * Flink's ClosureCleaner (which runs as each operator is added) without a Kafka cluster.
+   *
+   * <p>Every object captured by the lambdas/functions here must be serializable: {@code MAPPER}
+   * is a static field (referenced, not captured), {@code maxDistanceToRouteMeters} is a primitive,
+   * {@code geometryIndex} is {@link RouteGeometryIndex} (Serializable), and {@code processor} is
+   * {@link BusRouteSentinelProcessor} (Serializable).
+   */
+  public static DataStream<String> buildSignalStream(
+      DataStream<String> rawPositions,
+      RouteGeometryIndex geometryIndex,
+      double maxDistanceToRouteMeters,
+      BusRouteSentinelProcessor processor) {
+    return rawPositions
+        .map(value -> MAPPER.readValue(value, NormalizedBusVehiclePosition.class))
+        .filter(NormalizedBusVehiclePosition::hasRequiredPosition)
+        .flatMap((NormalizedBusVehiclePosition position, org.apache.flink.util.Collector<EnrichedBusVehicleObservation> out) -> {
+          Optional<EnrichedBusVehicleObservation> enriched = geometryIndex.enrich(position, maxDistanceToRouteMeters);
+          enriched.ifPresent(out::collect);
+        })
+        .returns(EnrichedBusVehicleObservation.class)
+        .keyBy(EnrichedBusVehicleObservation::routeDirectionKey)
+        .process(new BusRouteSentinelFunction(processor))
+        .name("bus-route-sentinel")
+        .map(value -> MAPPER.writeValueAsString(value))
+        .name("online-bus-route-signal-json");
   }
 
   public record BusRouteSentinelConfig(

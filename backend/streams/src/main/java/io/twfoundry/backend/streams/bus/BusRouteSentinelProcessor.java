@@ -1,5 +1,6 @@
 package io.twfoundry.backend.streams.bus;
 
+import java.io.Serializable;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -8,7 +9,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class BusRouteSentinelProcessor {
+// Serializable because BusRouteSentinelFunction holds it as a non-transient field
+// and Flink serializes the operator at job-submit time. All fields are primitives
+// or a Serializable Clock.
+public final class BusRouteSentinelProcessor implements Serializable {
   public static final double DEFAULT_ROUTE_MINUTES = 48.0;
   public static final double DEFAULT_SERVICE_GAP_MINUTES = 14.0;
   public static final double DEFAULT_BUNCHING_PROGRESS_GAP_RATIO = 0.04;
