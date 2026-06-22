@@ -2,6 +2,7 @@ package io.twfoundry.backend.streams.bus;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public record BusRouteSignal(
@@ -50,7 +51,10 @@ public record BusRouteSignal(
         "ongoing",
         detectedAt,
         "flink-speed-layer",
-        List.of(trailing.vehicleId(), leading.vehicleId())
+        // Mutable ArrayList, NOT List.of(...): Flink's Kryo serializer copies a collection by
+        // instantiating it and calling add(), which throws UnsupportedOperationException on
+        // Java immutable lists and made the route-sentinel task fail on every record.
+        new ArrayList<>(List.of(trailing.vehicleId(), leading.vehicleId()))
     );
   }
 
