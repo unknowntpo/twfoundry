@@ -11,6 +11,8 @@ WORKDIR /repo
 COPY scripts ./scripts
 COPY services/bus-projection-publisher ./services/bus-projection-publisher
 COPY cloudflare ./cloudflare
+# bus-projection-publisher imports ../../../frontend/functions/_shared/busProjectionContract.js
+COPY frontend/functions/_shared ./frontend/functions/_shared
 
 ENV WRANGLER_BIN=wrangler \
     TRACK_B_INGEST_URL=http://bus-ingestion:8081 \

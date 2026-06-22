@@ -9,7 +9,10 @@ cloudflare/.wrangler
 cloudflare/.wrangler-local
 cloudflare/artifacts
 cloudflare/bus
-frontend
+frontend/*
+!frontend/functions
+frontend/functions/*
+!frontend/functions/_shared
 backend
 docs
 infra
