@@ -73,6 +73,16 @@ async function createTopics() {
           { name: 'retention.ms', value: '2592000000' }, // 30 days
         ],
       },
+      {
+        topic: 'online.tdx.bus_route_signal',
+        numPartitions: 6,
+        replicationFactor: argRF,
+        configEntries: [
+          { name: 'min.insync.replicas', value: `${minIsr}` },
+          { name: 'cleanup.policy', value: 'delete' },
+          { name: 'retention.ms', value: '604800000' }, // 7 days
+        ],
+      },
     ];
 
     console.log(`\nTopic Configuration:`);

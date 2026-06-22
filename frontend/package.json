@@ -28,7 +28,7 @@
     "verify:bus-oversight": "bun scripts/verify-bus-oversight-dashboard.mjs",
     "e2e": "bun scripts/run-bus-oversight-e2e.mjs",
     "test": "bun ./tests/run.mjs",
-    "test:cloudflare-pages": "node ./functions/test/pagesProjectionFunction.test.mjs",
+    "test:cloudflare-pages": "node ./functions/test/pagesProjectionFunction.test.mjs && node ./functions/test/pagesBusRouteSignalsFunction.test.mjs",
     "test:mrt-train": "bun ./tests/mrtTrain.test.mjs",
     "test:ontology-components": "bun ./tests/ontologyComponents.test.mjs"
   },

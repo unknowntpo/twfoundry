@@ -31,6 +31,14 @@ jobs:
             image: bus-track-b-scheduler
             context: .
             dockerfile: ./services/bus-track-b-scheduler/Dockerfile
+          - service: bus-route-sentinel
+            image: bus-route-sentinel
+            context: .
+            dockerfile: ./backend/streams/Dockerfile
+          - service: bus-route-signal-publisher
+            image: bus-route-signal-publisher
+            context: ./services/bus-route-signal-publisher
+            dockerfile: ./services/bus-route-signal-publisher/Dockerfile
 
     steps:
       - name: Checkout

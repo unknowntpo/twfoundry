@@ -12,6 +12,14 @@ const analytics = ref({
   freshness: null,
   density: null,
 });
+const analyticsManifest = ref(null);
+const liveSignalBundle = ref({
+  status: 'waiting_for_flink',
+  generatedAt: null,
+  latestSlotKey: null,
+  signals: [],
+});
+const liveSignalError = ref('');
 const routeContext = ref(null);
 const selectedRouteName = ref(null);
 const selectedSlotIndex = ref(null);
@@ -22,6 +30,7 @@ const focusedProblemId = ref(null);
 const isPlaying = ref(false);
 const isLoadingRoute = ref(false);
 let playTimer = null;
+let liveSignalTimer = null;
 
 const model = computed(() => buildBusOversightModel({
   bunching: analytics.value.bunching,
@@ -36,6 +45,20 @@ const currentSlot = computed(() => model.value.activeSlot);
 const selectedRoute = computed(() => model.value.selectedRoute);
 const activeEvents = computed(() => model.value.activeEvents);
 const isLive = computed(() => currentSlotIndex.value === model.value.liveIndex);
+const dataModeLabel = computed(() => t('oversight.batchSnapshot'));
+const dataModeDetail = computed(() => {
+  const publishedAt = analyticsManifest.value?.publishedAt;
+  if (!publishedAt) return t('oversight.batchSource');
+  return t('oversight.batchSourcePublished', { time: formatPublishedAt(publishedAt) });
+});
+const recentLiveSignals = computed(() => (
+  Array.isArray(liveSignalBundle.value.signals) ? liveSignalBundle.value.signals : []
+));
+const liveSignalStatusLabel = computed(() => {
+  if (liveSignalError.value) return t('oversight.liveSignals.unavailable');
+  if (recentLiveSignals.value.length > 0) return t('oversight.liveSignals.count', { count: recentLiveSignals.value.length });
+  return t('oversight.liveSignals.waiting');
+});
 
 const schematic = computed(() => buildRouteSchematic(routeContext.value, {
   routeName: selectedRoute.value?.routeName ?? '',
@@ -121,10 +144,13 @@ const kpiCards = computed(() => {
 
 onMounted(() => {
   loadAnalytics();
+  loadLiveSignals();
+  liveSignalTimer = window.setInterval(loadLiveSignals, 30_000);
 });
 
 onUnmounted(() => {
   stopPlayback();
+  if (liveSignalTimer) window.clearInterval(liveSignalTimer);
 });
 
 watch(() => model.value.watchlist, (watchlist) => {
@@ -141,11 +167,13 @@ watch(() => selectedRoute.value?.routeName, async (routeName) => {
 
 async function loadAnalytics() {
   try {
-    const [bunching, freshness, density] = await Promise.all([
+    const [manifest, bunching, freshness, density] = await Promise.all([
+      fetchJson('/data/analytics/bus/manifest.json'),
       fetchJson('/data/analytics/bus/bunching.json'),
       fetchJson('/data/analytics/bus/data-freshness.json'),
       fetchJson('/data/analytics/bus/route-density.json'),
     ]);
+    analyticsManifest.value = manifest;
     analytics.value = { bunching, freshness, density };
   } catch (error) {
     console.warn('Unable to load bus oversight data', error);
@@ -161,6 +189,15 @@ async function loadRouteContext(routeName) {
     routeContext.value = null;
   } finally {
     isLoadingRoute.value = false;
+  }
+}
+
+async function loadLiveSignals() {
+  try {
+    liveSignalError.value = '';
+    liveSignalBundle.value = await fetchJson('/api/online/bus-route-signals?limit=8');
+  } catch (error) {
+    liveSignalError.value = error.message;
   }
 }
 
@@ -311,6 +348,20 @@ function problemMetric(event) {
   });
 }
 
+function signalTypeLabel(signal) {
+  if (signal.type === 'suspected_gap') return t('oversight.signal.service_gap');
+  if (signal.type === 'suspected_bunching') return t('oversight.signal.bunching');
+  return signal.type ?? t('oversight.liveSignals.signal');
+}
+
+function signalMetric(signal) {
+  const minutes = Number(signal.headway_min_est);
+  if (Number.isFinite(minutes)) {
+    return t('oversight.liveSignals.headway', { minutes: formatNumber(minutes, 1) });
+  }
+  return signal.slot_key ?? liveSignalBundle.value.latestSlotKey ?? '—';
+}
+
 function shouldShowStopLabel(point) {
   const points = schematic.value.points;
   if (point.index === 0 || point.index === points.length - 1) return true;
@@ -380,6 +431,17 @@ function formatNumber(value, digits) {
   if (!Number.isFinite(number)) return '0';
   return number.toFixed(digits).replace(/\.0$/, '');
 }
+
+function formatPublishedAt(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleString(locale.value === 'zh-TW' ? 'zh-TW' : 'en-US', {
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
 </script>
 
 <template>
@@ -392,6 +454,9 @@ function formatNumber(value, digits) {
         </h1>
       </div>
       <div class="topbar-actions">
+        <span class="day-pill data-mode-pill" :title="dataModeDetail">
+          {{ dataModeLabel }}
+        </span>
         <span class="day-pill">
           {{ currentSlot ? t('oversight.serviceDate', { date: currentSlot.date }) : t('oversight.noDate') }}
         </span>
@@ -459,9 +524,9 @@ function formatNumber(value, digits) {
 
       <div class="tl-statusrow">
         <span class="tl-bigtime">{{ formatSlot() }}</span>
-        <span class="live-pill" :class="isLive ? 'live' : 'history'">
+        <span class="live-pill history" :title="dataModeDetail">
           <span class="live-dot"></span>
-          {{ isLive ? t('oversight.live') : t('oversight.history') }}
+          {{ isLive ? t('oversight.latestSnapshot') : t('oversight.history') }}
         </span>
       </div>
 
@@ -521,7 +586,7 @@ function formatNumber(value, digits) {
           {{ isPlaying ? '⏸' : '▶' }}
         </button>
         <button class="tl-btn" type="button" :aria-label="t('oversight.timeline.next')" :disabled="currentSlotIndex >= model.timeline.length - 1" @click="stepSlot(1)">›</button>
-        <button class="btn compact" type="button" @click="backToLive">{{ t('oversight.backToLive') }}</button>
+        <button class="btn compact" type="button" @click="backToLive">{{ t('oversight.backToLatestSnapshot') }}</button>
       </div>
 
       <div class="legend">
@@ -539,9 +604,9 @@ function formatNumber(value, digits) {
             <div class="eyebrow">{{ t('oversight.map.eyebrow') }}</div>
             <h2>{{ routeTitle }}</h2>
           </div>
-          <span class="live-pill" :class="isLive ? 'live' : 'history'">
+          <span class="live-pill history" :title="dataModeDetail">
             <span class="live-dot"></span>
-            {{ isLive ? t('oversight.live') : t('oversight.history') }} {{ currentSlot ? `${currentSlot.date} ${String(currentSlot.hour).padStart(2, '0')}:00` : '' }}
+            {{ isLive ? t('oversight.latestSnapshot') : t('oversight.history') }} {{ currentSlot ? `${currentSlot.date} ${String(currentSlot.hour).padStart(2, '0')}:00` : '' }}
           </span>
         </div>
 
@@ -635,6 +700,35 @@ function formatNumber(value, digits) {
       </section>
 
       <div class="side-column">
+        <section class="panel live-signals-panel">
+          <div class="panel-head compact-head">
+            <div>
+              <div class="eyebrow">{{ t('oversight.liveSignals.eyebrow') }}</div>
+              <h2>{{ t('oversight.liveSignals.title') }}</h2>
+            </div>
+            <span class="mode-badge">{{ liveSignalStatusLabel }}</span>
+          </div>
+          <div v-if="recentLiveSignals.length > 0" class="live-signal-list">
+            <article
+              v-for="signal in recentLiveSignals"
+              :key="`${signal.type}-${signal.route_uid}-${signal.direction}-${signal.slot_key}-${signal.trailing_vehicle_id}-${signal.leading_vehicle_id}`"
+              class="live-signal-row"
+              :class="signal.type === 'suspected_gap' ? 'critical' : 'warning'"
+            >
+              <span class="sev-chip" :class="signal.type === 'suspected_gap' ? 'critical' : 'warning'">
+                {{ signalTypeLabel(signal) }}
+              </span>
+              <span class="watch-main">
+                <strong>{{ t('oversight.routePrefix') }}{{ signal.route_name ?? signal.route_uid ?? '—' }}</strong>
+                <small>{{ signalMetric(signal) }} · {{ signal.slot_key ?? '—' }}</small>
+              </span>
+            </article>
+          </div>
+          <div v-else class="prob-empty">
+            {{ liveSignalError ? t('oversight.liveSignals.unavailable') : t('oversight.liveSignals.empty') }}
+          </div>
+        </section>
+
         <section class="panel">
           <div class="panel-head compact-head">
             <div class="eyebrow">{{ t('oversight.watch.eyebrow') }}</div>
@@ -1439,6 +1533,35 @@ function formatNumber(value, digits) {
 .watch-list {
   display: grid;
   gap: 8px;
+}
+
+.live-signals-panel {
+  border-color: rgba(79, 213, 167, 0.22);
+}
+
+.live-signal-list {
+  display: grid;
+  gap: 8px;
+}
+
+.live-signal-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-soft);
+  border-left: 4px solid var(--warning);
+  border-radius: 8px;
+  background: var(--panel-soft);
+}
+
+.live-signal-row.critical {
+  border-left-color: var(--critical);
+}
+
+.live-signal-row.warning {
+  border-left-color: var(--warning);
 }
 
 .watch-row {

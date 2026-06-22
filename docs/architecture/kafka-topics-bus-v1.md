@@ -17,7 +17,7 @@ Retention 回答：「最慢 consumer 能 down 多久，而 Iceberg 仍已是真
 |---|---|---|
 | `normalized.tdx.bus_vehicle_position` | 主資料流 | 1 |
 | `dlq.tdx.bus_vehicle_position` | 無法處理的 poison message | 1 |
-| `online.tdx.bus_route_snapshot` | `bus-route-sentinel` 輸出 | 2 |
+| `online.tdx.bus_route_signal` | `bus-route-sentinel` Flink live signal 輸出 | 2 |
 | `ops.ingestion.slot_status` | Outbox manifest（未來） | 未建立 |
 
 **Phase 1 不建立** `raw.tdx.bus_*`；ingest 內聯 normalize，長期 replay 走 Iceberg。

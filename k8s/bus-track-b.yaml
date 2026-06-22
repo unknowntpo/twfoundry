@@ -3,6 +3,22 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  name: bus-route-sentinel-checkpoints
+  namespace: twfoundry-data
+  labels:
+    app.kubernetes.io/name: bus-route-sentinel-checkpoints
+    app.kubernetes.io/part-of: twfoundry-track-b
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
   name: bus-lake
   namespace: twfoundry-data
   labels:
@@ -92,7 +108,65 @@ spec:
             limits:
               cpu: 500m
               memory: 512Mi
+        - name: signal-publisher
+          image: ghcr.io/unknowntpo/twfoundry/bus-route-signal-publisher:latest
+          imagePullPolicy: Always
+          env:
+            - name: KAFKA_BROKERS
+              value: kafka:9092
+            - name: BUS_ROUTE_SIGNAL_TOPIC
+              value: online.tdx.bus_route_signal
+            - name: BUS_ROUTE_SIGNAL_UPLOAD_R2
+              value: "true"
+            - name: BUS_ROUTE_SIGNAL_PUBLISH_LOOP
+              value: "true"
+            - name: CLOUDFLARE_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: twfoundry-track-b-secrets
+                  key: CLOUDFLARE_API_TOKEN
+            - name: CLOUDFLARE_ACCOUNT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: twfoundry-track-b-secrets
+                  key: CLOUDFLARE_ACCOUNT_ID
+          resources:
+            requests:
+              cpu: 50m
+              memory: 96Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+        - name: route-sentinel
+          image: ghcr.io/unknowntpo/twfoundry/bus-route-sentinel:latest
+          imagePullPolicy: Always
+          env:
+            - name: KAFKA_BROKERS
+              value: kafka:9092
+            - name: BUS_SENTINEL_INPUT_TOPIC
+              value: normalized.tdx.bus_vehicle_position
+            - name: BUS_SENTINEL_OUTPUT_TOPIC
+              value: online.tdx.bus_route_signal
+            - name: BUS_SENTINEL_GROUP_ID
+              value: bus-route-sentinel
+            - name: BUS_ROUTE_CONTEXT_DIR
+              value: /app/route-context
+            - name: BUS_SENTINEL_CHECKPOINT_DIR
+              value: file:///flink-checkpoints/bus-route-sentinel
+          volumeMounts:
+            - name: bus-route-sentinel-checkpoints
+              mountPath: /flink-checkpoints
+          resources:
+            requests:
+              cpu: 150m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
       volumes:
         - name: bus-lake
           persistentVolumeClaim:
             claimName: bus-lake
+        - name: bus-route-sentinel-checkpoints
+          persistentVolumeClaim:
+            claimName: bus-route-sentinel-checkpoints

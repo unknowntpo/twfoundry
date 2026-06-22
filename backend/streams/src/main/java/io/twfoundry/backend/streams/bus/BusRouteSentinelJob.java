@@ -1,0 +1,132 @@
+package io.twfoundry.backend.streams.bus;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.nio.file.Path;
+import java.util.Optional;
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.api.common.serialization.SimpleStringSchema;
+import org.apache.flink.connector.base.DeliveryGuarantee;
+import org.apache.flink.connector.kafka.sink.KafkaRecordSerializationSchema;
+import org.apache.flink.connector.kafka.sink.KafkaSink;
+import org.apache.flink.connector.kafka.source.KafkaSource;
+import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+
+public final class BusRouteSentinelJob {
+  private static final String DEFAULT_INPUT_TOPIC = "normalized.tdx.bus_vehicle_position";
+  private static final String DEFAULT_OUTPUT_TOPIC = "online.tdx.bus_route_signal";
+  private static final double DEFAULT_MAX_DISTANCE_TO_ROUTE_METERS = 120.0;
+
+  private BusRouteSentinelJob() {}
+
+  public static void main(String[] args) throws Exception {
+    BusRouteSentinelConfig config = BusRouteSentinelConfig.fromEnv();
+    RouteGeometryIndex geometryIndex = RouteGeometryIndex.loadFromRouteContextDirectory(Path.of(config.routeContextDirectory()));
+
+    StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+    env.enableCheckpointing(config.checkpointIntervalMillis());
+    env.getCheckpointConfig().setCheckpointStorage(config.checkpointDirectory());
+
+    KafkaSource<String> source = KafkaSource.<String>builder()
+        .setBootstrapServers(config.kafkaBrokers())
+        .setTopics(config.inputTopic())
+        .setGroupId(config.consumerGroup())
+        .setStartingOffsets(OffsetsInitializer.latest())
+        .setValueOnlyDeserializer(new SimpleStringSchema())
+        .build();
+
+    KafkaSink<String> sink = KafkaSink.<String>builder()
+        .setBootstrapServers(config.kafkaBrokers())
+        .setRecordSerializer(KafkaRecordSerializationSchema.builder()
+            .setTopic(config.outputTopic())
+            .setValueSerializationSchema(new SimpleStringSchema())
+            .build())
+        .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
+        .build();
+
+    ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
+    DataStream<BusRouteSignal> signals = env
+        .fromSource(source, WatermarkStrategy.noWatermarks(), "normalized-bus-positions")
+        .map(value -> mapper.readValue(value, NormalizedBusVehiclePosition.class))
+        .filter(NormalizedBusVehiclePosition::hasRequiredPosition)
+        .flatMap((NormalizedBusVehiclePosition position, org.apache.flink.util.Collector<EnrichedBusVehicleObservation> out) -> {
+          Optional<EnrichedBusVehicleObservation> enriched = geometryIndex.enrich(position, config.maxDistanceToRouteMeters());
+          enriched.ifPresent(out::collect);
+        })
+        .returns(EnrichedBusVehicleObservation.class)
+        .keyBy(EnrichedBusVehicleObservation::routeDirectionKey)
+        .process(new BusRouteSentinelFunction(new BusRouteSentinelProcessor(
+            config.routeMinutes(),
+            config.serviceGapMinutes(),
+            config.bunchingProgressGapRatio(),
+            config.bunchingConfirmationSlots(),
+            java.time.Clock.systemUTC()
+        )))
+        .name("bus-route-sentinel");
+
+    signals
+        .map(mapper::writeValueAsString)
+        .sinkTo(sink)
+        .name("online-bus-route-signal-kafka");
+
+    env.execute("twfoundry-bus-route-sentinel");
+  }
+
+  public record BusRouteSentinelConfig(
+      String kafkaBrokers,
+      String inputTopic,
+      String outputTopic,
+      String consumerGroup,
+      String routeContextDirectory,
+      double maxDistanceToRouteMeters,
+      double routeMinutes,
+      double serviceGapMinutes,
+      double bunchingProgressGapRatio,
+      int bunchingConfirmationSlots,
+      long checkpointIntervalMillis,
+      String checkpointDirectory
+  ) {
+    public static BusRouteSentinelConfig fromEnv() {
+      return new BusRouteSentinelConfig(
+          env("KAFKA_BROKERS", "localhost:9092"),
+          env("BUS_SENTINEL_INPUT_TOPIC", DEFAULT_INPUT_TOPIC),
+          env("BUS_SENTINEL_OUTPUT_TOPIC", DEFAULT_OUTPUT_TOPIC),
+          env("BUS_SENTINEL_GROUP_ID", "bus-route-sentinel"),
+          env("BUS_ROUTE_CONTEXT_DIR", "frontend/public/data/tdx-bus/route-context"),
+          doubleEnv("BUS_SENTINEL_MAX_DISTANCE_TO_ROUTE_METERS", DEFAULT_MAX_DISTANCE_TO_ROUTE_METERS),
+          doubleEnv("BUS_SENTINEL_ROUTE_MINUTES", BusRouteSentinelProcessor.DEFAULT_ROUTE_MINUTES),
+          doubleEnv("BUS_SENTINEL_SERVICE_GAP_MINUTES", BusRouteSentinelProcessor.DEFAULT_SERVICE_GAP_MINUTES),
+          doubleEnv("BUS_SENTINEL_BUNCHING_PROGRESS_GAP_RATIO", BusRouteSentinelProcessor.DEFAULT_BUNCHING_PROGRESS_GAP_RATIO),
+          intEnv("BUS_SENTINEL_BUNCHING_CONFIRMATION_SLOTS", BusRouteSentinelProcessor.DEFAULT_BUNCHING_CONFIRMATION_SLOTS),
+          longEnv("BUS_SENTINEL_CHECKPOINT_INTERVAL_MS", 60_000L),
+          env("BUS_SENTINEL_CHECKPOINT_DIR", "file:///flink-checkpoints/bus-route-sentinel")
+      );
+    }
+
+    private static String env(String key, String fallback) {
+      String value = System.getenv(key);
+      return value == null || value.isBlank() ? fallback : value;
+    }
+
+    private static double doubleEnv(String key, double fallback) {
+      String value = System.getenv(key);
+      if (value == null || value.isBlank()) return fallback;
+      return Double.parseDouble(value);
+    }
+
+    private static int intEnv(String key, int fallback) {
+      String value = System.getenv(key);
+      if (value == null || value.isBlank()) return fallback;
+      return Integer.parseInt(value);
+    }
+
+    private static long longEnv(String key, long fallback) {
+      String value = System.getenv(key);
+      if (value == null || value.isBlank()) return fallback;
+      return Long.parseLong(value);
+    }
+  }
+}

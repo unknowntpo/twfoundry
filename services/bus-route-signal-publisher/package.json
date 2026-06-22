@@ -1,0 +1,15 @@
+{
+  "name": "bus-route-signal-publisher",
+  "version": "0.1.0",
+  "description": "Publishes Flink bus route signals from Kafka to an R2-readable latest.json bundle",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test src/**/*.test.js"
+  },
+  "dependencies": {
+    "kafkajs": "^2.2.4"
+  },
+  "license": "MIT"
+}

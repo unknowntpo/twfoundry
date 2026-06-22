@@ -1,6 +1,7 @@
 # Bus Anomaly Detection — 空窗 (service gap) & 群聚 (bunching)
 
-Status: DESIGN / discussion capture (2026-06-22). Not yet implemented.
+Status: FIRST IMPLEMENTATION (2026-06-22). Core Flink speed-layer job lives in
+`backend/streams/src/main/java/io/twfoundry/backend/streams/bus/`.
 
 Scope: the speed-layer detection that consumes the existing 5-min polled bus
 stream and emits `suspected_gap` / `suspected_bunching` alerts. Engine-agnostic
@@ -98,7 +99,7 @@ constant. Seed (§3a.2) and gate both read the same schedule.
   "schedule_basis": "frequency|timetable", "state": "ongoing|resolved",
   "detected_at": "...", "source": "speed-layer" }
 
-Sink → Kafka bus-alerts → R2/Pages live panel. Cross-reference with the free TDX
+Sink → Kafka `online.tdx.bus_route_signal` → R2/Pages live panel. Cross-reference with the free TDX
 MQTT 官方通阻 alert lane (route/time overlap) to label 官方通阻 vs 官方事件未覆蓋.
 MQTT is enrichment only — no vehicle positions, never feeds detection.
 
@@ -106,8 +107,8 @@ MQTT is enrichment only — no vehicle positions, never feeds detection.
 
 - checkpoint granularity: progress-bin vs stop-level (precision vs key count).
 - map-match as shared library (§2) vs enrichment stage.
-- engine: Flink (heavier on single-node k0s) vs lightweight stateful consumer —
-  same algorithm either way.
+- engine: Flink selected for live operations signals; ClickHouse remains batch /
+  historical analytics.
 - This supersedes the older handoff note "Flink = archival; detection =
   ClickHouse." New direction: a speed layer (Flink or consumer) does live
   detection; ClickHouse/lake remains the accurate batch/historical layer
