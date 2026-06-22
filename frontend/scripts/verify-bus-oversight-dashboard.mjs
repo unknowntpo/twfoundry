@@ -91,7 +91,7 @@ try {
 
   await page.getByText('路線 南環幹線').click();
   await page.waitForTimeout(700);
-  await page.getByText('回到即時').click();
+  await page.getByText('回到最新快照').click();
   await page.waitForTimeout(300);
   const liveGapText = await page.locator('body').innerText();
   assert.match(liveGapText, /GPS 推估，非官方車牌歸屬。/, 'Latest service-gap problem should show the GPS estimate note');

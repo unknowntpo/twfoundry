@@ -195,10 +195,20 @@ async function loadRouteContext(routeName) {
 async function loadLiveSignals() {
   try {
     liveSignalError.value = '';
-    liveSignalBundle.value = await fetchJson('/api/online/bus-route-signals?limit=8');
+    liveSignalBundle.value = await fetchJson(liveSignalPath());
   } catch (error) {
     liveSignalError.value = error.message;
   }
+}
+
+function liveSignalPath() {
+  if (isLocalHost()) return '/data/online/bus-route-signals/latest.json';
+  return '/api/online/bus-route-signals?limit=8';
+}
+
+function isLocalHost() {
+  if (typeof window === 'undefined') return false;
+  return ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
 }
 
 async function fetchJson(path) {
