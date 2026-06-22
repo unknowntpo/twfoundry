@@ -19,6 +19,12 @@ public final class BusRouteSentinelJob {
   private static final String DEFAULT_OUTPUT_TOPIC = "online.tdx.bus_route_signal";
   private static final double DEFAULT_MAX_DISTANCE_TO_ROUTE_METERS = 120.0;
 
+  // Static so the map lambdas reference it via getstatic instead of capturing it.
+  // ObjectMapper's JavaTimeModule holds a non-serializable DateTimeFormatter, and a
+  // captured (or bound-method-ref) mapper makes Flink's ClosureCleaner fail to serialize
+  // the operator at job-submit time.
+  private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new JavaTimeModule());
+
   private BusRouteSentinelJob() {}
 
   public static void main(String[] args) throws Exception {
@@ -46,11 +52,9 @@ public final class BusRouteSentinelJob {
         .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
         .build();
 
-    ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
-
     DataStream<BusRouteSignal> signals = env
         .fromSource(source, WatermarkStrategy.noWatermarks(), "normalized-bus-positions")
-        .map(value -> mapper.readValue(value, NormalizedBusVehiclePosition.class))
+        .map(value -> MAPPER.readValue(value, NormalizedBusVehiclePosition.class))
         .filter(NormalizedBusVehiclePosition::hasRequiredPosition)
         .flatMap((NormalizedBusVehiclePosition position, org.apache.flink.util.Collector<EnrichedBusVehicleObservation> out) -> {
           Optional<EnrichedBusVehicleObservation> enriched = geometryIndex.enrich(position, config.maxDistanceToRouteMeters());
@@ -68,7 +72,7 @@ public final class BusRouteSentinelJob {
         .name("bus-route-sentinel");
 
     signals
-        .map(mapper::writeValueAsString)
+        .map(value -> MAPPER.writeValueAsString(value))
         .sinkTo(sink)
         .name("online-bus-route-signal-kafka");
 
