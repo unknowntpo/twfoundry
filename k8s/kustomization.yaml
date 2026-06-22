@@ -8,3 +8,4 @@ resources:
   - kafka.yaml
   - bus-ingestion.yaml
   - bus-track-b.yaml
+  - redpanda-console.yaml

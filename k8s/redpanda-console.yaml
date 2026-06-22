@@ -1,0 +1,93 @@
+# Redpanda Console — read-only web UI for the Kafka cluster (topics, consumer
+# groups, messages). Connects to the existing cp-kafka broker. View via:
+#   kubectl --kubeconfig ~/.kube/config-morefine -n twfoundry-data \
+#     port-forward svc/redpanda-console 8080:8080
+# then open http://localhost:8080
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redpanda-console-config
+  namespace: twfoundry-data
+  labels:
+    app.kubernetes.io/name: redpanda-console
+    app.kubernetes.io/part-of: twfoundry-track-b
+data:
+  config.yaml: |
+    kafka:
+      brokers:
+        - kafka:9092
+    server:
+      listenPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redpanda-console
+  namespace: twfoundry-data
+  labels:
+    app.kubernetes.io/name: redpanda-console
+    app.kubernetes.io/part-of: twfoundry-track-b
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: redpanda-console
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: redpanda-console
+        app.kubernetes.io/part-of: twfoundry-track-b
+    spec:
+      containers:
+        - name: redpanda-console
+          image: docker.redpanda.com/redpandadata/console:v2.7.2
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: CONFIG_FILEPATH
+              value: /etc/console/config.yaml
+          ports:
+            - name: http
+              containerPort: 8080
+          volumeMounts:
+            - name: config
+              mountPath: /etc/console
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /admin/health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 384Mi
+      volumes:
+        - name: config
+          configMap:
+            name: redpanda-console-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redpanda-console
+  namespace: twfoundry-data
+  labels:
+    app.kubernetes.io/name: redpanda-console
+    app.kubernetes.io/part-of: twfoundry-track-b
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: redpanda-console
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
