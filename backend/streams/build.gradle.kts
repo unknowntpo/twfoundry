@@ -17,6 +17,11 @@ dependencies {
   implementation(libs.flink.connector.base)
   implementation(libs.flink.connector.kafka)
 
+  // log4j2 backend so the Flink job actually emits logs (otherwise SLF4J NOP = silent, blind ops)
+  runtimeOnly(libs.log4j.slf4j2.impl)
+  runtimeOnly(libs.log4j.core)
+  runtimeOnly(libs.log4j.api)
+
   testImplementation(libs.junit.jupiter)
 }
 

@@ -26,6 +26,10 @@ public final class RouteGeometryIndex implements Serializable {
     return new RouteGeometryIndex(Map.of());
   }
 
+  public int size() {
+    return byRouteDirection.size();
+  }
+
   public static RouteGeometryIndex loadFromRouteContextDirectory(Path directory) throws IOException {
     ObjectMapper mapper = new ObjectMapper();
     Map<String, RouteShape> routes = new HashMap<>();

@@ -13,8 +13,11 @@ import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class BusRouteSentinelJob {
+  private static final Logger LOG = LoggerFactory.getLogger(BusRouteSentinelJob.class);
   private static final String DEFAULT_INPUT_TOPIC = "normalized.tdx.bus_vehicle_position";
   private static final String DEFAULT_OUTPUT_TOPIC = "online.tdx.bus_route_signal";
   private static final double DEFAULT_MAX_DISTANCE_TO_ROUTE_METERS = 120.0;
@@ -30,6 +33,9 @@ public final class BusRouteSentinelJob {
   public static void main(String[] args) throws Exception {
     BusRouteSentinelConfig config = BusRouteSentinelConfig.fromEnv();
     RouteGeometryIndex geometryIndex = RouteGeometryIndex.loadFromRouteContextDirectory(Path.of(config.routeContextDirectory()));
+    LOG.info("starting bus-route-sentinel: brokers={} input={} output={} group={} startingOffsets={} routeContextDir={} routeShapes={}",
+        config.kafkaBrokers(), config.inputTopic(), config.outputTopic(), config.consumerGroup(),
+        config.startingOffsets(), config.routeContextDirectory(), geometryIndex.size());
 
     StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
     env.enableCheckpointing(config.checkpointIntervalMillis());
@@ -39,7 +45,7 @@ public final class BusRouteSentinelJob {
         .setBootstrapServers(config.kafkaBrokers())
         .setTopics(config.inputTopic())
         .setGroupId(config.consumerGroup())
-        .setStartingOffsets(OffsetsInitializer.latest())
+        .setStartingOffsets(startingOffsets(config.startingOffsets()))
         .setValueOnlyDeserializer(new SimpleStringSchema())
         .build();
 
@@ -99,11 +105,22 @@ public final class BusRouteSentinelJob {
         .name("online-bus-route-signal-json");
   }
 
+  /** Maps BUS_SENTINEL_STARTING_OFFSETS (earliest|latest|committed) to a Flink initializer. */
+  static OffsetsInitializer startingOffsets(String mode) {
+    return switch (mode == null ? "latest" : mode.trim().toLowerCase()) {
+      case "earliest" -> OffsetsInitializer.earliest();
+      case "committed" -> OffsetsInitializer.committedOffsets(
+          org.apache.kafka.clients.consumer.OffsetResetStrategy.EARLIEST);
+      default -> OffsetsInitializer.latest();
+    };
+  }
+
   public record BusRouteSentinelConfig(
       String kafkaBrokers,
       String inputTopic,
       String outputTopic,
       String consumerGroup,
+      String startingOffsets,
       String routeContextDirectory,
       double maxDistanceToRouteMeters,
       double routeMinutes,
@@ -119,6 +136,7 @@ public final class BusRouteSentinelJob {
           env("BUS_SENTINEL_INPUT_TOPIC", DEFAULT_INPUT_TOPIC),
           env("BUS_SENTINEL_OUTPUT_TOPIC", DEFAULT_OUTPUT_TOPIC),
           env("BUS_SENTINEL_GROUP_ID", "bus-route-sentinel"),
+          env("BUS_SENTINEL_STARTING_OFFSETS", "latest"),
           env("BUS_ROUTE_CONTEXT_DIR", "frontend/public/data/tdx-bus/route-context"),
           doubleEnv("BUS_SENTINEL_MAX_DISTANCE_TO_ROUTE_METERS", DEFAULT_MAX_DISTANCE_TO_ROUTE_METERS),
           doubleEnv("BUS_SENTINEL_ROUTE_MINUTES", BusRouteSentinelProcessor.DEFAULT_ROUTE_MINUTES),
