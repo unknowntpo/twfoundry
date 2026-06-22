@@ -31,12 +31,18 @@ Delegated to codex (via direct `codex-companion.mjs task --background --write`, 
 - `.github/workflows/build-track-b-images.yml` (GHCR CI for the 3 images)
 - Verified: `kustomize build` (291 lines) + `kubectl apply --dry-run=client` (all 7 resources) + all 3 docker images build clean. R2-not-ClickHouse trap clear; no secret values (all via `twfoundry-track-b-secrets` refs).
 
-## ▶ NEXT TASK (do this first) — deploy Track B to homelab k0s
+## ✅ P1 DONE (2026-06-22) — Track B DEPLOYED + GREEN on homelab k0s
 
-Pick the deploy path (plan §1b / §5) and run it. **Needs cluster access** — off-LAN via `ssh -L 6443:127.0.0.1:6443 morefinepublic` + kubeconfig `server: https://localhost:6443` + `insecure-skip-tls-verify`; also fix the stale kubeconfig IP (`.115` → `.114`).
-- **P1 (recommended, KISS):** `kubectl apply -k k8s/` directly. First: create Secret `twfoundry-track-b-secrets` (TDX_CLIENT_ID/SECRET, CLOUDFLARE_API_TOKEN/ACCOUNT_ID) out-of-band; ensure GHCR images are public or add an imagePullSecret; confirm CI pushed the 3 images. Then apply, watch pods, confirm scheduler logs 5-min cycles and Track B Pages API `latestSlotKey` hugs Track A.
-- **P2:** install ArgoCD first (NOT currently installed — no `argocd` ns), then register the twfoundry Application + Terraform-managed Secret (plan §3.B). More setup; defer unless GitOps is wanted now.
-- After Track B runs 24/7 fresh ≥48h → CUTOVER (#2): stop the Mac daemon, switch public map to Track B / publish to `bus/projections/`, retire Track A.
+Deployed via P1 (plain `kubectl apply -k k8s/`) on morefine k0s. Full cycle green; Track B now publishes 24/7 and hugs Track A.
+- **Cluster access:** LAN-direct `~/.kube/config-morefine` (context `morefine`, server `https://192.168.1.114:6443`, real CA — refreshed from morefine `~/.kube/config`; old `.115` was stale). IP is DHCP, may drift.
+- **Pods (ns `twfoundry-data`):** `kafka-0` 1/1, `bus-ingestion` 1/1, `bus-track-b` 2/2 (archiver+scheduler) all Running. Images `ghcr.io/unknowntpo/twfoundry/*:latest` (public).
+- **Secret `twfoundry-track-b-secrets`:** TDX_CLIENT_ID/SECRET + CLOUDFLARE_API_TOKEN/ACCOUNT_ID. The R2 token is a **dedicated account-scoped Cloudflare token (Workers R2 Storage: Edit)** in E850506's account, kept at `~/.cloudflare/r2.env` (NOT the tunnel tokens — those lack R2). S3 creds backup at `~/.cloudflare/r2-s3.env`.
+- **Verified GREEN (slot 2026-06-22T14:45):** scheduler cycle_end exitStatus 0 (ingest→archiver→publish→upload_r2 all 0, uploaded:2); Track B API `latestSlotKey` == Track A `latestSlotKey` (14:45). mode `homelab-lake-publisher`.
+- **Runtime bugs found+fixed during deploy (commit `ead7edf`):** (1) kafka KRaft voter `kafka:29093`→`localhost:29093` (headless-DNS readiness deadlock); (2) scheduler image missing `frontend/functions/_shared/busProjectionContract.js` + `.dockerignore` un-ignore; (3) arm64→amd64 (build via CI, never local docker build on the arm Mac). R2 auth was a credential gap, not a manifest bug.
+
+### ▶ NEXT — after P1
+- **#2 CUTOVER (after Track B fresh ≥48h):** stop the Mac daemon, switch public map to `bus_vehicles_track_b` / publish Track B to `bus/projections/`, retire Track A edge worker.
+- **Backlog (process hardening, not blocking):** P2 GitOps — bring twfoundry under infra repo Terraform/ArgoCD against the EXISTING cluster (`terraform import` the P1-made ns/secret; no cluster rebuild); fill `homelab/20-saas-k0s` with **k0sctl** (adopt existing morefine node); migrate Kafka to **Strimzi** when it becomes the permanent Flink backbone (+ plan retention/HA); add archiver cold-start Kafka retry. See `docs/architecture/anomaly-detection-algorithm.md` for the speed-layer detection direction.
 
 **Historical reference — the now-completed k8s-artifacts task spec (kept for traceability):**
 
@@ -94,9 +100,8 @@ Pick the deploy path (plan §1b / §5) and run it. **Needs cluster access** — 
   1. ▶ **Track B continuous automation** ← do this next (cron: ingest→archiver→publisher→upload, freshness hugging Track A)
   2. Cutover + retire Track A (after Track B fresh ~48h)
   3. ○ Flink + Iceberg (deferred)
-- **Architecture clarification (avoid re-confusing the next agent):**
-  - **Flink = archival layer** (Kafka→Iceberg). Its verification = checkpoint commit / Iceberg snapshot / upsert dedup — *not* gap/bunching.
-  - **service_gap / bunching detection = ClickHouse layer** (`publish-clickhouse-bus-analytics.mjs`), downstream and *unrelated* to Flink.
+- **Architecture clarification (SUPERSEDED 2026-06-22):** the old "Flink = archival; service_gap/bunching detection = ClickHouse layer" split no longer holds. Detection now moves to a **speed layer** (Flink OR a lightweight stateful consumer — same algorithm) per `docs/architecture/anomaly-detection-algorithm.md`.
+  - ClickHouse/lake remains the **batch/historical accuracy layer** (Lambda architecture); the speed layer does live `suspected_gap`/`suspected_bunching` detection.
 - **Cleanup done:** orphaned `browser-tools-mcp` MCP servers from killed cursor agents → killed. Pipeline services down. Kafka kept Up (pipeline needs it).
 - **Still running:** Kafka `twfoundry-kafka-1` only. (User's 9–10-day-old `codex` CLI sessions were killed this session.)
 - **#1 Track B automation — scripts built (commit `7d594ac`):**
