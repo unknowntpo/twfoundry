@@ -7,6 +7,26 @@ application {
   mainClass.set("io.twfoundry.backend.streams.bus.BusRouteSentinelJob")
 }
 
+// Flink on Java 17+ needs these module opens for its Kryo serializer (reflective setAccessible
+// on java.util collections). Must match Dockerfile JDK_JAVA_OPTIONS. See JvmModuleAccessTest.
+val flinkAddOpens = listOf(
+  "--add-opens=java.base/java.lang=ALL-UNNAMED",
+  "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
+  "--add-opens=java.base/java.io=ALL-UNNAMED",
+  "--add-opens=java.base/java.nio=ALL-UNNAMED",
+  "--add-opens=java.base/java.net=ALL-UNNAMED",
+  "--add-opens=java.base/java.util=ALL-UNNAMED",
+  "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED",
+  "--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED",
+  "--add-opens=java.base/java.text=ALL-UNNAMED",
+  "--add-opens=java.base/java.time=ALL-UNNAMED",
+  "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+)
+
+tasks.test {
+  jvmArgs(flinkAddOpens)
+}
+
 dependencies {
   implementation(platform(libs.spring.boot.bom))
   implementation(project(":backend:common"))

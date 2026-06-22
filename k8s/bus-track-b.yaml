@@ -149,6 +149,10 @@ spec:
               value: online.tdx.bus_route_signal
             - name: BUS_SENTINEL_GROUP_ID
               value: bus-route-sentinel
+            # earliest: replay the input backlog so signals appear promptly (the topic is
+            # young; switch to latest for steady-state once detection is confirmed).
+            - name: BUS_SENTINEL_STARTING_OFFSETS
+              value: earliest
             - name: BUS_ROUTE_CONTEXT_DIR
               value: /app/route-context
             - name: BUS_SENTINEL_CHECKPOINT_DIR

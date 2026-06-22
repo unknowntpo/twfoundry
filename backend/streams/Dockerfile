@@ -19,4 +19,20 @@ ENV KAFKA_BROKERS=kafka:9092 \
     BUS_ROUTE_CONTEXT_DIR=/app/route-context \
     BUS_SENTINEL_CHECKPOINT_DIR=file:///flink-checkpoints/bus-route-sentinel
 
+# Flink on Java 17+ requires these module opens for its Kryo serializer (reflective
+# setAccessible on java.util collections). Without them the job throws
+# InaccessibleObjectException and restart-loops, consuming nothing. Keep in sync with
+# backend/streams/build.gradle.kts test jvmArgs (guarded by JvmModuleAccessTest).
+ENV JDK_JAVA_OPTIONS="--add-opens=java.base/java.lang=ALL-UNNAMED \
+--add-opens=java.base/java.lang.reflect=ALL-UNNAMED \
+--add-opens=java.base/java.io=ALL-UNNAMED \
+--add-opens=java.base/java.nio=ALL-UNNAMED \
+--add-opens=java.base/java.net=ALL-UNNAMED \
+--add-opens=java.base/java.util=ALL-UNNAMED \
+--add-opens=java.base/java.util.concurrent=ALL-UNNAMED \
+--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED \
+--add-opens=java.base/java.text=ALL-UNNAMED \
+--add-opens=java.base/java.time=ALL-UNNAMED \
+--add-opens=java.base/sun.nio.ch=ALL-UNNAMED"
+
 CMD ["java", "-jar", "/app/bus-route-sentinel.jar"]
