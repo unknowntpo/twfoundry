@@ -297,9 +297,6 @@ const nextTickLabel = computed(() => {
   if (timelineSnapshots.value.length > 1) return playbackRunning.value ? `${playbackSpeed.value}x` : t('status.paused');
   return playbackRunning.value ? `${Math.ceil(countdown.value)}s` : t('status.paused');
 });
-const sourceTitle = computed(() => operationsDataSource.value.captureDate
-  ? t('source.titleDated', { date: operationsDataSource.value.captureDate })
-  : t('source.title'));
 const mapStatusLabel = computed(() => (
   mapRendererStatus.value.toLowerCase().includes('ready') ? t('map.ready') : t('map.loading')
 ));
@@ -1600,7 +1597,6 @@ onBeforeUnmount(() => {
         </select>
       </div>
       <div class="status-strip" :aria-label="t('status.aria')">
-        <div class="metric metric-source"><span class="dot accent"></span><strong>{{ sourceTitle }}</strong></div>
         <div class="metric metric-time"><span>{{ t('status.time') }}</span><strong>{{ activeSnapshotLabel }}</strong><em v-if="activeSnapshotTimeZoneLabel">{{ activeSnapshotTimeZoneLabel }}</em></div>
         <div class="metric"><span>{{ t('status.playback') }}</span><strong>{{ nextTickLabel }}</strong></div>
       </div>
@@ -2329,17 +2325,8 @@ onBeforeUnmount(() => {
   font-style: normal;
 }
 
-.metric-source {
-  max-width: min(280px, 30vw);
-}
-
 .metric-time strong {
   font-family: var(--font-mono);
-}
-
-.metric-source strong {
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .dot {
@@ -4163,10 +4150,6 @@ pre {
     gap: 5px;
     padding-inline: 6px;
     font-size: 10.5px;
-  }
-
-  .metric-source {
-    max-width: 122px;
   }
 
   .metric-time em {
