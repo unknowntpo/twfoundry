@@ -75,9 +75,17 @@ bus-ingestion → Kafka normalized.tdx.bus_vehicle_position
 
 ## ▶ NEXT TASKS (priority order)
 
-### 1. Confirm real anomaly signals emit (data-dependent, FIRST thing to check)
+### ✅ DONE 2026-06-23 — live signals end-to-end on the public dashboard
 
-The speed layer is deployed and consuming, but `status` is still `waiting_for_flink` (0 signals). Verify the sentinel actually emits when a real service-gap/bunching occurs:
+The full speed layer works and is verified visually: `/bus-oversight` → "路線訊號紀錄" panel shows live `大空窗`/`車輛群聚` signals with current timestamps. Fixes this session:
+- **Flink death spiral** (Kryo can't checkpoint records) → checkpointing disabled, `startingOffsets=latest`, topic truncated (commit `596cf19`).
+- **signal-publisher missed flushes** (fresh 5s-window consumer per cycle) → rewritten to ONE persistent consumer filling a rolling buffer + periodic publish (commit `056aef0`).
+- **Frontend IA** → root `/` = multi-layer OperationsExplorer; bus dashboard at `/bus-oversight` via a header button (commit `e93374e`).
+- Proper hardening tracked in Linear UNK-30 (Avro + re-enable checkpointing). Linear project: see memory `twfoundry-linear-project`.
+
+### (historical) Confirm real anomaly signals emit
+
+The speed layer is deployed and consuming. Verify the sentinel emits when a real service-gap/bunching occurs:
 ```bash
 # output topic — should grow > 0 once an anomaly is detected
 KUBECONFIG=~/.kube/config-morefine kubectl exec -n twfoundry-data kafka-0 -- bash -lc \
