@@ -8,7 +8,13 @@ const DEFAULT_R2_KEY = 'online/bus-route-signals/latest.json';
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const options = parseArgs(process.argv.slice(2));
-  if (options.loop || process.env.BUS_ROUTE_SIGNAL_PUBLISH_LOOP === 'true') {
+  const loop = options.loop || process.env.BUS_ROUTE_SIGNAL_PUBLISH_LOOP === 'true';
+  if (loop && !options['input-file']) {
+    // Live mode: ONE persistent consumer continuously fills a rolling buffer, decoupled from a
+    // periodic publish. The old model opened a fresh short-lived consumer each cycle (stopped after
+    // ~5s idle), so it routinely missed the sentinel's bursty per-slot flushes -> empty bundles.
+    await runContinuous(options);
+  } else if (loop) {
     const sleepMs = Number(options['sleep-ms'] ?? process.env.BUS_ROUTE_SIGNAL_PUBLISH_SLEEP_MS ?? 30_000);
     while (true) {
       await publishOnce(options);
@@ -16,6 +22,62 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     }
   } else {
     await publishOnce(options);
+  }
+}
+
+async function runContinuous(options) {
+  const brokers = splitCsv(options.brokers ?? process.env.KAFKA_BROKERS ?? 'localhost:9092');
+  const topic = options.topic ?? process.env.BUS_ROUTE_SIGNAL_TOPIC ?? DEFAULT_TOPIC;
+  const groupId = options.group ?? process.env.BUS_ROUTE_SIGNAL_PUBLISHER_GROUP_ID ?? 'bus-route-signal-publisher';
+  const limit = Number(options.limit ?? process.env.BUS_ROUTE_SIGNAL_BUNDLE_LIMIT ?? 50);
+  const sleepMs = Number(options['sleep-ms'] ?? process.env.BUS_ROUTE_SIGNAL_PUBLISH_SLEEP_MS ?? 30_000);
+  const output = resolve(process.cwd(), options.output ?? process.env.BUS_ROUTE_SIGNAL_OUTPUT ?? DEFAULT_OUTPUT);
+  const doUpload = Boolean(options.upload || process.env.BUS_ROUTE_SIGNAL_UPLOAD_R2 === 'true');
+  const retain = Math.max(limit * 4, 200);
+
+  const { Kafka, logLevel } = await import('kafkajs');
+  const kafka = new Kafka({ clientId: 'twfoundry-bus-route-signal-publisher', brokers, logLevel: logLevel.WARN });
+  const consumer = kafka.consumer({ groupId });
+  await consumer.connect();
+  await consumer.subscribe({ topic, fromBeginning: false });
+
+  // rolling buffer of the most-recent signals, filled in the background as messages arrive
+  const buffer = [];
+  await consumer.run({
+    eachMessage: async ({ message }) => {
+      if (!message.value) return;
+      try {
+        buffer.push(JSON.parse(message.value.toString('utf8')));
+        if (buffer.length > retain) buffer.splice(0, buffer.length - retain);
+      } catch { /* skip malformed */ }
+    },
+  });
+
+  // periodic publish of whatever has accumulated so far
+  for (;;) {
+    const bundle = bundleSignals(buffer.slice(), { limit });
+    writeBundle(output, bundle);
+    if (doUpload) {
+      try {
+        uploadBundle(output, {
+          bucket: options.bucket ?? process.env.BUS_ROUTE_SIGNAL_BUCKET ?? 'twfoundry-poc-archive',
+          key: options.key ?? process.env.BUS_ROUTE_SIGNAL_R2_KEY ?? DEFAULT_R2_KEY,
+          wrangler: options.wrangler ?? process.env.WRANGLER_BIN ?? 'bunx',
+          local: Boolean(options.local),
+        });
+      } catch (err) {
+        console.error(JSON.stringify({ ok: false, step: 'upload_r2', error: String(err?.message ?? err) }));
+      }
+    }
+    console.log(JSON.stringify({
+      ok: true,
+      mode: 'continuous',
+      buffered: buffer.length,
+      signals: bundle.signals.length,
+      latestSlotKey: bundle.latestSlotKey,
+      uploaded: doUpload,
+    }));
+    await new Promise((resolve) => setTimeout(resolve, sleepMs));
   }
 }
 
