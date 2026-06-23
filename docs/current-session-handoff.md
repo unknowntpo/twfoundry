@@ -24,13 +24,11 @@ This session left two background tasks running in the *previous* process; a new 
 - **Frontend IA**: `/` = multi-layer **OperationsExplorer** map; `/bus-oversight` = bus dashboard (reached via header "公車服務控制台" button). Planned layers (MRT/YouBike/signals) show as disabled "Coming soon". Oversight page has dark full-width bg (no light side margins).
 - All 4 `bus-track-b` containers + kafka-0 + redpanda-console Running 0 restarts (ns `twfoundry-data`, `~/.kube/config-morefine`).
 
-### ▶ FIRST ACTION — finish verifying "A: live KPIs"
-Shipped this session: oversight `大空窗事件`/`車輛群聚事件` KPI cards now show **live current-slot counts** from the bundle's new `counts` field, tagged `即時 · HH:MM` (fallback to batch when absent). At handoff the cluster was in the **post-redeploy warmup gap** (sentinel reads `latest`, only flushes on the 2nd slot transition → ~6–12 min of `waiting_for_flink` after every `rollout restart`). **Verify it recovered:**
-```bash
-curl -s 'https://twfoundry-poc.pages.dev/api/online/bus-route-signals?limit=2' | jq '.status, .counts, .latestSlotKey'
-# expect status "ok" + counts {gap,bunching,total}; then the KPI cards should read live, not 50/0.
-```
-If still empty after ~15 min, check sentinel is emitting: `kubectl -n twfoundry-data exec kafka-0 -- kafka-run-class kafka.tools.GetOffsetShell --bootstrap-server localhost:9092 --topic online.tdx.bus_route_signal` (readable = high−low should grow each slot).
+### ✅ A: live KPIs — DONE + verified (2026-06-23 11:07)
+Oversight `大空窗事件`/`車輛群聚事件` KPI cards show **live current-slot counts** from the bundle's `counts` field, tagged `即時 · HH:MM`; the other 3 cards stay batch ("較昨日"). Verified live: 大空窗 156 / 群聚 0 · 即時 10:55. Required two fixes: publisher emits `counts` (commit `c9a2c6d`) AND the Pages function must forward it (commit `c30c9d1` — `limitSignals` was dropping it). Spot-check: `curl -s '.../api/online/bus-route-signals?limit=2' | jq '.counts'`.
+
+### ▶ FIRST ACTION — open dashboard UX items with the user (B/D/E)
+The headline pipeline + dashboard work is done. Resume the dashboard discussion.
 
 ### Then: dashboard UX discussion (items B/D/E still open) + Lambda design
 - **B (answered, now Linear UNK-37)**: speed+batch merge via a **serving-layer watermark** ("同一套規則、兩種算力、一個 serving 出口"). Past=batch, live-edge=speed, seam at watermark. Depends on the batch layer (M5).
