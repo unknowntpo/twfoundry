@@ -105,10 +105,8 @@ const pollStatusKey = ref('status.loadingArchive');
 const pollStatusParams = ref({});
 const analyticsLoading = ref(false);
 const analyticsError = ref('');
-const analyticsExpanded = ref(false);
 const analyticsLoadedAt = ref(null);
 const analyticsData = ref({
-  routeDensity: [],
   dataFreshness: [],
   bunching: [],
   serviceDate: '',
@@ -150,17 +148,6 @@ const routeOptions = computed(() => {
   }
   return [...routes].sort((left, right) => left.localeCompare(right, 'zh-Hant-u-kn-true'));
 });
-const routeVehicleCounts = computed(() => observations.value.reduce((counts, observation) => {
-  const route = observation.route?.name;
-  if (!route) return counts;
-  counts.set(route, (counts.get(route) ?? 0) + 1);
-  return counts;
-}, new Map()));
-const routeDirectoryItems = computed(() => routeOptions.value.map((route) => ({
-  route,
-  count: routeVehicleCounts.value.get(route) ?? 0,
-  href: routeMonitorHref(route),
-})));
 const routeQualitySummary = computed(() => {
   const summary = routeQualityManifest.value?.summary;
   if (!summary) return null;
@@ -292,7 +279,6 @@ const transitSignalSummaryLabel = computed(() => {
   });
 });
 const visibleSummary = computed(() => summarizeOperations(visibleObservations.value));
-const allSummary = computed(() => summarizeOperations(observations.value));
 const rootStyle = computed(() => ({
   '--point-scale': pointSize.value,
   '--point-opacity': pointOpacity.value,
@@ -306,11 +292,7 @@ const timelineProgressPercent = computed(() => {
   return Math.min(100, Math.max(0, (displayIndex / (timelineSnapshots.value.length - 1)) * 100));
 });
 const zoomLabel = computed(() => `${mapState.value.zoom.toFixed(1)}z`);
-const freshnessLabel = computed(() => `${allSummary.value.minAgeSeconds}s`);
 const sourceModeLabel = computed(() => formatSourceMode(operationsDataSource.value.mode));
-const pollModeLabel = computed(() => countdown.value <= 3
-  ? t('status.loadingNext')
-  : `${sourceModeLabel.value} ${t('timeline.title').toLowerCase()}`);
 const nextTickLabel = computed(() => {
   if (timelineSnapshots.value.length > 1) return playbackRunning.value ? `${playbackSpeed.value}x` : t('status.paused');
   return playbackRunning.value ? `${Math.ceil(countdown.value)}s` : t('status.paused');
@@ -476,9 +458,6 @@ const vehicleTelemetrySummary = computed(() => [
   `${selectedObservation.value?.motion?.speedKph ?? 0} km/h`,
   selectedFreshnessLabel.value,
 ].join(' · '));
-const analyticsRouteDensityRows = computed(() => analyticsData.value.routeDensity.slice(0, 3));
-const analyticsFreshnessRows = computed(() => analyticsData.value.dataFreshness.slice(0, 3));
-const analyticsBunchingRows = computed(() => analyticsData.value.bunching.slice(0, 3));
 const routeHealthWatchlist = computed(() => {
   const items = [];
 
@@ -537,53 +516,23 @@ const routeHealthRouteNames = computed(() => (
 const routeHealthHasOverflow = computed(() => (
   analyticsData.value.bunching.length + analyticsData.value.dataFreshness.length > routeHealthWatchlist.value.length
 ));
-const analyticsStatusLabel = computed(() => {
-  if (analyticsLoading.value) return t('analytics.loading');
-  if (analyticsLoadedAt.value) {
-    return t('analytics.loadedAt', { time: formatTaipeiDateTime(analyticsLoadedAt.value) });
-  }
-  return t('analytics.localApi');
-});
-const analyticsServiceDateLabel = computed(() => (
-  analyticsData.value.serviceDate || analyticsQueryServiceDate() || t('data.current')
-));
-const analyticsSummaryLabel = computed(() => {
-  if (analyticsLoading.value) return t('analytics.loading');
-  if (analyticsLoadedAt.value) return t('analytics.serviceDate', { date: analyticsServiceDateLabel.value });
-  return t('analytics.summaryCollapsed');
-});
-
 function setPollStatusKey(key, params = {}) {
   pollStatusKey.value = key;
   pollStatusParams.value = params;
-}
-
-function toggleAnalyticsSection() {
-  analyticsExpanded.value = !analyticsExpanded.value;
-  if (analyticsExpanded.value && !analyticsLoadedAt.value && !analyticsLoading.value) {
-    void loadAnalytics();
-  }
-}
-
-function refreshAnalytics() {
-  analyticsExpanded.value = true;
-  void loadAnalytics();
 }
 
 async function loadAnalytics() {
   analyticsLoading.value = true;
   analyticsError.value = '';
   try {
-    const [routeDensity, dataFreshness, bunching] = await Promise.all([
-      fetchAnalytics('/analytics/bus/route-density'),
+    const [dataFreshness, bunching] = await Promise.all([
       fetchAnalytics('/analytics/bus/data-freshness'),
       fetchAnalytics('/analytics/bus/bunching', { min_headway_minutes: '14' }),
     ]);
     analyticsData.value = {
-      routeDensity: routeDensity.rows ?? [],
       dataFreshness: dataFreshness.rows ?? [],
       bunching: bunching.rows ?? [],
-      serviceDate: routeDensity.serviceDate ?? dataFreshness.serviceDate ?? bunching.serviceDate ?? '',
+      serviceDate: dataFreshness.serviceDate ?? bunching.serviceDate ?? '',
     };
     void ensureRouteOperatorsForWatchlist();
     analyticsLoadedAt.value = new Date();
@@ -1640,7 +1589,6 @@ onBeforeUnmount(() => {
       <div class="status-strip" :aria-label="t('status.aria')">
         <div class="metric metric-source"><span class="dot accent"></span><strong>{{ sourceTitle }}</strong></div>
         <div class="metric metric-time"><span>{{ t('status.time') }}</span><strong>{{ activeSnapshotLabel }}</strong><em v-if="activeSnapshotTimeZoneLabel">{{ activeSnapshotTimeZoneLabel }}</em></div>
-        <div class="metric"><span>{{ t('status.vehicles') }}</span><strong>{{ visibleSummary.active }}</strong></div>
         <div class="metric"><span>{{ t('status.playback') }}</span><strong>{{ nextTickLabel }}</strong></div>
       </div>
       <div class="actions">
@@ -1714,12 +1662,28 @@ onBeforeUnmount(() => {
     <aside class="panel left-panel" :aria-label="t('layer.aria')">
       <div class="panel-header">
         <div class="eyebrow"><span>{{ t('layer.label') }}</span><span>{{ layerVisible ? t('layer.visible') : t('layer.hidden') }}</span></div>
+        <div class="field layer-field">
+          <select id="layerSelect" v-model="activeLayerId" :aria-label="t('filters.layerFilter')">
+            <option
+              v-for="layer in layerOptions"
+              :key="layer.id"
+              :value="layer.id"
+              :disabled="layer.status !== 'active'"
+            >
+              {{ t(layer.shortLabelKey) }}{{ layer.status !== 'active' ? ` · ${t('layer.planned')}` : '' }}
+            </option>
+          </select>
+        </div>
         <h1 class="panel-title">{{ t(activeLayer.labelKey) }}</h1>
         <p class="panel-copy">{{ t(activeLayer.descriptionKey) }}</p>
         <div class="badge-row">
           <span class="badge source">交通部 TDX</span>
           <span class="badge sample">{{ sourceModeLabel }}</span>
           <span class="badge">{{ t(activeLayer.shortLabelKey) }}</span>
+        </div>
+        <div class="layer-metric">
+          <strong>{{ visibleSummary.active }}</strong>
+          <span>{{ t(activeLayer.shortLabelKey) }}</span>
         </div>
       </div>
       <div class="panel-body">
@@ -1817,112 +1781,12 @@ onBeforeUnmount(() => {
         </section>
 
         <section class="section">
-          <div class="section-title"><span>{{ t('health.title') }}</span><span class="badge sample">{{ sourceModeLabel }}</span></div>
-          <div class="health-grid">
-            <div class="health-card"><strong>{{ freshnessLabel }}</strong><span>{{ t('health.latestAge') }}</span></div>
-            <div class="health-card"><strong>{{ Math.round(allSummary.completeness * 100) }}%</strong><span>{{ t('health.completeness') }}</span></div>
-            <div class="health-card"><strong>{{ OPERATIONS_ARCHIVE_INTERVAL_MINUTES }} min</strong><span>{{ t('health.archiveCadence') }}</span></div>
-            <div class="health-card"><strong>{{ pollModeLabel }}</strong><span>{{ t('health.dataMode') }}</span></div>
-            <div class="health-card"><strong>{{ timelineSnapshots.length }}</strong><span>{{ t('health.timelineSlots') }}</span></div>
-            <div class="health-card"><strong>{{ mapStatusLabel }}</strong><span>{{ t('health.mapStatus') }}</span></div>
-          </div>
-        </section>
-
-        <section class="section analytics-section" :class="{ 'is-collapsed': !analyticsExpanded }">
-          <div class="section-title analytics-heading">
-            <span>{{ t('analytics.title') }}</span>
-            <div class="analytics-actions">
-              <button
-                class="section-action"
-                type="button"
-                :aria-expanded="analyticsExpanded"
-                @click="toggleAnalyticsSection"
-              >
-                {{ analyticsExpanded ? t('analytics.collapse') : t('analytics.expand') }}
-              </button>
-              <button
-                v-if="analyticsExpanded"
-                class="section-action"
-                type="button"
-                :disabled="analyticsLoading"
-                @click="refreshAnalytics"
-              >
-                {{ analyticsLoading ? t('analytics.loading') : t('analytics.refresh') }}
-              </button>
-            </div>
-          </div>
-          <div v-if="!analyticsExpanded" class="analytics-collapsed">
-            <span class="badge source">{{ t('routeHealth.source') }}</span>
-            <span>{{ analyticsSummaryLabel }}</span>
-          </div>
-          <template v-else>
-            <div class="analytics-meta">
-              <span class="badge source">{{ t('routeHealth.source') }}</span>
-              <span>{{ t('analytics.serviceDate', { date: analyticsServiceDateLabel }) }}</span>
-            </div>
-            <p class="analytics-copy">{{ t('analytics.copy') }}</p>
-            <p v-if="analyticsError" class="inline-warning">{{ analyticsError }}</p>
-            <div v-else class="analytics-stack" :aria-busy="analyticsLoading">
-              <div class="analytics-group">
-                <div class="analytics-group-title"><strong>{{ t('analytics.density') }}</strong><span>{{ analyticsStatusLabel }}</span></div>
-                <div v-if="analyticsRouteDensityRows.length === 0" class="analytics-empty">{{ t('analytics.noRows') }}</div>
-                <div
-                  v-for="row in analyticsRouteDensityRows"
-                  :key="`${row.bucket_start}-${row.route_name}-${row.direction}`"
-                  class="analytics-row"
-                >
-                  <strong>{{ t('filters.route', { route: row.route_name }) }}</strong>
-                  <span>{{ formatAnalyticsTime(row.bucket_start) }} · {{ formatAnalyticsDirection(row.direction) }} · {{ t('analytics.vehicleCount', { count: formatAnalyticsNumber(row.active_vehicles) }) }}</span>
-                </div>
-              </div>
-              <div class="analytics-group">
-                <div class="analytics-group-title"><strong>{{ t('analytics.freshness') }}</strong></div>
-                <div v-if="analyticsFreshnessRows.length === 0" class="analytics-empty">{{ t('analytics.noRows') }}</div>
-                <div
-                  v-for="row in analyticsFreshnessRows"
-                  :key="`${row.route_name}-${row.direction}`"
-                  class="analytics-row"
-                >
-                  <strong>{{ t('filters.route', { route: row.route_name }) }}</strong>
-                  <span>{{ t('analytics.reports', { count: formatAnalyticsNumber(row.reports) }) }} · {{ t('analytics.offRouteRate', { rate: formatAnalyticsPercent(row.off_route_rate) }) }}</span>
-                </div>
-              </div>
-              <div class="analytics-group">
-                <div class="analytics-group-title"><strong>{{ t('analytics.bunching') }}</strong></div>
-                <div v-if="analyticsBunchingRows.length === 0" class="analytics-empty">{{ t('analytics.noRows') }}</div>
-                <div
-                  v-for="row in analyticsBunchingRows"
-                  :key="`${row.slot_start}-${row.route_name}-${row.trailing_vehicle_id}`"
-                  class="analytics-row"
-                >
-                  <strong>{{ t('filters.route', { route: row.route_name }) }}</strong>
-                  <span>{{ formatAnalyticsTime(row.slot_start) }} · {{ t('analytics.headway', { minutes: formatAnalyticsNumber(row.estimated_headway_minutes) }) }}</span>
-                </div>
-              </div>
-            </div>
-          </template>
-        </section>
-
-        <section class="section">
           <div class="section-title"><span>{{ t('filters.title') }}</span><span>{{ activeLayerFilterLabel }}</span></div>
           <div class="mobile-layer-context" aria-hidden="true">
             <span>{{ t('layer.currentLayer') }}</span>
             <strong>{{ t(activeLayer.shortLabelKey) }}</strong>
           </div>
           <div class="filter-grid">
-            <div class="field layer-field">
-              <label for="layerFilter">{{ t('filters.layerFilter') }}</label>
-              <select id="layerFilter" v-model="activeLayerId">
-                <option
-                  v-for="layer in layerOptions"
-                  :key="layer.id"
-                  :value="layer.id"
-                  :disabled="layer.status !== 'active'"
-                >
-                  {{ t(layer.shortLabelKey) }}{{ layer.status !== 'active' ? ` · ${t('layer.planned')}` : '' }}
-                </option>
-              </select>
-            </div>
             <div class="field route-field">
               <label for="routeFilter">{{ t('filters.routeFilter') }}</label>
               <select id="routeFilter" v-model="routeFilter">
@@ -1936,24 +1800,6 @@ onBeforeUnmount(() => {
               >
                 {{ t('routeHealth.selectedDetail', { route: routeFilter }) }}
               </a>
-              <div class="route-directory" :aria-label="t('routeDirectory.aria')">
-                <div class="route-directory-head">
-                  <span>{{ t('routeDirectory.title') }}</span>
-                  <b>{{ t('routeDirectory.count', { count: formatAnalyticsNumber(routeDirectoryItems.length) }) }}</b>
-                </div>
-                <div class="route-directory-list">
-                  <a
-                    v-for="item in routeDirectoryItems"
-                    :key="item.route"
-                    class="route-directory-row"
-                    :class="{ active: routeFilter === item.route }"
-                    :href="item.href"
-                  >
-                    <span>{{ t('filters.route', { route: item.route }) }}</span>
-                    <small>{{ t('routeDirectory.vehicles', { count: formatAnalyticsNumber(item.count) }) }}</small>
-                  </a>
-                </div>
-              </div>
             </div>
           </div>
           <label class="checkbox">
@@ -1982,7 +1828,6 @@ onBeforeUnmount(() => {
               <tr><td>{{ t('data.serviceDay') }}</td><td>{{ operationsDataSource.captureDate ?? t('data.current') }}</td></tr>
               <tr><td>{{ t('data.sampleInterval') }}</td><td>{{ OPERATIONS_ARCHIVE_INTERVAL_MINUTES }} min</td></tr>
               <tr><td>{{ t('data.records') }}</td><td>{{ t('data.recordsValue', { visible: visibleSummary.active, sampled: operationsDataSource.count }) }}</td></tr>
-              <tr><td>{{ t('data.routes') }}</td><td>{{ routeOptions.length }}</td></tr>
               <tr><td>{{ t('routeQuality.title') }}</td><td>{{ selectedRouteQualityLabel }}</td></tr>
             </tbody>
           </table>
@@ -3022,6 +2867,26 @@ onBeforeUnmount(() => {
   margin-top: 8px;
 }
 
+/* Active-layer entity count, relocated out of the global status bar so the
+   top chrome stays layer-agnostic as more layers are added. */
+.layer-metric {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.layer-metric strong {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.layer-metric span {
+  color: color-mix(in oklch, var(--muted) 82%, white);
+  font: 11px/1.35 var(--font-mono);
+}
+
+
 .badge {
   display: inline-flex;
   align-items: center;
@@ -3102,32 +2967,6 @@ onBeforeUnmount(() => {
 .switch input:checked + span::after {
   background: var(--accent);
   transform: translateX(17px);
-}
-
-.health-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.health-card {
-  min-height: 76px;
-  padding: 10px;
-  border: 1px solid color-mix(in oklch, var(--border) 52%, transparent);
-  border-radius: 8px;
-  background: color-mix(in oklch, var(--surface) 42%, transparent);
-}
-
-.health-card strong {
-  display: block;
-  font-size: 18px;
-}
-
-.health-card span {
-  display: block;
-  margin-top: 4px;
-  color: color-mix(in oklch, var(--muted) 82%, white);
-  font: 11px/1.35 var(--font-mono);
 }
 
 .field {
@@ -3509,167 +3348,6 @@ select {
 .route-detail-link:focus-visible {
   border-color: color-mix(in oklch, var(--accent) 62%, var(--border));
   outline: none;
-}
-
-.route-directory {
-  display: grid;
-  gap: 7px;
-  margin-top: 10px;
-  padding: 9px;
-  border: 1px solid color-mix(in oklch, var(--border) 42%, transparent);
-  border-radius: 8px;
-  background: color-mix(in oklch, var(--surface) 30%, transparent);
-}
-
-.route-directory-head,
-.route-directory-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.route-directory-head {
-  color: var(--muted);
-  font: 10.5px/1.2 var(--font-mono);
-}
-
-.route-directory-head b {
-  color: color-mix(in oklch, var(--accent) 38%, white);
-  font-weight: 650;
-}
-
-.route-directory-list {
-  display: grid;
-  max-height: 170px;
-  overflow: auto;
-  padding-right: 2px;
-}
-
-.route-directory-row {
-  min-height: 28px;
-  padding: 5px 6px;
-  border-radius: 6px;
-  color: var(--fg);
-  text-decoration: none;
-}
-
-.route-directory-row:hover,
-.route-directory-row:focus-visible,
-.route-directory-row.active {
-  background: color-mix(in oklch, var(--accent) 10%, transparent);
-  outline: none;
-}
-
-.route-directory-row span {
-  min-width: 0;
-  overflow: hidden;
-  font-size: 11px;
-  font-weight: 620;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.route-directory-row small {
-  flex: 0 0 auto;
-  color: var(--muted);
-  font: 10px/1 var(--font-mono);
-}
-
-.analytics-heading {
-  align-items: center;
-}
-
-.analytics-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 6px;
-}
-
-.section-action {
-  min-height: 24px;
-  padding: 0 8px;
-  border: 1px solid color-mix(in oklch, var(--accent) 42%, transparent);
-  border-radius: 7px;
-  background: color-mix(in oklch, var(--accent) 12%, var(--surface));
-  color: color-mix(in oklch, var(--accent) 76%, white);
-  font: 10.5px/1 var(--font-mono);
-}
-
-.section-action:disabled {
-  opacity: 0.58;
-}
-
-.analytics-collapsed {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  color: color-mix(in oklch, var(--muted) 78%, white);
-  font: 10.5px/1.3 var(--font-mono);
-}
-
-.analytics-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 8px;
-  color: color-mix(in oklch, var(--muted) 78%, white);
-  font: 10.5px/1.3 var(--font-mono);
-}
-
-.analytics-copy {
-  margin: 0 0 10px;
-  color: color-mix(in oklch, var(--muted) 82%, white);
-  font-size: 11px;
-  line-height: 1.45;
-}
-
-.analytics-stack {
-  display: grid;
-  gap: 10px;
-}
-
-.analytics-group {
-  display: grid;
-  gap: 6px;
-}
-
-.analytics-group-title,
-.analytics-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.analytics-group-title {
-  align-items: baseline;
-  color: color-mix(in oklch, var(--fg) 92%, white);
-  font-size: 11px;
-}
-
-.analytics-group-title span {
-  color: color-mix(in oklch, var(--muted) 74%, white);
-  font: 10px/1 var(--font-mono);
-}
-
-.analytics-row {
-  align-items: flex-start;
-  padding: 7px 0;
-  border-top: 1px solid color-mix(in oklch, var(--border) 34%, transparent);
-  color: color-mix(in oklch, var(--muted) 82%, white);
-  font: 10.5px/1.35 var(--font-mono);
-}
-
-.analytics-row strong {
-  color: var(--fg);
-  font-weight: 660;
-}
-
-.analytics-row span {
-  text-align: right;
 }
 
 .analytics-empty {
@@ -4608,7 +4286,6 @@ pre {
     display: none;
   }
 
-  .health-grid,
   .kv,
   .source-health-row {
     grid-template-columns: 1fr;
