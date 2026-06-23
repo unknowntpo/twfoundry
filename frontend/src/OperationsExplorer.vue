@@ -322,9 +322,10 @@ const mapStatusLabel = computed(() => (
   mapRendererStatus.value.toLowerCase().includes('ready') ? t('map.ready') : t('map.loading')
 ));
 const activeLayer = computed(() => getOperationsLayer(activeLayerId.value));
-const layerOptions = computed(() => operationsLayerRegistry.filter(
-  (layer) => layer.id === OPERATIONS_LAYER_IDS.BUS_VEHICLES && layer.status === 'active',
-));
+// Show the active layer plus the planned ones (rendered disabled as "coming soon"), active first.
+const layerOptions = computed(() => operationsLayerRegistry
+  .filter((layer) => layer.status === 'active' || layer.status === 'planned')
+  .sort((left, right) => (left.status === 'active' ? -1 : 1) - (right.status === 'active' ? -1 : 1)));
 const activeLayerFilterLabel = computed(() => t(activeLayer.value.primaryFilter.labelKey));
 const timelineMax = computed(() => Math.max(0, timelineSnapshots.value.length - 1));
 const timelineDisabled = computed(() => timelineSnapshots.value.length <= 1);

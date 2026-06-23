@@ -60,6 +60,20 @@ const liveSignalStatusLabel = computed(() => {
   return t('oversight.liveSignals.waiting');
 });
 
+// Live counts for the current slot from the speed-layer bundle (the batch KPIs are a frozen
+// snapshot). When present, they drive the gap/bunching KPI cards so those reflect "now".
+const liveCounts = computed(() => {
+  const bundle = liveSignalBundle.value;
+  const counts = bundle?.counts;
+  if (!counts || (counts.gap == null && counts.bunching == null)) return null;
+  const slotKey = bundle.latestSlotKey ?? '';
+  return {
+    gap: counts.gap ?? 0,
+    bunching: counts.bunching ?? 0,
+    time: slotKey.length >= 16 ? slotKey.slice(11, 16) : '',
+  };
+});
+
 const schematic = computed(() => buildRouteSchematic(routeContext.value, {
   routeName: selectedRoute.value?.routeName ?? '',
   direction: selectedRoute.value?.direction ?? null,
@@ -120,16 +134,20 @@ const kpiCards = computed(() => {
       tone: 'critical',
       label: t('oversight.kpi.serviceGaps'),
       info: t('oversight.kpi.serviceGaps.info'),
-      value: kpis.serviceGaps,
-      delta: formatDelta(kpis.deltas.serviceGaps, true),
+      value: liveCounts.value ? liveCounts.value.gap : kpis.serviceGaps,
+      delta: liveCounts.value
+        ? { text: t('oversight.kpi.liveAsOf', { time: liveCounts.value.time }), tone: 'live' }
+        : formatDelta(kpis.deltas.serviceGaps, true),
     },
     {
       key: 'bunching',
       tone: 'warning',
       label: t('oversight.kpi.bunching'),
       info: t('oversight.kpi.bunching.info'),
-      value: kpis.bunching,
-      delta: formatDelta(kpis.deltas.bunching, true),
+      value: liveCounts.value ? liveCounts.value.bunching : kpis.bunching,
+      delta: liveCounts.value
+        ? { text: t('oversight.kpi.liveAsOf', { time: liveCounts.value.time }), tone: 'live' }
+        : formatDelta(kpis.deltas.bunching, true),
     },
     {
       key: 'lowCapacity',
@@ -1046,6 +1064,10 @@ function formatPublishedAt(value) {
 
 .kpi-delta.good {
   color: var(--ok);
+}
+
+.kpi-delta.live {
+  color: var(--accent);
 }
 
 .ring {

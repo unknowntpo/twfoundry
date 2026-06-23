@@ -32,6 +32,10 @@ body.document-scroll-page {
   perspective: none;
 }
 
+body.oversight-page {
+  background: #060a12;
+}
+
 body.document-scroll-page #app {
   height: auto;
   min-height: 100%;
