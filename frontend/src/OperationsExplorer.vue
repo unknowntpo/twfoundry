@@ -1674,7 +1674,7 @@ onBeforeUnmount(() => {
 
     <aside class="panel left-panel" :aria-label="t('layer.aria')">
       <div class="panel-header">
-        <div class="eyebrow"><span>{{ t('layer.label') }}</span><span>{{ layerVisible ? t('layer.visible') : t('layer.hidden') }}</span></div>
+        <div class="eyebrow"><span>{{ t('layer.activeLabel') }}</span><span>{{ layerVisible ? t('layer.visible') : t('layer.hidden') }}</span></div>
         <h1 class="panel-title">{{ t(activeLayer.labelKey) }}</h1>
         <p class="panel-copy">{{ t(activeLayer.descriptionKey) }}</p>
         <div class="badge-row">
