@@ -13,6 +13,10 @@ const user = options.user ?? process.env.CLICKHOUSE_USER ?? 'default';
 const password = options.password ?? process.env.CLICKHOUSE_PASSWORD ?? 'twfoundry_dev';
 const serviceDate = options['service-date'] ?? process.env.TWFOUNDRY_ANALYTICS_SERVICE_DATE ?? DEFAULT_SERVICE_DATE;
 const outputRoot = options['output-root'] ?? DEFAULT_OUTPUT_ROOT;
+// Provenance label. The rolling batch pipeline passes --source clickhouse-rolling
+// (or TWFOUNDRY_ANALYTICS_SOURCE) so the published dataset is not mislabelled as a
+// frozen one-time snapshot. Default preserves the legacy static-snapshot behaviour.
+const source = options.source ?? process.env.TWFOUNDRY_ANALYTICS_SOURCE ?? 'clickhouse-static-snapshot';
 const limit = positiveInteger(options.limit, 50);
 const minHeadwayMinutes = positiveInteger(options['min-headway-minutes'], 14);
 const publishedAt = new Date().toISOString();
@@ -45,7 +49,7 @@ for (const metric of metrics) {
 const manifestPath = join(outputRoot, 'manifest.json');
 writeFileSync(manifestPath, `${JSON.stringify({
   schemaVersion: 1,
-  source: 'clickhouse-static-snapshot',
+  source,
   publishedAt,
   serviceDate,
   clickhouse: {
@@ -168,7 +172,7 @@ function metricPayload(metric, result) {
   return {
     metric,
     serviceDate,
-    source: 'clickhouse-static-snapshot',
+    source,
     publishedAt,
     rows: result.data ?? [],
     statistics: result.statistics ?? null,
