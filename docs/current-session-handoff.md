@@ -1,7 +1,49 @@
 # Current Session Handoff
 
-Date: 2026-06-22  
-Mode: **Producer handoff** — for Codex or next agent to continue.
+Date: 2026-06-23  
+Mode: **Producer handoff** — for the next session.
+
+---
+
+## ⏩ READ FIRST — 2026-06-23 handoff
+
+**Repo:** `/Users/unknowntpo/repo/unknowntpo/twfoundry/main` · branch `main` · clean · pushed · HEAD `cb28387`.
+
+### ⚠️ Background tasks DO NOT carry over — restart if needed
+This session left two background tasks running in the *previous* process; a new session starts with none:
+- **Redpanda Console port-forward** (the user actively uses this). Restart with a self-healing loop:
+  ```bash
+  while true; do KUBECONFIG=~/.kube/config-morefine kubectl -n twfoundry-data \
+    port-forward svc/redpanda-console 8080:8080; sleep 2; done   # run_in_background
+  ```
+  then http://localhost:8080. (Kill old: `pkill -f "port-forward svc/redpanda-console"`.)
+- Any signal/CI **pollers** were transient — re-create as needed (see commands below).
+
+### What's working now (verify, don't rebuild)
+- **Live Flink speed layer end-to-end**: `/bus-oversight` "路線訊號紀錄" panel shows live `大空窗`/`車輛群聚` signals. Pipeline: TDX→ingestion→Kafka→route-sentinel(Flink, checkpointing OFF, `latest`)→`online.tdx.bus_route_signal`→signal-publisher(persistent consumer + periodic publish)→R2→`/api/online/bus-route-signals`→dashboard.
+- **Frontend IA**: `/` = multi-layer **OperationsExplorer** map; `/bus-oversight` = bus dashboard (reached via header "公車服務控制台" button). Planned layers (MRT/YouBike/signals) show as disabled "Coming soon". Oversight page has dark full-width bg (no light side margins).
+- All 4 `bus-track-b` containers + kafka-0 + redpanda-console Running 0 restarts (ns `twfoundry-data`, `~/.kube/config-morefine`).
+
+### ▶ FIRST ACTION — finish verifying "A: live KPIs"
+Shipped this session: oversight `大空窗事件`/`車輛群聚事件` KPI cards now show **live current-slot counts** from the bundle's new `counts` field, tagged `即時 · HH:MM` (fallback to batch when absent). At handoff the cluster was in the **post-redeploy warmup gap** (sentinel reads `latest`, only flushes on the 2nd slot transition → ~6–12 min of `waiting_for_flink` after every `rollout restart`). **Verify it recovered:**
+```bash
+curl -s 'https://twfoundry-poc.pages.dev/api/online/bus-route-signals?limit=2' | jq '.status, .counts, .latestSlotKey'
+# expect status "ok" + counts {gap,bunching,total}; then the KPI cards should read live, not 50/0.
+```
+If still empty after ~15 min, check sentinel is emitting: `kubectl -n twfoundry-data exec kafka-0 -- kafka-run-class kafka.tools.GetOffsetShell --bootstrap-server localhost:9092 --topic online.tdx.bus_route_signal` (readable = high−low should grow each slot).
+
+### Then: dashboard UX discussion (items B/D/E still open) + Lambda design
+- **B (answered, now Linear UNK-37)**: speed+batch merge via a **serving-layer watermark** ("同一套規則、兩種算力、一個 serving 出口"). Past=batch, live-edge=speed, seam at watermark. Depends on the batch layer (M5).
+- **A caveat**: only the 2 signal-type KPIs are live; reliability/7-day timeline/focus-route are still the **frozen 2026-05-20 batch snapshot** (`/data/analytics/bus/*.json`). Full live needs the batch layer (Linear M5: UNK-34/35/36).
+- **Still to discuss with user**: D (KPI number consistency), E (i18n/empty-state copy), and whether to relabel the batch service-date honestly.
+
+### Linear (project `twfoundry`, team UNK, prefix `UNK-`)
+Milestones M1–M5 + issues UNK-19..37 seeded. Done = M1/M2; open = M3 cutover, M4 hardening (UNK-30 Avro+checkpointing), M5 batch + UNK-37 watermark merge. See memory `twfoundry-linear-project`. Keep Linear in sync when issues complete.
+
+### Known recurring gotchas
+- **Every `rollout restart` → ~6–12 min signal warmup** (sentinel `latest` + flush-on-slot-transition). Not a bug.
+- **NEVER local docker build** (arm Mac → amd64 cluster exec-format error). Push → CI builds 5 images → `kubectl rollout restart deploy/bus-track-b`.
+- Frontend deploy: `cd frontend && bun run build && bun run deploy:cloudflare-pages -- --project-name twfoundry-poc --commit-dirty=true`.
 
 ---
 
