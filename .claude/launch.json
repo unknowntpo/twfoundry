@@ -2,6 +2,20 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "frontend",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "frontend",
+      "port": 5173
+    },
+    {
+      "name": "frontend-rolling",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["run", "dev:rolling"],
+      "cwd": "frontend",
+      "port": 5173
+    },
+    {
       "name": "design-mockup",
       "runtimeExecutable": "npx",
       "runtimeArgs": ["serve", "-p", "4321", "design"],

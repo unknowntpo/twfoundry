@@ -47,3 +47,4 @@ data/analytics-rolling/
 cloudflare/bus/
 __pycache__/
 *.pyc
+frontend/public/data/analytics-rolling/
