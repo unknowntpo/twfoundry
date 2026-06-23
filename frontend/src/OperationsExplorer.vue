@@ -76,7 +76,6 @@ const trackVehicleMode = ref(false);
 const trackedVehicleId = ref('');
 const lastTrackedObservation = ref(null);
 const ghostMode = ref(false);
-const routeProgressEncoding = ref(false);
 const routeFilter = ref('all');
 const hideStale = ref(false);
 const layerVisible = ref(true);
@@ -186,11 +185,6 @@ const selectedRouteQualityLabel = computed(() => {
   const p95 = Math.max(...readyRows.map((routeQuality) => Number(routeQuality.p95DistanceToRouteMeters ?? 0)));
   return t('routeQuality.ready', { count: readyRows.length, p95: Math.round(p95) });
 });
-const routeProgressEncodingEnabled = computed(() => (
-  routeProgressEncoding.value
-  && routeFilter.value !== 'all'
-  && selectedRouteGeometryReady.value
-));
 const visibleObservations = computed(() => filterOperationsObservations(observations.value, {
   routeName: routeFilter.value,
   hideStale: hideStale.value,
@@ -236,11 +230,7 @@ const displayMapObservations = computed(() => {
         && observation.route.direction === selected.route.direction
       )
     ));
-  if (!routeProgressEncodingEnabled.value || routeProgressEncodingMap.value.size === 0) return baseObservations;
-  return baseObservations.map((observation) => ({
-    ...observation,
-    routeProgress: routeProgressEncodingMap.value.get(observation.id) ?? null,
-  }));
+  return baseObservations;
 });
 const transitSignalEntries = computed(() => (
   routeFilter.value === 'all'
@@ -1000,7 +990,6 @@ watch(
 
 watch(
   () => [
-    routeProgressEncoding.value,
     activeSnapshotIndex.value,
     observations.value,
     routeQualityManifest.value?.generatedAt ?? '',
@@ -1626,7 +1615,6 @@ onBeforeUnmount(() => {
           :observations="displayMapObservations"
           :ghost-observations="ghostObservations"
           :route-stop-locations="routeStopLocations"
-          :route-progress-encoding="routeProgressEncodingEnabled"
           :selected-observation-id="selectedObservation?.id ?? ''"
           :visible="layerVisible"
           :point-scale="pointSize"
@@ -1802,17 +1790,6 @@ onBeforeUnmount(() => {
           <label class="checkbox">
             <input v-model="hideStale" type="checkbox">
             <span class="check-label">{{ t('filters.hideStale') }}</span>
-          </label>
-          <label class="checkbox experimental-toggle">
-            <input
-              v-model="routeProgressEncoding"
-              type="checkbox"
-              :disabled="routeFilter === 'all'"
-            >
-            <span class="check-label">
-              <strong>{{ t('routeProgressEncoding.title') }}</strong>
-              <small>{{ t('routeProgressEncoding.copy') }}</small>
-            </span>
           </label>
         </section>
 
@@ -3028,35 +3005,6 @@ select {
 
 .checkbox input {
   accent-color: var(--accent);
-}
-
-.experimental-toggle {
-  align-items: flex-start;
-  padding: 8px;
-  border: 1px dashed color-mix(in oklch, var(--warn) 46%, var(--border));
-  border-radius: 8px;
-  background: color-mix(in oklch, var(--warn) 5%, transparent);
-}
-
-.experimental-toggle input {
-  margin-top: 2px;
-}
-
-.experimental-toggle strong,
-.experimental-toggle small {
-  display: block;
-}
-
-.experimental-toggle strong {
-  color: color-mix(in oklch, var(--warn) 58%, white);
-  font-size: 11px;
-}
-
-.experimental-toggle small {
-  margin-top: 3px;
-  color: var(--muted);
-  font-size: 10px;
-  line-height: 1.35;
 }
 
 .mini-table {
