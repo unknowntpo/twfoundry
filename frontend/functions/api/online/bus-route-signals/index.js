@@ -49,6 +49,7 @@ function limitSignals(bundle, searchParams) {
     status: bundle.status ?? (signals.length > 0 ? 'ok' : 'waiting_for_flink'),
     generatedAt: bundle.generatedAt ?? null,
     latestSlotKey: bundle.latestSlotKey ?? null,
+    counts: bundle.counts ?? null,
     signals,
   };
 }
@@ -60,6 +61,7 @@ function emptyBundle() {
     status: 'waiting_for_flink',
     generatedAt: null,
     latestSlotKey: null,
+    counts: null,
     signals: [],
   };
 }
