@@ -1656,6 +1656,7 @@ onBeforeUnmount(() => {
             {{ option.label }}
           </button>
         </div>
+        <a class="btn primary" href="/bus-oversight">{{ t('nav.busOversight') }}</a>
         <button class="btn" type="button" @click="healthDrawerOpen = true">{{ t('drawer.title') }}</button>
       </div>
     </header>
@@ -2529,6 +2530,8 @@ onBeforeUnmount(() => {
 }
 
 .btn {
+  display: inline-flex;
+  align-items: center;
   height: 32px;
   border: 1px solid color-mix(in oklch, var(--border) 64%, transparent);
   border-radius: 7px;
@@ -2537,6 +2540,7 @@ onBeforeUnmount(() => {
   padding: 0 11px;
   font-size: 12px;
   font-weight: 510;
+  text-decoration: none;
 }
 
 .btn:hover,
