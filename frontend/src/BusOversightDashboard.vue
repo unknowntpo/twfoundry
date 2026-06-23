@@ -490,9 +490,6 @@ function formatPublishedAt(value) {
         <span class="day-pill data-mode-pill" :title="dataModeDetail">
           {{ dataModeLabel }}
         </span>
-        <span class="day-pill">
-          {{ currentSlot ? t('oversight.serviceDate', { date: currentSlot.date }) : t('oversight.noDate') }}
-        </span>
         <div class="locale-switch" :aria-label="t('app.language')">
           <button
             v-for="option in SUPPORTED_LOCALES"
