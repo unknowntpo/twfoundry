@@ -38,8 +38,18 @@ public final class BusRouteSentinelJob {
         config.startingOffsets(), config.routeContextDirectory(), geometryIndex.size());
 
     StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-    env.enableCheckpointing(config.checkpointIntervalMillis());
-    env.getCheckpointConfig().setCheckpointStorage(config.checkpointDirectory());
+    // Speed layer is ephemeral live-alerting: it reads from the stream tip and emits transient
+    // signals. Durable/replayable history is the batch layer's job (Lambda architecture), so by
+    // default we do NOT checkpoint. Checkpointing the operator state here forced Kryo's
+    // FieldSerializer onto our Java `record` state types (EnrichedBusVehicleObservation), which
+    // throws "can't get field offset on a record class" every checkpoint -> the job restart-looped
+    // and re-emitted the backlog (millions of duplicate signals). Enable only with a >0 interval
+    // once the state types are real Flink POJOs.
+    boolean checkpointing = config.checkpointIntervalMillis() > 0;
+    if (checkpointing) {
+      env.enableCheckpointing(config.checkpointIntervalMillis());
+      env.getCheckpointConfig().setCheckpointStorage(config.checkpointDirectory());
+    }
 
     KafkaSource<String> source = KafkaSource.<String>builder()
         .setBootstrapServers(config.kafkaBrokers())
@@ -55,7 +65,7 @@ public final class BusRouteSentinelJob {
             .setTopic(config.outputTopic())
             .setValueSerializationSchema(new SimpleStringSchema())
             .build())
-        .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
+        .setDeliveryGuarantee(checkpointing ? DeliveryGuarantee.AT_LEAST_ONCE : DeliveryGuarantee.NONE)
         .build();
 
     DataStream<String> rawPositions =
@@ -143,7 +153,7 @@ public final class BusRouteSentinelJob {
           doubleEnv("BUS_SENTINEL_SERVICE_GAP_MINUTES", BusRouteSentinelProcessor.DEFAULT_SERVICE_GAP_MINUTES),
           doubleEnv("BUS_SENTINEL_BUNCHING_PROGRESS_GAP_RATIO", BusRouteSentinelProcessor.DEFAULT_BUNCHING_PROGRESS_GAP_RATIO),
           intEnv("BUS_SENTINEL_BUNCHING_CONFIRMATION_SLOTS", BusRouteSentinelProcessor.DEFAULT_BUNCHING_CONFIRMATION_SLOTS),
-          longEnv("BUS_SENTINEL_CHECKPOINT_INTERVAL_MS", 60_000L),
+          longEnv("BUS_SENTINEL_CHECKPOINT_INTERVAL_MS", 0L),
           env("BUS_SENTINEL_CHECKPOINT_DIR", "file:///flink-checkpoints/bus-route-sentinel")
       );
     }
