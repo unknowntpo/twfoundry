@@ -5,6 +5,32 @@ Mode: **Producer handoff** — for the next session.
 
 ---
 
+## ⏩ READ FIRST — 2026-06-23 evening (UI declutter + M5 batch layer)
+
+Two parallel branches off `main`, both pushed; neither merged, no prod/homelab changes made.
+
+### Branch `ui/operations-explorer-dedup` → PR [#1](https://github.com/unknowntpo/twfoundry/pull/1)
+Frontend-only UI/UX pass (root operations explorer + bus dashboard): removed duplicated UI, promoted the layer switcher to top chrome, distinguished live-vs-batch KPIs, etc. + `dev:remote` to pull real R2 live signals locally. Build/tests green; verified in preview. **Awaiting review/merge.**
+
+### Branch `m5-batch-layer` — batch analytics layer (the Lambda batch half)
+Replaces the frozen `clickhouse-static-snapshot` with a rolling, dated bus service-health dataset. **Verified locally; NOT deployed to homelab and prod NOT cut over** (deliberate — needs human review of rolling data first).
+
+- **Design/spec**: `openspec/changes/batch-analytics-layer/` (proposal+design+specs+tasks; spectra-validated).
+- **Verified locally** (against local ClickHouse `docker-compose` + `data/lake/2026-06-19/20/21.jsonl`):
+  - `infra/clickhouse/scripts/load-lake-observations.mjs` — idempotent lake→ClickHouse loader (the missing ingestion step). Loaded 06-21 = 23,195 rows / 285 routes.
+  - `frontend/scripts/publish-clickhouse-bus-analytics.mjs` — added `--lookback-days` (real multi-day timeline via `LIMIT n BY service_date`) + configurable `--source` (honest provenance, default unchanged).
+  - `infra/clickhouse/scripts/run-bus-service-health-pipeline.mjs` — chains load→publish (the daily roll-up).
+  - `BusOversightDashboard.vue` — `VITE_TWFOUNDRY_ANALYTICS_BASE` env-switch (default static fallback).
+  - Visual proof: `bun run dev:rolling` shows the dashboard on serviceDate **2026-06-21** (not frozen 05-20) with a real multi-day timeline (06-15..06-21).
+- **Committed but NOT deployed/run on cluster** (see `infra/clickhouse/README.md` status table):
+  - `airflow/dags/bus_service_health_daily.py` — daily DAG (syntax-checked only).
+  - `infra/clickhouse/scripts/upload-bus-analytics.mjs` — R2 upload (dry-run verified; needs wrangler auth).
+- **NOT started / pending** (next session): Iceberg lakehouse curated store on R2; deploy Airflow DAG on homelab; **bunching enrichment** (lake rows lack `route_progress_*` → batch bunching only on days that already have progress data); **prod cutover** (flip dashboard default to R2 rolling dataset + retire static snapshot).
+
+> ⚠️ Local ClickHouse must be running (`infra/clickhouse/docker-compose.yml`, default `twfoundry`/`twfoundry_dev`) for the pipeline. The committed `frontend/public/data/analytics/bus/*` static snapshot was left untouched (still the prod fallback).
+
+---
+
 ## ⏩ READ FIRST — 2026-06-23 handoff
 
 **Repo:** `/Users/unknowntpo/repo/unknowntpo/twfoundry/main` · branch `main` · clean · pushed · HEAD `cb28387`.
