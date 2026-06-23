@@ -1586,6 +1586,19 @@ onBeforeUnmount(() => {
           <div class="brand-sub">{{ t('app.subtitle') }}</div>
         </div>
       </div>
+      <div class="top-layer-switcher">
+        <span class="top-layer-eyebrow">{{ t('layer.label') }}</span>
+        <select id="topLayerSelect" v-model="activeLayerId" :aria-label="t('filters.layerFilter')">
+          <option
+            v-for="layer in layerOptions"
+            :key="layer.id"
+            :value="layer.id"
+            :disabled="layer.status !== 'active'"
+          >
+            {{ t(layer.shortLabelKey) }}{{ layer.status !== 'active' ? ` · ${t('layer.planned')}` : '' }}
+          </option>
+        </select>
+      </div>
       <div class="status-strip" :aria-label="t('status.aria')">
         <div class="metric metric-source"><span class="dot accent"></span><strong>{{ sourceTitle }}</strong></div>
         <div class="metric metric-time"><span>{{ t('status.time') }}</span><strong>{{ activeSnapshotLabel }}</strong><em v-if="activeSnapshotTimeZoneLabel">{{ activeSnapshotTimeZoneLabel }}</em></div>
@@ -1662,18 +1675,6 @@ onBeforeUnmount(() => {
     <aside class="panel left-panel" :aria-label="t('layer.aria')">
       <div class="panel-header">
         <div class="eyebrow"><span>{{ t('layer.label') }}</span><span>{{ layerVisible ? t('layer.visible') : t('layer.hidden') }}</span></div>
-        <div class="field layer-field">
-          <select id="layerSelect" v-model="activeLayerId" :aria-label="t('filters.layerFilter')">
-            <option
-              v-for="layer in layerOptions"
-              :key="layer.id"
-              :value="layer.id"
-              :disabled="layer.status !== 'active'"
-            >
-              {{ t(layer.shortLabelKey) }}{{ layer.status !== 'active' ? ` · ${t('layer.planned')}` : '' }}
-            </option>
-          </select>
-        </div>
         <h1 class="panel-title">{{ t(activeLayer.labelKey) }}</h1>
         <p class="panel-copy">{{ t(activeLayer.descriptionKey) }}</p>
         <div class="badge-row">
@@ -2222,7 +2223,7 @@ onBeforeUnmount(() => {
   z-index: 40;
   height: 52px;
   display: grid;
-  grid-template-columns: max-content 1fr max-content;
+  grid-template-columns: max-content max-content 1fr max-content;
   align-items: center;
   gap: 14px;
   padding: 0 14px;
@@ -2260,6 +2261,29 @@ onBeforeUnmount(() => {
   margin-top: 2px;
   color: var(--muted);
   font: 11px/1.1 var(--font-mono);
+}
+
+/* Top-level layer switcher: cross-layer navigation lives in the chrome,
+   separated from the selected layer's content in the left panel. */
+.top-layer-switcher {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 14px;
+  border-left: 1px solid color-mix(in oklch, var(--border) 56%, transparent);
+}
+
+.top-layer-eyebrow {
+  color: var(--muted);
+  font: 10px/1 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.top-layer-switcher select {
+  width: auto;
+  min-width: 152px;
+  height: 30px;
 }
 
 .status-strip {
