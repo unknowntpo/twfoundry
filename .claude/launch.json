@@ -9,6 +9,13 @@
       "port": 5173
     },
     {
+      "name": "frontend-remote",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["run", "dev:remote"],
+      "cwd": "frontend",
+      "port": 5173
+    },
+    {
       "name": "analytics-api",
       "runtimeExecutable": "bun",
       "runtimeArgs": ["src/server.mjs"],

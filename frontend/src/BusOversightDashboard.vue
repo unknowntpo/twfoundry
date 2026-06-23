@@ -224,8 +224,13 @@ async function loadLiveSignals() {
   }
 }
 
+// Dev opt-in: set VITE_TWFOUNDRY_LIVE_SIGNALS=remote to pull the real R2-backed
+// bundle locally via the /api proxy (see vite.config.js server.proxy) instead of
+// the empty static fallback. Lets us tune the UI against real Flink signals.
+const LIVE_SIGNALS_REMOTE = import.meta.env.VITE_TWFOUNDRY_LIVE_SIGNALS === 'remote';
+
 function liveSignalPath() {
-  if (isLocalHost()) return '/data/online/bus-route-signals/latest.json';
+  if (isLocalHost() && !LIVE_SIGNALS_REMOTE) return '/data/online/bus-route-signals/latest.json';
   return '/api/online/bus-route-signals?limit=8';
 }
 
