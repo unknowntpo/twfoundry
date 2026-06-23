@@ -33,7 +33,8 @@ async function runContinuous(options) {
   const sleepMs = Number(options['sleep-ms'] ?? process.env.BUS_ROUTE_SIGNAL_PUBLISH_SLEEP_MS ?? 30_000);
   const output = resolve(process.cwd(), options.output ?? process.env.BUS_ROUTE_SIGNAL_OUTPUT ?? DEFAULT_OUTPUT);
   const doUpload = Boolean(options.upload || process.env.BUS_ROUTE_SIGNAL_UPLOAD_R2 === 'true');
-  const retain = Math.max(limit * 4, 200);
+  // Keep enough to hold a whole slot's signals (can be a few hundred) for accurate counts.
+  const retain = Math.max(limit * 40, 2000);
 
   const { Kafka, logLevel } = await import('kafkajs');
   const kafka = new Kafka({ clientId: 'twfoundry-bus-route-signal-publisher', brokers, logLevel: logLevel.WARN });
@@ -117,17 +118,28 @@ async function publishOnce(options) {
 }
 
 export function bundleSignals(signals, { limit = 50, generatedAt = new Date().toISOString() } = {}) {
-  const normalized = signals
+  const valid = signals
     .filter((signal) => signal && typeof signal === 'object')
-    .sort((left, right) => String(right.detected_at ?? '').localeCompare(String(left.detected_at ?? '')))
-    .slice(0, limit);
+    .sort((left, right) => String(right.detected_at ?? '').localeCompare(String(left.detected_at ?? '')));
+  const normalized = valid.slice(0, limit);
+  const latest = latestSlotKey(valid);
+
+  // Accurate counts for the latest slot over the FULL input (not the display-capped sample), so the
+  // dashboard KPIs can show live gap/bunching totals. Assumes the buffer holds a whole slot.
+  const inLatestSlot = latest ? valid.filter((signal) => signal.slot_key === latest) : [];
+  const counts = {
+    gap: inLatestSlot.filter((signal) => signal.type === 'suspected_gap').length,
+    bunching: inLatestSlot.filter((signal) => signal.type === 'suspected_bunching').length,
+    total: inLatestSlot.length,
+  };
 
   return {
     schema: 'twfoundry.online.tdx.bus_route_signal_bundle.v1',
     source: 'flink-speed-layer',
     status: normalized.length > 0 ? 'ok' : 'waiting_for_flink',
     generatedAt,
-    latestSlotKey: latestSlotKey(normalized),
+    latestSlotKey: latest,
+    counts,
     signals: normalized,
   };
 }
