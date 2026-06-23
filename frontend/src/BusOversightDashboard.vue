@@ -116,6 +116,7 @@ const kpiCards = computed(() => {
     {
       key: 'reliability',
       primary: true,
+      live: false,
       label: t('oversight.kpi.reliability'),
       info: t('oversight.kpi.reliability.info'),
       value: kpis.reliability ?? '—',
@@ -124,6 +125,7 @@ const kpiCards = computed(() => {
     },
     {
       key: 'routes',
+      live: false,
       label: t('oversight.kpi.routes'),
       info: t('oversight.kpi.routes.info'),
       value: kpis.routes,
@@ -132,6 +134,7 @@ const kpiCards = computed(() => {
     {
       key: 'serviceGaps',
       tone: 'critical',
+      live: true,
       label: t('oversight.kpi.serviceGaps'),
       info: t('oversight.kpi.serviceGaps.info'),
       value: liveCounts.value ? liveCounts.value.gap : kpis.serviceGaps,
@@ -142,6 +145,7 @@ const kpiCards = computed(() => {
     {
       key: 'bunching',
       tone: 'warning',
+      live: true,
       label: t('oversight.kpi.bunching'),
       info: t('oversight.kpi.bunching.info'),
       value: liveCounts.value ? liveCounts.value.bunching : kpis.bunching,
@@ -152,6 +156,7 @@ const kpiCards = computed(() => {
     {
       key: 'lowCapacity',
       tone: 'watch',
+      live: false,
       label: t('oversight.kpi.lowCapacity'),
       info: t('oversight.kpi.lowCapacity.info'),
       value: kpis.lowCapacity,
@@ -507,10 +512,15 @@ function formatPublishedAt(value) {
         v-for="card in kpiCards"
         :key="card.key"
         class="kpi"
-        :class="[{ primary: card.primary }, card.tone ? `tone-${card.tone}` : '']"
+        :class="[{ primary: card.primary, 'is-live': card.live }, card.tone ? `tone-${card.tone}` : '']"
       >
         <div class="kpi-top">
-          <span class="kpi-label">{{ card.label }}</span>
+          <span class="kpi-headline">
+            <span class="kpi-label">{{ card.label }}</span>
+            <span class="kpi-source" :class="card.live ? 'live' : 'batch'">
+              <span v-if="card.live" class="kpi-source-dot"></span>{{ card.live ? t('oversight.kpi.liveSource') : t('oversight.kpi.batchSource') }}
+            </span>
+          </span>
           <button class="kpi-i" type="button" :aria-label="t('oversight.info')">
             i
             <span class="kpi-pop">{{ card.info }}</span>
@@ -987,6 +997,39 @@ function formatPublishedAt(value) {
   font: 11px/1.2 var(--mono);
   letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+.kpi-headline {
+  display: grid;
+  gap: 6px;
+  justify-items: start;
+}
+/* Source tag: distinguishes speed-layer "Live" KPIs from the frozen batch snapshot. */
+.kpi-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--mono-muted);
+  font: 10px/1.5 var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.kpi-source.live {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+}
+.kpi-source-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 6px currentColor;
+}
+.kpi.is-live {
+  border-top: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
 }
 
 .kpi-i {
