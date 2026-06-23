@@ -19,6 +19,11 @@ const outputRoot = options['output-root'] ?? DEFAULT_OUTPUT_ROOT;
 const source = options.source ?? process.env.TWFOUNDRY_ANALYTICS_SOURCE ?? 'clickhouse-static-snapshot';
 const limit = positiveInteger(options.limit, 50);
 const minHeadwayMinutes = positiveInteger(options['min-headway-minutes'], 14);
+// Density/bunching are queried over a trailing window so the dashboard's 7-day
+// timeline reflects real multiple days. Default 1 keeps the single-day snapshot
+// behaviour; the rolling pipeline passes --lookback-days 7.
+const lookbackDays = positiveInteger(options['lookback-days'], 1);
+const rangeStart = addDays(serviceDate, -(lookbackDays - 1));
 const publishedAt = new Date().toISOString();
 
 if (!/^\d{4}-\d{2}-\d{2}$/.test(serviceDate)) {
@@ -52,6 +57,8 @@ writeFileSync(manifestPath, `${JSON.stringify({
   source,
   publishedAt,
   serviceDate,
+  lookbackDays,
+  rangeStart,
   clickhouse: {
     url: publicClickhouseLabel(clickhouseUrl),
     database,
@@ -78,6 +85,7 @@ console.log(JSON.stringify({
 async function buildRouteDensity() {
   const result = await clickhouse(`
     SELECT
+      service_date,
       toStartOfInterval(slot_start, INTERVAL 15 MINUTE) AS bucket_start,
       route_name,
       direction,
@@ -85,11 +93,11 @@ async function buildRouteDensity() {
       round(avg(speed_kph), 1) AS avg_speed_kph,
       countIf(speed_kph = 0) AS stopped_reports
     FROM ${tableName()}
-    WHERE service_date = toDate('${serviceDate}')
-    GROUP BY bucket_start, route_name, direction
+    WHERE service_date BETWEEN toDate('${rangeStart}') AND toDate('${serviceDate}')
+    GROUP BY service_date, bucket_start, route_name, direction
     HAVING active_vehicles >= 3
-    ORDER BY bucket_start ASC, active_vehicles DESC
-    LIMIT ${limit}
+    ORDER BY active_vehicles DESC, bucket_start ASC
+    LIMIT ${limit} BY service_date
     FORMAT JSON
   `);
 
@@ -125,6 +133,7 @@ async function buildBunching() {
   const result = await clickhouse(`
     WITH ordered AS (
       SELECT
+        service_date,
         slot_start,
         route_uid,
         route_name,
@@ -134,7 +143,7 @@ async function buildBunching() {
         leadInFrame(vehicle_id) OVER route_window AS leading_vehicle_id,
         leadInFrame(route_progress_ratio) OVER route_window AS leading_progress
       FROM ${tableName()}
-      WHERE service_date = toDate('${serviceDate}')
+      WHERE service_date BETWEEN toDate('${rangeStart}') AND toDate('${serviceDate}')
         AND route_progress_ratio IS NOT NULL
         AND distance_to_route_meters <= 120
       WINDOW route_window AS (
@@ -144,6 +153,7 @@ async function buildBunching() {
       )
     )
     SELECT
+      service_date,
       slot_start,
       route_name,
       direction,
@@ -158,7 +168,7 @@ async function buildBunching() {
       AND leading_progress > trailing_progress
       AND estimated_headway_minutes >= ${minHeadwayMinutes}
     ORDER BY estimated_headway_minutes DESC
-    LIMIT ${limit}
+    LIMIT ${limit} BY service_date
     FORMAT JSON
   `);
 
@@ -214,6 +224,12 @@ function publicClickhouseLabel(value) {
 
 function stripTrailingSlash(value) {
   return value.replace(/\/+$/, '');
+}
+
+function addDays(date, days) {
+  const d = new Date(`${date}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
 }
 
 function parseArgs(args) {

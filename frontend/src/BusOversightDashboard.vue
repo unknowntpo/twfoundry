@@ -183,13 +183,22 @@ watch(() => selectedRoute.value?.routeName, async (routeName) => {
   await loadRouteContext(routeName);
 }, { immediate: true });
 
+// Batch analytics source. Default is the bundled static dataset (offline/local
+// fallback). Set VITE_TWFOUNDRY_ANALYTICS_BASE to the rolling dataset prefix
+// (e.g. an R2-served path) to consume the daily batch-layer output instead.
+const ANALYTICS_BASE = (import.meta.env.VITE_TWFOUNDRY_ANALYTICS_BASE ?? '').replace(/\/+$/, '');
+
+function analyticsUrl(file) {
+  return ANALYTICS_BASE ? `${ANALYTICS_BASE}/${file}` : `/data/analytics/bus/${file}`;
+}
+
 async function loadAnalytics() {
   try {
     const [manifest, bunching, freshness, density] = await Promise.all([
-      fetchJson('/data/analytics/bus/manifest.json'),
-      fetchJson('/data/analytics/bus/bunching.json'),
-      fetchJson('/data/analytics/bus/data-freshness.json'),
-      fetchJson('/data/analytics/bus/route-density.json'),
+      fetchJson(analyticsUrl('manifest.json')),
+      fetchJson(analyticsUrl('bunching.json')),
+      fetchJson(analyticsUrl('data-freshness.json')),
+      fetchJson(analyticsUrl('route-density.json')),
     ]);
     analyticsManifest.value = manifest;
     analytics.value = { bunching, freshness, density };
