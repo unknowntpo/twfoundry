@@ -13,6 +13,19 @@ data:
       <mark_cache_size>67108864</mark_cache_size>
       <uncompressed_cache_size>33554432</uncompressed_cache_size>
     </clickhouse>
+  network.xml: |
+    <!-- The stock image restricts the `default` user to localhost; allow it over
+         the cluster network so the schema job / cronjob pods can connect. Safe:
+         clickhouse is a ClusterIP service in twfoundry-data, not externally exposed. -->
+    <clickhouse>
+      <users>
+        <default>
+          <networks replace="replace">
+            <ip>::/0</ip>
+          </networks>
+        </default>
+      </users>
+    </clickhouse>
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -109,10 +122,9 @@ spec:
           env:
             - name: CLICKHOUSE_DB
               value: twfoundry
-            - name: CLICKHOUSE_USER
-              value: default
-            - name: CLICKHOUSE_PASSWORD
-              value: ""
+            # NOTE: do NOT set CLICKHOUSE_USER=default / CLICKHOUSE_PASSWORD="" — the
+            # official image's handling of that combo makes the default user require
+            # auth, breaking no-password clients. Stock default user is password-less.
           ports:
             - name: http
               containerPort: 8123
@@ -124,6 +136,9 @@ spec:
             - name: clickhouse-config
               mountPath: /etc/clickhouse-server/config.d/memory.xml
               subPath: memory.xml
+            - name: clickhouse-config
+              mountPath: /etc/clickhouse-server/users.d/zz-network.xml
+              subPath: network.xml
           resources:
             requests:
               cpu: 250m
