@@ -36,6 +36,9 @@ const model = computed(() => buildBusOversightModel({
   bunching: analytics.value.bunching,
   freshness: analytics.value.freshness,
   density: analytics.value.density,
+  // Speed-layer signals stitch onto the live edge after the batch watermark
+  // (only when batch is current enough to be contiguous — see buildBusOversightModel).
+  liveSignals: recentLiveSignals.value,
   selectedRouteName: selectedRouteName.value,
   selectedSlotIndex: selectedSlotIndex.value,
 }));
@@ -587,12 +590,19 @@ function formatPublishedAt(value) {
           class="tl-cell"
           :class="[
             `sev-${severityForSlot(slot)}`,
-            { active: index === currentSlotIndex, 'day-sep': slot.hour === 0 && index > 0, empty: !slot.hasData },
+            { active: index === currentSlotIndex, 'day-sep': slot.hour === 0 && index > 0, empty: !slot.hasData, provisional: slot.provisional },
           ]"
           :style="{ height: slotHeight(slot, index) }"
           :title="slotTitle(slot)"
           @click="selectSlot(index)"
         ></button>
+        <div
+          v-if="model.watermarkIndex >= 0 && model.hasSpeedLayer"
+          class="tl-watermark"
+          :style="{ left: `${model.timeline.length <= 1 ? 0 : (model.watermarkIndex / (model.timeline.length - 1)) * 100}%` }"
+        >
+          <span class="tl-watermark-tag">{{ t('oversight.timeline.liveEdge') }}</span>
+        </div>
       </div>
 
       <div class="tl-track" @mousemove="updateTimelineHover" @mouseleave="clearTimelineHover">
@@ -643,6 +653,7 @@ function formatPublishedAt(value) {
         <span><b class="swatch watch"></b>{{ t('oversight.severity.watch') }}</span>
         <span><b class="swatch warning"></b>{{ t('oversight.severity.warning') }}</span>
         <span><b class="swatch critical"></b>{{ t('oversight.severity.critical') }}</span>
+        <span v-if="model.hasSpeedLayer" class="legend-provisional"><b class="swatch provisional"></b>{{ t('oversight.severity.liveProvisional') }}</span>
       </div>
     </section>
 
@@ -1219,6 +1230,7 @@ function formatPublishedAt(value) {
 }
 
 .tl-strip {
+  position: relative;
   display: flex;
   align-items: flex-end;
   gap: 2px;
@@ -1266,6 +1278,47 @@ function formatPublishedAt(value) {
 .tl-cell.active {
   outline: 2px solid #d8fbff;
   outline-offset: 1px;
+}
+
+/* Speed-layer (post-watermark) bars — provisional, may revise. Hatched + outlined
+   + gentle pulse so they read as "live, not yet settled" vs solid batch bars. */
+.tl-cell.provisional {
+  background-image: repeating-linear-gradient(135deg, rgba(46, 199, 232, 0.5) 0 2px, transparent 2px 5px);
+  background-color: rgba(46, 199, 232, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(46, 199, 232, 0.55);
+  animation: tl-provisional-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes tl-provisional-pulse {
+  0%, 100% { opacity: 0.68; }
+  50% { opacity: 1; }
+}
+
+/* Watermark: the seam where batch hands off to the live speed layer. */
+.tl-watermark {
+  position: absolute;
+  top: -6px;
+  bottom: 0;
+  width: 0;
+  border-left: 1px dashed rgba(46, 199, 232, 0.75);
+  pointer-events: none;
+}
+
+.tl-watermark-tag {
+  position: absolute;
+  top: -14px;
+  left: 5px;
+  color: var(--accent);
+  font: 9px/1 var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.swatch.provisional {
+  background-image: repeating-linear-gradient(135deg, var(--accent) 0 2px, transparent 2px 4px);
+  background-color: rgba(46, 199, 232, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(46, 199, 232, 0.55);
 }
 
 .tl-track {

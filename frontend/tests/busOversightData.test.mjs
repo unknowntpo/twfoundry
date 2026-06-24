@@ -103,4 +103,38 @@ assert.equal(schematic.destination, '終點');
 assert.ok(schematic.problemSegments.length > 0);
 assert.ok(schematic.pins.length > 0);
 
+// --- Lambda watermark merge: speed layer stitches onto the live edge ---
+const contiguousBatch = {
+  serviceDate: '2026-06-23',
+  rows: [{
+    slot_start: '2026-06-23 08:15:00.000',
+    route_name: '530', direction: 1,
+    trailing_vehicle_id: 'A', leading_vehicle_id: 'B',
+    trailing_progress: 0.2, leading_progress: 0.8, progress_gap_ratio: 0.6,
+    estimated_headway_minutes: 36,
+  }],
+};
+const liveSignals = [{
+  type: 'suspected_gap', slot_key: '2026-06-24T14:25+08:00',
+  route_name: '530', direction: 1, headway_min_est: 33, progress_gap_ratio: 0.69,
+}];
+
+const merged = buildBusOversightModel({ bunching: contiguousBatch, liveSignals });
+assert.equal(merged.watermarkDate, '2026-06-23', 'watermark = batch latest day');
+assert.equal(merged.serviceDate, '2026-06-24', 'timeline extends to the live edge');
+assert.ok(merged.hasSpeedLayer, 'speed layer merged');
+const liveSlot = merged.timeline.find((slot) => slot.key === '2026-06-24T14');
+assert.ok(liveSlot && liveSlot.provisional && liveSlot.hasData, 'live-edge slot is provisional with data');
+const batchSlot = merged.timeline.find((slot) => slot.key === '2026-06-23T08');
+assert.ok(batchSlot && !batchSlot.provisional && batchSlot.hasData, 'batch slot is settled, not provisional');
+
+// Stale batch (far from live edge) → no merge, batch-only timeline (prod-safe fallback).
+const staleMerge = buildBusOversightModel({
+  bunching: { serviceDate: '2026-05-20', rows: [{ ...contiguousBatch.rows[0], slot_start: '2026-05-20 08:15:00.000' }] },
+  liveSignals,
+});
+assert.equal(staleMerge.serviceDate, '2026-05-20', 'stale batch keeps batch-only timeline');
+assert.equal(staleMerge.watermarkDate, null, 'no watermark when batch is not contiguous');
+assert.ok(!staleMerge.hasSpeedLayer, 'speed not stitched when batch is stale');
+
 console.log('busOversightData tests passed');

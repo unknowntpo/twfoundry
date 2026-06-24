@@ -27,29 +27,56 @@ export function buildBusOversightModel({
   bunching = null,
   freshness = null,
   density = null,
+  liveSignals = null,
   selectedRouteName = null,
   selectedSlotIndex = null,
 } = {}) {
-  const serviceDate = chooseServiceDate([bunching, freshness, density]);
-  const slots = buildTimelineSlots(serviceDate);
-  const events = [
+  const batchServiceDate = chooseServiceDate([bunching, freshness, density]);
+  const batchEvents = [
     ...buildHeadwayEvents(bunching),
     ...buildLowCapacityEvents(density),
     ...buildFreshnessQualityEvents(freshness),
   ];
+  const speedEvents = buildSpeedEvents(liveSignals);
+  const speedLatestDate = speedEvents.map((event) => event.date).filter(Boolean).sort().at(-1) ?? null;
+
+  // Lambda serving merge: batch covers up to the watermark (its latest service day),
+  // the speed layer fills the live edge after it. Only stitch speed in when batch is
+  // contiguous with the live edge (within the lookback window) — if batch is stale the
+  // merge would leave a multi-day hole, so we fall back to a batch-only timeline.
+  const mergeSpeed = Boolean(
+    batchServiceDate && speedLatestDate
+    && daysBetween(batchServiceDate, speedLatestDate) <= OVERSIGHT_LOOKBACK_DAYS,
+  );
+  const watermarkDate = mergeSpeed ? batchServiceDate : null;
+  const effectiveSpeedEvents = mergeSpeed ? speedEvents : [];
+  const events = [...batchEvents, ...effectiveSpeedEvents];
+
+  const serviceDate = mergeSpeed
+    ? [batchServiceDate, speedLatestDate].filter(Boolean).sort().at(-1)
+    : batchServiceDate;
+  const slots = buildTimelineSlots(serviceDate);
   const freshnessRows = normalizeRows(freshness);
-  const dataDates = new Set(events.map((event) => event.date));
-  if (serviceDate && freshnessRows.length > 0) dataDates.add(serviceDate);
+  const dataDates = new Set(batchEvents.map((event) => event.date));
+  if (batchServiceDate && freshnessRows.length > 0) dataDates.add(batchServiceDate);
+  const speedSlotKeys = new Set(effectiveSpeedEvents.map((event) => event.slotKey));
 
   const timeline = slots.map((slot) => {
     const slotEvents = events.filter((event) => event.slotKey === slot.key);
+    // Past the watermark the data is speed-layer only — provisional, may revise.
+    const provisional = Boolean(watermarkDate && slot.date > watermarkDate);
     return {
       ...slot,
-      hasData: dataDates.has(slot.date),
+      hasData: dataDates.has(slot.date) || speedSlotKeys.has(slot.key),
+      provisional,
       severity: maxSeverity(slotEvents),
       events: slotEvents,
     };
   });
+
+  const watermarkIndex = watermarkDate
+    ? timeline.findLastIndex((slot) => slot.date === watermarkDate)
+    : -1;
 
   const liveIndex = Math.max(0, timeline.findLastIndex((slot) => slot.hasData));
   const activeSlotIndex = clampSlotIndex(
@@ -66,6 +93,9 @@ export function buildBusOversightModel({
 
   return {
     serviceDate,
+    watermarkDate,
+    watermarkIndex,
+    hasSpeedLayer: effectiveSpeedEvents.length > 0,
     activeSlotIndex,
     liveIndex,
     activeSlot,
@@ -76,6 +106,47 @@ export function buildBusOversightModel({
     activeEvents,
     kpis,
   };
+}
+
+// Speed-layer (Flink) signals → timeline events for the live edge after the
+// watermark. Reuses the batch headway rule (normalizeHeadwaySignal) so severity
+// is on the same scale as batch — the merge reads continuously across the seam.
+export function buildSpeedEvents(liveSignals) {
+  const rows = Array.isArray(liveSignals) ? liveSignals : (liveSignals?.signals ?? []);
+  return rows.map((row, index) => {
+    const slot = parseSlot(row.slot_key ?? row.slot_start);
+    const observedHeadwayMinutes = finiteNumber(row.headway_min_est ?? row.estimated_headway_minutes);
+    const progressGapRatio = finiteNumber(row.progress_gap_ratio);
+    const signal = normalizeHeadwaySignal({
+      observedHeadwayMinutes,
+      expectedHeadwayMinutes: DEFAULT_EXPECTED_HEADWAY_MINUTES,
+      progressGapRatio,
+    });
+    return {
+      id: `speed-${slot.key}-${row.route_name}-${row.direction}-${index}`,
+      sourceKind: 'speed',
+      provisional: true,
+      routeName: String(row.route_name ?? ''),
+      direction: normalizeDirection(row.direction),
+      date: slot.date,
+      hour: slot.hour,
+      slotKey: slot.key,
+      type: signal.type,
+      severity: signal.severity,
+      labelKey: signal.labelKey,
+      severityKey: signal.severityKey,
+      observedHeadwayMinutes,
+      expectedHeadwayMinutes: DEFAULT_EXPECTED_HEADWAY_MINUTES,
+      progressGapRatio,
+    };
+  }).filter((event) => event.routeName && event.date);
+}
+
+function daysBetween(fromDate, toDate) {
+  const from = Date.parse(`${fromDate}T00:00:00Z`);
+  const to = Date.parse(`${toDate}T00:00:00Z`);
+  if (!Number.isFinite(from) || !Number.isFinite(to)) return Number.POSITIVE_INFINITY;
+  return Math.abs(to - from) / 86_400_000;
 }
 
 export function buildHeadwayEvents(dataset) {
