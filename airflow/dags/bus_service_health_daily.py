@@ -26,10 +26,11 @@ from kubernetes.client import models as k8s
 NAMESPACE = "twfoundry-data"
 IMAGE = "ghcr.io/unknowntpo/twfoundry/bus-batch-job:latest"
 
-# Same script the CronJob runs: compute yesterday (Asia/Taipei) inside the
-# container, roll up a 7-day window, then upload to R2 under analytics/bus/.
+# The SERVICE_DATE env var is injected by the DAG (data_interval_end in
+# Asia/Taipei).  Falls back to yesterday if unset, for manual `kubectl exec`.
 BATCH_SCRIPT = r"""
-SERVICE_DATE="$(node -e "console.log(new Date(Date.now()+8*3600e3-86400e3).toISOString().slice(0,10));")"
+SERVICE_DATE="${SERVICE_DATE:=$(node -e "console.log(new Date(Date.now()+8*3600e3-86400e3).toISOString().slice(0,10));")}"
+echo "SERVICE_DATE=${SERVICE_DATE}"
 node infra/clickhouse/scripts/run-bus-service-health-pipeline.mjs \
   --service-date "${SERVICE_DATE}" \
   --lookback-days 7 \
@@ -75,8 +76,18 @@ with DAG(
     catchup=False,
     max_active_runs=1,
     default_args=default_args,
+    params={"service_date": ""},
     tags=["twfoundry", "batch", "bus"],
 ) as dag:
+    # Priority: 1) --conf service_date  2) data_interval_end - 1d  3) empty → bash fallback
+    service_date = (
+        "{% if params.service_date | default('') %}"
+        "{{ params.service_date }}"
+        "{% elif data_interval_end is defined %}"
+        "{{ (data_interval_end - macros.timedelta(days=1)).in_tz('Asia/Taipei').format('YYYY-MM-DD') }}"
+        "{% endif %}"
+    )
+
     KubernetesPodOperator(
         task_id="roll_up_and_upload",
         name="bus-batch-airflow",
@@ -86,6 +97,7 @@ with DAG(
         cmds=["/bin/bash", "-ec"],
         arguments=[BATCH_SCRIPT],
         env_vars={
+            "SERVICE_DATE": service_date,
             "CLICKHOUSE_URL": "http://clickhouse:8123",
             "CLICKHOUSE_DATABASE": "twfoundry",
             "CLICKHOUSE_USER": "default",
