@@ -9,6 +9,13 @@
       "port": 5173
     },
     {
+      "name": "frontend-rolling",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["run", "dev:rolling"],
+      "cwd": "frontend",
+      "port": 5173
+    },
+    {
       "name": "frontend-remote",
       "runtimeExecutable": "bun",
       "runtimeArgs": ["run", "dev:remote"],

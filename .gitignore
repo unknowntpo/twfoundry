@@ -43,6 +43,8 @@ backend/**/data/
 node_modules/
 data/lake/
 data/bus/
+data/analytics-rolling/
 cloudflare/bus/
 __pycache__/
 *.pyc
+frontend/public/data/analytics-rolling/
