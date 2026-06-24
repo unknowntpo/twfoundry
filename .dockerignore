@@ -16,6 +16,9 @@ frontend/*
 !frontend/functions
 frontend/functions/*
 !frontend/functions/_shared
+!frontend/scripts
+frontend/scripts/*
+!frontend/scripts/publish-clickhouse-bus-analytics.mjs
 !frontend/public
 frontend/public/*
 !frontend/public/data
@@ -33,6 +36,12 @@ backend/*
 !backend/streams/**
 docs
 infra
+!infra
+infra/*
+!infra/clickhouse
+infra/clickhouse/*
+!infra/clickhouse/scripts
+!infra/clickhouse/scripts/**
 openspec
 tmp
 .DS_Store

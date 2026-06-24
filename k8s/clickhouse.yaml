@@ -1,0 +1,207 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clickhouse-config
+  namespace: twfoundry-data
+  labels:
+    app.kubernetes.io/name: clickhouse
+    app.kubernetes.io/part-of: twfoundry-batch
+data:
+  memory.xml: |
+    <clickhouse>
+      <max_server_memory_usage>700000000</max_server_memory_usage>
+      <mark_cache_size>67108864</mark_cache_size>
+      <uncompressed_cache_size>33554432</uncompressed_cache_size>
+    </clickhouse>
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clickhouse-schema
+  namespace: twfoundry-data
+  labels:
+    app.kubernetes.io/name: clickhouse
+    app.kubernetes.io/part-of: twfoundry-batch
+data:
+  schema.sql: |
+    CREATE DATABASE IF NOT EXISTS twfoundry;
+
+    CREATE TABLE IF NOT EXISTS twfoundry.bus_vehicle_observations
+    (
+      service_date Date,
+      slot_start DateTime64(3, 'Asia/Taipei'),
+      slot_label LowCardinality(String),
+      captured_at DateTime64(3, 'Asia/Taipei'),
+
+      vehicle_id String,
+      route_uid LowCardinality(String),
+      route_name LowCardinality(String),
+      direction Int8,
+
+      longitude Float64,
+      latitude Float64,
+      speed_kph Nullable(Float64),
+      azimuth_deg Nullable(Float64),
+      gps_time Nullable(DateTime64(3, 'Asia/Taipei')),
+      update_time Nullable(DateTime64(3, 'Asia/Taipei')),
+      gps_update_lag_seconds Nullable(Int32),
+
+      freshness LowCardinality(String),
+      completeness Float32,
+
+      route_progress_ratio Nullable(Float64),
+      route_progress_meters Nullable(Float64),
+      route_length_meters Nullable(Float64),
+      distance_to_route_meters Nullable(Float64),
+      nearest_stop_name Nullable(String),
+      between_stops_label Nullable(String),
+
+      source_file String,
+      imported_at DateTime64(3, 'Asia/Taipei') DEFAULT now64(3)
+    )
+    ENGINE = MergeTree
+    PARTITION BY toYYYYMM(service_date)
+    ORDER BY (service_date, route_name, direction, slot_start, vehicle_id);
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clickhouse
+  namespace: twfoundry-data
+  labels:
+    app.kubernetes.io/name: clickhouse
+    app.kubernetes.io/part-of: twfoundry-batch
+spec:
+  selector:
+    app.kubernetes.io/name: clickhouse
+  ports:
+    - name: http
+      port: 8123
+      targetPort: http
+    - name: native
+      port: 9000
+      targetPort: native
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: clickhouse
+  namespace: twfoundry-data
+  labels:
+    app.kubernetes.io/name: clickhouse
+    app.kubernetes.io/part-of: twfoundry-batch
+spec:
+  serviceName: clickhouse
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: clickhouse
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: clickhouse
+        app.kubernetes.io/part-of: twfoundry-batch
+    spec:
+      containers:
+        - name: clickhouse
+          image: clickhouse/clickhouse-server:25.5
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: CLICKHOUSE_DB
+              value: twfoundry
+            - name: CLICKHOUSE_USER
+              value: default
+            - name: CLICKHOUSE_PASSWORD
+              value: ""
+          ports:
+            - name: http
+              containerPort: 8123
+            - name: native
+              containerPort: 9000
+          volumeMounts:
+            - name: clickhouse-data
+              mountPath: /var/lib/clickhouse
+            - name: clickhouse-config
+              mountPath: /etc/clickhouse-server/config.d/memory.xml
+              subPath: memory.xml
+          resources:
+            requests:
+              cpu: 250m
+              memory: 1Gi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+      volumes:
+        - name: clickhouse-config
+          configMap:
+            name: clickhouse-config
+  volumeClaimTemplates:
+    - metadata:
+        name: clickhouse-data
+        labels:
+          app.kubernetes.io/name: clickhouse
+          app.kubernetes.io/part-of: twfoundry-batch
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: local-path
+        resources:
+          requests:
+            storage: 20Gi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: clickhouse-apply-schema
+  namespace: twfoundry-data
+  labels:
+    app.kubernetes.io/name: clickhouse-apply-schema
+    app.kubernetes.io/part-of: twfoundry-batch
+spec:
+  backoffLimit: 6
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: clickhouse-apply-schema
+        app.kubernetes.io/part-of: twfoundry-batch
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: apply-schema
+          image: clickhouse/clickhouse-server:25.5
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/bash
+            - -ec
+            - |
+              until clickhouse-client --host clickhouse --query "SELECT 1"; do
+                sleep 5
+              done
+              clickhouse-client --host clickhouse --multiquery < /schema/schema.sql
+          volumeMounts:
+            - name: clickhouse-schema
+              mountPath: /schema
+              readOnly: true
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi
+      volumes:
+        - name: clickhouse-schema
+          configMap:
+            name: clickhouse-schema

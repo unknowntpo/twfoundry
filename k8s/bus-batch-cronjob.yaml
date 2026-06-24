@@ -1,0 +1,84 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: bus-batch-daily
+  namespace: twfoundry-data
+  labels:
+    app.kubernetes.io/name: bus-batch-daily
+    app.kubernetes.io/part-of: twfoundry-batch
+spec:
+  schedule: "30 3 * * *"
+  timeZone: Asia/Taipei
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: bus-batch-daily
+            app.kubernetes.io/part-of: twfoundry-batch
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: batch
+              image: ghcr.io/unknowntpo/twfoundry/bus-batch-job:latest
+              imagePullPolicy: Always
+              command:
+                - /bin/bash
+                - -ec
+                - |
+                  SERVICE_DATE="$(node -e "console.log(new Date(Date.now()+8*3600e3-86400e3).toISOString().slice(0,10));")"
+                  node infra/clickhouse/scripts/run-bus-service-health-pipeline.mjs \
+                    --service-date "${SERVICE_DATE}" \
+                    --lookback-days 7 \
+                    --lake-dir /lake \
+                    --output-root /out
+                  node infra/clickhouse/scripts/upload-bus-analytics.mjs \
+                    --input-root /out \
+                    --prefix analytics/bus \
+                    --wrangler wrangler
+              env:
+                - name: CLICKHOUSE_URL
+                  value: http://clickhouse:8123
+                - name: CLICKHOUSE_DATABASE
+                  value: twfoundry
+                - name: CLICKHOUSE_USER
+                  value: default
+                - name: CLICKHOUSE_PASSWORD
+                  value: ""
+                - name: R2_BUCKET
+                  value: twfoundry-poc-archive
+                - name: CLOUDFLARE_API_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: twfoundry-track-b-secrets
+                      key: CLOUDFLARE_API_TOKEN
+                - name: CLOUDFLARE_ACCOUNT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: twfoundry-track-b-secrets
+                      key: CLOUDFLARE_ACCOUNT_ID
+              volumeMounts:
+                - name: bus-lake
+                  mountPath: /lake
+                  readOnly: true
+                - name: output
+                  mountPath: /out
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 256Mi
+                limits:
+                  cpu: 500m
+                  memory: 512Mi
+          volumes:
+            - name: bus-lake
+              persistentVolumeClaim:
+                claimName: bus-lake
+                readOnly: true
+            - name: output
+              emptyDir:
+                sizeLimit: 512Mi
