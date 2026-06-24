@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "dev:rolling": "VITE_TWFOUNDRY_ANALYTICS_BASE=/data/analytics-rolling/bus vite --host 0.0.0.0",
+    "dev:remote": "VITE_TWFOUNDRY_LIVE_SIGNALS=remote VITE_API_TARGET=https://twfoundry-poc.pages.dev vite --host 0.0.0.0",
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
     "fetch:tdx-bus": "bun scripts/fetch-tdx-taipei-bus-snapshot.mjs --limit 1200 --interval-minutes 5",
