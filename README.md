@@ -1,23 +1,23 @@
 # TWFoundry
 
-Taiwan public-data operations dashboard for live transit monitoring, map overlays, and data-quality analytics.
+TWFoundry 是一個以台灣公共資料為核心的營運監控儀表板，聚焦即時交通、地圖圖層、資料品質與批次分析。
 
-[Live demo](https://twfoundry.pages.dev) · [Bus operations dashboard](https://twfoundry.pages.dev/bus-oversight) · [System contract](SPEC.md)
+[線上展示](https://twfoundry.pages.dev) · [公車服務控制台](https://twfoundry.pages.dev/bus-oversight) · [系統規格](SPEC.md)
 
-## What It Does
+## 專案在做什麼
 
-TWFoundry turns public mobility feeds into operational map products:
+TWFoundry 把台灣公開交通資料轉成可操作的地圖產品：
 
-- Live Taipei bus map backed by real TDX data, not fixtures.
-- Bus operations dashboard for route density, data freshness, service gaps, and bunching signals.
-- Cloudflare Pages + Pages Functions public frontend with R2-backed data artifacts.
-- Homelab data runtime with Kafka, Airflow, ClickHouse, and Kubernetes for ingestion, batch analytics, and backfills.
-- Contract-first architecture that keeps raw source schemas, normalized observations, product projections, and UI rendering separate.
+- 即時台北公車地圖，資料來自真實 TDX API，不是靜態假資料。
+- 公車服務控制台，觀察路線密度、資料新鮮度、服務空窗與車輛群聚訊號。
+- Cloudflare Pages + Pages Functions 前端，透過 R2 讀取已發布的資料成果。
+- Homelab 資料工程後端，用 Kafka、Airflow、ClickHouse、Kubernetes 處理 ingestion、批次分析與 backfill。
+- Contract-first 架構，把原始來源 schema、normalized observation、product projection、UI rendering 分開治理。
 
-## Architecture
+## 系統架構
 
 ```text
-TDX public transit APIs
+TDX 台灣公共交通 API
   -> source adapters / ingestion workers
   -> Kafka normalized events
   -> lake archive + ClickHouse analytics
@@ -27,37 +27,37 @@ TDX public transit APIs
   -> Vue / MapLibre operations UI
 ```
 
-The public site is served from Cloudflare. The private homelab runtime produces and publishes materialized data, so public requests do not hit the homelab directly.
+公開網站由 Cloudflare 提供服務。Homelab 只負責資料處理與發布 materialized artifacts，公開流量不會直接打到私人機器。
 
-## Current Status
+## 目前狀態
 
-| Area | Status |
+| 區塊 | 狀態 |
 |---|---|
-| Public demo | Live at `twfoundry.pages.dev` |
-| Live bus projections | Production path through Cloudflare R2 + Pages Functions |
-| Bus dashboard | Live route/service analytics view |
-| Batch analytics | Airflow DAG + ClickHouse rolling dataset |
-| Stream backbone | Kafka-based normalized bus events |
-| Product contract | `SPEC.md` + architecture docs |
+| 線上展示 | 已上線：`twfoundry.pages.dev` |
+| 即時公車投影 | 透過 Cloudflare R2 + Pages Functions 提供 production path |
+| 公車服務控制台 | 已上線，可看路線服務與資料品質分析 |
+| 批次分析 | Airflow DAG + ClickHouse rolling dataset |
+| 串流骨幹 | Kafka normalized bus events |
+| 產品契約 | `SPEC.md` + architecture docs |
 
-## Tech Stack
+## 技術棧
 
-- Frontend: Vue 3, Vite, MapLibre GL, deck.gl, Three.js
-- Edge serving: Cloudflare Pages, Pages Functions, R2
-- Data pipeline: Kafka, Airflow, ClickHouse, Kubernetes/k0s
-- Data contracts: normalized observation schemas, projection manifests, OpenSpec/Spectra docs
-- Tooling: Bun, Playwright, Wrangler
+- Frontend：Vue 3、Vite、MapLibre GL、deck.gl、Three.js
+- Edge serving：Cloudflare Pages、Pages Functions、R2
+- Data pipeline：Kafka、Airflow、ClickHouse、Kubernetes/k0s
+- Data contracts：normalized observation schema、projection manifest、OpenSpec/Spectra docs
+- Tooling：Bun、Playwright、Wrangler
 
-## Key Links
+## 重要連結
 
-- [Live demo](https://twfoundry.pages.dev)
-- [Bus operations dashboard](https://twfoundry.pages.dev/bus-oversight)
+- [線上展示](https://twfoundry.pages.dev)
+- [公車服務控制台](https://twfoundry.pages.dev/bus-oversight)
 - [Cloudflare edge serving boundary](docs/architecture/cloudflare-edge-serving-boundary.md)
 - [Bus pipeline milestones](docs/architecture/bus-pipeline-e2e-milestones.md)
 - [Normalized bus event contract](docs/architecture/normalized-bus-vehicle-position-v1.md)
 - [Batch stack runbook](docs/m5-batch-stack-runbook.md)
 
-## Run Locally
+## 本機啟動
 
 ```bash
 cd frontend
@@ -65,20 +65,20 @@ bun install
 bun run dev
 ```
 
-Use remote production APIs while developing locally:
+開發時也可以直接接線上 API：
 
 ```bash
 cd frontend
 bun run dev:remote
 ```
 
-## Design Principles
+## 設計原則
 
-- Normalize public source data before it reaches product UI.
-- Treat map overlays as product projections, not renderer-specific demos.
-- Keep source adapters, ontology contracts, projections, renderers, and diagnostics separate.
-- Prefer replayable materialized artifacts over live public requests into private infrastructure.
+- 公共資料必須先 normalized，不能讓 raw source schema 直接進入產品 UI。
+- 地圖圖層是 product projection，不是 renderer-specific demo。
+- Source adapters、ontology contracts、projections、renderers、diagnostics 必須分層。
+- 公開網站讀取可 replay 的 materialized artifacts，不把 public request path 接到私人 homelab。
 
-## Repository Notes
+## Repo 說明
 
-The normative product/system contract lives in [SPEC.md](SPEC.md). Architecture notes and runbooks live under [docs/](docs/), and implementation change proposals live under [openspec/](openspec/).
+最高層級的產品與系統契約在 [SPEC.md](SPEC.md)。架構文件與 runbook 放在 [docs/](docs/)，OpenSpec/Spectra change proposals 放在 [openspec/](openspec/)。
