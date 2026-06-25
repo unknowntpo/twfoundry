@@ -1,0 +1,125 @@
+# Apache Airflow on the homelab (morefine-m9, single node) — KubernetesExecutor.
+# Chart: apache-airflow/airflow 1.22.0 (Airflow 3.2.2).
+#
+# Cloud-native, scale-to-zero: the scheduler spawns a short-lived airflow task
+# pod per task (no Redis, no persistent worker pool). The task pod runs the
+# KubernetesPodOperator, which in turn launches the verified `bus-batch-job`
+# image to run the Node pipeline — two layers, max isolation, reused image.
+# The `workers` block below is the task-pod template (resources/volumes), not a
+# standing Deployment.
+#
+# Footprint: postgres only (+ scheduler/api-server/dag-processor/triggerer),
+# no redis / pgbouncer / flower / statsd. Default SC is `local-path`.
+executor: "KubernetesExecutor"
+airflowVersion: "3.2.2"
+
+# Lets the scheduler (KubernetesExecutor) and task pods launch pods in this
+# namespace — both the airflow task pods and the KPO-spawned batch pods.
+allowPodLaunching: true
+multiNamespaceMode: false
+
+# Trim the stack for a single node.
+pgbouncer:
+  enabled: false
+flower:
+  enabled: false
+statsd:
+  enabled: false
+
+# DAGs are delivered by a ConfigMap mounted at the dags folder (no gitSync creds,
+# no DAG image rebuilds). Mounted on every component via the global volume below.
+dags:
+  persistence:
+    enabled: false
+  gitSync:
+    enabled: false
+
+# Global volume — applied to scheduler, dag-processor, workers, api-server, triggerer.
+volumes:
+  - name: dags
+    configMap:
+      name: airflow-dags
+# subPath mounts the file directly — without it, the ConfigMap's `..data`
+# symlink farm makes Airflow's DAG walker raise "recursive loop". One mount
+# entry per DAG file (subPath mounts don't auto-update; restart on change).
+volumeMounts:
+  - name: dags
+    mountPath: /opt/airflow/dags/bus_service_health_daily.py
+    subPath: bus_service_health_daily.py
+    readOnly: true
+
+scheduler:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+
+apiServer:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+
+dagProcessor:
+  enabled: true
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+# Under KubernetesExecutor this is the per-task pod template (not a standing
+# Deployment). These resources apply to the short-lived airflow task pod that
+# runs the KPO operator; the actual batch pod it launches is sized in the DAG.
+workers:
+  persistence:
+    enabled: false
+  resources:
+    requests:
+      cpu: 100m
+      memory: 384Mi
+    limits:
+      cpu: 500m
+      memory: 768Mi
+
+triggerer:
+  persistence:
+    enabled: false
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+# No broker needed — KubernetesExecutor uses the k8s API, not Celery/Redis.
+redis:
+  enabled: false
+
+postgresql:
+  primary:
+    persistence:
+      enabled: true
+      size: 4Gi
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+# Logs live in per-pod emptyDir (KPO task logs are streamed from the launched
+# pod via the k8s API); fine for a homelab, avoids a shared RWX log PVC.
+logs:
+  persistence:
+    enabled: false

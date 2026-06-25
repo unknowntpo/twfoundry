@@ -51,7 +51,7 @@ try {
   assert.equal(pageErrors.length, 0, `Unexpected page errors: ${JSON.stringify(pageErrors, null, 2)}`);
   assert.match(initialText, /公車路線服務控制台/);
   assert.match(initialText, /服務健康時間軸/);
-  assert.match(initialText, /服務日期 2026-05-20/);
+  assert.match(initialText, /最新快照 2026-05-20 23:00/);
   assert.equal(forbiddenVisibleText.test(initialText), false, 'Forbidden implementation wording is visible in zh UI');
 
   const kpiDeltas = initialText.match(/較昨日/g) ?? [];
