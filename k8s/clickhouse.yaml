@@ -9,7 +9,7 @@ metadata:
 data:
   memory.xml: |
     <clickhouse>
-      <max_server_memory_usage>700000000</max_server_memory_usage>
+      <max_server_memory_usage>1300000000</max_server_memory_usage>
       <mark_cache_size>67108864</mark_cache_size>
       <uncompressed_cache_size>33554432</uncompressed_cache_size>
     </clickhouse>
@@ -145,7 +145,7 @@ spec:
               memory: 1Gi
             limits:
               cpu: "1"
-              memory: 1Gi
+              memory: 2Gi
           readinessProbe:
             httpGet:
               path: /ping

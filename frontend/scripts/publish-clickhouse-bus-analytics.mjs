@@ -55,6 +55,7 @@ const manifestPath = join(outputRoot, 'manifest.json');
 writeFileSync(manifestPath, `${JSON.stringify({
   schemaVersion: 1,
   source,
+  generatedAt: publishedAt,
   publishedAt,
   serviceDate,
   lookbackDays,
@@ -183,6 +184,7 @@ function metricPayload(metric, result) {
     metric,
     serviceDate,
     source,
+    generatedAt: publishedAt,
     publishedAt,
     rows: result.data ?? [],
     statistics: result.statistics ?? null,
