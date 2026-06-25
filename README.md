@@ -2,7 +2,7 @@
 
 Taiwan public-data operations dashboard for live transit monitoring, map overlays, and data-quality analytics.
 
-[Live demo](https://twfoundry-poc.pages.dev) · [Bus operations dashboard](https://twfoundry-poc.pages.dev/bus-oversight) · [System contract](SPEC.md)
+[Live demo](https://twfoundry.pages.dev) · [Bus operations dashboard](https://twfoundry.pages.dev/bus-oversight) · [System contract](SPEC.md)
 
 ## What It Does
 
@@ -33,7 +33,7 @@ The public site is served from Cloudflare. The private homelab runtime produces 
 
 | Area | Status |
 |---|---|
-| Public demo | Live at `twfoundry-poc.pages.dev` |
+| Public demo | Live at `twfoundry.pages.dev` |
 | Live bus projections | Production path through Cloudflare R2 + Pages Functions |
 | Bus dashboard | Live route/service analytics view |
 | Batch analytics | Airflow DAG + ClickHouse rolling dataset |
@@ -50,8 +50,8 @@ The public site is served from Cloudflare. The private homelab runtime produces 
 
 ## Key Links
 
-- [Live demo](https://twfoundry-poc.pages.dev)
-- [Bus operations dashboard](https://twfoundry-poc.pages.dev/bus-oversight)
+- [Live demo](https://twfoundry.pages.dev)
+- [Bus operations dashboard](https://twfoundry.pages.dev/bus-oversight)
 - [Cloudflare edge serving boundary](docs/architecture/cloudflare-edge-serving-boundary.md)
 - [Bus pipeline milestones](docs/architecture/bus-pipeline-e2e-milestones.md)
 - [Normalized bus event contract](docs/architecture/normalized-bus-vehicle-position-v1.md)
