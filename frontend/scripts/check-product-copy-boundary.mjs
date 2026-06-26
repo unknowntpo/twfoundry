@@ -27,11 +27,6 @@ const templateChecks = [
     extract: (text) => text.match(/<template>([\s\S]*?)<\/template>/)?.[1] ?? '',
     message: 'operations explorer template contains implementation wording',
   },
-  {
-    file: 'src/RouteGeometryConcept.vue',
-    extract: (text) => text.match(/<template>([\s\S]*?)<\/template>/)?.[1] ?? '',
-    message: 'route detail template contains implementation wording',
-  },
 ];
 
 function userVisibleValue(value) {

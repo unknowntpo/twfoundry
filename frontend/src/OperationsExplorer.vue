@@ -465,7 +465,6 @@ const routeHealthWatchlist = computed(() => {
       operatorLabel: routeOperatorLabelForRoute(route),
       metricLabel: t('analytics.headway', { minutes: formatAnalyticsNumber(minutes) }),
       detailLabel: formatAnalyticsTime(row.slot_start),
-      href: routeMonitorHref(route),
     });
   }
 
@@ -485,7 +484,6 @@ const routeHealthWatchlist = computed(() => {
       operatorLabel: routeOperatorLabelForRoute(route),
       metricLabel: t('analytics.offRouteRate', { rate: formatAnalyticsPercent(row.off_route_rate) }),
       detailLabel: t('analytics.reports', { count: formatAnalyticsNumber(row.reports) }),
-      href: routeMonitorHref(route),
     });
   }
 
@@ -554,10 +552,6 @@ function analyticsUrl(path) {
 
 function analyticsQueryServiceDate() {
   return ANALYTICS_SERVICE_DATE;
-}
-
-function routeMonitorHref(route) {
-  return `/route-geometry?route=${encodeURIComponent(route)}`;
 }
 
 function routeOperatorLabelForRoute(route) {
@@ -1740,12 +1734,11 @@ onBeforeUnmount(() => {
           <div v-else-if="analyticsLoading && routeHealthWatchlist.length === 0" class="analytics-empty">{{ t('routeHealth.loading') }}</div>
           <div v-else-if="routeHealthWatchlist.length === 0" class="analytics-empty">{{ t('routeHealth.noRows') }}</div>
           <div v-else class="route-health-list">
-            <a
+            <div
               v-for="item in routeHealthWatchlist"
               :key="item.id"
               class="route-health-row"
               :class="[item.severity, item.type]"
-              :href="item.href"
             >
               <span class="route-health-status">{{ t(`routeHealth.severity.${item.severity}`) }}</span>
               <span class="route-health-main">
@@ -1757,8 +1750,7 @@ onBeforeUnmount(() => {
                 <b>{{ item.metricLabel }}</b>
                 <small>{{ item.detailLabel }}</small>
               </span>
-              <span class="route-health-open">{{ t('routeHealth.detail') }}</span>
-            </a>
+            </div>
             <div v-if="routeHealthHasOverflow" class="route-health-overflow">
               {{ t('routeHealth.more') }}
             </div>
@@ -1778,13 +1770,6 @@ onBeforeUnmount(() => {
                 <option value="all">{{ t('filters.allRoutes') }}</option>
                 <option v-for="route in routeOptions" :key="route" :value="route">{{ t('filters.route', { route }) }}</option>
               </select>
-              <a
-                v-if="routeFilter !== 'all'"
-                class="route-detail-link"
-                :href="routeMonitorHref(routeFilter)"
-              >
-                {{ t('routeHealth.selectedDetail', { route: routeFilter }) }}
-              </a>
             </div>
           </div>
           <label class="checkbox">
@@ -4060,10 +4045,15 @@ pre {
   }
 
   .status-bar {
-    height: 76px;
+    height: auto;
+    min-height: 76px;
     grid-template-columns: 1fr max-content;
     align-items: start;
+    align-content: start;
+    column-gap: 12px;
+    row-gap: 6px;
     padding-top: 8px;
+    padding-bottom: 8px;
   }
 
   .brand-sub {
@@ -4109,11 +4099,11 @@ pre {
   }
 
   .map-shell {
-    inset: 76px 0 calc(var(--timeline-height) + var(--timeline-gap)) 0;
+    inset: 116px 0 calc(var(--timeline-height) + var(--timeline-gap)) 0;
   }
 
   .left-panel {
-    top: 88px;
+    top: 124px;
     right: 10px;
     bottom: auto;
     left: 10px;

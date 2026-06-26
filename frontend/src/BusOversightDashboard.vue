@@ -113,13 +113,20 @@ const dayGroups = computed(() => {
   return Array.from(seen.values());
 });
 
+// Batch analytics have arrived once the bunching payload resolves (null = still fetching).
+// Before this, KPI cards must not render 0/— as if they were a confirmed reading.
+const batchReady = computed(() => analytics.value.bunching !== null);
+
 const kpiCards = computed(() => {
   const kpis = model.value.kpis;
+  // Live cards can resolve from either the speed layer (liveCounts) or the batch fallback.
+  const liveCardLoading = !liveCounts.value && !batchReady.value;
   return [
     {
       key: 'reliability',
       primary: true,
       live: false,
+      loading: !batchReady.value,
       label: t('oversight.kpi.reliability'),
       info: t('oversight.kpi.reliability.info'),
       value: kpis.reliability ?? '—',
@@ -129,6 +136,7 @@ const kpiCards = computed(() => {
     {
       key: 'routes',
       live: false,
+      loading: !batchReady.value,
       label: t('oversight.kpi.routes'),
       info: t('oversight.kpi.routes.info'),
       value: kpis.routes,
@@ -138,6 +146,7 @@ const kpiCards = computed(() => {
       key: 'serviceGaps',
       tone: 'critical',
       live: true,
+      loading: liveCardLoading,
       label: t('oversight.kpi.serviceGaps'),
       info: t('oversight.kpi.serviceGaps.info'),
       value: liveCounts.value ? liveCounts.value.gap : kpis.serviceGaps,
@@ -149,6 +158,7 @@ const kpiCards = computed(() => {
       key: 'bunching',
       tone: 'warning',
       live: true,
+      loading: liveCardLoading,
       label: t('oversight.kpi.bunching'),
       info: t('oversight.kpi.bunching.info'),
       value: liveCounts.value ? liveCounts.value.bunching : kpis.bunching,
@@ -160,6 +170,7 @@ const kpiCards = computed(() => {
       key: 'lowCapacity',
       tone: 'watch',
       live: false,
+      loading: !batchReady.value,
       label: t('oversight.kpi.lowCapacity'),
       info: t('oversight.kpi.lowCapacity.info'),
       value: kpis.lowCapacity,
@@ -526,7 +537,8 @@ function formatPublishedAt(value) {
         v-for="card in kpiCards"
         :key="card.key"
         class="kpi"
-        :class="[{ primary: card.primary, 'is-live': card.live }, card.tone ? `tone-${card.tone}` : '']"
+        :class="[{ primary: card.primary, 'is-live': card.live, 'is-loading': card.loading }, card.tone ? `tone-${card.tone}` : '']"
+        :aria-busy="card.loading"
       >
         <div class="kpi-top">
           <span class="kpi-headline">
@@ -541,11 +553,19 @@ function formatPublishedAt(value) {
           </button>
         </div>
         <div class="kpi-value">
-          <div v-if="card.primary" class="ring" :style="{ '--p': card.ring }">
-            {{ card.value }}
-          </div>
-          <strong>{{ card.value }}</strong>
-          <span class="kpi-delta" :class="card.delta.tone">{{ card.delta.text }}</span>
+          <template v-if="card.loading">
+            <div v-if="card.primary" class="ring ring-skeleton" aria-hidden="true"></div>
+            <span class="kpi-skeleton kpi-skeleton-value" aria-hidden="true"></span>
+            <span class="kpi-skeleton kpi-skeleton-delta" aria-hidden="true"></span>
+            <span class="kpi-loading-label">{{ t('oversight.kpi.loading') }}</span>
+          </template>
+          <template v-else>
+            <div v-if="card.primary" class="ring" :style="{ '--p': card.ring }">
+              {{ card.value }}
+            </div>
+            <strong>{{ card.value }}</strong>
+            <span class="kpi-delta" :class="card.delta.tone">{{ card.delta.text }}</span>
+          </template>
         </div>
       </article>
     </section>
@@ -1146,6 +1166,68 @@ function formatPublishedAt(value) {
   display: grid;
   font: 700 15px/1 var(--mono);
   place-items: center;
+}
+
+/* Loading skeletons: shown before batch/live data resolves so KPI cards never
+   render an unconfirmed 0/— as if it were a real reading. */
+.kpi-skeleton {
+  display: inline-block;
+  border-radius: 6px;
+  background: linear-gradient(
+    100deg,
+    rgba(128, 154, 180, 0.10) 30%,
+    rgba(128, 154, 180, 0.24) 50%,
+    rgba(128, 154, 180, 0.10) 70%
+  );
+  background-size: 200% 100%;
+  animation: kpi-skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+.kpi-skeleton-value {
+  width: clamp(56px, 7vw, 92px);
+  height: clamp(24px, 2.6vw, 38px);
+}
+
+.kpi.primary .kpi-skeleton-value {
+  width: clamp(72px, 9vw, 120px);
+  height: clamp(40px, 4.4vw, 58px);
+}
+
+.kpi-skeleton-delta {
+  width: 64px;
+  height: 12px;
+  align-self: center;
+}
+
+.ring-skeleton {
+  background:
+    radial-gradient(closest-side, var(--bg) 70%, transparent 71%),
+    conic-gradient(rgba(128, 154, 180, 0.24), rgba(128, 154, 180, 0.10));
+  animation: kpi-skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+.kpi-loading-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes kpi-skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kpi-skeleton,
+  .ring-skeleton {
+    animation: none;
+  }
 }
 
 .panel {

@@ -1,6 +1,6 @@
 # TWFoundry 技術決策紀錄（持續更新）
 
-最後更新：2026-06-17
+最後更新：2026-06-26
 
 **架構文件索引**
 
@@ -498,5 +498,56 @@ Dedup 合併：     「同一輛車同一 slot 重複寫入」  → 需 per-row 
 **後續**
 - 驗證 normalized topic 生成品質後再投入 Flink 遷移。
 - 轉 Flink 時複用現有 merge key、checkpoint 語意、partition 策略。
+
+---
+
+## 2026-06-26：移除 obsolete 前端路由/UI（route-geometry、legacy-voxel、operations-explorer alias）
+
+**決策**
+- 移除三條前端路由與對應 UI：
+  - `/route-geometry`（`RouteGeometryConcept.vue`）+ OperationsExplorer 的 `View route` 連結（`routeMonitorHref`）。
+  - `/legacy-voxel`（`App.vue`，舊 voxel 原型）。
+  - `/operations-explorer`（與 `/` 重複的別名）。
+- 保留 design-system 預覽路由（`/design-system`、`/design-system-contract`、`/minimum-design-system-contract`）與其 voxel preview 元件。
+- 來源：2026-06-26 production UI/UX persona review（`docs/prod-uiux-persona-review-2026-06-26.md`）。
+
+**原因**
+- `/route-geometry` 在 prod 打 `/api/tdx/bus-delay-poc` 取得 `503`（Pages 無 TDX 憑證、也無對應 function），頁面卻降級顯示「目前無異常訊號／0 筆」，把後端失敗偽裝成「一切正常」——是整個 workflow 最傷信任的狀態。其職能已由 `/bus-oversight` 的路線 drilldown 取代。
+- `/legacy-voxel` 已被 map-first `OperationsExplorer` 取代，無任何 UI 連到它。
+- `/operations-explorer` 與 `/` 完全重複。
+
+**影響**
+- 刪除 `frontend/src/App.vue`、`frontend/src/RouteGeometryConcept.vue`。
+- `busRouteGeometry.js` 保留（仍被 `OperationsExplorer` 共用）；voxel*.js 保留（design-system preview 仍用）。
+- route-health watchlist 列由 `<a href>` 改為非導覽 `<div>`（移除死連結，保留資訊顯示）。
+- 清除無用 i18n key `routeHealth.detail` / `routeHealth.selectedDetail`（EN+zh）。
+- `scripts/check-product-copy-boundary.mjs` 移除對已刪 `RouteGeometryConcept.vue` 的引用。
+- 未知路徑統一 fallback 到 `OperationsExplorer`（`routes[path] ?? OperationsExplorer`），故舊 `/route-geometry` 連結不再噴 503。
+
+**驗證**
+- `vite build` 通過；`bun tests/run.mjs` 10 suites 全過；copy-boundary check 通過。
+- 本地 dev 確認：route-geometry fallback 正常、design-system 三路由正常、無 console error。
+
+**後續**
+- （選配）若確定不再需要，移除無對應 UI 的 `/api/tdx/bus-delay-poc` Pages function 測試與相關死碼。
+- persona review 的 P1（live row 可點選聚焦路線、自動跳到最嚴重時段）尚未實作，屬獨立增強。
+
+---
+
+## 2026-06-26：KPI 載入狀態誠實（不得在資料 resolve 前顯示未確認的 0/—）
+
+**決策**
+- `BusOversightDashboard` 的 KPI 卡在批次/即時資料尚未 resolve 前，顯示 skeleton（shimmer）而非 `0`/`—`。
+- 以 `batchReady`（`analytics.bunching !== null`）判定批次是否到位；即時卡（service gap / bunching）在 `liveCounts` 與批次皆無時才視為 loading。
+
+**原因**
+- persona review 指出首屏渲染會短暫顯示 `0`，被誤讀為「真的零事件」，而非載入中。
+
+**影響**
+- KPI 卡新增 `loading` 旗標、`is-loading` class 與 `aria-busy`；新增 skeleton CSS 與 `oversight.kpi.loading` i18n（EN+zh）。
+- 尊重 `prefers-reduced-motion`（停用 shimmer 動畫）。
+
+**後續**
+- 同樣的 loading-state 原則可推廣到 timeline / route evidence 區塊。
 
 ---
