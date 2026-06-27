@@ -372,11 +372,17 @@ async function produceNormalizedMessages(producer, config, slot, records, ingest
     },
   }));
 
-  await producer.send({
-    topic: config.kafkaTopic,
-    messages,
-    acks: -1, // all replicas
-  });
+  // Send in chunks so a single produce request stays under the broker's message.max.bytes
+  // (~1 MB). A historical slot can hold every vehicle across all routes (~1-2k records ≈ >1 MB);
+  // live slots are small enough to fit one chunk.
+  const CHUNK = 400;
+  for (let i = 0; i < messages.length; i += CHUNK) {
+    await producer.send({
+      topic: config.kafkaTopic,
+      messages: messages.slice(i, i + CHUNK),
+      acks: -1, // all replicas
+    });
+  }
 
   return { recordCount: records.length };
 }
