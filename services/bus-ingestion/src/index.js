@@ -5,8 +5,11 @@ import { Kafka } from 'kafkajs';
 const DEFAULT_HTTP_PORT = 8081;
 const DEFAULT_TDX_AUTH_URL = 'https://tdx.transportdata.tw/auth/realms/TDXConnect/protocol/openid-connect/token';
 const DEFAULT_TDX_API_BASE_URL = 'https://tdx.transportdata.tw/api/basic/v2';
+const DEFAULT_TDX_HISTORICAL_BASE_URL = 'https://tdx.transportdata.tw/api/historical/v2';
 const DEFAULT_CITY = 'Taipei';
 const DEFAULT_TOP = 1200;
+// Historical days are fetched whole in one call, so the cap must cover a full day.
+const DEFAULT_HISTORICAL_TOP = 500000;
 const DEFAULT_INTERVAL_MINUTES = 5;
 const DEFAULT_KAFKA_BROKER = 'localhost:9092';
 const DEFAULT_KAFKA_TOPIC = 'normalized.tdx.bus_vehicle_position';
@@ -19,8 +22,10 @@ function configFromEnv() {
     httpPort: Number(process.env.HTTP_PORT ?? DEFAULT_HTTP_PORT),
     tdxAuthUrl: process.env.TDX_AUTH_URL ?? DEFAULT_TDX_AUTH_URL,
     tdxApiBaseUrl: stripTrailingSlash(process.env.TDX_API_BASE_URL ?? DEFAULT_TDX_API_BASE_URL),
+    tdxHistoricalBaseUrl: stripTrailingSlash(process.env.TDX_HISTORICAL_BASE_URL ?? DEFAULT_TDX_HISTORICAL_BASE_URL),
     tdxCity: process.env.TDX_CITY ?? DEFAULT_CITY,
     tdxTop: Number(process.env.TDX_TOP ?? DEFAULT_TOP),
+    tdxHistoricalTop: Number(process.env.TDX_HISTORICAL_TOP ?? DEFAULT_HISTORICAL_TOP),
     tdxClientId: process.env.TDX_CLIENT_ID,
     tdxClientSecret: process.env.TDX_CLIENT_SECRET,
     intervalMinutes: Number(process.env.INGEST_INTERVAL_MINUTES ?? DEFAULT_INTERVAL_MINUTES),
@@ -90,10 +95,99 @@ async function fetchTdxBusRows(config, accessToken) {
   return response.json();
 }
 
+// TDX Historical Fetch — a whole day in one call (the Historical endpoint, with Dates=).
+async function fetchTdxHistoricalDay(config, accessToken, date) {
+  const url = new URL(`${config.tdxHistoricalBaseUrl}/Historical/Bus/RealTimeByFrequency/City/${encodeURIComponent(config.tdxCity)}`);
+  url.searchParams.set('Dates', date);
+  url.searchParams.set('$top', String(config.tdxHistoricalTop));
+  url.searchParams.set('$format', 'JSON');
+
+  const response = await fetch(url.toString(), {
+    headers: { authorization: `Bearer ${accessToken}` },
+  });
+  if (!response.ok) {
+    throw new Error(`TDX historical request failed with HTTP ${response.status}`);
+  }
+  return response.json();
+}
+
+// Bucket a whole day's rows into interval slots by each row's own UpdateTime (Taipei).
+// Rows whose slot lands on a different service_date (midnight spillover) are dropped.
+function bucketRowsBySlot(rows, date, intervalMinutes) {
+  const buckets = new Map();
+  for (const row of (Array.isArray(rows) ? rows : [])) {
+    const t = row.UpdateTime ?? row.SrcUpdateTime ?? row.GPSTime ?? null;
+    if (!t) continue;
+    const ts = new Date(t);
+    if (Number.isNaN(ts.getTime())) continue;
+    const slot = taipeiSlot(ts, intervalMinutes);
+    if (slot.serviceDate !== date) continue;
+    if (!buckets.has(slot.slotKey)) buckets.set(slot.slotKey, { slot, rows: [] });
+    buckets.get(slot.slotKey).rows.push(row);
+  }
+  return buckets;
+}
+
+// Ingest a full historical day: one historical fetch, bucket into slots, produce to the
+// SAME normalized topic with historical provenance + correct per-slot timestamps. Does NOT
+// write the live ingestion manifest, so the reconcile DAG/live poller are unaffected.
+async function ingestHistoricalDay(date) {
+  const config = configFromEnv();
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(date))) {
+    return { ok: false, date, error: 'invalid_date', message: 'date must be YYYY-MM-DD' };
+  }
+  if (!config.tdxClientId || !config.tdxClientSecret) {
+    return { ok: false, date, error: 'missing_tdx_credentials', message: 'TDX_CLIENT_ID and/or TDX_CLIENT_SECRET not set' };
+  }
+
+  try {
+    const accessToken = await fetchAccessToken(config);
+    const rawRows = await fetchTdxHistoricalDay(config, accessToken, date);
+    const buckets = bucketRowsBySlot(rawRows, date, config.intervalMinutes);
+
+    const producer = await getKafkaProducer(config);
+    let recordCount = 0;
+    const routes = new Set();
+
+    for (const { slot, rows } of buckets.values()) {
+      // Reference time = the slot's own wall-clock, so freshness is judged in-context (not vs now).
+      const slotMs = new Date(`${slot.serviceDate}T${slot.timeLabel}:00+08:00`).getTime();
+      const records = normalizeRows(rows, slot, config, new Date(slotMs).toISOString(), {
+        ingestMode: 'historical',
+        sourceDataset: 'Historical.Bus.RealTimeByFrequency.City',
+        referenceMs: slotMs,
+      });
+      const { recordCount: n } = await produceNormalizedMessages(producer, config, slot, records, 'historical');
+      recordCount += n;
+      for (const r of records) routes.add(r.route_uid);
+    }
+
+    return {
+      ok: true,
+      date,
+      mode: 'historical',
+      slotCount: buckets.size,
+      recordCount,
+      routeCount: routes.size,
+    };
+  } catch (error) {
+    console.error('ingestHistoricalDay error:', error);
+    return { ok: false, date, error: error.message || 'historical_ingest_failed', message: error.message };
+  }
+}
+
 // Normalize TDX rows to normalized.tdx.bus_vehicle_position.v1
-function normalizeRows(rows, slot, config, capturedAt) {
+// Live and historical share this normalizer; only the provenance fields and the
+// freshness reference time differ (live = now, historical = the slot's own time).
+function normalizeRows(rows, slot, config, capturedAt, options = {}) {
+  const {
+    ingestMode = 'live',
+    sourceDataset = 'Bus.RealTimeByFrequency.City',
+    referenceMs = Date.now(),
+  } = options;
   const normalized = [];
-  
+
   for (const row of (Array.isArray(rows) ? rows : [])) {
     if (!row.PlateNumb || !row.RouteUID) continue;
     if (row.BusPosition?.PositionLat === null || row.BusPosition?.PositionLat === undefined) continue;
@@ -120,10 +214,10 @@ function normalizeRows(rows, slot, config, capturedAt) {
       azimuth_deg: row.Azimuth ? Number(row.Azimuth) : null,
       gps_time: gpsTime,
       update_time: updateTime,
-      freshness: updateTime ? (isStale(updateTime) ? 'stale' : 'fresh') : 'unknown',
+      freshness: updateTime ? (isStale(updateTime, referenceMs) ? 'stale' : 'fresh') : 'unknown',
       completeness: computeCompleteness(row),
-      ingest_mode: 'live',
-      source_dataset: 'Bus.RealTimeByFrequency.City',
+      ingest_mode: ingestMode,
+      source_dataset: sourceDataset,
       ingested_at: capturedAt,
     });
   }
@@ -131,9 +225,9 @@ function normalizeRows(rows, slot, config, capturedAt) {
   return normalized;
 }
 
-function isStale(timeStr) {
+function isStale(timeStr, referenceMs = Date.now()) {
   if (!timeStr) return true;
-  const ageMs = Date.now() - new Date(timeStr).getTime();
+  const ageMs = referenceMs - new Date(timeStr).getTime();
   return ageMs > 90 * 1000; // stale if > 90 seconds
 }
 
@@ -230,7 +324,7 @@ async function getKafkaProducer(config) {
   return kafkaProducerInstance;
 }
 
-async function produceNormalizedMessages(producer, config, slot, records) {
+async function produceNormalizedMessages(producer, config, slot, records, ingestMode = 'live') {
   if (records.length === 0) {
     return { recordCount: 0 };
   }
@@ -240,7 +334,7 @@ async function produceNormalizedMessages(producer, config, slot, records) {
     value: JSON.stringify(record),
     headers: {
       schema: Buffer.from('twfoundry.kafka.normalized.tdx.bus_vehicle_position.v1'),
-      ingest_mode: Buffer.from('live'),
+      ingest_mode: Buffer.from(ingestMode),
     },
   }));
 
@@ -410,6 +504,32 @@ function createHttpServer(config) {
       return;
     }
 
+    // Historical backfill: ingest a whole day from TDX's Historical endpoint.
+    if (req.method === 'POST' && url.pathname === '/ingest/day') {
+      let body = '';
+      req.on('data', (chunk) => {
+        body += chunk.toString();
+      });
+      req.on('end', async () => {
+        try {
+          const payload = body ? JSON.parse(body) : {};
+          const { date } = payload;
+          if (!date) {
+            res.writeHead(400, { 'content-type': 'application/json' });
+            res.end(JSON.stringify({ ok: false, error: 'missing_fields', message: 'date is required (YYYY-MM-DD)' }));
+            return;
+          }
+          const result = await ingestHistoricalDay(date);
+          res.writeHead(result.ok ? 200 : 500, { 'content-type': 'application/json' });
+          res.end(JSON.stringify(result));
+        } catch (error) {
+          res.writeHead(400, { 'content-type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: 'invalid_request', message: error.message }));
+        }
+      });
+      return;
+    }
+
     // 404
     res.writeHead(404, { 'content-type': 'application/json' });
     res.end(JSON.stringify({ error: 'not_found' }));
@@ -477,4 +597,4 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   });
 }
 
-export { ingestSlot, normalizeRows, parseSlotKey, taipeiSlot };
+export { ingestSlot, ingestHistoricalDay, bucketRowsBySlot, normalizeRows, parseSlotKey, taipeiSlot };
