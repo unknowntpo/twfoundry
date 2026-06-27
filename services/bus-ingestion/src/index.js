@@ -8,8 +8,9 @@ const DEFAULT_TDX_API_BASE_URL = 'https://tdx.transportdata.tw/api/basic/v2';
 const DEFAULT_TDX_HISTORICAL_BASE_URL = 'https://tdx.transportdata.tw/api/historical/v2';
 const DEFAULT_CITY = 'Taipei';
 const DEFAULT_TOP = 1200;
-// Historical days are fetched whole in one call, so the cap must cover a full day.
-const DEFAULT_HISTORICAL_TOP = 500000;
+// Historical days are streamed (NDJSON) and deduped on the fly — the endpoint ignores
+// $skip/$filter, so $top must be large enough for the server to emit the whole day (~7M rows).
+const DEFAULT_HISTORICAL_TOP = 10000000;
 const DEFAULT_INTERVAL_MINUTES = 5;
 const DEFAULT_KAFKA_BROKER = 'localhost:9092';
 const DEFAULT_KAFKA_TOPIC = 'normalized.tdx.bus_vehicle_position';
@@ -95,42 +96,47 @@ async function fetchTdxBusRows(config, accessToken) {
   return response.json();
 }
 
-// TDX Historical Fetch — a whole day in one call (the Historical endpoint, with Dates=).
-async function fetchTdxHistoricalDay(config, accessToken, date) {
+// Build the TDX Historical RealTimeByFrequency URL for a whole Taipei service day. The endpoint
+// returns NDJSON, ignores $skip/$filter, and honors only Dates + $top — so the whole day (~7M
+// rows / multi-GB) must be streamed in one request and deduped on the fly (see ingestHistoricalDay).
+function historicalDayUrl(config, date) {
   const url = new URL(`${config.tdxHistoricalBaseUrl}/Historical/Bus/RealTimeByFrequency/City/${encodeURIComponent(config.tdxCity)}`);
   url.searchParams.set('Dates', date);
   url.searchParams.set('$top', String(config.tdxHistoricalTop));
   url.searchParams.set('$format', 'JSON');
-
-  const response = await fetch(url.toString(), {
-    headers: { authorization: `Bearer ${accessToken}` },
-  });
-  if (!response.ok) {
-    throw new Error(`TDX historical request failed with HTTP ${response.status}`);
-  }
-  return response.json();
+  return url.toString();
 }
 
-// Bucket a whole day's rows into interval slots by each row's own UpdateTime (Taipei).
-// Rows whose slot lands on a different service_date (midnight spillover) are dropped.
-function bucketRowsBySlot(rows, date, intervalMinutes) {
-  const buckets = new Map();
-  for (const row of (Array.isArray(rows) ? rows : [])) {
-    const t = row.UpdateTime ?? row.SrcUpdateTime ?? row.GPSTime ?? null;
-    if (!t) continue;
-    const ts = new Date(t);
-    if (Number.isNaN(ts.getTime())) continue;
-    const slot = taipeiSlot(ts, intervalMinutes);
-    if (slot.serviceDate !== date) continue;
-    if (!buckets.has(slot.slotKey)) buckets.set(slot.slotKey, { slot, rows: [] });
-    buckets.get(slot.slotKey).rows.push(row);
-  }
-  return buckets;
+// The slot for a row, from its own UpdateTime (Taipei). null if the timestamp is missing/invalid
+// or lands on a different service_date than `date` (midnight spillover).
+function rowSlot(row, date, intervalMinutes) {
+  const t = row?.UpdateTime ?? row?.SrcUpdateTime ?? row?.GPSTime ?? null;
+  if (!t) return null;
+  const ts = new Date(t);
+  if (Number.isNaN(ts.getTime())) return null;
+  const slot = taipeiSlot(ts, intervalMinutes);
+  return slot.serviceDate === date ? slot : null;
 }
 
-// Ingest a full historical day: one historical fetch, bucket into slots, produce to the
-// SAME normalized topic with historical provenance + correct per-slot timestamps. Does NOT
-// write the live ingestion manifest, so the reconcile DAG/live poller are unaffected.
+// Fold one row into the dedup map, keeping the latest UpdateTime per (slot,vehicle,route,dir).
+// This collapses the ~85x oversampled historical stream to one position per vehicle per slot —
+// the same shape live polling produces — with O(deduped) memory, not O(day).
+function considerRow(latest, row, date, intervalMinutes) {
+  if (!row || !row.PlateNumb || !row.RouteUID) return;
+  if (row.BusPosition?.PositionLat == null || row.BusPosition?.PositionLon == null) return;
+  const slot = rowSlot(row, date, intervalMinutes);
+  if (!slot) return;
+  const key = `${slot.slotKey}|${row.PlateNumb}|${row.RouteUID}|${Number(row.Direction ?? 0)}`;
+  const updateMs = new Date(row.UpdateTime ?? row.GPSTime ?? 0).getTime() || 0;
+  const prev = latest.get(key);
+  if (!prev || updateMs >= prev.updateMs) latest.set(key, { row, slot, updateMs });
+}
+
+// Ingest a full historical day: ONE streamed NDJSON request, deduped on the fly to one position
+// per vehicle per slot, then produced to the same normalized topic with historical provenance +
+// correct per-slot timestamps. Memory is bounded by the deduped set (~tens of thousands of rows),
+// not the raw day. Does NOT write the live ingestion manifest, so the reconcile DAG/poller are
+// unaffected.
 async function ingestHistoricalDay(date) {
   const config = configFromEnv();
 
@@ -143,14 +149,49 @@ async function ingestHistoricalDay(date) {
 
   try {
     const accessToken = await fetchAccessToken(config);
-    const rawRows = await fetchTdxHistoricalDay(config, accessToken, date);
-    const buckets = bucketRowsBySlot(rawRows, date, config.intervalMinutes);
+    const response = await fetch(historicalDayUrl(config, date), {
+      headers: { authorization: `Bearer ${accessToken}` },
+    });
+    if (!response.ok || !response.body) {
+      throw new Error(`TDX historical request failed with HTTP ${response.status}`);
+    }
+
+    // Stream NDJSON line-by-line; never buffer the whole (multi-GB) day.
+    const latest = new Map();
+    const decoder = new TextDecoder();
+    const reader = response.body.getReader();
+    let buf = '';
+    let scanned = 0;
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, { stream: true });
+      let nl;
+      while ((nl = buf.indexOf('\n')) >= 0) {
+        const line = buf.slice(0, nl);
+        buf = buf.slice(nl + 1);
+        if (!line.trim()) continue;
+        let row;
+        try { row = JSON.parse(line); } catch { continue; }
+        scanned++;
+        considerRow(latest, row, date, config.intervalMinutes);
+      }
+    }
+    if (buf.trim()) {
+      try { considerRow(latest, JSON.parse(buf), date, config.intervalMinutes); scanned++; } catch { /* trailing partial */ }
+    }
+
+    // Group deduped rows by slot, then normalize + produce.
+    const bySlot = new Map();
+    for (const { row, slot } of latest.values()) {
+      if (!bySlot.has(slot.slotKey)) bySlot.set(slot.slotKey, { slot, rows: [] });
+      bySlot.get(slot.slotKey).rows.push(row);
+    }
 
     const producer = await getKafkaProducer(config);
     let recordCount = 0;
     const routes = new Set();
-
-    for (const { slot, rows } of buckets.values()) {
+    for (const { slot, rows } of bySlot.values()) {
       // Reference time = the slot's own wall-clock, so freshness is judged in-context (not vs now).
       const slotMs = new Date(`${slot.serviceDate}T${slot.timeLabel}:00+08:00`).getTime();
       const records = normalizeRows(rows, slot, config, new Date(slotMs).toISOString(), {
@@ -163,14 +204,7 @@ async function ingestHistoricalDay(date) {
       for (const r of records) routes.add(r.route_uid);
     }
 
-    return {
-      ok: true,
-      date,
-      mode: 'historical',
-      slotCount: buckets.size,
-      recordCount,
-      routeCount: routes.size,
-    };
+    return { ok: true, date, mode: 'historical', scanned, slotCount: bySlot.size, recordCount, routeCount: routes.size };
   } catch (error) {
     console.error('ingestHistoricalDay error:', error);
     return { ok: false, date, error: error.message || 'historical_ingest_failed', message: error.message };
@@ -597,4 +631,4 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   });
 }
 
-export { ingestSlot, ingestHistoricalDay, bucketRowsBySlot, normalizeRows, parseSlotKey, taipeiSlot };
+export { ingestSlot, ingestHistoricalDay, considerRow, rowSlot, normalizeRows, parseSlotKey, taipeiSlot };
