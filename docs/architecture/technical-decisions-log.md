@@ -551,3 +551,30 @@ Dedup 合併：     「同一輛車同一 slot 重複寫入」  → 需 per-row 
 - 同樣的 loading-state 原則可推廣到 timeline / route evidence 區塊。
 
 ---
+
+## 2026-06-26：bus-oversight batch 接 R2 Function（修 05-20 stale + 移除 Spectra）
+
+詳見 `bus-oversight-data-serving-and-freshness.md`。
+
+**決策**
+- prod/staging build 用新 script `build:prod`（`VITE_TWFOUNDRY_ANALYTICS_BASE=/api/analytics/bus`），dashboard batch 改讀 **R2-backed Pages Function**（`/api/analytics/bus/*`，06-25、自動更新），取代凍結的靜態 `/data/analytics/bus/`（05-20）。
+- 不動 default `build`（保持靜態指向）：`/api/*` Function 在本地 `vite`/`vite preview` 不存在，CI e2e 預覽用 default build。
+- 同時移除 Spectra（SDD 工具）：刪各 AI 工具的 spectra 指令/skill、`.spectra*`、`openspec` 工具；保留 `twfoundry-extensibility-judge`；openspec 的 75 個 .md 設計內容搬到 `docs/specs`、`docs/changes`；`AGENTS.md` 重寫為純治理。
+
+**原因**
+- 根因：prod build 未設 analytics base → batch 落到舊靜態 05-20；與 live 06-26 相差 37 天 > 7，觸發 `buildBusOversightModel` 的 merge 守門 → 退回 batch-only、整片凍 05-20，失去信任度。
+- `/api/analytics/bus` R2 Function 已存在且供應全部 4 檔（06-25），直接接上等於免費取得 R2 read path（原 ③ 的一部分）。
+
+**影響**
+- batch 05-20 → 06-25（與 live 06-26 差 1 天 → `mergeSpeed=true`，timeline 延伸到今天、live 縫回）。
+- 涵蓋路線 21 → 52（06-25 batch）。
+- prod 部署改用 `bun run build:prod`（見 deploy memory）。
+
+**驗證**
+- local `build:prod` → staging `twfoundry-poc` 驗證（日期只剩 06-26、無 analytics/online 失敗）→ prod `twfoundry` 同樣驗證通過。
+
+**後續**
+- ②（serving 統一：Flink 補齊 metric 契約 + provisional 渲染）、③（batch 覆蓋完整度）見設計文件。
+- 長期可考慮把 `/data/analytics/bus`（05-20 靜態）與 `/data/analytics-rolling`（06-21 靜態）淘汰，dev 也走 R2 或統一 fixture。
+
+---
