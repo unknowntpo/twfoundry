@@ -1,5 +1,12 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
+import { loadBusDetectionRules } from './lib/busDetectionRules.mjs';
+
+// UNK-37: detection parameters come from the shared contract
+// (contracts/bus-detection-rules.v1.json), the SAME file the Flink speed layer reads,
+// so the two engines cannot drift. CLI flags still override per-run, but the DEFAULTS
+// are single-sourced — no hardcoded 14 / 48 / 120 in this script.
+const detectionRules = loadBusDetectionRules();
 
 const DEFAULT_CLICKHOUSE_URL = 'http://127.0.0.1:8123';
 const DEFAULT_DATABASE = 'twfoundry';
@@ -18,7 +25,11 @@ const outputRoot = options['output-root'] ?? DEFAULT_OUTPUT_ROOT;
 // frozen one-time snapshot. Default preserves the legacy static-snapshot behaviour.
 const source = options.source ?? process.env.TWFOUNDRY_ANALYTICS_SOURCE ?? 'clickhouse-static-snapshot';
 const limit = positiveInteger(options.limit, 50);
-const minHeadwayMinutes = positiveInteger(options['min-headway-minutes'], 14);
+// Default mirrors the speed layer's serviceGapMinutes from the shared contract.
+const minHeadwayMinutes = positiveInteger(options['min-headway-minutes'], detectionRules.serviceGapMinutes);
+// routeMinutes and the map-match distance gate are contract-sourced, not hardcoded in SQL.
+const routeMinutes = detectionRules.routeMinutes;
+const maxDistanceToRouteMeters = detectionRules.maxDistanceToRouteMeters;
 // Density/bunching are queried over a trailing window so the dashboard's 7-day
 // timeline reflects real multiple days. Default 1 keeps the single-day snapshot
 // behaviour; the rolling pipeline passes --lookback-days 7.
@@ -115,7 +126,7 @@ async function buildDataFreshness() {
       round(avg(completeness), 3) AS avg_completeness,
       quantileExact(0.95)(gps_update_lag_seconds) AS p95_gps_update_lag_seconds,
       countIf(freshness != 'fresh') AS non_fresh_reports,
-      countIf(distance_to_route_meters > 120) AS off_route_reports,
+      countIf(distance_to_route_meters > ${maxDistanceToRouteMeters}) AS off_route_reports,
       round(non_fresh_reports / reports, 4) AS non_fresh_rate,
       round(off_route_reports / reports, 4) AS off_route_rate
     FROM ${tableName()}
@@ -146,7 +157,7 @@ async function buildBunching() {
       FROM ${tableName()}
       WHERE service_date BETWEEN toDate('${rangeStart}') AND toDate('${serviceDate}')
         AND route_progress_ratio IS NOT NULL
-        AND distance_to_route_meters <= 120
+        AND distance_to_route_meters <= ${maxDistanceToRouteMeters}
       WINDOW route_window AS (
         PARTITION BY slot_start, route_uid, direction
         ORDER BY route_progress_ratio
@@ -163,7 +174,7 @@ async function buildBunching() {
       round(trailing_progress, 4) AS trailing_progress,
       round(leading_progress, 4) AS leading_progress,
       round(leading_progress - trailing_progress, 4) AS progress_gap_ratio,
-      round((leading_progress - trailing_progress) * 48, 1) AS estimated_headway_minutes
+      round((leading_progress - trailing_progress) * ${routeMinutes}, 1) AS estimated_headway_minutes
     FROM ordered
     WHERE leading_vehicle_id != ''
       AND leading_progress > trailing_progress
@@ -176,6 +187,16 @@ async function buildBunching() {
   return {
     ...metricPayload('route_bunching_signal', result),
     minHeadwayMinutes,
+    // Provenance: the contract-sourced detection params this run used, so a consumer can
+    // verify the batch layer and speed layer agree (UNK-37 shared detection rules).
+    detectionRules: {
+      schema: 'twfoundry.contracts.bus_detection_rules.v1',
+      routeMinutes,
+      serviceGapMinutes: detectionRules.serviceGapMinutes,
+      bunchingProgressGapRatio: detectionRules.bunchingProgressGapRatio,
+      bunchingConfirmationSlots: detectionRules.bunchingConfirmationSlots,
+      maxDistanceToRouteMeters,
+    },
   };
 }
 

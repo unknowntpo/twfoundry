@@ -13,10 +13,15 @@ import java.util.Map;
 // and Flink serializes the operator at job-submit time. All fields are primitives
 // or a Serializable Clock.
 public final class BusRouteSentinelProcessor implements Serializable {
-  public static final double DEFAULT_ROUTE_MINUTES = 48.0;
-  public static final double DEFAULT_SERVICE_GAP_MINUTES = 14.0;
-  public static final double DEFAULT_BUNCHING_PROGRESS_GAP_RATIO = 0.04;
-  public static final int DEFAULT_BUNCHING_CONFIRMATION_SLOTS = 2;
+  // Single source of truth: the shared detection-rule contract
+  // (contracts/bus-detection-rules.v1.json), also consumed by the ClickHouse batch
+  // publish script. Do NOT hardcode these numbers — edit the contract (UNK-37).
+  public static final double DEFAULT_ROUTE_MINUTES = BusDetectionRules.DEFAULTS.routeMinutes();
+  public static final double DEFAULT_SERVICE_GAP_MINUTES = BusDetectionRules.DEFAULTS.serviceGapMinutes();
+  public static final double DEFAULT_BUNCHING_PROGRESS_GAP_RATIO =
+      BusDetectionRules.DEFAULTS.bunchingProgressGapRatio();
+  public static final int DEFAULT_BUNCHING_CONFIRMATION_SLOTS =
+      BusDetectionRules.DEFAULTS.bunchingConfirmationSlots();
 
   private final double routeMinutes;
   private final double serviceGapMinutes;

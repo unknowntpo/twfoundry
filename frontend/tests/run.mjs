@@ -7,6 +7,7 @@ import './busHeadwaySignals.test.mjs';
 import './busReliabilitySignals.test.mjs';
 import './busOversightData.test.mjs';
 import './busDelayPocFunction.test.mjs';
+import './busDetectionRulesContract.test.mjs';
 import './layerRegistry.test.mjs';
 import './mapOverlayData.test.mjs';
 import './overlayRegistry.test.mjs';

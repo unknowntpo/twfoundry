@@ -83,6 +83,12 @@ constant. Seed (§3a.2) and gate both read the same schedule.
 
 ## 5. Parameters
 
+The scalar detection parameters (route minutes, gap/headway threshold, bunching EPS,
+confirmation slots, map-match distance gate) are single-sourced in
+`contracts/bus-detection-rules.v1.json` and consumed by BOTH the Flink speed layer and the
+ClickHouse batch publish script — do NOT hardcode them anywhere. See
+`shared-detection-rules.md` (UNK-37).
+
 | Param | Meaning | Starting value | Source |
 |---|---|---|---|
 | checkpoint granularity | gap key resolution | progress bin 0.1 → stop-level later | choice |

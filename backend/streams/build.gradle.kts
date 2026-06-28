@@ -7,6 +7,20 @@ application {
   mainClass.set("io.twfoundry.backend.streams.bus.BusRouteSentinelJob")
 }
 
+// UNK-37: package the shared detection-rule contract onto the classpath at
+// `contracts/bus-detection-rules.v1.json` so BusDetectionRules can read it via
+// getResourceAsStream. The SAME file is read by the ClickHouse batch publish script
+// (frontend/scripts/publish-clickhouse-bus-analytics.mjs), making it the single source
+// of truth for gap/bunching/headway/map-match parameters across both engines. Wired
+// into both main and test resources so unit tests load the identical bytes the job ships.
+val sharedContractsDir = rootDir.resolve("contracts")
+tasks.named<ProcessResources>("processResources") {
+  from(sharedContractsDir) { into("contracts") }
+}
+tasks.named<ProcessResources>("processTestResources") {
+  from(sharedContractsDir) { into("contracts") }
+}
+
 // Flink on Java 17+ needs these module opens for its Kryo serializer (reflective setAccessible
 // on java.util collections). Must match Dockerfile JDK_JAVA_OPTIONS. See JvmModuleAccessTest.
 val flinkAddOpens = listOf(

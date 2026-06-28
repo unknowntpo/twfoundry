@@ -1,0 +1,19 @@
+{
+  "schema": "twfoundry.contracts.bus_detection_rules.v1",
+  "description": "Single source of truth for bus anomaly-detection parameters. BOTH the Flink speed layer (backend/streams) AND the ClickHouse batch publish script (frontend/scripts/publish-clickhouse-bus-analytics.mjs) read these values so the two engines cannot drift. See docs/architecture/shared-detection-rules.md and docs/architecture/anomaly-detection-algorithm.md. Do NOT hardcode these numbers anywhere else.",
+  "version": 1,
+  "parameters": {
+    "routeMinutes": 48.0,
+    "serviceGapMinutes": 14.0,
+    "bunchingProgressGapRatio": 0.04,
+    "bunchingConfirmationSlots": 2,
+    "maxDistanceToRouteMeters": 120.0
+  },
+  "parameterDocs": {
+    "routeMinutes": "Full-route traversal time in minutes. headway_min_est = progress_gap_ratio * routeMinutes. Shared constant until per-route traversal time exists. (algorithm doc §3b, §5)",
+    "serviceGapMinutes": "Service-gap (空窗) headway threshold in minutes. Flink emits suspected_gap when headway_min_est >= this; batch emits route_bunching_signal rows when estimated_headway_minutes >= this. Mirrors the batch --min-headway-minutes default. (algorithm doc K(cp,t) starting value)",
+    "bunchingProgressGapRatio": "Bunching (群聚) closeness EPS on route_progress_ratio [0,1]. Adjacent vehicle pairs with progress_gap <= this are bunching candidates. (algorithm doc §5 EPS)",
+    "bunchingConfirmationSlots": "M consecutive slots a candidate pair must stay close before a bunching signal fires (kills GPS jitter). Speed layer only; batch reports per-slot candidates. (algorithm doc §3b, §5 M)",
+    "maxDistanceToRouteMeters": "Map-matching gate: observations farther than this from the route shape are dropped before detection. Flink filters in RouteGeometryIndex.enrich; batch filters distance_to_route_meters <= this. (algorithm doc §2)"
+  }
+}

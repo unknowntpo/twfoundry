@@ -20,7 +20,11 @@ public final class BusRouteSentinelJob {
   private static final Logger LOG = LoggerFactory.getLogger(BusRouteSentinelJob.class);
   private static final String DEFAULT_INPUT_TOPIC = "normalized.tdx.bus_vehicle_position";
   private static final String DEFAULT_OUTPUT_TOPIC = "online.tdx.bus_route_signal";
-  private static final double DEFAULT_MAX_DISTANCE_TO_ROUTE_METERS = 120.0;
+  // Sourced from the shared detection-rule contract (contracts/bus-detection-rules.v1.json),
+  // the same file the ClickHouse batch publish script reads, so the map-matching distance
+  // gate cannot drift between speed and batch layers (UNK-37).
+  private static final double DEFAULT_MAX_DISTANCE_TO_ROUTE_METERS =
+      BusDetectionRules.DEFAULTS.maxDistanceToRouteMeters();
 
   // Static so the map lambdas reference it via getstatic instead of capturing it.
   // ObjectMapper's JavaTimeModule holds a non-serializable DateTimeFormatter, and a
