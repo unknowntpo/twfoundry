@@ -9,6 +9,10 @@ WORKDIR /repo
 
 COPY infra/clickhouse/scripts ./infra/clickhouse/scripts
 COPY frontend/scripts/publish-clickhouse-bus-analytics.mjs ./frontend/scripts/publish-clickhouse-bus-analytics.mjs
+# UNK-37: publish imports ./lib/busDetectionRules.mjs which reads repo-root contracts/
+# (the same detection-rule contract the Flink speed layer uses). Both must be in the image.
+COPY frontend/scripts/lib ./frontend/scripts/lib
+COPY contracts/bus-detection-rules.v1.json ./contracts/bus-detection-rules.v1.json
 
 ENV CLICKHOUSE_URL=http://clickhouse:8123 \
     CLICKHOUSE_DATABASE=twfoundry \

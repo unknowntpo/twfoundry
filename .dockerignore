@@ -19,6 +19,8 @@ frontend/functions/*
 !frontend/scripts
 frontend/scripts/*
 !frontend/scripts/publish-clickhouse-bus-analytics.mjs
+!frontend/scripts/lib
+!frontend/scripts/lib/**
 !frontend/public
 frontend/public/*
 !frontend/public/data
