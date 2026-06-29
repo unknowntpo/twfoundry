@@ -88,6 +88,25 @@ GET api/historical/v2/Historical/Bus/RealTimeByFrequency/City/Taipei
 - 費率 **~52 點/GB(wire)**（06-27 未壓縮 4.28GB→220 點、06-28 壓縮 0.18GB→9.25 點，一致）。
 - **結論：歷史抓取一律帶 `Accept-Encoding: br` → 省 ~2.9×**。一天從 ~180 點降到 **~65 點**；但仍貴，2 週 ~870 點。要回填仍建議只挑關鍵幾天。
 
+## 公車 A1 端點參考（即時 / 歷史）
+
+資料型別：**A1 = 車輛 GPS 動態定時**（`RealTimeByFrequency`）。TDX 另有 N1（到站 ETA）、A2（進離站事件），TWFoundry 未用。
+
+**即時** — base `https://tdx.transportdata.tw/api/basic/v2`（基礎服務，便宜）
+| Endpoint | 範圍 | 狀態 |
+|---|---|---|
+| `GET /Bus/RealTimeByFrequency/City/{City}` | 整城當下快照（批次更新） | ✅ live 攝取用此 |
+| `GET /Bus/RealTimeByFrequency/City/{City}/{RouteName}` | 單一路線當下 | ✅ 可用（實測 200） |
+| `GET /Bus/RealTimeByFrequency/Streaming/City/{City}[/{RouteName}]` | 逐筆更新 | 逐筆=UDP 來源，非可消費的 HTTP 串流 |
+
+**歷史** — base `https://tdx.transportdata.tw/api/historical/v2`（進階服務，貴）
+| Endpoint | 範圍 | 狀態 |
+|---|---|---|
+| `GET /Historical/Bus/RealTimeByFrequency/City/{City}?Dates=YYYY-MM-DD` | **整城整天**，回 NDJSON | ✅ 唯一可用；`$top` 認、`$skip`/`$filter` 忽略 |
+| `GET /Historical/.../City/{City}/{RouteName}?Dates=...` | 想要單一路線 | ❌ **404，歷史不支援 route 層**（basic 同路線 200 → 非格式問題） |
+
+**Auth**（共用，免點數）：`POST https://tdx.transportdata.tw/auth/realms/TDXConnect/protocol/openid-connect/token`（client_credentials）。
+
 ## Sources
 
 - [訂閱收費 - TDX](https://tdx.transportdata.tw/pricing)（官方，動態頁需手動看）
