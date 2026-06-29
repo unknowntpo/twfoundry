@@ -40,6 +40,12 @@ node infra/clickhouse/scripts/upload-bus-analytics.mjs \
   --input-root /out \
   --prefix analytics/bus \
   --wrangler wrangler
+# Permanent per-day history: re-publish this single service day from ClickHouse and
+# upload to the immutable prefix analytics/bus/by-date/<date>/ (so dragging the dashboard
+# timeline to a past day shows that day's real reliability/density/freshness/watchlist,
+# not the overwritten "latest" snapshot). Zero TDX cost — reads ClickHouse only.
+node infra/clickhouse/scripts/archive-bus-analytics-by-date.mjs \
+  --service-date "${SERVICE_DATE}"
 """
 
 # Cloudflare creds come from the existing secret, same as the CronJob.

@@ -40,6 +40,10 @@ spec:
                     --input-root /out \
                     --prefix analytics/bus \
                     --wrangler wrangler
+                  # Permanent per-day history -> analytics/bus/by-date/<date>/ (zero TDX cost,
+                  # reads ClickHouse only). Mirrors the airflow DAG; keep the two in sync.
+                  node infra/clickhouse/scripts/archive-bus-analytics-by-date.mjs \
+                    --service-date "${SERVICE_DATE}"
               env:
                 - name: CLICKHOUSE_URL
                   value: http://clickhouse:8123
