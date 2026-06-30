@@ -21,6 +21,9 @@ frontend/scripts/*
 !frontend/scripts/publish-clickhouse-bus-analytics.mjs
 !frontend/scripts/lib
 !frontend/scripts/lib/**
+!frontend/src
+frontend/src/*
+!frontend/src/busRouteGeometry.js
 !frontend/public
 frontend/public/*
 !frontend/public/data

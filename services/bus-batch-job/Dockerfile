@@ -13,6 +13,12 @@ COPY frontend/scripts/publish-clickhouse-bus-analytics.mjs ./frontend/scripts/pu
 # (the same detection-rule contract the Flink speed layer uses). Both must be in the image.
 COPY frontend/scripts/lib ./frontend/scripts/lib
 COPY contracts/bus-detection-rules.v1.json ./contracts/bus-detection-rules.v1.json
+# UNK-61: the lake loader map-matches each position against route geometry so the batch
+# layer populates route_progress_ratio / distance_to_route_meters (needed for bunching /
+# service-gap detection). buildRouteProgressObservation + the route-context shapes must be
+# in the image. Route-context is ~32MB of static TDX geometry; acceptable for a batch image.
+COPY frontend/src/busRouteGeometry.js ./frontend/src/busRouteGeometry.js
+COPY frontend/public/data/tdx-bus/route-context ./frontend/public/data/tdx-bus/route-context
 
 ENV CLICKHOUSE_URL=http://clickhouse:8123 \
     CLICKHOUSE_DATABASE=twfoundry \
