@@ -5,10 +5,12 @@ import {
   buildRouteServiceSummary,
   detectHeadwayGapSignals,
 } from './busHeadwaySignals.js';
+import { BUS_RELIABILITY_SIGNAL_TYPES } from './busReliabilitySignals.js';
 import {
-  headwaySeverity,
-  headwaySeverityRank,
-} from './busReliabilitySignals.js';
+  buildFreshnessQualityEvents,
+  buildHeadwayEvents,
+  buildWatchlist,
+} from './busOversightData.js';
 import { buildRouteProgressObservation } from './busRouteGeometry.js';
 import {
   formatRouteOperatorNames,
@@ -445,55 +447,45 @@ const vehicleTelemetrySummary = computed(() => [
   `${selectedObservation.value?.motion?.speedKph ?? 0} km/h`,
   selectedFreshnessLabel.value,
 ].join(' · '));
+// Single source of truth: the root-page watchlist is computed by the SAME
+// buildWatchlist() the BusOversight DetailPage uses, so route selection / severity
+// can't drift between the overview cards and the detail console (rootpage-vs-detailpage
+// principle: the card is a basic-display drill-down entry, depth lives in the DetailPage).
+function watchlistDominant(counts) {
+  const T = BUS_RELIABILITY_SIGNAL_TYPES;
+  if (counts?.[T.SERVICE_GAP]) return { type: 'service-gap', labelKey: 'routeHealth.serviceGap' };
+  if (counts?.[T.BUNCHING]) return { type: 'service-gap', labelKey: 'routeHealth.serviceGap' };
+  return { type: 'data-quality', labelKey: 'routeHealth.telemetryQuality' };
+}
+function totalRouteSignals(counts) {
+  return Object.values(counts ?? {}).reduce((sum, value) => sum + (Number(value) || 0), 0);
+}
 const routeHealthWatchlist = computed(() => {
-  const items = [];
-
-  for (const row of analyticsData.value.bunching) {
-    const route = String(row.route_name ?? '');
-    if (!route) continue;
-    const minutes = Number(row.estimated_headway_minutes);
-    const severity = headwaySeverity(minutes);
-    items.push({
-      id: `gap-${route}-${row.direction}-${row.slot_start}-${row.trailing_vehicle_id}-${row.leading_vehicle_id}`,
-      route,
-      direction: row.direction,
-      severity,
-      type: 'service-gap',
-      sortRank: headwaySeverityRank(severity),
-      sortValue: Number.isFinite(minutes) ? minutes : 0,
-      typeLabel: t('routeHealth.serviceGap'),
-      operatorLabel: routeOperatorLabelForRoute(route),
-      metricLabel: t('analytics.headway', { minutes: formatAnalyticsNumber(minutes) }),
-      detailLabel: formatAnalyticsTime(row.slot_start),
+  const events = [
+    ...buildHeadwayEvents({ rows: analyticsData.value.bunching }),
+    ...buildFreshnessQualityEvents({ rows: analyticsData.value.dataFreshness }),
+  ];
+  const date = analyticsData.value.serviceDate
+    || events.map((event) => event.date).filter(Boolean).sort().at(-1)
+    || '';
+  return buildWatchlist({ events, freshnessRows: analyticsData.value.dataFreshness, date })
+    .filter((route) => route.severity !== 'normal')
+    .slice(0, 4)
+    .map((route) => {
+      const dominant = watchlistDominant(route.counts);
+      return {
+        id: `watch-${route.routeName}`,
+        route: route.routeName,
+        direction: route.direction,
+        severity: route.severity,
+        type: dominant.type,
+        typeLabel: t(dominant.labelKey),
+        operatorLabel: routeOperatorLabelForRoute(route.routeName),
+        metricLabel: route.metric || '—',
+        detailLabel: t('routeHealth.signalCount', { count: totalRouteSignals(route.counts) }),
+        href: `/bus-oversight?route=${encodeURIComponent(route.routeName)}`,
+      };
     });
-  }
-
-  for (const row of analyticsData.value.dataFreshness) {
-    const route = String(row.route_name ?? '');
-    if (!route) continue;
-    const rate = Number(row.off_route_rate);
-    items.push({
-      id: `quality-${route}-${row.direction}`,
-      route,
-      direction: row.direction,
-      severity: 'watch',
-      type: 'data-quality',
-      sortRank: headwaySeverityRank('watch'),
-      sortValue: Number.isFinite(rate) ? rate : 0,
-      typeLabel: t('routeHealth.telemetryQuality'),
-      operatorLabel: routeOperatorLabelForRoute(route),
-      metricLabel: t('analytics.offRouteRate', { rate: formatAnalyticsPercent(row.off_route_rate) }),
-      detailLabel: t('analytics.reports', { count: formatAnalyticsNumber(row.reports) }),
-    });
-  }
-
-  return items
-    .sort((left, right) => (
-      left.sortRank - right.sortRank
-      || right.sortValue - left.sortValue
-      || left.route.localeCompare(right.route)
-    ))
-    .slice(0, 4);
 });
 const routeHealthRouteNames = computed(() => (
   [...new Set(routeHealthWatchlist.value.map((item) => item.route).filter(Boolean))]
@@ -1491,20 +1483,9 @@ function formatHourDuration(minutes) {
   return `${minutes}m`;
 }
 
-function formatAnalyticsTime(value) {
-  if (!value) return '--';
-  return String(value).slice(5, 16).replace('T', ' ');
-}
-
 function formatAnalyticsNumber(value) {
   const number = Number(value);
   return Number.isFinite(number) ? number.toLocaleString('en-US') : '--';
-}
-
-function formatAnalyticsPercent(rate) {
-  const number = Number(rate);
-  if (!Number.isFinite(number)) return '--';
-  return `${(number * 100).toFixed(number >= 0.1 ? 1 : 2)}%`;
 }
 
 function formatAnalyticsDirection(direction) {
@@ -1597,7 +1578,7 @@ onBeforeUnmount(() => {
             {{ option.label }}
           </button>
         </div>
-        <a class="btn primary" href="/bus-oversight">{{ t('nav.busOversight') }}</a>
+        <a class="btn" href="/bus-oversight">{{ t('nav.busOversight') }}</a>
         <button class="btn" type="button" @click="healthDrawerOpen = true">{{ t('drawer.title') }}</button>
       </div>
     </header>
@@ -1734,11 +1715,13 @@ onBeforeUnmount(() => {
           <div v-else-if="analyticsLoading && routeHealthWatchlist.length === 0" class="analytics-empty">{{ t('routeHealth.loading') }}</div>
           <div v-else-if="routeHealthWatchlist.length === 0" class="analytics-empty">{{ t('routeHealth.noRows') }}</div>
           <div v-else class="route-health-list">
-            <div
+            <a
               v-for="item in routeHealthWatchlist"
               :key="item.id"
               class="route-health-row"
               :class="[item.severity, item.type]"
+              :href="item.href"
+              :aria-label="t('routeHealth.openDetail', { route: item.route })"
             >
               <span class="route-health-status">{{ t(`routeHealth.severity.${item.severity}`) }}</span>
               <span class="route-health-main">
@@ -1750,7 +1733,7 @@ onBeforeUnmount(() => {
                 <b>{{ item.metricLabel }}</b>
                 <small>{{ item.detailLabel }}</small>
               </span>
-            </div>
+            </a>
             <div v-if="routeHealthHasOverflow" class="route-health-overflow">
               {{ t('routeHealth.more') }}
             </div>

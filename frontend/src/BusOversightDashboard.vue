@@ -183,6 +183,10 @@ onMounted(() => {
   loadAnalytics();
   loadLiveSignals();
   liveSignalTimer = window.setInterval(loadLiveSignals, 30_000);
+  // Drill-down entry from the root-page watchlist card (/bus-oversight?route=…):
+  // preselect that route so the DetailPage opens straight on its reliability view.
+  const presetRoute = new URLSearchParams(window.location.search).get('route');
+  if (presetRoute) selectRoute(presetRoute);
 });
 
 onUnmounted(() => {
