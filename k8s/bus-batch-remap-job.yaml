@@ -1,0 +1,87 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bus-batch-remap
+  namespace: twfoundry-data
+  labels:
+    app.kubernetes.io/name: bus-batch-remap
+    app.kubernetes.io/part-of: twfoundry-batch
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: bus-batch-remap
+        app.kubernetes.io/part-of: twfoundry-batch
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: remap
+          image: ghcr.io/unknowntpo/twfoundry/bus-batch-job:latest
+          imagePullPolicy: Always
+          # UNK-61 one-shot: re-load the lake window into ClickHouse with the new image so
+          # route_progress_ratio / distance_to_route_meters get populated (map-match on load),
+          # then re-publish the rolling analytics to R2. lookback 10 covers 06-22..latest;
+          # missing lake days are skipped. Idempotent (each day's rows are replaced on load).
+          command:
+            - /bin/bash
+            - -ec
+            - |
+              SERVICE_DATE="$(
+                for file in /lake/*.jsonl; do
+                  [ -e "${file}" ] || continue
+                  basename "${file}" .jsonl
+                done | sort | tail -1
+              )"
+              echo "latest lake service_date=${SERVICE_DATE}"
+              node infra/clickhouse/scripts/run-bus-service-health-pipeline.mjs \
+                --service-date "${SERVICE_DATE}" \
+                --lookback-days 10 \
+                --lake-dir /lake \
+                --output-root /out
+              node infra/clickhouse/scripts/upload-bus-analytics.mjs \
+                --input-root /out \
+                --prefix analytics/bus \
+                --wrangler wrangler
+          env:
+            - name: CLICKHOUSE_URL
+              value: http://clickhouse:8123
+            - name: CLICKHOUSE_DATABASE
+              value: twfoundry
+            - name: CLICKHOUSE_USER
+              value: default
+            - name: CLICKHOUSE_PASSWORD
+              value: ""
+            - name: R2_BUCKET
+              value: twfoundry-poc-archive
+            - name: CLOUDFLARE_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: twfoundry-track-b-secrets
+                  key: CLOUDFLARE_API_TOKEN
+            - name: CLOUDFLARE_ACCOUNT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: twfoundry-track-b-secrets
+                  key: CLOUDFLARE_ACCOUNT_ID
+          volumeMounts:
+            - name: bus-lake
+              mountPath: /lake
+              readOnly: true
+            - name: output
+              mountPath: /out
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1536Mi
+      volumes:
+        - name: bus-lake
+          persistentVolumeClaim:
+            claimName: bus-lake
+            readOnly: true
+        - name: output
+          emptyDir:
+            sizeLimit: 512Mi

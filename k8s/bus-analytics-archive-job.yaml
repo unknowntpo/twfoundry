@@ -30,7 +30,7 @@ spec:
             - --from-date
             - "2026-06-22"
             - --to-date
-            - "2026-06-27"
+            - "2026-07-01"
           env:
             - name: CLICKHOUSE_URL
               value: http://clickhouse:8123
